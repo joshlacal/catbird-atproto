@@ -1,0 +1,21 @@
+[package]
+name = "catbird-atproto"
+version = "0.1.0"
+edition = "2021"
+description = "Shared generated AT Protocol lexicon surface for Catbird Rust crates"
+
+[features]
+default = ["namespace-bluecatbird"]
+namespace-bluecatbird = []
+streaming = []
+
+[dependencies]
+bytes = "1"
+jacquard-common = "0.9"
+jacquard-derive = "0.9"
+jacquard-lexicon = "0.9"
+miette = "7"
+rustversion = "1"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "1"
