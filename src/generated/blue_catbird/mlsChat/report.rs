@@ -273,11 +273,11 @@ pub mod report_view_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Status;
-        type ReportId;
-        type SubmittedAt;
         type ConvoId;
+        type ReportId;
         type ReportedDid;
+        type SubmittedAt;
+        type Status;
         type Category;
         type ReporterDid;
     }
@@ -285,23 +285,23 @@ pub mod report_view_state {
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Status = Unset;
-        type ReportId = Unset;
-        type SubmittedAt = Unset;
         type ConvoId = Unset;
+        type ReportId = Unset;
         type ReportedDid = Unset;
+        type SubmittedAt = Unset;
+        type Status = Unset;
         type Category = Unset;
         type ReporterDid = Unset;
     }
-    ///State transition - sets the `status` field to Set
-    pub struct SetStatus<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetStatus<S> {}
-    impl<S: State> State for SetStatus<S> {
-        type Status = Set<members::status>;
+    ///State transition - sets the `convo_id` field to Set
+    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetConvoId<S> {}
+    impl<S: State> State for SetConvoId<S> {
+        type ConvoId = Set<members::convo_id>;
         type ReportId = S::ReportId;
-        type SubmittedAt = S::SubmittedAt;
-        type ConvoId = S::ConvoId;
         type ReportedDid = S::ReportedDid;
+        type SubmittedAt = S::SubmittedAt;
+        type Status = S::Status;
         type Category = S::Category;
         type ReporterDid = S::ReporterDid;
     }
@@ -309,35 +309,11 @@ pub mod report_view_state {
     pub struct SetReportId<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetReportId<S> {}
     impl<S: State> State for SetReportId<S> {
-        type Status = S::Status;
+        type ConvoId = S::ConvoId;
         type ReportId = Set<members::report_id>;
+        type ReportedDid = S::ReportedDid;
         type SubmittedAt = S::SubmittedAt;
-        type ConvoId = S::ConvoId;
-        type ReportedDid = S::ReportedDid;
-        type Category = S::Category;
-        type ReporterDid = S::ReporterDid;
-    }
-    ///State transition - sets the `submitted_at` field to Set
-    pub struct SetSubmittedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetSubmittedAt<S> {}
-    impl<S: State> State for SetSubmittedAt<S> {
         type Status = S::Status;
-        type ReportId = S::ReportId;
-        type SubmittedAt = Set<members::submitted_at>;
-        type ConvoId = S::ConvoId;
-        type ReportedDid = S::ReportedDid;
-        type Category = S::Category;
-        type ReporterDid = S::ReporterDid;
-    }
-    ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type Status = S::Status;
-        type ReportId = S::ReportId;
-        type SubmittedAt = S::SubmittedAt;
-        type ConvoId = Set<members::convo_id>;
-        type ReportedDid = S::ReportedDid;
         type Category = S::Category;
         type ReporterDid = S::ReporterDid;
     }
@@ -345,11 +321,35 @@ pub mod report_view_state {
     pub struct SetReportedDid<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetReportedDid<S> {}
     impl<S: State> State for SetReportedDid<S> {
-        type Status = S::Status;
-        type ReportId = S::ReportId;
-        type SubmittedAt = S::SubmittedAt;
         type ConvoId = S::ConvoId;
+        type ReportId = S::ReportId;
         type ReportedDid = Set<members::reported_did>;
+        type SubmittedAt = S::SubmittedAt;
+        type Status = S::Status;
+        type Category = S::Category;
+        type ReporterDid = S::ReporterDid;
+    }
+    ///State transition - sets the `submitted_at` field to Set
+    pub struct SetSubmittedAt<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetSubmittedAt<S> {}
+    impl<S: State> State for SetSubmittedAt<S> {
+        type ConvoId = S::ConvoId;
+        type ReportId = S::ReportId;
+        type ReportedDid = S::ReportedDid;
+        type SubmittedAt = Set<members::submitted_at>;
+        type Status = S::Status;
+        type Category = S::Category;
+        type ReporterDid = S::ReporterDid;
+    }
+    ///State transition - sets the `status` field to Set
+    pub struct SetStatus<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetStatus<S> {}
+    impl<S: State> State for SetStatus<S> {
+        type ConvoId = S::ConvoId;
+        type ReportId = S::ReportId;
+        type ReportedDid = S::ReportedDid;
+        type SubmittedAt = S::SubmittedAt;
+        type Status = Set<members::status>;
         type Category = S::Category;
         type ReporterDid = S::ReporterDid;
     }
@@ -357,11 +357,11 @@ pub mod report_view_state {
     pub struct SetCategory<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCategory<S> {}
     impl<S: State> State for SetCategory<S> {
-        type Status = S::Status;
-        type ReportId = S::ReportId;
-        type SubmittedAt = S::SubmittedAt;
         type ConvoId = S::ConvoId;
+        type ReportId = S::ReportId;
         type ReportedDid = S::ReportedDid;
+        type SubmittedAt = S::SubmittedAt;
+        type Status = S::Status;
         type Category = Set<members::category>;
         type ReporterDid = S::ReporterDid;
     }
@@ -369,27 +369,27 @@ pub mod report_view_state {
     pub struct SetReporterDid<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetReporterDid<S> {}
     impl<S: State> State for SetReporterDid<S> {
-        type Status = S::Status;
-        type ReportId = S::ReportId;
-        type SubmittedAt = S::SubmittedAt;
         type ConvoId = S::ConvoId;
+        type ReportId = S::ReportId;
         type ReportedDid = S::ReportedDid;
+        type SubmittedAt = S::SubmittedAt;
+        type Status = S::Status;
         type Category = S::Category;
         type ReporterDid = Set<members::reporter_did>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `status` field
-        pub struct status(());
-        ///Marker type for the `report_id` field
-        pub struct report_id(());
-        ///Marker type for the `submitted_at` field
-        pub struct submitted_at(());
         ///Marker type for the `convo_id` field
         pub struct convo_id(());
+        ///Marker type for the `report_id` field
+        pub struct report_id(());
         ///Marker type for the `reported_did` field
         pub struct reported_did(());
+        ///Marker type for the `submitted_at` field
+        pub struct submitted_at(());
+        ///Marker type for the `status` field
+        pub struct status(());
         ///Marker type for the `category` field
         pub struct category(());
         ///Marker type for the `reporter_did` field
@@ -616,11 +616,11 @@ where
 impl<'a, S> ReportViewBuilder<'a, S>
 where
     S: report_view_state::State,
-    S::Status: report_view_state::IsSet,
-    S::ReportId: report_view_state::IsSet,
-    S::SubmittedAt: report_view_state::IsSet,
     S::ConvoId: report_view_state::IsSet,
+    S::ReportId: report_view_state::IsSet,
     S::ReportedDid: report_view_state::IsSet,
+    S::SubmittedAt: report_view_state::IsSet,
+    S::Status: report_view_state::IsSet,
     S::Category: report_view_state::IsSet,
     S::ReporterDid: report_view_state::IsSet,
 {

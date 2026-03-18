@@ -10,9 +10,11 @@ pub mod commit_group_change;
 pub mod create_convo;
 pub mod declaration;
 pub mod delete_blob;
+pub mod get_blob;
 pub mod get_blob_usage;
 pub mod get_convo_settings;
 pub mod get_convos;
+pub mod get_group_metadata_blob;
 pub mod get_group_state;
 pub mod get_key_package_status;
 pub mod get_key_packages;
@@ -24,6 +26,7 @@ pub mod leave_convo;
 pub mod list_devices;
 pub mod opt_in;
 pub mod publish_key_packages;
+pub mod put_group_metadata_blob;
 pub mod register_device;
 pub mod report;
 pub mod send_ephemeral;
@@ -33,6 +36,7 @@ pub mod send_message;
 pub mod subscribe_events;
 pub mod update_convo;
 pub mod update_cursor;
+pub mod upload_blob;
 
 /// Metadata for a conversation (name, description)
 #[jacquard_derive::lexicon]
@@ -849,105 +853,105 @@ pub mod convo_view_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Epoch;
         type CreatedAt;
-        type CipherSuite;
-        type GroupId;
+        type Epoch;
         type Creator;
         type Members;
+        type GroupId;
+        type CipherSuite;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Epoch = Unset;
         type CreatedAt = Unset;
-        type CipherSuite = Unset;
-        type GroupId = Unset;
+        type Epoch = Unset;
         type Creator = Unset;
         type Members = Unset;
-    }
-    ///State transition - sets the `epoch` field to Set
-    pub struct SetEpoch<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetEpoch<S> {}
-    impl<S: State> State for SetEpoch<S> {
-        type Epoch = Set<members::epoch>;
-        type CreatedAt = S::CreatedAt;
-        type CipherSuite = S::CipherSuite;
-        type GroupId = S::GroupId;
-        type Creator = S::Creator;
-        type Members = S::Members;
+        type GroupId = Unset;
+        type CipherSuite = Unset;
     }
     ///State transition - sets the `created_at` field to Set
     pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
     impl<S: State> State for SetCreatedAt<S> {
-        type Epoch = S::Epoch;
         type CreatedAt = Set<members::created_at>;
-        type CipherSuite = S::CipherSuite;
-        type GroupId = S::GroupId;
-        type Creator = S::Creator;
-        type Members = S::Members;
-    }
-    ///State transition - sets the `cipher_suite` field to Set
-    pub struct SetCipherSuite<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCipherSuite<S> {}
-    impl<S: State> State for SetCipherSuite<S> {
         type Epoch = S::Epoch;
-        type CreatedAt = S::CreatedAt;
-        type CipherSuite = Set<members::cipher_suite>;
+        type Creator = S::Creator;
+        type Members = S::Members;
         type GroupId = S::GroupId;
-        type Creator = S::Creator;
-        type Members = S::Members;
-    }
-    ///State transition - sets the `group_id` field to Set
-    pub struct SetGroupId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetGroupId<S> {}
-    impl<S: State> State for SetGroupId<S> {
-        type Epoch = S::Epoch;
-        type CreatedAt = S::CreatedAt;
         type CipherSuite = S::CipherSuite;
-        type GroupId = Set<members::group_id>;
+    }
+    ///State transition - sets the `epoch` field to Set
+    pub struct SetEpoch<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetEpoch<S> {}
+    impl<S: State> State for SetEpoch<S> {
+        type CreatedAt = S::CreatedAt;
+        type Epoch = Set<members::epoch>;
         type Creator = S::Creator;
         type Members = S::Members;
+        type GroupId = S::GroupId;
+        type CipherSuite = S::CipherSuite;
     }
     ///State transition - sets the `creator` field to Set
     pub struct SetCreator<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCreator<S> {}
     impl<S: State> State for SetCreator<S> {
-        type Epoch = S::Epoch;
         type CreatedAt = S::CreatedAt;
-        type CipherSuite = S::CipherSuite;
-        type GroupId = S::GroupId;
+        type Epoch = S::Epoch;
         type Creator = Set<members::creator>;
         type Members = S::Members;
+        type GroupId = S::GroupId;
+        type CipherSuite = S::CipherSuite;
     }
     ///State transition - sets the `members` field to Set
     pub struct SetMembers<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetMembers<S> {}
     impl<S: State> State for SetMembers<S> {
-        type Epoch = S::Epoch;
         type CreatedAt = S::CreatedAt;
-        type CipherSuite = S::CipherSuite;
-        type GroupId = S::GroupId;
+        type Epoch = S::Epoch;
         type Creator = S::Creator;
         type Members = Set<members::members>;
+        type GroupId = S::GroupId;
+        type CipherSuite = S::CipherSuite;
+    }
+    ///State transition - sets the `group_id` field to Set
+    pub struct SetGroupId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetGroupId<S> {}
+    impl<S: State> State for SetGroupId<S> {
+        type CreatedAt = S::CreatedAt;
+        type Epoch = S::Epoch;
+        type Creator = S::Creator;
+        type Members = S::Members;
+        type GroupId = Set<members::group_id>;
+        type CipherSuite = S::CipherSuite;
+    }
+    ///State transition - sets the `cipher_suite` field to Set
+    pub struct SetCipherSuite<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCipherSuite<S> {}
+    impl<S: State> State for SetCipherSuite<S> {
+        type CreatedAt = S::CreatedAt;
+        type Epoch = S::Epoch;
+        type Creator = S::Creator;
+        type Members = S::Members;
+        type GroupId = S::GroupId;
+        type CipherSuite = Set<members::cipher_suite>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `epoch` field
-        pub struct epoch(());
         ///Marker type for the `created_at` field
         pub struct created_at(());
-        ///Marker type for the `cipher_suite` field
-        pub struct cipher_suite(());
-        ///Marker type for the `group_id` field
-        pub struct group_id(());
+        ///Marker type for the `epoch` field
+        pub struct epoch(());
         ///Marker type for the `creator` field
         pub struct creator(());
         ///Marker type for the `members` field
         pub struct members(());
+        ///Marker type for the `group_id` field
+        pub struct group_id(());
+        ///Marker type for the `cipher_suite` field
+        pub struct cipher_suite(());
     }
 }
 
@@ -1146,12 +1150,12 @@ impl<'a, S: convo_view_state::State> ConvoViewBuilder<'a, S> {
 impl<'a, S> ConvoViewBuilder<'a, S>
 where
     S: convo_view_state::State,
-    S::Epoch: convo_view_state::IsSet,
     S::CreatedAt: convo_view_state::IsSet,
-    S::CipherSuite: convo_view_state::IsSet,
-    S::GroupId: convo_view_state::IsSet,
+    S::Epoch: convo_view_state::IsSet,
     S::Creator: convo_view_state::IsSet,
     S::Members: convo_view_state::IsSet,
+    S::GroupId: convo_view_state::IsSet,
+    S::CipherSuite: convo_view_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> ConvoView<'a> {
@@ -1547,65 +1551,65 @@ pub mod member_view_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type IsAdmin;
         type UserDid;
         type JoinedAt;
+        type IsAdmin;
         type Did;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type IsAdmin = Unset;
         type UserDid = Unset;
         type JoinedAt = Unset;
+        type IsAdmin = Unset;
         type Did = Unset;
-    }
-    ///State transition - sets the `is_admin` field to Set
-    pub struct SetIsAdmin<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetIsAdmin<S> {}
-    impl<S: State> State for SetIsAdmin<S> {
-        type IsAdmin = Set<members::is_admin>;
-        type UserDid = S::UserDid;
-        type JoinedAt = S::JoinedAt;
-        type Did = S::Did;
     }
     ///State transition - sets the `user_did` field to Set
     pub struct SetUserDid<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetUserDid<S> {}
     impl<S: State> State for SetUserDid<S> {
-        type IsAdmin = S::IsAdmin;
         type UserDid = Set<members::user_did>;
         type JoinedAt = S::JoinedAt;
+        type IsAdmin = S::IsAdmin;
         type Did = S::Did;
     }
     ///State transition - sets the `joined_at` field to Set
     pub struct SetJoinedAt<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetJoinedAt<S> {}
     impl<S: State> State for SetJoinedAt<S> {
-        type IsAdmin = S::IsAdmin;
         type UserDid = S::UserDid;
         type JoinedAt = Set<members::joined_at>;
+        type IsAdmin = S::IsAdmin;
+        type Did = S::Did;
+    }
+    ///State transition - sets the `is_admin` field to Set
+    pub struct SetIsAdmin<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetIsAdmin<S> {}
+    impl<S: State> State for SetIsAdmin<S> {
+        type UserDid = S::UserDid;
+        type JoinedAt = S::JoinedAt;
+        type IsAdmin = Set<members::is_admin>;
         type Did = S::Did;
     }
     ///State transition - sets the `did` field to Set
     pub struct SetDid<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetDid<S> {}
     impl<S: State> State for SetDid<S> {
-        type IsAdmin = S::IsAdmin;
         type UserDid = S::UserDid;
         type JoinedAt = S::JoinedAt;
+        type IsAdmin = S::IsAdmin;
         type Did = Set<members::did>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `is_admin` field
-        pub struct is_admin(());
         ///Marker type for the `user_did` field
         pub struct user_did(());
         ///Marker type for the `joined_at` field
         pub struct joined_at(());
+        ///Marker type for the `is_admin` field
+        pub struct is_admin(());
         ///Marker type for the `did` field
         pub struct did(());
     }
@@ -1854,9 +1858,9 @@ where
 impl<'a, S> MemberViewBuilder<'a, S>
 where
     S: member_view_state::State,
-    S::IsAdmin: member_view_state::IsSet,
     S::UserDid: member_view_state::IsSet,
     S::JoinedAt: member_view_state::IsSet,
+    S::IsAdmin: member_view_state::IsSet,
     S::Did: member_view_state::IsSet,
 {
     /// Build the final struct
@@ -1985,105 +1989,105 @@ pub mod message_view_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type CreatedAt;
-        type Id;
         type Epoch;
-        type ConvoId;
         type Ciphertext;
+        type ConvoId;
+        type Id;
         type Seq;
+        type CreatedAt;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type CreatedAt = Unset;
-        type Id = Unset;
         type Epoch = Unset;
-        type ConvoId = Unset;
         type Ciphertext = Unset;
+        type ConvoId = Unset;
+        type Id = Unset;
         type Seq = Unset;
-    }
-    ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type CreatedAt = Set<members::created_at>;
-        type Id = S::Id;
-        type Epoch = S::Epoch;
-        type ConvoId = S::ConvoId;
-        type Ciphertext = S::Ciphertext;
-        type Seq = S::Seq;
-    }
-    ///State transition - sets the `id` field to Set
-    pub struct SetId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetId<S> {}
-    impl<S: State> State for SetId<S> {
-        type CreatedAt = S::CreatedAt;
-        type Id = Set<members::id>;
-        type Epoch = S::Epoch;
-        type ConvoId = S::ConvoId;
-        type Ciphertext = S::Ciphertext;
-        type Seq = S::Seq;
+        type CreatedAt = Unset;
     }
     ///State transition - sets the `epoch` field to Set
     pub struct SetEpoch<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetEpoch<S> {}
     impl<S: State> State for SetEpoch<S> {
-        type CreatedAt = S::CreatedAt;
-        type Id = S::Id;
         type Epoch = Set<members::epoch>;
+        type Ciphertext = S::Ciphertext;
         type ConvoId = S::ConvoId;
-        type Ciphertext = S::Ciphertext;
-        type Seq = S::Seq;
-    }
-    ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type CreatedAt = S::CreatedAt;
         type Id = S::Id;
-        type Epoch = S::Epoch;
-        type ConvoId = Set<members::convo_id>;
-        type Ciphertext = S::Ciphertext;
         type Seq = S::Seq;
+        type CreatedAt = S::CreatedAt;
     }
     ///State transition - sets the `ciphertext` field to Set
     pub struct SetCiphertext<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCiphertext<S> {}
     impl<S: State> State for SetCiphertext<S> {
-        type CreatedAt = S::CreatedAt;
-        type Id = S::Id;
         type Epoch = S::Epoch;
-        type ConvoId = S::ConvoId;
         type Ciphertext = Set<members::ciphertext>;
+        type ConvoId = S::ConvoId;
+        type Id = S::Id;
         type Seq = S::Seq;
+        type CreatedAt = S::CreatedAt;
+    }
+    ///State transition - sets the `convo_id` field to Set
+    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetConvoId<S> {}
+    impl<S: State> State for SetConvoId<S> {
+        type Epoch = S::Epoch;
+        type Ciphertext = S::Ciphertext;
+        type ConvoId = Set<members::convo_id>;
+        type Id = S::Id;
+        type Seq = S::Seq;
+        type CreatedAt = S::CreatedAt;
+    }
+    ///State transition - sets the `id` field to Set
+    pub struct SetId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetId<S> {}
+    impl<S: State> State for SetId<S> {
+        type Epoch = S::Epoch;
+        type Ciphertext = S::Ciphertext;
+        type ConvoId = S::ConvoId;
+        type Id = Set<members::id>;
+        type Seq = S::Seq;
+        type CreatedAt = S::CreatedAt;
     }
     ///State transition - sets the `seq` field to Set
     pub struct SetSeq<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetSeq<S> {}
     impl<S: State> State for SetSeq<S> {
-        type CreatedAt = S::CreatedAt;
-        type Id = S::Id;
         type Epoch = S::Epoch;
-        type ConvoId = S::ConvoId;
         type Ciphertext = S::Ciphertext;
+        type ConvoId = S::ConvoId;
+        type Id = S::Id;
         type Seq = Set<members::seq>;
+        type CreatedAt = S::CreatedAt;
+    }
+    ///State transition - sets the `created_at` field to Set
+    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
+    impl<S: State> State for SetCreatedAt<S> {
+        type Epoch = S::Epoch;
+        type Ciphertext = S::Ciphertext;
+        type ConvoId = S::ConvoId;
+        type Id = S::Id;
+        type Seq = S::Seq;
+        type CreatedAt = Set<members::created_at>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `created_at` field
-        pub struct created_at(());
-        ///Marker type for the `id` field
-        pub struct id(());
         ///Marker type for the `epoch` field
         pub struct epoch(());
-        ///Marker type for the `convo_id` field
-        pub struct convo_id(());
         ///Marker type for the `ciphertext` field
         pub struct ciphertext(());
+        ///Marker type for the `convo_id` field
+        pub struct convo_id(());
+        ///Marker type for the `id` field
+        pub struct id(());
         ///Marker type for the `seq` field
         pub struct seq(());
+        ///Marker type for the `created_at` field
+        pub struct created_at(());
     }
 }
 
@@ -2256,12 +2260,12 @@ where
 impl<'a, S> MessageViewBuilder<'a, S>
 where
     S: message_view_state::State,
-    S::CreatedAt: message_view_state::IsSet,
-    S::Id: message_view_state::IsSet,
     S::Epoch: message_view_state::IsSet,
-    S::ConvoId: message_view_state::IsSet,
     S::Ciphertext: message_view_state::IsSet,
+    S::ConvoId: message_view_state::IsSet,
+    S::Id: message_view_state::IsSet,
     S::Seq: message_view_state::IsSet,
+    S::CreatedAt: message_view_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> MessageView<'a> {

@@ -484,11 +484,125 @@ pub mod catbird {
             pub type Error = crate::blue_catbird::mlsChat::delete_blob::DeleteBlobError<'static>;
         }
 
+        pub mod get_blob {
+            pub const NSID: &str = "blue.catbird.mlsChat.getBlob";
+
+            pub type Input = crate::blue_catbird::mlsChat::get_blob::GetBlob<'static>;
+            pub type Output = crate::blue_catbird::mlsChat::get_blob::GetBlobOutput;
+            pub type Error = crate::blue_catbird::mlsChat::get_blob::GetBlobError<'static>;
+
+            pub struct InputData {
+                pub blob_id: String,
+            }
+
+            impl From<InputData> for Input {
+                fn from(value: InputData) -> Self {
+                    Self {
+                        blob_id: value.blob_id.into(),
+                    }
+                }
+            }
+        }
+
         pub mod get_blob_usage {
             pub const NSID: &str = "blue.catbird.mlsChat.getBlobUsage";
 
             pub type Output =
                 crate::blue_catbird::mlsChat::get_blob_usage::GetBlobUsageOutput<'static>;
+        }
+
+        pub mod get_group_metadata_blob {
+            pub const NSID: &str = "blue.catbird.mlsChat.getGroupMetadataBlob";
+
+            pub type Input =
+                crate::blue_catbird::mlsChat::get_group_metadata_blob::GetGroupMetadataBlob<
+                    'static,
+                >;
+            pub type Output =
+                crate::blue_catbird::mlsChat::get_group_metadata_blob::GetGroupMetadataBlobOutput;
+            pub type Error =
+                crate::blue_catbird::mlsChat::get_group_metadata_blob::GetGroupMetadataBlobError<
+                    'static,
+                >;
+
+            pub struct InputData {
+                pub blob_locator: Option<String>,
+                pub group_id: String,
+            }
+
+            impl From<InputData> for Input {
+                fn from(value: InputData) -> Self {
+                    Self {
+                        blob_locator: value.blob_locator.map(Into::into),
+                        group_id: value.group_id.into(),
+                    }
+                }
+            }
+        }
+
+        pub mod put_group_metadata_blob {
+            pub const NSID: &str = "blue.catbird.mlsChat.putGroupMetadataBlob";
+
+            pub type Input =
+                crate::blue_catbird::mlsChat::put_group_metadata_blob::PutGroupMetadataBlob;
+            pub type Params =
+                crate::blue_catbird::mlsChat::put_group_metadata_blob::PutGroupMetadataBlobParams<
+                    'static,
+                >;
+            pub type Output =
+                crate::blue_catbird::mlsChat::put_group_metadata_blob::PutGroupMetadataBlobOutput<
+                    'static,
+                >;
+            pub type Error =
+                crate::blue_catbird::mlsChat::put_group_metadata_blob::PutGroupMetadataBlobError<
+                    'static,
+                >;
+
+            pub struct InputData {
+                pub body: Vec<u8>,
+            }
+
+            impl From<InputData> for Input {
+                fn from(value: InputData) -> Self {
+                    Self {
+                        body: bytes::Bytes::from(value.body),
+                    }
+                }
+            }
+
+            pub struct ParamsData {
+                pub blob_locator: String,
+                pub group_id: String,
+            }
+
+            impl From<ParamsData> for Params {
+                fn from(value: ParamsData) -> Self {
+                    Self {
+                        blob_locator: value.blob_locator.into(),
+                        group_id: value.group_id.into(),
+                    }
+                }
+            }
+        }
+
+        pub mod upload_blob {
+            pub const NSID: &str = "blue.catbird.mlsChat.uploadBlob";
+
+            pub type Input = crate::blue_catbird::mlsChat::upload_blob::UploadBlob;
+            pub type Output = crate::blue_catbird::mlsChat::upload_blob::UploadBlobOutput<'static>;
+            pub type Error = crate::blue_catbird::mlsChat::upload_blob::UploadBlobError<'static>;
+
+            pub struct InputData {
+                pub body: Vec<u8>,
+            }
+
+            impl From<InputData> for Input {
+                fn from(value: InputData) -> Self {
+                    Self {
+                        body: bytes::Bytes::from(value.body),
+                    }
+                }
+            }
         }
     }
 
@@ -597,8 +711,8 @@ mod bytes_test {
             device_uuid: Some("test-uuid".to_string()),
             device_name: "Test Device".to_string(),
             signature_public_key: vec![
-                1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
-                23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
+                1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
+                24, 25, 26, 27, 28, 29, 30, 31, 32,
             ],
             key_packages: vec![],
         }

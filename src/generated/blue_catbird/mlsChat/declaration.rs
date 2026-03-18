@@ -874,37 +874,37 @@ pub mod device_add_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type DeviceId;
         type DeviceMlsSignaturePublicKey;
+        type DeviceId;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type DeviceId = Unset;
         type DeviceMlsSignaturePublicKey = Unset;
-    }
-    ///State transition - sets the `device_id` field to Set
-    pub struct SetDeviceId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDeviceId<S> {}
-    impl<S: State> State for SetDeviceId<S> {
-        type DeviceId = Set<members::device_id>;
-        type DeviceMlsSignaturePublicKey = S::DeviceMlsSignaturePublicKey;
+        type DeviceId = Unset;
     }
     ///State transition - sets the `device_mls_signature_public_key` field to Set
     pub struct SetDeviceMlsSignaturePublicKey<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetDeviceMlsSignaturePublicKey<S> {}
     impl<S: State> State for SetDeviceMlsSignaturePublicKey<S> {
-        type DeviceId = S::DeviceId;
         type DeviceMlsSignaturePublicKey = Set<members::device_mls_signature_public_key>;
+        type DeviceId = S::DeviceId;
+    }
+    ///State transition - sets the `device_id` field to Set
+    pub struct SetDeviceId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetDeviceId<S> {}
+    impl<S: State> State for SetDeviceId<S> {
+        type DeviceMlsSignaturePublicKey = S::DeviceMlsSignaturePublicKey;
+        type DeviceId = Set<members::device_id>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `device_id` field
-        pub struct device_id(());
         ///Marker type for the `device_mls_signature_public_key` field
         pub struct device_mls_signature_public_key(());
+        ///Marker type for the `device_id` field
+        pub struct device_id(());
     }
 }
 
@@ -997,8 +997,8 @@ impl<'a, S: device_add_state::State> DeviceAddBuilder<'a, S> {
 impl<'a, S> DeviceAddBuilder<'a, S>
 where
     S: device_add_state::State,
-    S::DeviceId: device_add_state::IsSet,
     S::DeviceMlsSignaturePublicKey: device_add_state::IsSet,
+    S::DeviceId: device_add_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> DeviceAdd<'a> {
@@ -1086,37 +1086,37 @@ pub mod device_proof_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type ProofSig;
         type ProofAlg;
+        type ProofSig;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type ProofSig = Unset;
         type ProofAlg = Unset;
-    }
-    ///State transition - sets the `proof_sig` field to Set
-    pub struct SetProofSig<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetProofSig<S> {}
-    impl<S: State> State for SetProofSig<S> {
-        type ProofSig = Set<members::proof_sig>;
-        type ProofAlg = S::ProofAlg;
+        type ProofSig = Unset;
     }
     ///State transition - sets the `proof_alg` field to Set
     pub struct SetProofAlg<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetProofAlg<S> {}
     impl<S: State> State for SetProofAlg<S> {
-        type ProofSig = S::ProofSig;
         type ProofAlg = Set<members::proof_alg>;
+        type ProofSig = S::ProofSig;
+    }
+    ///State transition - sets the `proof_sig` field to Set
+    pub struct SetProofSig<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetProofSig<S> {}
+    impl<S: State> State for SetProofSig<S> {
+        type ProofAlg = S::ProofAlg;
+        type ProofSig = Set<members::proof_sig>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `proof_sig` field
-        pub struct proof_sig(());
         ///Marker type for the `proof_alg` field
         pub struct proof_alg(());
+        ///Marker type for the `proof_sig` field
+        pub struct proof_sig(());
     }
 }
 
@@ -1189,8 +1189,8 @@ where
 impl<'a, S> DeviceProofBuilder<'a, S>
 where
     S: device_proof_state::State,
-    S::ProofSig: device_proof_state::IsSet,
     S::ProofAlg: device_proof_state::IsSet,
+    S::ProofSig: device_proof_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> DeviceProof<'a> {
@@ -1336,105 +1336,105 @@ pub mod declaration_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Proofs;
-        type Did;
-        type CreatedAt;
         type Event;
-        type Seq;
+        type CreatedAt;
         type Epoch;
+        type Did;
+        type Seq;
+        type Proofs;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Proofs = Unset;
-        type Did = Unset;
-        type CreatedAt = Unset;
         type Event = Unset;
-        type Seq = Unset;
+        type CreatedAt = Unset;
         type Epoch = Unset;
-    }
-    ///State transition - sets the `proofs` field to Set
-    pub struct SetProofs<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetProofs<S> {}
-    impl<S: State> State for SetProofs<S> {
-        type Proofs = Set<members::proofs>;
-        type Did = S::Did;
-        type CreatedAt = S::CreatedAt;
-        type Event = S::Event;
-        type Seq = S::Seq;
-        type Epoch = S::Epoch;
-    }
-    ///State transition - sets the `did` field to Set
-    pub struct SetDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDid<S> {}
-    impl<S: State> State for SetDid<S> {
-        type Proofs = S::Proofs;
-        type Did = Set<members::did>;
-        type CreatedAt = S::CreatedAt;
-        type Event = S::Event;
-        type Seq = S::Seq;
-        type Epoch = S::Epoch;
-    }
-    ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type Proofs = S::Proofs;
-        type Did = S::Did;
-        type CreatedAt = Set<members::created_at>;
-        type Event = S::Event;
-        type Seq = S::Seq;
-        type Epoch = S::Epoch;
+        type Did = Unset;
+        type Seq = Unset;
+        type Proofs = Unset;
     }
     ///State transition - sets the `event` field to Set
     pub struct SetEvent<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetEvent<S> {}
     impl<S: State> State for SetEvent<S> {
-        type Proofs = S::Proofs;
-        type Did = S::Did;
-        type CreatedAt = S::CreatedAt;
         type Event = Set<members::event>;
-        type Seq = S::Seq;
-        type Epoch = S::Epoch;
-    }
-    ///State transition - sets the `seq` field to Set
-    pub struct SetSeq<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetSeq<S> {}
-    impl<S: State> State for SetSeq<S> {
-        type Proofs = S::Proofs;
-        type Did = S::Did;
         type CreatedAt = S::CreatedAt;
-        type Event = S::Event;
-        type Seq = Set<members::seq>;
         type Epoch = S::Epoch;
+        type Did = S::Did;
+        type Seq = S::Seq;
+        type Proofs = S::Proofs;
+    }
+    ///State transition - sets the `created_at` field to Set
+    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
+    impl<S: State> State for SetCreatedAt<S> {
+        type Event = S::Event;
+        type CreatedAt = Set<members::created_at>;
+        type Epoch = S::Epoch;
+        type Did = S::Did;
+        type Seq = S::Seq;
+        type Proofs = S::Proofs;
     }
     ///State transition - sets the `epoch` field to Set
     pub struct SetEpoch<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetEpoch<S> {}
     impl<S: State> State for SetEpoch<S> {
-        type Proofs = S::Proofs;
-        type Did = S::Did;
-        type CreatedAt = S::CreatedAt;
         type Event = S::Event;
-        type Seq = S::Seq;
+        type CreatedAt = S::CreatedAt;
         type Epoch = Set<members::epoch>;
+        type Did = S::Did;
+        type Seq = S::Seq;
+        type Proofs = S::Proofs;
+    }
+    ///State transition - sets the `did` field to Set
+    pub struct SetDid<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetDid<S> {}
+    impl<S: State> State for SetDid<S> {
+        type Event = S::Event;
+        type CreatedAt = S::CreatedAt;
+        type Epoch = S::Epoch;
+        type Did = Set<members::did>;
+        type Seq = S::Seq;
+        type Proofs = S::Proofs;
+    }
+    ///State transition - sets the `seq` field to Set
+    pub struct SetSeq<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetSeq<S> {}
+    impl<S: State> State for SetSeq<S> {
+        type Event = S::Event;
+        type CreatedAt = S::CreatedAt;
+        type Epoch = S::Epoch;
+        type Did = S::Did;
+        type Seq = Set<members::seq>;
+        type Proofs = S::Proofs;
+    }
+    ///State transition - sets the `proofs` field to Set
+    pub struct SetProofs<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetProofs<S> {}
+    impl<S: State> State for SetProofs<S> {
+        type Event = S::Event;
+        type CreatedAt = S::CreatedAt;
+        type Epoch = S::Epoch;
+        type Did = S::Did;
+        type Seq = S::Seq;
+        type Proofs = Set<members::proofs>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `proofs` field
-        pub struct proofs(());
-        ///Marker type for the `did` field
-        pub struct did(());
-        ///Marker type for the `created_at` field
-        pub struct created_at(());
         ///Marker type for the `event` field
         pub struct event(());
-        ///Marker type for the `seq` field
-        pub struct seq(());
+        ///Marker type for the `created_at` field
+        pub struct created_at(());
         ///Marker type for the `epoch` field
         pub struct epoch(());
+        ///Marker type for the `did` field
+        pub struct did(());
+        ///Marker type for the `seq` field
+        pub struct seq(());
+        ///Marker type for the `proofs` field
+        pub struct proofs(());
     }
 }
 
@@ -1615,12 +1615,12 @@ where
 impl<'a, S> DeclarationBuilder<'a, S>
 where
     S: declaration_state::State,
-    S::Proofs: declaration_state::IsSet,
-    S::Did: declaration_state::IsSet,
-    S::CreatedAt: declaration_state::IsSet,
     S::Event: declaration_state::IsSet,
-    S::Seq: declaration_state::IsSet,
+    S::CreatedAt: declaration_state::IsSet,
     S::Epoch: declaration_state::IsSet,
+    S::Did: declaration_state::IsSet,
+    S::Seq: declaration_state::IsSet,
+    S::Proofs: declaration_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> Declaration<'a> {
@@ -1878,37 +1878,37 @@ pub mod proofs_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Sig;
         type SigAlg;
+        type Sig;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Sig = Unset;
         type SigAlg = Unset;
-    }
-    ///State transition - sets the `sig` field to Set
-    pub struct SetSig<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetSig<S> {}
-    impl<S: State> State for SetSig<S> {
-        type Sig = Set<members::sig>;
-        type SigAlg = S::SigAlg;
+        type Sig = Unset;
     }
     ///State transition - sets the `sig_alg` field to Set
     pub struct SetSigAlg<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetSigAlg<S> {}
     impl<S: State> State for SetSigAlg<S> {
-        type Sig = S::Sig;
         type SigAlg = Set<members::sig_alg>;
+        type Sig = S::Sig;
+    }
+    ///State transition - sets the `sig` field to Set
+    pub struct SetSig<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetSig<S> {}
+    impl<S: State> State for SetSig<S> {
+        type SigAlg = S::SigAlg;
+        type Sig = Set<members::sig>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `sig` field
-        pub struct sig(());
         ///Marker type for the `sig_alg` field
         pub struct sig_alg(());
+        ///Marker type for the `sig` field
+        pub struct sig(());
     }
 }
 
@@ -2041,8 +2041,8 @@ where
 impl<'a, S> ProofsBuilder<'a, S>
 where
     S: proofs_state::State,
-    S::Sig: proofs_state::IsSet,
     S::SigAlg: proofs_state::IsSet,
+    S::Sig: proofs_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> Proofs<'a> {
@@ -2363,67 +2363,67 @@ pub mod root_init_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type RecoveryRootAlg;
-        type RecoveryRootPublicKey;
         type OnlineRootPublicKey;
         type OnlineRootAlg;
+        type RecoveryRootAlg;
+        type RecoveryRootPublicKey;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type RecoveryRootAlg = Unset;
-        type RecoveryRootPublicKey = Unset;
         type OnlineRootPublicKey = Unset;
         type OnlineRootAlg = Unset;
-    }
-    ///State transition - sets the `recovery_root_alg` field to Set
-    pub struct SetRecoveryRootAlg<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRecoveryRootAlg<S> {}
-    impl<S: State> State for SetRecoveryRootAlg<S> {
-        type RecoveryRootAlg = Set<members::recovery_root_alg>;
-        type RecoveryRootPublicKey = S::RecoveryRootPublicKey;
-        type OnlineRootPublicKey = S::OnlineRootPublicKey;
-        type OnlineRootAlg = S::OnlineRootAlg;
-    }
-    ///State transition - sets the `recovery_root_public_key` field to Set
-    pub struct SetRecoveryRootPublicKey<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRecoveryRootPublicKey<S> {}
-    impl<S: State> State for SetRecoveryRootPublicKey<S> {
-        type RecoveryRootAlg = S::RecoveryRootAlg;
-        type RecoveryRootPublicKey = Set<members::recovery_root_public_key>;
-        type OnlineRootPublicKey = S::OnlineRootPublicKey;
-        type OnlineRootAlg = S::OnlineRootAlg;
+        type RecoveryRootAlg = Unset;
+        type RecoveryRootPublicKey = Unset;
     }
     ///State transition - sets the `online_root_public_key` field to Set
     pub struct SetOnlineRootPublicKey<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetOnlineRootPublicKey<S> {}
     impl<S: State> State for SetOnlineRootPublicKey<S> {
-        type RecoveryRootAlg = S::RecoveryRootAlg;
-        type RecoveryRootPublicKey = S::RecoveryRootPublicKey;
         type OnlineRootPublicKey = Set<members::online_root_public_key>;
         type OnlineRootAlg = S::OnlineRootAlg;
+        type RecoveryRootAlg = S::RecoveryRootAlg;
+        type RecoveryRootPublicKey = S::RecoveryRootPublicKey;
     }
     ///State transition - sets the `online_root_alg` field to Set
     pub struct SetOnlineRootAlg<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetOnlineRootAlg<S> {}
     impl<S: State> State for SetOnlineRootAlg<S> {
-        type RecoveryRootAlg = S::RecoveryRootAlg;
-        type RecoveryRootPublicKey = S::RecoveryRootPublicKey;
         type OnlineRootPublicKey = S::OnlineRootPublicKey;
         type OnlineRootAlg = Set<members::online_root_alg>;
+        type RecoveryRootAlg = S::RecoveryRootAlg;
+        type RecoveryRootPublicKey = S::RecoveryRootPublicKey;
+    }
+    ///State transition - sets the `recovery_root_alg` field to Set
+    pub struct SetRecoveryRootAlg<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetRecoveryRootAlg<S> {}
+    impl<S: State> State for SetRecoveryRootAlg<S> {
+        type OnlineRootPublicKey = S::OnlineRootPublicKey;
+        type OnlineRootAlg = S::OnlineRootAlg;
+        type RecoveryRootAlg = Set<members::recovery_root_alg>;
+        type RecoveryRootPublicKey = S::RecoveryRootPublicKey;
+    }
+    ///State transition - sets the `recovery_root_public_key` field to Set
+    pub struct SetRecoveryRootPublicKey<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetRecoveryRootPublicKey<S> {}
+    impl<S: State> State for SetRecoveryRootPublicKey<S> {
+        type OnlineRootPublicKey = S::OnlineRootPublicKey;
+        type OnlineRootAlg = S::OnlineRootAlg;
+        type RecoveryRootAlg = S::RecoveryRootAlg;
+        type RecoveryRootPublicKey = Set<members::recovery_root_public_key>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `recovery_root_alg` field
-        pub struct recovery_root_alg(());
-        ///Marker type for the `recovery_root_public_key` field
-        pub struct recovery_root_public_key(());
         ///Marker type for the `online_root_public_key` field
         pub struct online_root_public_key(());
         ///Marker type for the `online_root_alg` field
         pub struct online_root_alg(());
+        ///Marker type for the `recovery_root_alg` field
+        pub struct recovery_root_alg(());
+        ///Marker type for the `recovery_root_public_key` field
+        pub struct recovery_root_public_key(());
     }
 }
 
@@ -2553,10 +2553,10 @@ where
 impl<'a, S> RootInitBuilder<'a, S>
 where
     S: root_init_state::State,
-    S::RecoveryRootAlg: root_init_state::IsSet,
-    S::RecoveryRootPublicKey: root_init_state::IsSet,
     S::OnlineRootPublicKey: root_init_state::IsSet,
     S::OnlineRootAlg: root_init_state::IsSet,
+    S::RecoveryRootAlg: root_init_state::IsSet,
+    S::RecoveryRootPublicKey: root_init_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> RootInit<'a> {
@@ -2652,37 +2652,37 @@ pub mod root_rotate_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type NewOnlineRootPublicKey;
         type NewOnlineRootAlg;
+        type NewOnlineRootPublicKey;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type NewOnlineRootPublicKey = Unset;
         type NewOnlineRootAlg = Unset;
-    }
-    ///State transition - sets the `new_online_root_public_key` field to Set
-    pub struct SetNewOnlineRootPublicKey<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetNewOnlineRootPublicKey<S> {}
-    impl<S: State> State for SetNewOnlineRootPublicKey<S> {
-        type NewOnlineRootPublicKey = Set<members::new_online_root_public_key>;
-        type NewOnlineRootAlg = S::NewOnlineRootAlg;
+        type NewOnlineRootPublicKey = Unset;
     }
     ///State transition - sets the `new_online_root_alg` field to Set
     pub struct SetNewOnlineRootAlg<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetNewOnlineRootAlg<S> {}
     impl<S: State> State for SetNewOnlineRootAlg<S> {
-        type NewOnlineRootPublicKey = S::NewOnlineRootPublicKey;
         type NewOnlineRootAlg = Set<members::new_online_root_alg>;
+        type NewOnlineRootPublicKey = S::NewOnlineRootPublicKey;
+    }
+    ///State transition - sets the `new_online_root_public_key` field to Set
+    pub struct SetNewOnlineRootPublicKey<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetNewOnlineRootPublicKey<S> {}
+    impl<S: State> State for SetNewOnlineRootPublicKey<S> {
+        type NewOnlineRootAlg = S::NewOnlineRootAlg;
+        type NewOnlineRootPublicKey = Set<members::new_online_root_public_key>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `new_online_root_public_key` field
-        pub struct new_online_root_public_key(());
         ///Marker type for the `new_online_root_alg` field
         pub struct new_online_root_alg(());
+        ///Marker type for the `new_online_root_public_key` field
+        pub struct new_online_root_public_key(());
     }
 }
 
@@ -2775,8 +2775,8 @@ impl<'a, S: root_rotate_state::State> RootRotateBuilder<'a, S> {
 impl<'a, S> RootRotateBuilder<'a, S>
 where
     S: root_rotate_state::State,
-    S::NewOnlineRootPublicKey: root_rotate_state::IsSet,
     S::NewOnlineRootAlg: root_rotate_state::IsSet,
+    S::NewOnlineRootPublicKey: root_rotate_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> RootRotate<'a> {
