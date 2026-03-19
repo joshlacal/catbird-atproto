@@ -7,13 +7,7 @@
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct TransferSequencer<'a> {
@@ -29,9 +23,9 @@ pub struct TransferSequencer<'a> {
 
 pub mod transfer_sequencer_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -185,13 +179,7 @@ where
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct TransferSequencerOutput<'a> {
@@ -211,7 +199,7 @@ pub struct TransferSequencerOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic
+    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -274,9 +262,8 @@ impl jacquard_common::xrpc::XrpcResp for TransferSequencerResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for TransferSequencer<'a> {
     const NSID: &'static str = "blue.catbird.mlsDS.transferSequencer";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = TransferSequencerResponse;
 }
 
@@ -285,9 +272,8 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for TransferSequencer<'a> {
 pub struct TransferSequencerRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for TransferSequencerRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.mlsDS.transferSequencer";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<'de> = TransferSequencer<'de>;
     type Response = TransferSequencerResponse;
 }

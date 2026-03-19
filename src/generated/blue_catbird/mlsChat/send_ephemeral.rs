@@ -7,13 +7,7 @@
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct SendEphemeral<'a> {
@@ -31,75 +25,75 @@ pub struct SendEphemeral<'a> {
 
 pub mod send_ephemeral_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type PaddedSize;
-        type Epoch;
-        type ConvoId;
         type Ciphertext;
+        type ConvoId;
+        type Epoch;
+        type PaddedSize;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type PaddedSize = Unset;
-        type Epoch = Unset;
-        type ConvoId = Unset;
         type Ciphertext = Unset;
-    }
-    ///State transition - sets the `padded_size` field to Set
-    pub struct SetPaddedSize<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetPaddedSize<S> {}
-    impl<S: State> State for SetPaddedSize<S> {
-        type PaddedSize = Set<members::padded_size>;
-        type Epoch = S::Epoch;
-        type ConvoId = S::ConvoId;
-        type Ciphertext = S::Ciphertext;
-    }
-    ///State transition - sets the `epoch` field to Set
-    pub struct SetEpoch<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetEpoch<S> {}
-    impl<S: State> State for SetEpoch<S> {
-        type PaddedSize = S::PaddedSize;
-        type Epoch = Set<members::epoch>;
-        type ConvoId = S::ConvoId;
-        type Ciphertext = S::Ciphertext;
-    }
-    ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type PaddedSize = S::PaddedSize;
-        type Epoch = S::Epoch;
-        type ConvoId = Set<members::convo_id>;
-        type Ciphertext = S::Ciphertext;
+        type ConvoId = Unset;
+        type Epoch = Unset;
+        type PaddedSize = Unset;
     }
     ///State transition - sets the `ciphertext` field to Set
     pub struct SetCiphertext<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCiphertext<S> {}
     impl<S: State> State for SetCiphertext<S> {
-        type PaddedSize = S::PaddedSize;
-        type Epoch = S::Epoch;
-        type ConvoId = S::ConvoId;
         type Ciphertext = Set<members::ciphertext>;
+        type ConvoId = S::ConvoId;
+        type Epoch = S::Epoch;
+        type PaddedSize = S::PaddedSize;
+    }
+    ///State transition - sets the `convo_id` field to Set
+    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetConvoId<S> {}
+    impl<S: State> State for SetConvoId<S> {
+        type Ciphertext = S::Ciphertext;
+        type ConvoId = Set<members::convo_id>;
+        type Epoch = S::Epoch;
+        type PaddedSize = S::PaddedSize;
+    }
+    ///State transition - sets the `epoch` field to Set
+    pub struct SetEpoch<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetEpoch<S> {}
+    impl<S: State> State for SetEpoch<S> {
+        type Ciphertext = S::Ciphertext;
+        type ConvoId = S::ConvoId;
+        type Epoch = Set<members::epoch>;
+        type PaddedSize = S::PaddedSize;
+    }
+    ///State transition - sets the `padded_size` field to Set
+    pub struct SetPaddedSize<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetPaddedSize<S> {}
+    impl<S: State> State for SetPaddedSize<S> {
+        type Ciphertext = S::Ciphertext;
+        type ConvoId = S::ConvoId;
+        type Epoch = S::Epoch;
+        type PaddedSize = Set<members::padded_size>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `padded_size` field
-        pub struct padded_size(());
-        ///Marker type for the `epoch` field
-        pub struct epoch(());
-        ///Marker type for the `convo_id` field
-        pub struct convo_id(());
         ///Marker type for the `ciphertext` field
         pub struct ciphertext(());
+        ///Marker type for the `convo_id` field
+        pub struct convo_id(());
+        ///Marker type for the `epoch` field
+        pub struct epoch(());
+        ///Marker type for the `padded_size` field
+        pub struct padded_size(());
     }
 }
 
@@ -212,10 +206,10 @@ where
 impl<'a, S> SendEphemeralBuilder<'a, S>
 where
     S: send_ephemeral_state::State,
-    S::PaddedSize: send_ephemeral_state::IsSet,
-    S::Epoch: send_ephemeral_state::IsSet,
-    S::ConvoId: send_ephemeral_state::IsSet,
     S::Ciphertext: send_ephemeral_state::IsSet,
+    S::ConvoId: send_ephemeral_state::IsSet,
+    S::Epoch: send_ephemeral_state::IsSet,
+    S::PaddedSize: send_ephemeral_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> SendEphemeral<'a> {
@@ -254,7 +248,7 @@ where
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct SendEphemeralOutput<'a> {
@@ -273,7 +267,7 @@ pub struct SendEphemeralOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic
+    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -330,9 +324,8 @@ impl jacquard_common::xrpc::XrpcResp for SendEphemeralResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for SendEphemeral<'a> {
     const NSID: &'static str = "blue.catbird.mlsChat.sendEphemeral";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = SendEphemeralResponse;
 }
 
@@ -341,9 +334,8 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for SendEphemeral<'a> {
 pub struct SendEphemeralRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for SendEphemeralRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.sendEphemeral";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<'de> = SendEphemeral<'de>;
     type Response = SendEphemeralResponse;
 }

@@ -14,7 +14,7 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Report<'a> {
@@ -55,7 +55,7 @@ pub struct Report<'a> {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ReportOutput<'a> {
@@ -66,9 +66,8 @@ pub struct ReportOutput<'a> {
     /// List of reports (for 'list' action)
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub reports: std::option::Option<
-        Vec<crate::generated::blue_catbird::mlsChat::report::ReportView<'a>>,
-    >,
+    pub reports:
+        std::option::Option<Vec<crate::generated::blue_catbird::mlsChat::report::ReportView<'a>>>,
     /// When the report was submitted (for 'create')
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     pub submitted_at: std::option::Option<jacquard_common::types::string::Datetime>,
@@ -87,7 +86,7 @@ pub struct ReportOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic
+    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -204,9 +203,8 @@ impl jacquard_common::xrpc::XrpcResp for ReportResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for Report<'a> {
     const NSID: &'static str = "blue.catbird.mlsChat.report";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = ReportResponse;
 }
 
@@ -215,22 +213,15 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for Report<'a> {
 pub struct ReportRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for ReportRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.report";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<'de> = Report<'de>;
     type Response = ReportResponse;
 }
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ReportView<'a> {
@@ -265,135 +256,135 @@ pub struct ReportView<'a> {
 
 pub mod report_view_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type ConvoId;
+        type ReporterDid;
+        type Category;
+        type Status;
+        type SubmittedAt;
         type ReportId;
         type ReportedDid;
-        type SubmittedAt;
-        type Status;
-        type Category;
-        type ReporterDid;
+        type ConvoId;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type ConvoId = Unset;
+        type ReporterDid = Unset;
+        type Category = Unset;
+        type Status = Unset;
+        type SubmittedAt = Unset;
         type ReportId = Unset;
         type ReportedDid = Unset;
-        type SubmittedAt = Unset;
-        type Status = Unset;
-        type Category = Unset;
-        type ReporterDid = Unset;
-    }
-    ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type ConvoId = Set<members::convo_id>;
-        type ReportId = S::ReportId;
-        type ReportedDid = S::ReportedDid;
-        type SubmittedAt = S::SubmittedAt;
-        type Status = S::Status;
-        type Category = S::Category;
-        type ReporterDid = S::ReporterDid;
-    }
-    ///State transition - sets the `report_id` field to Set
-    pub struct SetReportId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetReportId<S> {}
-    impl<S: State> State for SetReportId<S> {
-        type ConvoId = S::ConvoId;
-        type ReportId = Set<members::report_id>;
-        type ReportedDid = S::ReportedDid;
-        type SubmittedAt = S::SubmittedAt;
-        type Status = S::Status;
-        type Category = S::Category;
-        type ReporterDid = S::ReporterDid;
-    }
-    ///State transition - sets the `reported_did` field to Set
-    pub struct SetReportedDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetReportedDid<S> {}
-    impl<S: State> State for SetReportedDid<S> {
-        type ConvoId = S::ConvoId;
-        type ReportId = S::ReportId;
-        type ReportedDid = Set<members::reported_did>;
-        type SubmittedAt = S::SubmittedAt;
-        type Status = S::Status;
-        type Category = S::Category;
-        type ReporterDid = S::ReporterDid;
-    }
-    ///State transition - sets the `submitted_at` field to Set
-    pub struct SetSubmittedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetSubmittedAt<S> {}
-    impl<S: State> State for SetSubmittedAt<S> {
-        type ConvoId = S::ConvoId;
-        type ReportId = S::ReportId;
-        type ReportedDid = S::ReportedDid;
-        type SubmittedAt = Set<members::submitted_at>;
-        type Status = S::Status;
-        type Category = S::Category;
-        type ReporterDid = S::ReporterDid;
-    }
-    ///State transition - sets the `status` field to Set
-    pub struct SetStatus<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetStatus<S> {}
-    impl<S: State> State for SetStatus<S> {
-        type ConvoId = S::ConvoId;
-        type ReportId = S::ReportId;
-        type ReportedDid = S::ReportedDid;
-        type SubmittedAt = S::SubmittedAt;
-        type Status = Set<members::status>;
-        type Category = S::Category;
-        type ReporterDid = S::ReporterDid;
-    }
-    ///State transition - sets the `category` field to Set
-    pub struct SetCategory<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCategory<S> {}
-    impl<S: State> State for SetCategory<S> {
-        type ConvoId = S::ConvoId;
-        type ReportId = S::ReportId;
-        type ReportedDid = S::ReportedDid;
-        type SubmittedAt = S::SubmittedAt;
-        type Status = S::Status;
-        type Category = Set<members::category>;
-        type ReporterDid = S::ReporterDid;
+        type ConvoId = Unset;
     }
     ///State transition - sets the `reporter_did` field to Set
     pub struct SetReporterDid<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetReporterDid<S> {}
     impl<S: State> State for SetReporterDid<S> {
-        type ConvoId = S::ConvoId;
+        type ReporterDid = Set<members::reporter_did>;
+        type Category = S::Category;
+        type Status = S::Status;
+        type SubmittedAt = S::SubmittedAt;
         type ReportId = S::ReportId;
         type ReportedDid = S::ReportedDid;
-        type SubmittedAt = S::SubmittedAt;
+        type ConvoId = S::ConvoId;
+    }
+    ///State transition - sets the `category` field to Set
+    pub struct SetCategory<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCategory<S> {}
+    impl<S: State> State for SetCategory<S> {
+        type ReporterDid = S::ReporterDid;
+        type Category = Set<members::category>;
         type Status = S::Status;
+        type SubmittedAt = S::SubmittedAt;
+        type ReportId = S::ReportId;
+        type ReportedDid = S::ReportedDid;
+        type ConvoId = S::ConvoId;
+    }
+    ///State transition - sets the `status` field to Set
+    pub struct SetStatus<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetStatus<S> {}
+    impl<S: State> State for SetStatus<S> {
+        type ReporterDid = S::ReporterDid;
         type Category = S::Category;
-        type ReporterDid = Set<members::reporter_did>;
+        type Status = Set<members::status>;
+        type SubmittedAt = S::SubmittedAt;
+        type ReportId = S::ReportId;
+        type ReportedDid = S::ReportedDid;
+        type ConvoId = S::ConvoId;
+    }
+    ///State transition - sets the `submitted_at` field to Set
+    pub struct SetSubmittedAt<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetSubmittedAt<S> {}
+    impl<S: State> State for SetSubmittedAt<S> {
+        type ReporterDid = S::ReporterDid;
+        type Category = S::Category;
+        type Status = S::Status;
+        type SubmittedAt = Set<members::submitted_at>;
+        type ReportId = S::ReportId;
+        type ReportedDid = S::ReportedDid;
+        type ConvoId = S::ConvoId;
+    }
+    ///State transition - sets the `report_id` field to Set
+    pub struct SetReportId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetReportId<S> {}
+    impl<S: State> State for SetReportId<S> {
+        type ReporterDid = S::ReporterDid;
+        type Category = S::Category;
+        type Status = S::Status;
+        type SubmittedAt = S::SubmittedAt;
+        type ReportId = Set<members::report_id>;
+        type ReportedDid = S::ReportedDid;
+        type ConvoId = S::ConvoId;
+    }
+    ///State transition - sets the `reported_did` field to Set
+    pub struct SetReportedDid<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetReportedDid<S> {}
+    impl<S: State> State for SetReportedDid<S> {
+        type ReporterDid = S::ReporterDid;
+        type Category = S::Category;
+        type Status = S::Status;
+        type SubmittedAt = S::SubmittedAt;
+        type ReportId = S::ReportId;
+        type ReportedDid = Set<members::reported_did>;
+        type ConvoId = S::ConvoId;
+    }
+    ///State transition - sets the `convo_id` field to Set
+    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetConvoId<S> {}
+    impl<S: State> State for SetConvoId<S> {
+        type ReporterDid = S::ReporterDid;
+        type Category = S::Category;
+        type Status = S::Status;
+        type SubmittedAt = S::SubmittedAt;
+        type ReportId = S::ReportId;
+        type ReportedDid = S::ReportedDid;
+        type ConvoId = Set<members::convo_id>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `convo_id` field
-        pub struct convo_id(());
+        ///Marker type for the `reporter_did` field
+        pub struct reporter_did(());
+        ///Marker type for the `category` field
+        pub struct category(());
+        ///Marker type for the `status` field
+        pub struct status(());
+        ///Marker type for the `submitted_at` field
+        pub struct submitted_at(());
         ///Marker type for the `report_id` field
         pub struct report_id(());
         ///Marker type for the `reported_did` field
         pub struct reported_did(());
-        ///Marker type for the `submitted_at` field
-        pub struct submitted_at(());
-        ///Marker type for the `status` field
-        pub struct status(());
-        ///Marker type for the `category` field
-        pub struct category(());
-        ///Marker type for the `reporter_did` field
-        pub struct reporter_did(());
+        ///Marker type for the `convo_id` field
+        pub struct convo_id(());
     }
 }
 
@@ -426,17 +417,7 @@ impl<'a> ReportViewBuilder<'a, report_view_state::Empty> {
     pub fn new() -> Self {
         ReportViewBuilder {
             _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-            ),
+            __unsafe_private_named: (None, None, None, None, None, None, None, None, None),
             _phantom: ::core::marker::PhantomData,
         }
     }
@@ -616,13 +597,13 @@ where
 impl<'a, S> ReportViewBuilder<'a, S>
 where
     S: report_view_state::State,
-    S::ConvoId: report_view_state::IsSet,
+    S::ReporterDid: report_view_state::IsSet,
+    S::Category: report_view_state::IsSet,
+    S::Status: report_view_state::IsSet,
+    S::SubmittedAt: report_view_state::IsSet,
     S::ReportId: report_view_state::IsSet,
     S::ReportedDid: report_view_state::IsSet,
-    S::SubmittedAt: report_view_state::IsSet,
-    S::Status: report_view_state::IsSet,
-    S::Category: report_view_state::IsSet,
-    S::ReporterDid: report_view_state::IsSet,
+    S::ConvoId: report_view_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> ReportView<'a> {
@@ -662,9 +643,7 @@ where
     }
 }
 
-fn lexicon_doc_blue_catbird_mlsChat_report() -> ::jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn lexicon_doc_blue_catbird_mlsChat_report() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("blue.catbird.mlsChat.report"),
@@ -841,211 +820,207 @@ fn lexicon_doc_blue_catbird_mlsChat_report() -> ::jacquard_lexicon::lexicon::Lex
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("reportView"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: None,
-                    required: Some(
-                        vec![
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        description: None,
+                        required: Some(vec![
                             ::jacquard_common::smol_str::SmolStr::new_static("reportId"),
                             ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
                             ::jacquard_common::smol_str::SmolStr::new_static("reporterDid"),
                             ::jacquard_common::smol_str::SmolStr::new_static("reportedDid"),
                             ::jacquard_common::smol_str::SmolStr::new_static("category"),
                             ::jacquard_common::smol_str::SmolStr::new_static("status"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("submittedAt")
-                        ],
-                    ),
-                    nullable: None,
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("category"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static("Report category"),
+                            ::jacquard_common::smol_str::SmolStr::new_static("submittedAt"),
+                        ]),
+                        nullable: None,
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::std::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("category"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "Report category",
+                                        )),
+                                        format: None,
+                                        default: None,
+                                        min_length: None,
+                                        max_length: None,
+                                        min_graphemes: None,
+                                        max_graphemes: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                        known_values: None,
+                                    },
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "Conversation identifier",
-                                    ),
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "Conversation identifier",
+                                        )),
+                                        format: None,
+                                        default: None,
+                                        min_length: None,
+                                        max_length: None,
+                                        min_graphemes: None,
+                                        max_graphemes: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                        known_values: None,
+                                    },
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("reportId"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "Unique report identifier",
-                                    ),
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("reportId"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "Unique report identifier",
+                                        )),
+                                        format: None,
+                                        default: None,
+                                        min_length: None,
+                                        max_length: None,
+                                        min_graphemes: None,
+                                        max_graphemes: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                        known_values: None,
+                                    },
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
-                                "reportedDid",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "DID of the reported member",
-                                    ),
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("reportedDid"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "DID of the reported member",
+                                        )),
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                        ),
+                                        default: None,
+                                        min_length: None,
+                                        max_length: None,
+                                        min_graphemes: None,
+                                        max_graphemes: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                        known_values: None,
+                                    },
                                 ),
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("reporterDid"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "DID of the reporter",
+                                        )),
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                        ),
+                                        default: None,
+                                        min_length: None,
+                                        max_length: None,
+                                        min_graphemes: None,
+                                        max_graphemes: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                        known_values: None,
+                                    },
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
-                                "reporterDid",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static("DID of the reporter"),
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("resolvedAt"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "When the report was resolved (if applicable)",
+                                        )),
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                        ),
+                                        default: None,
+                                        min_length: None,
+                                        max_length: None,
+                                        min_graphemes: None,
+                                        max_graphemes: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                        known_values: None,
+                                    },
                                 ),
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("resolvedBy"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "DID of the admin who resolved the report",
+                                        )),
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                        ),
+                                        default: None,
+                                        min_length: None,
+                                        max_length: None,
+                                        min_graphemes: None,
+                                        max_graphemes: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                        known_values: None,
+                                    },
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
-                                "resolvedAt",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "When the report was resolved (if applicable)",
-                                    ),
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("status"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "Report status",
+                                        )),
+                                        format: None,
+                                        default: None,
+                                        min_length: None,
+                                        max_length: None,
+                                        min_graphemes: None,
+                                        max_graphemes: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                        known_values: None,
+                                    },
                                 ),
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("submittedAt"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "When the report was submitted",
+                                        )),
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                        ),
+                                        default: None,
+                                        min_length: None,
+                                        max_length: None,
+                                        min_graphemes: None,
+                                        max_graphemes: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                        known_values: None,
+                                    },
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
-                                "resolvedBy",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "DID of the admin who resolved the report",
-                                    ),
-                                ),
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
-                                ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("status"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static("Report status"),
-                                ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
-                                "submittedAt",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "When the report was submitted",
-                                    ),
-                                ),
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
-                                ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map
+                            );
+                            map
+                        },
                     },
-                }),
+                ),
             );
             map
         },
