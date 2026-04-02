@@ -169,49 +169,49 @@ pub mod pending_device_addition_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type ConvoId;
         type CreatedAt;
+        type ConvoId;
         type DeviceId;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type ConvoId = Unset;
         type CreatedAt = Unset;
+        type ConvoId = Unset;
         type DeviceId = Unset;
-    }
-    ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type ConvoId = Set<members::convo_id>;
-        type CreatedAt = S::CreatedAt;
-        type DeviceId = S::DeviceId;
     }
     ///State transition - sets the `created_at` field to Set
     pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
     impl<S: State> State for SetCreatedAt<S> {
-        type ConvoId = S::ConvoId;
         type CreatedAt = Set<members::created_at>;
+        type ConvoId = S::ConvoId;
+        type DeviceId = S::DeviceId;
+    }
+    ///State transition - sets the `convo_id` field to Set
+    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetConvoId<S> {}
+    impl<S: State> State for SetConvoId<S> {
+        type CreatedAt = S::CreatedAt;
+        type ConvoId = Set<members::convo_id>;
         type DeviceId = S::DeviceId;
     }
     ///State transition - sets the `device_id` field to Set
     pub struct SetDeviceId<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetDeviceId<S> {}
     impl<S: State> State for SetDeviceId<S> {
-        type ConvoId = S::ConvoId;
         type CreatedAt = S::CreatedAt;
+        type ConvoId = S::ConvoId;
         type DeviceId = Set<members::device_id>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `convo_id` field
-        pub struct convo_id(());
         ///Marker type for the `created_at` field
         pub struct created_at(());
+        ///Marker type for the `convo_id` field
+        pub struct convo_id(());
         ///Marker type for the `device_id` field
         pub struct device_id(());
     }
@@ -320,8 +320,8 @@ impl<'a, S: pending_device_addition_state::State> PendingDeviceAdditionBuilder<'
 impl<'a, S> PendingDeviceAdditionBuilder<'a, S>
 where
     S: pending_device_addition_state::State,
-    S::ConvoId: pending_device_addition_state::IsSet,
     S::CreatedAt: pending_device_addition_state::IsSet,
+    S::ConvoId: pending_device_addition_state::IsSet,
     S::DeviceId: pending_device_addition_state::IsSet,
 {
     /// Build the final struct

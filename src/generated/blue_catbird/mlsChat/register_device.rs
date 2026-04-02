@@ -32,50 +32,50 @@ pub mod key_package_item_state {
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
         type KeyPackage;
-        type CipherSuite;
         type Expires;
+        type CipherSuite;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
         type KeyPackage = Unset;
-        type CipherSuite = Unset;
         type Expires = Unset;
+        type CipherSuite = Unset;
     }
     ///State transition - sets the `key_package` field to Set
     pub struct SetKeyPackage<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetKeyPackage<S> {}
     impl<S: State> State for SetKeyPackage<S> {
         type KeyPackage = Set<members::key_package>;
+        type Expires = S::Expires;
         type CipherSuite = S::CipherSuite;
-        type Expires = S::Expires;
-    }
-    ///State transition - sets the `cipher_suite` field to Set
-    pub struct SetCipherSuite<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCipherSuite<S> {}
-    impl<S: State> State for SetCipherSuite<S> {
-        type KeyPackage = S::KeyPackage;
-        type CipherSuite = Set<members::cipher_suite>;
-        type Expires = S::Expires;
     }
     ///State transition - sets the `expires` field to Set
     pub struct SetExpires<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetExpires<S> {}
     impl<S: State> State for SetExpires<S> {
         type KeyPackage = S::KeyPackage;
-        type CipherSuite = S::CipherSuite;
         type Expires = Set<members::expires>;
+        type CipherSuite = S::CipherSuite;
+    }
+    ///State transition - sets the `cipher_suite` field to Set
+    pub struct SetCipherSuite<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCipherSuite<S> {}
+    impl<S: State> State for SetCipherSuite<S> {
+        type KeyPackage = S::KeyPackage;
+        type Expires = S::Expires;
+        type CipherSuite = Set<members::cipher_suite>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
         ///Marker type for the `key_package` field
         pub struct key_package(());
-        ///Marker type for the `cipher_suite` field
-        pub struct cipher_suite(());
         ///Marker type for the `expires` field
         pub struct expires(());
+        ///Marker type for the `cipher_suite` field
+        pub struct cipher_suite(());
     }
 }
 
@@ -169,8 +169,8 @@ impl<'a, S> KeyPackageItemBuilder<'a, S>
 where
     S: key_package_item_state::State,
     S::KeyPackage: key_package_item_state::IsSet,
-    S::CipherSuite: key_package_item_state::IsSet,
     S::Expires: key_package_item_state::IsSet,
+    S::CipherSuite: key_package_item_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> KeyPackageItem<'a> {

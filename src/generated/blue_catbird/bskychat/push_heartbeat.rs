@@ -14,28 +14,22 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct PushHeartbeat<'a> {
-    /// Client platform identifier
+    /// Client platform identifier (e.g., 'ios', 'macos')
     #[serde(borrow)]
     pub platform: jacquard_common::CowStr<'a>,
 }
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct PushHeartbeatOutput<'a> {
-    /// Timestamp when the push lease expires
+    /// When the foreground lease expires
     pub lease_expires_at: jacquard_common::types::string::Datetime,
 }
 
@@ -51,9 +45,8 @@ impl jacquard_common::xrpc::XrpcResp for PushHeartbeatResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for PushHeartbeat<'a> {
     const NSID: &'static str = "blue.catbird.bskychat.pushHeartbeat";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = PushHeartbeatResponse;
 }
 
@@ -62,9 +55,8 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for PushHeartbeat<'a> {
 pub struct PushHeartbeatRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for PushHeartbeatRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.bskychat.pushHeartbeat";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<'de> = PushHeartbeat<'de>;
     type Response = PushHeartbeatResponse;
 }
