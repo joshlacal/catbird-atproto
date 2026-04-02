@@ -3,6 +3,5 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-pub mod bskychat;
-pub mod mlsChat;
-pub mod mlsDS;
+pub mod push_heartbeat;
+pub mod update_mute_status;

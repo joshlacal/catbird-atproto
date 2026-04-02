@@ -9,6 +9,15 @@ pub use jacquard_common::types;
 pub use jacquard_derive;
 
 pub mod catbird {
+    pub mod bsky_chat {
+        pub mod push_heartbeat {
+            pub const NSID: &str = "blue.catbird.bskychat.pushHeartbeat";
+        }
+        pub mod update_mute_status {
+            pub const NSID: &str = "blue.catbird.bskychat.updateMuteStatus";
+        }
+    }
+
     pub mod mls_chat {
         pub mod defs {
             pub type ConvoMetadata = crate::blue_catbird::mlsChat::ConvoMetadata<'static>;
