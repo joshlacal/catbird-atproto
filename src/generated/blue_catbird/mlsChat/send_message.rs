@@ -7,7 +7,13 @@
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct SendMessage<'a> {
@@ -44,93 +50,93 @@ pub struct SendMessage<'a> {
 
 pub mod send_message_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
         type Epoch;
-        type ConvoId;
-        type MsgId;
-        type PaddedSize;
         type Ciphertext;
+        type MsgId;
+        type ConvoId;
+        type PaddedSize;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
         type Epoch = Unset;
-        type ConvoId = Unset;
-        type MsgId = Unset;
-        type PaddedSize = Unset;
         type Ciphertext = Unset;
+        type MsgId = Unset;
+        type ConvoId = Unset;
+        type PaddedSize = Unset;
     }
     ///State transition - sets the `epoch` field to Set
     pub struct SetEpoch<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetEpoch<S> {}
     impl<S: State> State for SetEpoch<S> {
         type Epoch = Set<members::epoch>;
-        type ConvoId = S::ConvoId;
+        type Ciphertext = S::Ciphertext;
         type MsgId = S::MsgId;
-        type PaddedSize = S::PaddedSize;
-        type Ciphertext = S::Ciphertext;
-    }
-    ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type Epoch = S::Epoch;
-        type ConvoId = Set<members::convo_id>;
-        type MsgId = S::MsgId;
-        type PaddedSize = S::PaddedSize;
-        type Ciphertext = S::Ciphertext;
-    }
-    ///State transition - sets the `msg_id` field to Set
-    pub struct SetMsgId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetMsgId<S> {}
-    impl<S: State> State for SetMsgId<S> {
-        type Epoch = S::Epoch;
         type ConvoId = S::ConvoId;
-        type MsgId = Set<members::msg_id>;
         type PaddedSize = S::PaddedSize;
-        type Ciphertext = S::Ciphertext;
-    }
-    ///State transition - sets the `padded_size` field to Set
-    pub struct SetPaddedSize<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetPaddedSize<S> {}
-    impl<S: State> State for SetPaddedSize<S> {
-        type Epoch = S::Epoch;
-        type ConvoId = S::ConvoId;
-        type MsgId = S::MsgId;
-        type PaddedSize = Set<members::padded_size>;
-        type Ciphertext = S::Ciphertext;
     }
     ///State transition - sets the `ciphertext` field to Set
     pub struct SetCiphertext<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCiphertext<S> {}
     impl<S: State> State for SetCiphertext<S> {
         type Epoch = S::Epoch;
-        type ConvoId = S::ConvoId;
-        type MsgId = S::MsgId;
-        type PaddedSize = S::PaddedSize;
         type Ciphertext = Set<members::ciphertext>;
+        type MsgId = S::MsgId;
+        type ConvoId = S::ConvoId;
+        type PaddedSize = S::PaddedSize;
+    }
+    ///State transition - sets the `msg_id` field to Set
+    pub struct SetMsgId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetMsgId<S> {}
+    impl<S: State> State for SetMsgId<S> {
+        type Epoch = S::Epoch;
+        type Ciphertext = S::Ciphertext;
+        type MsgId = Set<members::msg_id>;
+        type ConvoId = S::ConvoId;
+        type PaddedSize = S::PaddedSize;
+    }
+    ///State transition - sets the `convo_id` field to Set
+    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetConvoId<S> {}
+    impl<S: State> State for SetConvoId<S> {
+        type Epoch = S::Epoch;
+        type Ciphertext = S::Ciphertext;
+        type MsgId = S::MsgId;
+        type ConvoId = Set<members::convo_id>;
+        type PaddedSize = S::PaddedSize;
+    }
+    ///State transition - sets the `padded_size` field to Set
+    pub struct SetPaddedSize<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetPaddedSize<S> {}
+    impl<S: State> State for SetPaddedSize<S> {
+        type Epoch = S::Epoch;
+        type Ciphertext = S::Ciphertext;
+        type MsgId = S::MsgId;
+        type ConvoId = S::ConvoId;
+        type PaddedSize = Set<members::padded_size>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
         ///Marker type for the `epoch` field
         pub struct epoch(());
-        ///Marker type for the `convo_id` field
-        pub struct convo_id(());
-        ///Marker type for the `msg_id` field
-        pub struct msg_id(());
-        ///Marker type for the `padded_size` field
-        pub struct padded_size(());
         ///Marker type for the `ciphertext` field
         pub struct ciphertext(());
+        ///Marker type for the `msg_id` field
+        pub struct msg_id(());
+        ///Marker type for the `convo_id` field
+        pub struct convo_id(());
+        ///Marker type for the `padded_size` field
+        pub struct padded_size(());
     }
 }
 
@@ -163,7 +169,17 @@ impl<'a> SendMessageBuilder<'a, send_message_state::Empty> {
     pub fn new() -> Self {
         SendMessageBuilder {
             _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None, None, None, None, None),
+            __unsafe_private_named: (
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+            ),
             _phantom: ::core::marker::PhantomData,
         }
     }
@@ -171,7 +187,10 @@ impl<'a> SendMessageBuilder<'a, send_message_state::Empty> {
 
 impl<'a, S: send_message_state::State> SendMessageBuilder<'a, S> {
     /// Set the `action` field (optional)
-    pub fn action(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
+    pub fn action(
+        mut self,
+        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
+    ) -> Self {
         self.__unsafe_private_named.0 = value.into();
         self
     }
@@ -222,7 +241,10 @@ where
 
 impl<'a, S: send_message_state::State> SendMessageBuilder<'a, S> {
     /// Set the `delivery` field (optional)
-    pub fn delivery(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
+    pub fn delivery(
+        mut self,
+        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
+    ) -> Self {
         self.__unsafe_private_named.3 = value.into();
         self
     }
@@ -292,12 +314,18 @@ where
 
 impl<'a, S: send_message_state::State> SendMessageBuilder<'a, S> {
     /// Set the `reactionEmoji` field (optional)
-    pub fn reaction_emoji(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
+    pub fn reaction_emoji(
+        mut self,
+        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
+    ) -> Self {
         self.__unsafe_private_named.7 = value.into();
         self
     }
     /// Set the `reactionEmoji` field to an Option value (optional)
-    pub fn maybe_reaction_emoji(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
+    pub fn maybe_reaction_emoji(
+        mut self,
+        value: Option<jacquard_common::CowStr<'a>>,
+    ) -> Self {
         self.__unsafe_private_named.7 = value;
         self
     }
@@ -313,7 +341,10 @@ impl<'a, S: send_message_state::State> SendMessageBuilder<'a, S> {
         self
     }
     /// Set the `targetMessageId` field to an Option value (optional)
-    pub fn maybe_target_message_id(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
+    pub fn maybe_target_message_id(
+        mut self,
+        value: Option<jacquard_common::CowStr<'a>>,
+    ) -> Self {
         self.__unsafe_private_named.8 = value;
         self
     }
@@ -323,10 +354,10 @@ impl<'a, S> SendMessageBuilder<'a, S>
 where
     S: send_message_state::State,
     S::Epoch: send_message_state::IsSet,
-    S::ConvoId: send_message_state::IsSet,
-    S::MsgId: send_message_state::IsSet,
-    S::PaddedSize: send_message_state::IsSet,
     S::Ciphertext: send_message_state::IsSet,
+    S::MsgId: send_message_state::IsSet,
+    S::ConvoId: send_message_state::IsSet,
+    S::PaddedSize: send_message_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> SendMessage<'a> {
@@ -368,7 +399,13 @@ where
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct SendMessageOutput<'a> {
@@ -393,7 +430,7 @@ pub struct SendMessageOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
+    jacquard_derive::IntoStatic
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -480,8 +517,9 @@ impl jacquard_common::xrpc::XrpcResp for SendMessageResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for SendMessage<'a> {
     const NSID: &'static str = "blue.catbird.mlsChat.sendMessage";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = SendMessageResponse;
 }
 
@@ -490,8 +528,9 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for SendMessage<'a> {
 pub struct SendMessageRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for SendMessageRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.sendMessage";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<'de> = SendMessage<'de>;
     type Response = SendMessageResponse;
 }

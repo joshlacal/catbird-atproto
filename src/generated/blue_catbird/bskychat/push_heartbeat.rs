@@ -14,7 +14,7 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
 #[serde(rename_all = "camelCase")]
 pub struct PushHeartbeat<'a> {
@@ -25,7 +25,13 @@ pub struct PushHeartbeat<'a> {
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct PushHeartbeatOutput<'a> {
@@ -45,8 +51,9 @@ impl jacquard_common::xrpc::XrpcResp for PushHeartbeatResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for PushHeartbeat<'a> {
     const NSID: &'static str = "blue.catbird.bskychat.pushHeartbeat";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = PushHeartbeatResponse;
 }
 
@@ -55,8 +62,9 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for PushHeartbeat<'a> {
 pub struct PushHeartbeatRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for PushHeartbeatRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.bskychat.pushHeartbeat";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<'de> = PushHeartbeat<'de>;
     type Response = PushHeartbeatResponse;
 }

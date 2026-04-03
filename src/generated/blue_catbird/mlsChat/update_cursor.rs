@@ -14,7 +14,7 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateCursor<'a> {
@@ -22,27 +22,22 @@ pub struct UpdateCursor<'a> {
     #[serde(borrow)]
     pub convo_id: jacquard_common::CowStr<'a>,
     /// Opaque cursor value representing the read position (e.g., seq number as string)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// If true, generates a read receipt event visible to other members. Default false (silent cursor update).
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub mark_read: std::option::Option<bool>,
-    /// Specific message ID to mark as read (alternative to cursor-based tracking)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub message_id: std::option::Option<jacquard_common::CowStr<'a>>,
+    pub cursor: jacquard_common::CowStr<'a>,
 }
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateCursorOutput<'a> {
-    /// Timestamp of the read receipt (only present when markRead is true)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub read_at: std::option::Option<jacquard_common::types::string::Datetime>,
     /// Timestamp when the cursor was updated
     pub updated_at: jacquard_common::types::string::Datetime,
 }
@@ -57,7 +52,7 @@ pub struct UpdateCursorOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
+    jacquard_derive::IntoStatic
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -114,8 +109,9 @@ impl jacquard_common::xrpc::XrpcResp for UpdateCursorResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for UpdateCursor<'a> {
     const NSID: &'static str = "blue.catbird.mlsChat.updateCursor";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = UpdateCursorResponse;
 }
 
@@ -124,8 +120,9 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for UpdateCursor<'a> {
 pub struct UpdateCursorRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for UpdateCursorRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.updateCursor";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<'de> = UpdateCursor<'de>;
     type Response = UpdateCursorResponse;
 }

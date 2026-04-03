@@ -14,7 +14,7 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
 #[serde(rename_all = "camelCase")]
 pub struct UpsertFederationPeer<'a> {
@@ -35,12 +35,20 @@ pub struct UpsertFederationPeer<'a> {
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct UpsertFederationPeerOutput<'a> {
     #[serde(borrow)]
-    pub peer: crate::generated::blue_catbird::mlsDS::get_federation_peers::PeerRecord<'a>,
+    pub peer: crate::generated::blue_catbird::mlsDS::get_federation_peers::PeerRecord<
+        'a,
+    >,
     /// Whether the upsert succeeded
     pub updated: bool,
 }
@@ -57,8 +65,9 @@ impl jacquard_common::xrpc::XrpcResp for UpsertFederationPeerResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for UpsertFederationPeer<'a> {
     const NSID: &'static str = "blue.catbird.mlsDS.upsertFederationPeer";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = UpsertFederationPeerResponse;
 }
 
@@ -67,8 +76,9 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for UpsertFederationPeer<'a> {
 pub struct UpsertFederationPeerRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for UpsertFederationPeerRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.mlsDS.upsertFederationPeer";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<'de> = UpsertFederationPeer<'de>;
     type Response = UpsertFederationPeerResponse;
 }

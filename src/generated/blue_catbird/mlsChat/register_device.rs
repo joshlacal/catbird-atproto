@@ -7,7 +7,13 @@
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct KeyPackageItem<'a> {
@@ -23,59 +29,59 @@ pub struct KeyPackageItem<'a> {
 
 pub mod key_package_item_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
         type KeyPackage;
-        type Expires;
         type CipherSuite;
+        type Expires;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
         type KeyPackage = Unset;
-        type Expires = Unset;
         type CipherSuite = Unset;
+        type Expires = Unset;
     }
     ///State transition - sets the `key_package` field to Set
     pub struct SetKeyPackage<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetKeyPackage<S> {}
     impl<S: State> State for SetKeyPackage<S> {
         type KeyPackage = Set<members::key_package>;
+        type CipherSuite = S::CipherSuite;
         type Expires = S::Expires;
-        type CipherSuite = S::CipherSuite;
-    }
-    ///State transition - sets the `expires` field to Set
-    pub struct SetExpires<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetExpires<S> {}
-    impl<S: State> State for SetExpires<S> {
-        type KeyPackage = S::KeyPackage;
-        type Expires = Set<members::expires>;
-        type CipherSuite = S::CipherSuite;
     }
     ///State transition - sets the `cipher_suite` field to Set
     pub struct SetCipherSuite<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCipherSuite<S> {}
     impl<S: State> State for SetCipherSuite<S> {
         type KeyPackage = S::KeyPackage;
-        type Expires = S::Expires;
         type CipherSuite = Set<members::cipher_suite>;
+        type Expires = S::Expires;
+    }
+    ///State transition - sets the `expires` field to Set
+    pub struct SetExpires<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetExpires<S> {}
+    impl<S: State> State for SetExpires<S> {
+        type KeyPackage = S::KeyPackage;
+        type CipherSuite = S::CipherSuite;
+        type Expires = Set<members::expires>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
         ///Marker type for the `key_package` field
         pub struct key_package(());
-        ///Marker type for the `expires` field
-        pub struct expires(());
         ///Marker type for the `cipher_suite` field
         pub struct cipher_suite(());
+        ///Marker type for the `expires` field
+        pub struct expires(());
     }
 }
 
@@ -169,8 +175,8 @@ impl<'a, S> KeyPackageItemBuilder<'a, S>
 where
     S: key_package_item_state::State,
     S::KeyPackage: key_package_item_state::IsSet,
-    S::Expires: key_package_item_state::IsSet,
     S::CipherSuite: key_package_item_state::IsSet,
+    S::Expires: key_package_item_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> KeyPackageItem<'a> {
@@ -198,8 +204,9 @@ where
     }
 }
 
-fn lexicon_doc_blue_catbird_mlsChat_registerDevice(
-) -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_blue_catbird_mlsChat_registerDevice() -> ::jacquard_lexicon::lexicon::LexiconDoc<
+    'static,
+> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("blue.catbird.mlsChat.registerDevice"),
@@ -417,59 +424,57 @@ fn lexicon_doc_blue_catbird_mlsChat_registerDevice(
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("welcomeMessage"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
-                        required: Some(vec![
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: None,
+                    required: Some(
+                        vec![
                             ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
+                            ::jacquard_common::smol_str::SmolStr::new_static("welcome")
+                        ],
+                    ),
+                    nullable: None,
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::std::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static("Conversation ID"),
+                                ),
+                                format: None,
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map.insert(
                             ::jacquard_common::smol_str::SmolStr::new_static("welcome"),
-                        ]),
-                        nullable: None,
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: Some(::jacquard_common::CowStr::new_static(
-                                            "Conversation ID",
-                                        )),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
-                                    },
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Base64-encoded MLS Welcome message",
+                                    ),
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("welcome"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: Some(::jacquard_common::CowStr::new_static(
-                                            "Base64-encoded MLS Welcome message",
-                                        )),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
-                                    },
-                                ),
-                            );
-                            map
-                        },
+                                format: None,
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map
                     },
-                ),
+                }),
             );
             map
         },
@@ -495,7 +500,13 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for KeyPackageItem<'a> {
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct RegisterDevice<'a> {
@@ -508,8 +519,9 @@ pub struct RegisterDevice<'a> {
     pub device_uuid: std::option::Option<jacquard_common::CowStr<'a>>,
     /// MLS key packages for this device (1-200 packages)
     #[serde(borrow)]
-    pub key_packages:
-        Vec<crate::generated::blue_catbird::mlsChat::register_device::KeyPackageItem<'a>>,
+    pub key_packages: Vec<
+        crate::generated::blue_catbird::mlsChat::register_device::KeyPackageItem<'a>,
+    >,
     /// Optional APNS/FCM push token for this device. If provided, registers the push token in the same atomic operation as device registration.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
@@ -521,59 +533,59 @@ pub struct RegisterDevice<'a> {
 
 pub mod register_device_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
         type SignaturePublicKey;
-        type DeviceName;
         type KeyPackages;
+        type DeviceName;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
         type SignaturePublicKey = Unset;
-        type DeviceName = Unset;
         type KeyPackages = Unset;
+        type DeviceName = Unset;
     }
     ///State transition - sets the `signature_public_key` field to Set
     pub struct SetSignaturePublicKey<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetSignaturePublicKey<S> {}
     impl<S: State> State for SetSignaturePublicKey<S> {
         type SignaturePublicKey = Set<members::signature_public_key>;
+        type KeyPackages = S::KeyPackages;
         type DeviceName = S::DeviceName;
-        type KeyPackages = S::KeyPackages;
-    }
-    ///State transition - sets the `device_name` field to Set
-    pub struct SetDeviceName<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDeviceName<S> {}
-    impl<S: State> State for SetDeviceName<S> {
-        type SignaturePublicKey = S::SignaturePublicKey;
-        type DeviceName = Set<members::device_name>;
-        type KeyPackages = S::KeyPackages;
     }
     ///State transition - sets the `key_packages` field to Set
     pub struct SetKeyPackages<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetKeyPackages<S> {}
     impl<S: State> State for SetKeyPackages<S> {
         type SignaturePublicKey = S::SignaturePublicKey;
-        type DeviceName = S::DeviceName;
         type KeyPackages = Set<members::key_packages>;
+        type DeviceName = S::DeviceName;
+    }
+    ///State transition - sets the `device_name` field to Set
+    pub struct SetDeviceName<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetDeviceName<S> {}
+    impl<S: State> State for SetDeviceName<S> {
+        type SignaturePublicKey = S::SignaturePublicKey;
+        type KeyPackages = S::KeyPackages;
+        type DeviceName = Set<members::device_name>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
         ///Marker type for the `signature_public_key` field
         pub struct signature_public_key(());
-        ///Marker type for the `device_name` field
-        pub struct device_name(());
         ///Marker type for the `key_packages` field
         pub struct key_packages(());
+        ///Marker type for the `device_name` field
+        pub struct device_name(());
     }
 }
 
@@ -584,7 +596,11 @@ pub struct RegisterDeviceBuilder<'a, S: register_device_state::State> {
         ::core::option::Option<jacquard_common::CowStr<'a>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
         ::core::option::Option<
-            Vec<crate::generated::blue_catbird::mlsChat::register_device::KeyPackageItem<'a>>,
+            Vec<
+                crate::generated::blue_catbird::mlsChat::register_device::KeyPackageItem<
+                    'a,
+                >,
+            >,
         >,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
         ::core::option::Option<bytes::Bytes>,
@@ -631,12 +647,18 @@ where
 
 impl<'a, S: register_device_state::State> RegisterDeviceBuilder<'a, S> {
     /// Set the `deviceUUID` field (optional)
-    pub fn device_uuid(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
+    pub fn device_uuid(
+        mut self,
+        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
+    ) -> Self {
         self.__unsafe_private_named.1 = value.into();
         self
     }
     /// Set the `deviceUUID` field to an Option value (optional)
-    pub fn maybe_device_uuid(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
+    pub fn maybe_device_uuid(
+        mut self,
+        value: Option<jacquard_common::CowStr<'a>>,
+    ) -> Self {
         self.__unsafe_private_named.1 = value;
         self
     }
@@ -651,7 +673,11 @@ where
     pub fn key_packages(
         mut self,
         value: impl Into<
-            Vec<crate::generated::blue_catbird::mlsChat::register_device::KeyPackageItem<'a>>,
+            Vec<
+                crate::generated::blue_catbird::mlsChat::register_device::KeyPackageItem<
+                    'a,
+                >,
+            >,
         >,
     ) -> RegisterDeviceBuilder<'a, register_device_state::SetKeyPackages<S>> {
         self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
@@ -665,12 +691,18 @@ where
 
 impl<'a, S: register_device_state::State> RegisterDeviceBuilder<'a, S> {
     /// Set the `pushToken` field (optional)
-    pub fn push_token(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
+    pub fn push_token(
+        mut self,
+        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
+    ) -> Self {
         self.__unsafe_private_named.3 = value.into();
         self
     }
     /// Set the `pushToken` field to an Option value (optional)
-    pub fn maybe_push_token(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
+    pub fn maybe_push_token(
+        mut self,
+        value: Option<jacquard_common::CowStr<'a>>,
+    ) -> Self {
         self.__unsafe_private_named.3 = value;
         self
     }
@@ -699,8 +731,8 @@ impl<'a, S> RegisterDeviceBuilder<'a, S>
 where
     S: register_device_state::State,
     S::SignaturePublicKey: register_device_state::IsSet,
-    S::DeviceName: register_device_state::IsSet,
     S::KeyPackages: register_device_state::IsSet,
+    S::DeviceName: register_device_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> RegisterDevice<'a> {
@@ -734,7 +766,13 @@ where
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct RegisterDeviceOutput<'a> {
@@ -765,7 +803,7 @@ pub struct RegisterDeviceOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
+    jacquard_derive::IntoStatic
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -837,8 +875,9 @@ impl jacquard_common::xrpc::XrpcResp for RegisterDeviceResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for RegisterDevice<'a> {
     const NSID: &'static str = "blue.catbird.mlsChat.registerDevice";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = RegisterDeviceResponse;
 }
 
@@ -847,8 +886,9 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for RegisterDevice<'a> {
 pub struct RegisterDeviceRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for RegisterDeviceRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.registerDevice";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<'de> = RegisterDevice<'de>;
     type Response = RegisterDeviceResponse;
 }
@@ -862,7 +902,7 @@ impl jacquard_common::xrpc::XrpcEndpoint for RegisterDeviceRequest {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
 #[serde(rename_all = "camelCase")]
 pub struct WelcomeMessage<'a> {

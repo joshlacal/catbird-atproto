@@ -8,7 +8,13 @@
 /// Per-device MLS signature key published to the user's repo. Used to verify that key packages served by the delivery service belong to an authorized device.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Device<'a> {
@@ -23,59 +29,59 @@ pub struct Device<'a> {
 
 pub mod device_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Algorithm;
-        type CreatedAt;
         type MlsSignaturePublicKey;
+        type CreatedAt;
+        type Algorithm;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Algorithm = Unset;
-        type CreatedAt = Unset;
         type MlsSignaturePublicKey = Unset;
-    }
-    ///State transition - sets the `algorithm` field to Set
-    pub struct SetAlgorithm<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetAlgorithm<S> {}
-    impl<S: State> State for SetAlgorithm<S> {
-        type Algorithm = Set<members::algorithm>;
-        type CreatedAt = S::CreatedAt;
-        type MlsSignaturePublicKey = S::MlsSignaturePublicKey;
-    }
-    ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type Algorithm = S::Algorithm;
-        type CreatedAt = Set<members::created_at>;
-        type MlsSignaturePublicKey = S::MlsSignaturePublicKey;
+        type CreatedAt = Unset;
+        type Algorithm = Unset;
     }
     ///State transition - sets the `mls_signature_public_key` field to Set
     pub struct SetMlsSignaturePublicKey<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetMlsSignaturePublicKey<S> {}
     impl<S: State> State for SetMlsSignaturePublicKey<S> {
-        type Algorithm = S::Algorithm;
-        type CreatedAt = S::CreatedAt;
         type MlsSignaturePublicKey = Set<members::mls_signature_public_key>;
+        type CreatedAt = S::CreatedAt;
+        type Algorithm = S::Algorithm;
+    }
+    ///State transition - sets the `created_at` field to Set
+    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
+    impl<S: State> State for SetCreatedAt<S> {
+        type MlsSignaturePublicKey = S::MlsSignaturePublicKey;
+        type CreatedAt = Set<members::created_at>;
+        type Algorithm = S::Algorithm;
+    }
+    ///State transition - sets the `algorithm` field to Set
+    pub struct SetAlgorithm<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetAlgorithm<S> {}
+    impl<S: State> State for SetAlgorithm<S> {
+        type MlsSignaturePublicKey = S::MlsSignaturePublicKey;
+        type CreatedAt = S::CreatedAt;
+        type Algorithm = Set<members::algorithm>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `algorithm` field
-        pub struct algorithm(());
-        ///Marker type for the `created_at` field
-        pub struct created_at(());
         ///Marker type for the `mls_signature_public_key` field
         pub struct mls_signature_public_key(());
+        ///Marker type for the `created_at` field
+        pub struct created_at(());
+        ///Marker type for the `algorithm` field
+        pub struct algorithm(());
     }
 }
 
@@ -168,9 +174,9 @@ where
 impl<'a, S> DeviceBuilder<'a, S>
 where
     S: device_state::State,
-    S::Algorithm: device_state::IsSet,
-    S::CreatedAt: device_state::IsSet,
     S::MlsSignaturePublicKey: device_state::IsSet,
+    S::CreatedAt: device_state::IsSet,
+    S::Algorithm: device_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> Device<'a> {
@@ -213,7 +219,13 @@ impl<'a> Device<'a> {
 
 /// Typed wrapper for GetRecord response with this collection's record type.
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct DeviceGetRecordOutput<'a> {
@@ -270,7 +282,9 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Device<'a> {
     }
 }
 
-fn lexicon_doc_blue_catbird_mlsChat_device() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_blue_catbird_mlsChat_device() -> ::jacquard_lexicon::lexicon::LexiconDoc<
+    'static,
+> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("blue.catbird.mlsChat.device"),
