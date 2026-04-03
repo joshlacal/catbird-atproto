@@ -366,6 +366,28 @@ pub mod catbird {
                 crate::blue_catbird::mlsChat::list_devices::ListDevicesOutput<'static>;
         }
 
+        pub mod remove_device {
+            pub const NSID: &str = "blue.catbird.mlsChat.removeDevice";
+
+            pub type Input =
+                crate::blue_catbird::mlsChat::remove_device::RemoveDevice<'static>;
+            pub type Output =
+                crate::blue_catbird::mlsChat::remove_device::RemoveDeviceOutput<'static>;
+
+            pub struct InputData {
+                pub device_id: String,
+            }
+
+            impl From<InputData> for Input {
+                fn from(value: InputData) -> Self {
+                    Self {
+                        device_id: value.device_id.into(),
+                        extra_data: Default::default(),
+                    }
+                }
+            }
+        }
+
         pub mod opt_in {
             pub const NSID: &str = "blue.catbird.mlsChat.optIn";
 

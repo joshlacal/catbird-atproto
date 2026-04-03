@@ -28,6 +28,7 @@ pub mod policy;
 pub mod publish_key_packages;
 pub mod put_group_metadata_blob;
 pub mod register_device;
+pub mod remove_device;
 pub mod report_spam;
 pub mod send_message;
 
