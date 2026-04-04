@@ -44,6 +44,7 @@ pub mod catbird {
                 pub msg_id: String,
                 pub padded_size: i64,
                 pub delivery: Option<String>,
+                pub confirmation_tag: Option<String>,
             }
 
             impl From<InputData> for Input {
@@ -59,6 +60,7 @@ pub mod catbird {
                         padded_size: value.padded_size,
                         reaction_emoji: None,
                         target_message_id: None,
+                        confirmation_tag: value.confirmation_tag.map(Into::into),
                     }
                 }
             }
@@ -170,6 +172,7 @@ pub mod catbird {
             pub struct InputData {
                 pub action: String,
                 pub commit: Option<String>,
+                pub confirmation_tag: Option<String>,
                 pub convo_id: String,
                 pub device_id: Option<String>,
                 pub group_info: Option<String>,
@@ -185,6 +188,7 @@ pub mod catbird {
                     Self {
                         action: value.action.into(),
                         commit: value.commit.map(Into::into),
+                        confirmation_tag: value.confirmation_tag.map(Into::into),
                         convo_id: value.convo_id.into(),
                         device_id: value.device_id.map(Into::into),
                         extra_data: Default::default(),

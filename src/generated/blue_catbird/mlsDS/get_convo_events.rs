@@ -47,127 +47,127 @@ pub mod convo_event_entry_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Epoch;
         type MessageType;
-        type MsgId;
         type Ciphertext;
-        type PaddedSize;
-        type Seq;
         type CreatedAt;
+        type PaddedSize;
+        type MsgId;
+        type Seq;
+        type Epoch;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Epoch = Unset;
         type MessageType = Unset;
-        type MsgId = Unset;
         type Ciphertext = Unset;
-        type PaddedSize = Unset;
-        type Seq = Unset;
         type CreatedAt = Unset;
-    }
-    ///State transition - sets the `epoch` field to Set
-    pub struct SetEpoch<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetEpoch<S> {}
-    impl<S: State> State for SetEpoch<S> {
-        type Epoch = Set<members::epoch>;
-        type MessageType = S::MessageType;
-        type MsgId = S::MsgId;
-        type Ciphertext = S::Ciphertext;
-        type PaddedSize = S::PaddedSize;
-        type Seq = S::Seq;
-        type CreatedAt = S::CreatedAt;
+        type PaddedSize = Unset;
+        type MsgId = Unset;
+        type Seq = Unset;
+        type Epoch = Unset;
     }
     ///State transition - sets the `message_type` field to Set
     pub struct SetMessageType<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetMessageType<S> {}
     impl<S: State> State for SetMessageType<S> {
-        type Epoch = S::Epoch;
         type MessageType = Set<members::message_type>;
+        type Ciphertext = S::Ciphertext;
+        type CreatedAt = S::CreatedAt;
+        type PaddedSize = S::PaddedSize;
         type MsgId = S::MsgId;
-        type Ciphertext = S::Ciphertext;
-        type PaddedSize = S::PaddedSize;
         type Seq = S::Seq;
-        type CreatedAt = S::CreatedAt;
-    }
-    ///State transition - sets the `msg_id` field to Set
-    pub struct SetMsgId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetMsgId<S> {}
-    impl<S: State> State for SetMsgId<S> {
         type Epoch = S::Epoch;
-        type MessageType = S::MessageType;
-        type MsgId = Set<members::msg_id>;
-        type Ciphertext = S::Ciphertext;
-        type PaddedSize = S::PaddedSize;
-        type Seq = S::Seq;
-        type CreatedAt = S::CreatedAt;
     }
     ///State transition - sets the `ciphertext` field to Set
     pub struct SetCiphertext<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCiphertext<S> {}
     impl<S: State> State for SetCiphertext<S> {
-        type Epoch = S::Epoch;
         type MessageType = S::MessageType;
-        type MsgId = S::MsgId;
         type Ciphertext = Set<members::ciphertext>;
+        type CreatedAt = S::CreatedAt;
         type PaddedSize = S::PaddedSize;
-        type Seq = S::Seq;
-        type CreatedAt = S::CreatedAt;
-    }
-    ///State transition - sets the `padded_size` field to Set
-    pub struct SetPaddedSize<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetPaddedSize<S> {}
-    impl<S: State> State for SetPaddedSize<S> {
-        type Epoch = S::Epoch;
-        type MessageType = S::MessageType;
         type MsgId = S::MsgId;
-        type Ciphertext = S::Ciphertext;
-        type PaddedSize = Set<members::padded_size>;
         type Seq = S::Seq;
-        type CreatedAt = S::CreatedAt;
-    }
-    ///State transition - sets the `seq` field to Set
-    pub struct SetSeq<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetSeq<S> {}
-    impl<S: State> State for SetSeq<S> {
         type Epoch = S::Epoch;
-        type MessageType = S::MessageType;
-        type MsgId = S::MsgId;
-        type Ciphertext = S::Ciphertext;
-        type PaddedSize = S::PaddedSize;
-        type Seq = Set<members::seq>;
-        type CreatedAt = S::CreatedAt;
     }
     ///State transition - sets the `created_at` field to Set
     pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
     impl<S: State> State for SetCreatedAt<S> {
-        type Epoch = S::Epoch;
         type MessageType = S::MessageType;
-        type MsgId = S::MsgId;
         type Ciphertext = S::Ciphertext;
-        type PaddedSize = S::PaddedSize;
-        type Seq = S::Seq;
         type CreatedAt = Set<members::created_at>;
+        type PaddedSize = S::PaddedSize;
+        type MsgId = S::MsgId;
+        type Seq = S::Seq;
+        type Epoch = S::Epoch;
+    }
+    ///State transition - sets the `padded_size` field to Set
+    pub struct SetPaddedSize<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetPaddedSize<S> {}
+    impl<S: State> State for SetPaddedSize<S> {
+        type MessageType = S::MessageType;
+        type Ciphertext = S::Ciphertext;
+        type CreatedAt = S::CreatedAt;
+        type PaddedSize = Set<members::padded_size>;
+        type MsgId = S::MsgId;
+        type Seq = S::Seq;
+        type Epoch = S::Epoch;
+    }
+    ///State transition - sets the `msg_id` field to Set
+    pub struct SetMsgId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetMsgId<S> {}
+    impl<S: State> State for SetMsgId<S> {
+        type MessageType = S::MessageType;
+        type Ciphertext = S::Ciphertext;
+        type CreatedAt = S::CreatedAt;
+        type PaddedSize = S::PaddedSize;
+        type MsgId = Set<members::msg_id>;
+        type Seq = S::Seq;
+        type Epoch = S::Epoch;
+    }
+    ///State transition - sets the `seq` field to Set
+    pub struct SetSeq<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetSeq<S> {}
+    impl<S: State> State for SetSeq<S> {
+        type MessageType = S::MessageType;
+        type Ciphertext = S::Ciphertext;
+        type CreatedAt = S::CreatedAt;
+        type PaddedSize = S::PaddedSize;
+        type MsgId = S::MsgId;
+        type Seq = Set<members::seq>;
+        type Epoch = S::Epoch;
+    }
+    ///State transition - sets the `epoch` field to Set
+    pub struct SetEpoch<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetEpoch<S> {}
+    impl<S: State> State for SetEpoch<S> {
+        type MessageType = S::MessageType;
+        type Ciphertext = S::Ciphertext;
+        type CreatedAt = S::CreatedAt;
+        type PaddedSize = S::PaddedSize;
+        type MsgId = S::MsgId;
+        type Seq = S::Seq;
+        type Epoch = Set<members::epoch>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `epoch` field
-        pub struct epoch(());
         ///Marker type for the `message_type` field
         pub struct message_type(());
-        ///Marker type for the `msg_id` field
-        pub struct msg_id(());
         ///Marker type for the `ciphertext` field
         pub struct ciphertext(());
-        ///Marker type for the `padded_size` field
-        pub struct padded_size(());
-        ///Marker type for the `seq` field
-        pub struct seq(());
         ///Marker type for the `created_at` field
         pub struct created_at(());
+        ///Marker type for the `padded_size` field
+        pub struct padded_size(());
+        ///Marker type for the `msg_id` field
+        pub struct msg_id(());
+        ///Marker type for the `seq` field
+        pub struct seq(());
+        ///Marker type for the `epoch` field
+        pub struct epoch(());
     }
 }
 
@@ -340,13 +340,13 @@ where
 impl<'a, S> ConvoEventEntryBuilder<'a, S>
 where
     S: convo_event_entry_state::State,
-    S::Epoch: convo_event_entry_state::IsSet,
     S::MessageType: convo_event_entry_state::IsSet,
-    S::MsgId: convo_event_entry_state::IsSet,
     S::Ciphertext: convo_event_entry_state::IsSet,
-    S::PaddedSize: convo_event_entry_state::IsSet,
-    S::Seq: convo_event_entry_state::IsSet,
     S::CreatedAt: convo_event_entry_state::IsSet,
+    S::PaddedSize: convo_event_entry_state::IsSet,
+    S::MsgId: convo_event_entry_state::IsSet,
+    S::Seq: convo_event_entry_state::IsSet,
+    S::Epoch: convo_event_entry_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> ConvoEventEntry<'a> {

@@ -5,8 +5,6 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-pub const NSID: &str = "blue.catbird.mlsChat.removeDevice";
-
 #[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
@@ -25,19 +23,6 @@ pub struct RemoveDevice<'a> {
     pub device_id: jacquard_common::CowStr<'a>,
 }
 
-pub struct InputData {
-    pub device_id: String,
-}
-
-impl From<InputData> for RemoveDevice<'static> {
-    fn from(d: InputData) -> Self {
-        Self {
-            device_id: jacquard_common::CowStr::from(d.device_id),
-            extra_data: Default::default(),
-        }
-    }
-}
-
 #[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
@@ -50,14 +35,14 @@ impl From<InputData> for RemoveDevice<'static> {
 )]
 #[serde(rename_all = "camelCase")]
 pub struct RemoveDeviceOutput<'a> {
+    /// Number of conversations the device was removed from.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    pub conversations_left: std::option::Option<i64>,
     /// Whether the device was successfully deleted.
     pub deleted: bool,
     /// Number of key packages that were removed.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     pub key_packages_deleted: std::option::Option<i64>,
-    /// Number of conversations the device was removed from.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub conversations_left: std::option::Option<i64>,
 }
 
 #[jacquard_derive::open_union]
@@ -75,7 +60,6 @@ pub struct RemoveDeviceOutput<'a> {
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]
 pub enum RemoveDeviceError<'a> {
-    /// Device not found or not owned by the caller.
     #[serde(rename = "DeviceNotFound")]
     DeviceNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
 }
@@ -95,7 +79,8 @@ impl std::fmt::Display for RemoveDeviceError<'_> {
     }
 }
 
-/// Response type for blue.catbird.mlsChat.removeDevice
+/// Response type for
+///blue.catbird.mlsChat.removeDevice
 pub struct RemoveDeviceResponse;
 impl jacquard_common::xrpc::XrpcResp for RemoveDeviceResponse {
     const NSID: &'static str = "blue.catbird.mlsChat.removeDevice";
@@ -112,7 +97,8 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for RemoveDevice<'a> {
     type Response = RemoveDeviceResponse;
 }
 
-/// Endpoint type for blue.catbird.mlsChat.removeDevice
+/// Endpoint type for
+///blue.catbird.mlsChat.removeDevice
 pub struct RemoveDeviceRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for RemoveDeviceRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.removeDevice";

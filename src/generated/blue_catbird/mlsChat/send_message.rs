@@ -24,6 +24,10 @@ pub struct SendMessage<'a> {
     /// MLS encrypted message ciphertext bytes (MUST be padded to paddedSize)
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub ciphertext: bytes::Bytes,
+    /// Base64-encoded MLS confirmation tag. Server rejects with TreeStateDiverged if it does not match the canonical tree.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub confirmation_tag: std::option::Option<jacquard_common::CowStr<'a>>,
     /// Conversation identifier
     #[serde(borrow)]
     pub convo_id: jacquard_common::CowStr<'a>,
@@ -58,85 +62,85 @@ pub mod send_message_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
+        type PaddedSize;
+        type ConvoId;
+        type MsgId;
         type Epoch;
         type Ciphertext;
-        type MsgId;
-        type ConvoId;
-        type PaddedSize;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
+        type PaddedSize = Unset;
+        type ConvoId = Unset;
+        type MsgId = Unset;
         type Epoch = Unset;
         type Ciphertext = Unset;
-        type MsgId = Unset;
-        type ConvoId = Unset;
-        type PaddedSize = Unset;
-    }
-    ///State transition - sets the `epoch` field to Set
-    pub struct SetEpoch<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetEpoch<S> {}
-    impl<S: State> State for SetEpoch<S> {
-        type Epoch = Set<members::epoch>;
-        type Ciphertext = S::Ciphertext;
-        type MsgId = S::MsgId;
-        type ConvoId = S::ConvoId;
-        type PaddedSize = S::PaddedSize;
-    }
-    ///State transition - sets the `ciphertext` field to Set
-    pub struct SetCiphertext<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCiphertext<S> {}
-    impl<S: State> State for SetCiphertext<S> {
-        type Epoch = S::Epoch;
-        type Ciphertext = Set<members::ciphertext>;
-        type MsgId = S::MsgId;
-        type ConvoId = S::ConvoId;
-        type PaddedSize = S::PaddedSize;
-    }
-    ///State transition - sets the `msg_id` field to Set
-    pub struct SetMsgId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetMsgId<S> {}
-    impl<S: State> State for SetMsgId<S> {
-        type Epoch = S::Epoch;
-        type Ciphertext = S::Ciphertext;
-        type MsgId = Set<members::msg_id>;
-        type ConvoId = S::ConvoId;
-        type PaddedSize = S::PaddedSize;
-    }
-    ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type Epoch = S::Epoch;
-        type Ciphertext = S::Ciphertext;
-        type MsgId = S::MsgId;
-        type ConvoId = Set<members::convo_id>;
-        type PaddedSize = S::PaddedSize;
     }
     ///State transition - sets the `padded_size` field to Set
     pub struct SetPaddedSize<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetPaddedSize<S> {}
     impl<S: State> State for SetPaddedSize<S> {
+        type PaddedSize = Set<members::padded_size>;
+        type ConvoId = S::ConvoId;
+        type MsgId = S::MsgId;
         type Epoch = S::Epoch;
         type Ciphertext = S::Ciphertext;
+    }
+    ///State transition - sets the `convo_id` field to Set
+    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetConvoId<S> {}
+    impl<S: State> State for SetConvoId<S> {
+        type PaddedSize = S::PaddedSize;
+        type ConvoId = Set<members::convo_id>;
         type MsgId = S::MsgId;
+        type Epoch = S::Epoch;
+        type Ciphertext = S::Ciphertext;
+    }
+    ///State transition - sets the `msg_id` field to Set
+    pub struct SetMsgId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetMsgId<S> {}
+    impl<S: State> State for SetMsgId<S> {
+        type PaddedSize = S::PaddedSize;
         type ConvoId = S::ConvoId;
-        type PaddedSize = Set<members::padded_size>;
+        type MsgId = Set<members::msg_id>;
+        type Epoch = S::Epoch;
+        type Ciphertext = S::Ciphertext;
+    }
+    ///State transition - sets the `epoch` field to Set
+    pub struct SetEpoch<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetEpoch<S> {}
+    impl<S: State> State for SetEpoch<S> {
+        type PaddedSize = S::PaddedSize;
+        type ConvoId = S::ConvoId;
+        type MsgId = S::MsgId;
+        type Epoch = Set<members::epoch>;
+        type Ciphertext = S::Ciphertext;
+    }
+    ///State transition - sets the `ciphertext` field to Set
+    pub struct SetCiphertext<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCiphertext<S> {}
+    impl<S: State> State for SetCiphertext<S> {
+        type PaddedSize = S::PaddedSize;
+        type ConvoId = S::ConvoId;
+        type MsgId = S::MsgId;
+        type Epoch = S::Epoch;
+        type Ciphertext = Set<members::ciphertext>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
+        ///Marker type for the `padded_size` field
+        pub struct padded_size(());
+        ///Marker type for the `convo_id` field
+        pub struct convo_id(());
+        ///Marker type for the `msg_id` field
+        pub struct msg_id(());
         ///Marker type for the `epoch` field
         pub struct epoch(());
         ///Marker type for the `ciphertext` field
         pub struct ciphertext(());
-        ///Marker type for the `msg_id` field
-        pub struct msg_id(());
-        ///Marker type for the `convo_id` field
-        pub struct convo_id(());
-        ///Marker type for the `padded_size` field
-        pub struct padded_size(());
     }
 }
 
@@ -146,6 +150,7 @@ pub struct SendMessageBuilder<'a, S: send_message_state::State> {
     __unsafe_private_named: (
         ::core::option::Option<jacquard_common::CowStr<'a>>,
         ::core::option::Option<bytes::Bytes>,
+        ::core::option::Option<jacquard_common::CowStr<'a>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
         ::core::option::Option<i64>,
@@ -170,6 +175,7 @@ impl<'a> SendMessageBuilder<'a, send_message_state::Empty> {
         SendMessageBuilder {
             _phantom_state: ::core::marker::PhantomData,
             __unsafe_private_named: (
+                None,
                 None,
                 None,
                 None,
@@ -220,6 +226,25 @@ where
     }
 }
 
+impl<'a, S: send_message_state::State> SendMessageBuilder<'a, S> {
+    /// Set the `confirmationTag` field (optional)
+    pub fn confirmation_tag(
+        mut self,
+        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
+    ) -> Self {
+        self.__unsafe_private_named.2 = value.into();
+        self
+    }
+    /// Set the `confirmationTag` field to an Option value (optional)
+    pub fn maybe_confirmation_tag(
+        mut self,
+        value: Option<jacquard_common::CowStr<'a>>,
+    ) -> Self {
+        self.__unsafe_private_named.2 = value;
+        self
+    }
+}
+
 impl<'a, S> SendMessageBuilder<'a, S>
 where
     S: send_message_state::State,
@@ -230,7 +255,7 @@ where
         mut self,
         value: impl Into<jacquard_common::CowStr<'a>>,
     ) -> SendMessageBuilder<'a, send_message_state::SetConvoId<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
         SendMessageBuilder {
             _phantom_state: ::core::marker::PhantomData,
             __unsafe_private_named: self.__unsafe_private_named,
@@ -245,12 +270,12 @@ impl<'a, S: send_message_state::State> SendMessageBuilder<'a, S> {
         mut self,
         value: impl Into<Option<jacquard_common::CowStr<'a>>>,
     ) -> Self {
-        self.__unsafe_private_named.3 = value.into();
+        self.__unsafe_private_named.4 = value.into();
         self
     }
     /// Set the `delivery` field to an Option value (optional)
     pub fn maybe_delivery(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.3 = value;
+        self.__unsafe_private_named.4 = value;
         self
     }
 }
@@ -265,7 +290,7 @@ where
         mut self,
         value: impl Into<i64>,
     ) -> SendMessageBuilder<'a, send_message_state::SetEpoch<S>> {
-        self.__unsafe_private_named.4 = ::core::option::Option::Some(value.into());
+        self.__unsafe_private_named.5 = ::core::option::Option::Some(value.into());
         SendMessageBuilder {
             _phantom_state: ::core::marker::PhantomData,
             __unsafe_private_named: self.__unsafe_private_named,
@@ -284,7 +309,7 @@ where
         mut self,
         value: impl Into<jacquard_common::CowStr<'a>>,
     ) -> SendMessageBuilder<'a, send_message_state::SetMsgId<S>> {
-        self.__unsafe_private_named.5 = ::core::option::Option::Some(value.into());
+        self.__unsafe_private_named.6 = ::core::option::Option::Some(value.into());
         SendMessageBuilder {
             _phantom_state: ::core::marker::PhantomData,
             __unsafe_private_named: self.__unsafe_private_named,
@@ -303,7 +328,7 @@ where
         mut self,
         value: impl Into<i64>,
     ) -> SendMessageBuilder<'a, send_message_state::SetPaddedSize<S>> {
-        self.__unsafe_private_named.6 = ::core::option::Option::Some(value.into());
+        self.__unsafe_private_named.7 = ::core::option::Option::Some(value.into());
         SendMessageBuilder {
             _phantom_state: ::core::marker::PhantomData,
             __unsafe_private_named: self.__unsafe_private_named,
@@ -318,7 +343,7 @@ impl<'a, S: send_message_state::State> SendMessageBuilder<'a, S> {
         mut self,
         value: impl Into<Option<jacquard_common::CowStr<'a>>>,
     ) -> Self {
-        self.__unsafe_private_named.7 = value.into();
+        self.__unsafe_private_named.8 = value.into();
         self
     }
     /// Set the `reactionEmoji` field to an Option value (optional)
@@ -326,7 +351,7 @@ impl<'a, S: send_message_state::State> SendMessageBuilder<'a, S> {
         mut self,
         value: Option<jacquard_common::CowStr<'a>>,
     ) -> Self {
-        self.__unsafe_private_named.7 = value;
+        self.__unsafe_private_named.8 = value;
         self
     }
 }
@@ -337,7 +362,7 @@ impl<'a, S: send_message_state::State> SendMessageBuilder<'a, S> {
         mut self,
         value: impl Into<Option<jacquard_common::CowStr<'a>>>,
     ) -> Self {
-        self.__unsafe_private_named.8 = value.into();
+        self.__unsafe_private_named.9 = value.into();
         self
     }
     /// Set the `targetMessageId` field to an Option value (optional)
@@ -345,7 +370,7 @@ impl<'a, S: send_message_state::State> SendMessageBuilder<'a, S> {
         mut self,
         value: Option<jacquard_common::CowStr<'a>>,
     ) -> Self {
-        self.__unsafe_private_named.8 = value;
+        self.__unsafe_private_named.9 = value;
         self
     }
 }
@@ -353,24 +378,25 @@ impl<'a, S: send_message_state::State> SendMessageBuilder<'a, S> {
 impl<'a, S> SendMessageBuilder<'a, S>
 where
     S: send_message_state::State,
+    S::PaddedSize: send_message_state::IsSet,
+    S::ConvoId: send_message_state::IsSet,
+    S::MsgId: send_message_state::IsSet,
     S::Epoch: send_message_state::IsSet,
     S::Ciphertext: send_message_state::IsSet,
-    S::MsgId: send_message_state::IsSet,
-    S::ConvoId: send_message_state::IsSet,
-    S::PaddedSize: send_message_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> SendMessage<'a> {
         SendMessage {
             action: self.__unsafe_private_named.0,
             ciphertext: self.__unsafe_private_named.1.unwrap(),
-            convo_id: self.__unsafe_private_named.2.unwrap(),
-            delivery: self.__unsafe_private_named.3,
-            epoch: self.__unsafe_private_named.4.unwrap(),
-            msg_id: self.__unsafe_private_named.5.unwrap(),
-            padded_size: self.__unsafe_private_named.6.unwrap(),
-            reaction_emoji: self.__unsafe_private_named.7,
-            target_message_id: self.__unsafe_private_named.8,
+            confirmation_tag: self.__unsafe_private_named.2,
+            convo_id: self.__unsafe_private_named.3.unwrap(),
+            delivery: self.__unsafe_private_named.4,
+            epoch: self.__unsafe_private_named.5.unwrap(),
+            msg_id: self.__unsafe_private_named.6.unwrap(),
+            padded_size: self.__unsafe_private_named.7.unwrap(),
+            reaction_emoji: self.__unsafe_private_named.8,
+            target_message_id: self.__unsafe_private_named.9,
             extra_data: Default::default(),
         }
     }
@@ -385,13 +411,14 @@ where
         SendMessage {
             action: self.__unsafe_private_named.0,
             ciphertext: self.__unsafe_private_named.1.unwrap(),
-            convo_id: self.__unsafe_private_named.2.unwrap(),
-            delivery: self.__unsafe_private_named.3,
-            epoch: self.__unsafe_private_named.4.unwrap(),
-            msg_id: self.__unsafe_private_named.5.unwrap(),
-            padded_size: self.__unsafe_private_named.6.unwrap(),
-            reaction_emoji: self.__unsafe_private_named.7,
-            target_message_id: self.__unsafe_private_named.8,
+            confirmation_tag: self.__unsafe_private_named.2,
+            convo_id: self.__unsafe_private_named.3.unwrap(),
+            delivery: self.__unsafe_private_named.4,
+            epoch: self.__unsafe_private_named.5.unwrap(),
+            msg_id: self.__unsafe_private_named.6.unwrap(),
+            padded_size: self.__unsafe_private_named.7.unwrap(),
+            reaction_emoji: self.__unsafe_private_named.8,
+            target_message_id: self.__unsafe_private_named.9,
             extra_data: Some(extra_data),
         }
     }
@@ -453,6 +480,9 @@ pub enum SendMessageError<'a> {
     /// Payload or attachment pointer is invalid
     #[serde(rename = "InvalidAsset")]
     InvalidAsset(std::option::Option<jacquard_common::CowStr<'a>>),
+    /// Client MLS tree state does not match server canonical tree. Client must re-join via external commit.
+    #[serde(rename = "TreeStateDiverged")]
+    TreeStateDiverged(std::option::Option<jacquard_common::CowStr<'a>>),
 }
 
 impl std::fmt::Display for SendMessageError<'_> {
@@ -495,6 +525,13 @@ impl std::fmt::Display for SendMessageError<'_> {
             }
             Self::InvalidAsset(msg) => {
                 write!(f, "InvalidAsset")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::TreeStateDiverged(msg) => {
+                write!(f, "TreeStateDiverged")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }

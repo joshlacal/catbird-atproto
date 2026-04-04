@@ -174,6 +174,27 @@ fn lexicon_doc_blue_catbird_mlsChat_defs() -> ::jacquard_lexicon::lexicon::Lexic
                         );
                         map.insert(
                             ::jacquard_common::smol_str::SmolStr::new_static(
+                                "confirmationTag",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Base64-encoded confirmation tag of the server's canonical MLS tree state.",
+                                    ),
+                                ),
+                                format: None,
+                                default: None,
+                                min_length: None,
+                                max_length: Some(64usize),
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
                                 "createdAt",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -819,6 +840,10 @@ pub struct ConvoView<'a> {
     /// MLS cipher suite used for this conversation
     #[serde(borrow)]
     pub cipher_suite: jacquard_common::CowStr<'a>,
+    /// Base64-encoded confirmation tag of the server's canonical MLS tree state.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub confirmation_tag: std::option::Option<jacquard_common::CowStr<'a>>,
     /// Conversation creation timestamp
     pub created_at: jacquard_common::types::string::Datetime,
     /// DID of the conversation creator
@@ -853,105 +878,105 @@ pub mod convo_view_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type GroupId;
-        type CipherSuite;
-        type Epoch;
         type CreatedAt;
+        type CipherSuite;
+        type GroupId;
         type Creator;
         type Members;
+        type Epoch;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type GroupId = Unset;
-        type CipherSuite = Unset;
-        type Epoch = Unset;
         type CreatedAt = Unset;
+        type CipherSuite = Unset;
+        type GroupId = Unset;
         type Creator = Unset;
         type Members = Unset;
-    }
-    ///State transition - sets the `group_id` field to Set
-    pub struct SetGroupId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetGroupId<S> {}
-    impl<S: State> State for SetGroupId<S> {
-        type GroupId = Set<members::group_id>;
-        type CipherSuite = S::CipherSuite;
-        type Epoch = S::Epoch;
-        type CreatedAt = S::CreatedAt;
-        type Creator = S::Creator;
-        type Members = S::Members;
-    }
-    ///State transition - sets the `cipher_suite` field to Set
-    pub struct SetCipherSuite<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCipherSuite<S> {}
-    impl<S: State> State for SetCipherSuite<S> {
-        type GroupId = S::GroupId;
-        type CipherSuite = Set<members::cipher_suite>;
-        type Epoch = S::Epoch;
-        type CreatedAt = S::CreatedAt;
-        type Creator = S::Creator;
-        type Members = S::Members;
-    }
-    ///State transition - sets the `epoch` field to Set
-    pub struct SetEpoch<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetEpoch<S> {}
-    impl<S: State> State for SetEpoch<S> {
-        type GroupId = S::GroupId;
-        type CipherSuite = S::CipherSuite;
-        type Epoch = Set<members::epoch>;
-        type CreatedAt = S::CreatedAt;
-        type Creator = S::Creator;
-        type Members = S::Members;
+        type Epoch = Unset;
     }
     ///State transition - sets the `created_at` field to Set
     pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
     impl<S: State> State for SetCreatedAt<S> {
-        type GroupId = S::GroupId;
-        type CipherSuite = S::CipherSuite;
-        type Epoch = S::Epoch;
         type CreatedAt = Set<members::created_at>;
+        type CipherSuite = S::CipherSuite;
+        type GroupId = S::GroupId;
         type Creator = S::Creator;
         type Members = S::Members;
+        type Epoch = S::Epoch;
+    }
+    ///State transition - sets the `cipher_suite` field to Set
+    pub struct SetCipherSuite<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCipherSuite<S> {}
+    impl<S: State> State for SetCipherSuite<S> {
+        type CreatedAt = S::CreatedAt;
+        type CipherSuite = Set<members::cipher_suite>;
+        type GroupId = S::GroupId;
+        type Creator = S::Creator;
+        type Members = S::Members;
+        type Epoch = S::Epoch;
+    }
+    ///State transition - sets the `group_id` field to Set
+    pub struct SetGroupId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetGroupId<S> {}
+    impl<S: State> State for SetGroupId<S> {
+        type CreatedAt = S::CreatedAt;
+        type CipherSuite = S::CipherSuite;
+        type GroupId = Set<members::group_id>;
+        type Creator = S::Creator;
+        type Members = S::Members;
+        type Epoch = S::Epoch;
     }
     ///State transition - sets the `creator` field to Set
     pub struct SetCreator<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCreator<S> {}
     impl<S: State> State for SetCreator<S> {
-        type GroupId = S::GroupId;
-        type CipherSuite = S::CipherSuite;
-        type Epoch = S::Epoch;
         type CreatedAt = S::CreatedAt;
+        type CipherSuite = S::CipherSuite;
+        type GroupId = S::GroupId;
         type Creator = Set<members::creator>;
         type Members = S::Members;
+        type Epoch = S::Epoch;
     }
     ///State transition - sets the `members` field to Set
     pub struct SetMembers<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetMembers<S> {}
     impl<S: State> State for SetMembers<S> {
-        type GroupId = S::GroupId;
-        type CipherSuite = S::CipherSuite;
-        type Epoch = S::Epoch;
         type CreatedAt = S::CreatedAt;
+        type CipherSuite = S::CipherSuite;
+        type GroupId = S::GroupId;
         type Creator = S::Creator;
         type Members = Set<members::members>;
+        type Epoch = S::Epoch;
+    }
+    ///State transition - sets the `epoch` field to Set
+    pub struct SetEpoch<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetEpoch<S> {}
+    impl<S: State> State for SetEpoch<S> {
+        type CreatedAt = S::CreatedAt;
+        type CipherSuite = S::CipherSuite;
+        type GroupId = S::GroupId;
+        type Creator = S::Creator;
+        type Members = S::Members;
+        type Epoch = Set<members::epoch>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `group_id` field
-        pub struct group_id(());
-        ///Marker type for the `cipher_suite` field
-        pub struct cipher_suite(());
-        ///Marker type for the `epoch` field
-        pub struct epoch(());
         ///Marker type for the `created_at` field
         pub struct created_at(());
+        ///Marker type for the `cipher_suite` field
+        pub struct cipher_suite(());
+        ///Marker type for the `group_id` field
+        pub struct group_id(());
         ///Marker type for the `creator` field
         pub struct creator(());
         ///Marker type for the `members` field
         pub struct members(());
+        ///Marker type for the `epoch` field
+        pub struct epoch(());
     }
 }
 
@@ -959,6 +984,7 @@ pub mod convo_view_state {
 pub struct ConvoViewBuilder<'a, S: convo_view_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
+        ::core::option::Option<jacquard_common::CowStr<'a>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
         ::core::option::Option<jacquard_common::types::string::Datetime>,
         ::core::option::Option<jacquard_common::types::string::Did<'a>>,
@@ -987,7 +1013,17 @@ impl<'a> ConvoViewBuilder<'a, convo_view_state::Empty> {
     pub fn new() -> Self {
         ConvoViewBuilder {
             _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None, None, None, None),
+            __unsafe_private_named: (
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+            ),
             _phantom: ::core::marker::PhantomData,
         }
     }
@@ -1012,6 +1048,25 @@ where
     }
 }
 
+impl<'a, S: convo_view_state::State> ConvoViewBuilder<'a, S> {
+    /// Set the `confirmationTag` field (optional)
+    pub fn confirmation_tag(
+        mut self,
+        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
+    ) -> Self {
+        self.__unsafe_private_named.1 = value.into();
+        self
+    }
+    /// Set the `confirmationTag` field to an Option value (optional)
+    pub fn maybe_confirmation_tag(
+        mut self,
+        value: Option<jacquard_common::CowStr<'a>>,
+    ) -> Self {
+        self.__unsafe_private_named.1 = value;
+        self
+    }
+}
+
 impl<'a, S> ConvoViewBuilder<'a, S>
 where
     S: convo_view_state::State,
@@ -1022,7 +1077,7 @@ where
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
     ) -> ConvoViewBuilder<'a, convo_view_state::SetCreatedAt<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
         ConvoViewBuilder {
             _phantom_state: ::core::marker::PhantomData,
             __unsafe_private_named: self.__unsafe_private_named,
@@ -1041,7 +1096,7 @@ where
         mut self,
         value: impl Into<jacquard_common::types::string::Did<'a>>,
     ) -> ConvoViewBuilder<'a, convo_view_state::SetCreator<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
         ConvoViewBuilder {
             _phantom_state: ::core::marker::PhantomData,
             __unsafe_private_named: self.__unsafe_private_named,
@@ -1060,7 +1115,7 @@ where
         mut self,
         value: impl Into<i64>,
     ) -> ConvoViewBuilder<'a, convo_view_state::SetEpoch<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        self.__unsafe_private_named.4 = ::core::option::Option::Some(value.into());
         ConvoViewBuilder {
             _phantom_state: ::core::marker::PhantomData,
             __unsafe_private_named: self.__unsafe_private_named,
@@ -1079,7 +1134,7 @@ where
         mut self,
         value: impl Into<jacquard_common::CowStr<'a>>,
     ) -> ConvoViewBuilder<'a, convo_view_state::SetGroupId<S>> {
-        self.__unsafe_private_named.4 = ::core::option::Option::Some(value.into());
+        self.__unsafe_private_named.5 = ::core::option::Option::Some(value.into());
         ConvoViewBuilder {
             _phantom_state: ::core::marker::PhantomData,
             __unsafe_private_named: self.__unsafe_private_named,
@@ -1094,7 +1149,7 @@ impl<'a, S: convo_view_state::State> ConvoViewBuilder<'a, S> {
         mut self,
         value: impl Into<Option<jacquard_common::types::string::Datetime>>,
     ) -> Self {
-        self.__unsafe_private_named.5 = value.into();
+        self.__unsafe_private_named.6 = value.into();
         self
     }
     /// Set the `lastMessageAt` field to an Option value (optional)
@@ -1102,7 +1157,7 @@ impl<'a, S: convo_view_state::State> ConvoViewBuilder<'a, S> {
         mut self,
         value: Option<jacquard_common::types::string::Datetime>,
     ) -> Self {
-        self.__unsafe_private_named.5 = value;
+        self.__unsafe_private_named.6 = value;
         self
     }
 }
@@ -1117,7 +1172,7 @@ where
         mut self,
         value: impl Into<Vec<crate::generated::blue_catbird::mlsChat::MemberView<'a>>>,
     ) -> ConvoViewBuilder<'a, convo_view_state::SetMembers<S>> {
-        self.__unsafe_private_named.6 = ::core::option::Option::Some(value.into());
+        self.__unsafe_private_named.7 = ::core::option::Option::Some(value.into());
         ConvoViewBuilder {
             _phantom_state: ::core::marker::PhantomData,
             __unsafe_private_named: self.__unsafe_private_named,
@@ -1134,7 +1189,7 @@ impl<'a, S: convo_view_state::State> ConvoViewBuilder<'a, S> {
             Option<crate::generated::blue_catbird::mlsChat::ConvoMetadata<'a>>,
         >,
     ) -> Self {
-        self.__unsafe_private_named.7 = value.into();
+        self.__unsafe_private_named.8 = value.into();
         self
     }
     /// Set the `metadata` field to an Option value (optional)
@@ -1142,7 +1197,7 @@ impl<'a, S: convo_view_state::State> ConvoViewBuilder<'a, S> {
         mut self,
         value: Option<crate::generated::blue_catbird::mlsChat::ConvoMetadata<'a>>,
     ) -> Self {
-        self.__unsafe_private_named.7 = value;
+        self.__unsafe_private_named.8 = value;
         self
     }
 }
@@ -1150,24 +1205,25 @@ impl<'a, S: convo_view_state::State> ConvoViewBuilder<'a, S> {
 impl<'a, S> ConvoViewBuilder<'a, S>
 where
     S: convo_view_state::State,
-    S::GroupId: convo_view_state::IsSet,
-    S::CipherSuite: convo_view_state::IsSet,
-    S::Epoch: convo_view_state::IsSet,
     S::CreatedAt: convo_view_state::IsSet,
+    S::CipherSuite: convo_view_state::IsSet,
+    S::GroupId: convo_view_state::IsSet,
     S::Creator: convo_view_state::IsSet,
     S::Members: convo_view_state::IsSet,
+    S::Epoch: convo_view_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> ConvoView<'a> {
         ConvoView {
             cipher_suite: self.__unsafe_private_named.0.unwrap(),
-            created_at: self.__unsafe_private_named.1.unwrap(),
-            creator: self.__unsafe_private_named.2.unwrap(),
-            epoch: self.__unsafe_private_named.3.unwrap(),
-            group_id: self.__unsafe_private_named.4.unwrap(),
-            last_message_at: self.__unsafe_private_named.5,
-            members: self.__unsafe_private_named.6.unwrap(),
-            metadata: self.__unsafe_private_named.7,
+            confirmation_tag: self.__unsafe_private_named.1,
+            created_at: self.__unsafe_private_named.2.unwrap(),
+            creator: self.__unsafe_private_named.3.unwrap(),
+            epoch: self.__unsafe_private_named.4.unwrap(),
+            group_id: self.__unsafe_private_named.5.unwrap(),
+            last_message_at: self.__unsafe_private_named.6,
+            members: self.__unsafe_private_named.7.unwrap(),
+            metadata: self.__unsafe_private_named.8,
             extra_data: Default::default(),
         }
     }
@@ -1181,13 +1237,14 @@ where
     ) -> ConvoView<'a> {
         ConvoView {
             cipher_suite: self.__unsafe_private_named.0.unwrap(),
-            created_at: self.__unsafe_private_named.1.unwrap(),
-            creator: self.__unsafe_private_named.2.unwrap(),
-            epoch: self.__unsafe_private_named.3.unwrap(),
-            group_id: self.__unsafe_private_named.4.unwrap(),
-            last_message_at: self.__unsafe_private_named.5,
-            members: self.__unsafe_private_named.6.unwrap(),
-            metadata: self.__unsafe_private_named.7,
+            confirmation_tag: self.__unsafe_private_named.1,
+            created_at: self.__unsafe_private_named.2.unwrap(),
+            creator: self.__unsafe_private_named.3.unwrap(),
+            epoch: self.__unsafe_private_named.4.unwrap(),
+            group_id: self.__unsafe_private_named.5.unwrap(),
+            last_message_at: self.__unsafe_private_named.6,
+            members: self.__unsafe_private_named.7.unwrap(),
+            metadata: self.__unsafe_private_named.8,
             extra_data: Some(extra_data),
         }
     }
@@ -1206,6 +1263,18 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ConvoView<'a> {
     fn validate(
         &self,
     ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
+        if let Some(ref value) = self.confirmation_tag {
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 64usize {
+                return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
+                        "confirmation_tag",
+                    ),
+                    max: 64usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         {
             let value = &self.epoch;
             if *value < 0i64 {
@@ -1273,51 +1342,51 @@ pub mod key_package_ref_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
+        type CipherSuite;
         type Did;
         type KeyPackage;
-        type CipherSuite;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
+        type CipherSuite = Unset;
         type Did = Unset;
         type KeyPackage = Unset;
-        type CipherSuite = Unset;
-    }
-    ///State transition - sets the `did` field to Set
-    pub struct SetDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDid<S> {}
-    impl<S: State> State for SetDid<S> {
-        type Did = Set<members::did>;
-        type KeyPackage = S::KeyPackage;
-        type CipherSuite = S::CipherSuite;
-    }
-    ///State transition - sets the `key_package` field to Set
-    pub struct SetKeyPackage<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetKeyPackage<S> {}
-    impl<S: State> State for SetKeyPackage<S> {
-        type Did = S::Did;
-        type KeyPackage = Set<members::key_package>;
-        type CipherSuite = S::CipherSuite;
     }
     ///State transition - sets the `cipher_suite` field to Set
     pub struct SetCipherSuite<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCipherSuite<S> {}
     impl<S: State> State for SetCipherSuite<S> {
+        type CipherSuite = Set<members::cipher_suite>;
         type Did = S::Did;
         type KeyPackage = S::KeyPackage;
-        type CipherSuite = Set<members::cipher_suite>;
+    }
+    ///State transition - sets the `did` field to Set
+    pub struct SetDid<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetDid<S> {}
+    impl<S: State> State for SetDid<S> {
+        type CipherSuite = S::CipherSuite;
+        type Did = Set<members::did>;
+        type KeyPackage = S::KeyPackage;
+    }
+    ///State transition - sets the `key_package` field to Set
+    pub struct SetKeyPackage<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetKeyPackage<S> {}
+    impl<S: State> State for SetKeyPackage<S> {
+        type CipherSuite = S::CipherSuite;
+        type Did = S::Did;
+        type KeyPackage = Set<members::key_package>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
+        ///Marker type for the `cipher_suite` field
+        pub struct cipher_suite(());
         ///Marker type for the `did` field
         pub struct did(());
         ///Marker type for the `key_package` field
         pub struct key_package(());
-        ///Marker type for the `cipher_suite` field
-        pub struct cipher_suite(());
     }
 }
 
@@ -1430,9 +1499,9 @@ impl<'a, S: key_package_ref_state::State> KeyPackageRefBuilder<'a, S> {
 impl<'a, S> KeyPackageRefBuilder<'a, S>
 where
     S: key_package_ref_state::State,
+    S::CipherSuite: key_package_ref_state::IsSet,
     S::Did: key_package_ref_state::IsSet,
     S::KeyPackage: key_package_ref_state::IsSet,
-    S::CipherSuite: key_package_ref_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> KeyPackageRef<'a> {
@@ -1551,65 +1620,65 @@ pub mod member_view_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type IsAdmin;
-        type Did;
         type UserDid;
+        type Did;
+        type IsAdmin;
         type JoinedAt;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type IsAdmin = Unset;
-        type Did = Unset;
         type UserDid = Unset;
+        type Did = Unset;
+        type IsAdmin = Unset;
         type JoinedAt = Unset;
     }
-    ///State transition - sets the `is_admin` field to Set
-    pub struct SetIsAdmin<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetIsAdmin<S> {}
-    impl<S: State> State for SetIsAdmin<S> {
-        type IsAdmin = Set<members::is_admin>;
+    ///State transition - sets the `user_did` field to Set
+    pub struct SetUserDid<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetUserDid<S> {}
+    impl<S: State> State for SetUserDid<S> {
+        type UserDid = Set<members::user_did>;
         type Did = S::Did;
-        type UserDid = S::UserDid;
+        type IsAdmin = S::IsAdmin;
         type JoinedAt = S::JoinedAt;
     }
     ///State transition - sets the `did` field to Set
     pub struct SetDid<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetDid<S> {}
     impl<S: State> State for SetDid<S> {
-        type IsAdmin = S::IsAdmin;
-        type Did = Set<members::did>;
         type UserDid = S::UserDid;
+        type Did = Set<members::did>;
+        type IsAdmin = S::IsAdmin;
         type JoinedAt = S::JoinedAt;
     }
-    ///State transition - sets the `user_did` field to Set
-    pub struct SetUserDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUserDid<S> {}
-    impl<S: State> State for SetUserDid<S> {
-        type IsAdmin = S::IsAdmin;
+    ///State transition - sets the `is_admin` field to Set
+    pub struct SetIsAdmin<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetIsAdmin<S> {}
+    impl<S: State> State for SetIsAdmin<S> {
+        type UserDid = S::UserDid;
         type Did = S::Did;
-        type UserDid = Set<members::user_did>;
+        type IsAdmin = Set<members::is_admin>;
         type JoinedAt = S::JoinedAt;
     }
     ///State transition - sets the `joined_at` field to Set
     pub struct SetJoinedAt<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetJoinedAt<S> {}
     impl<S: State> State for SetJoinedAt<S> {
-        type IsAdmin = S::IsAdmin;
-        type Did = S::Did;
         type UserDid = S::UserDid;
+        type Did = S::Did;
+        type IsAdmin = S::IsAdmin;
         type JoinedAt = Set<members::joined_at>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `is_admin` field
-        pub struct is_admin(());
-        ///Marker type for the `did` field
-        pub struct did(());
         ///Marker type for the `user_did` field
         pub struct user_did(());
+        ///Marker type for the `did` field
+        pub struct did(());
+        ///Marker type for the `is_admin` field
+        pub struct is_admin(());
         ///Marker type for the `joined_at` field
         pub struct joined_at(());
     }
@@ -1858,9 +1927,9 @@ where
 impl<'a, S> MemberViewBuilder<'a, S>
 where
     S: member_view_state::State,
-    S::IsAdmin: member_view_state::IsSet,
-    S::Did: member_view_state::IsSet,
     S::UserDid: member_view_state::IsSet,
+    S::Did: member_view_state::IsSet,
+    S::IsAdmin: member_view_state::IsSet,
     S::JoinedAt: member_view_state::IsSet,
 {
     /// Build the final struct
@@ -1989,105 +2058,105 @@ pub mod message_view_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type ConvoId;
         type CreatedAt;
-        type Id;
-        type Ciphertext;
+        type ConvoId;
         type Epoch;
         type Seq;
+        type Id;
+        type Ciphertext;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type ConvoId = Unset;
         type CreatedAt = Unset;
-        type Id = Unset;
-        type Ciphertext = Unset;
+        type ConvoId = Unset;
         type Epoch = Unset;
         type Seq = Unset;
-    }
-    ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type ConvoId = Set<members::convo_id>;
-        type CreatedAt = S::CreatedAt;
-        type Id = S::Id;
-        type Ciphertext = S::Ciphertext;
-        type Epoch = S::Epoch;
-        type Seq = S::Seq;
+        type Id = Unset;
+        type Ciphertext = Unset;
     }
     ///State transition - sets the `created_at` field to Set
     pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
     impl<S: State> State for SetCreatedAt<S> {
-        type ConvoId = S::ConvoId;
         type CreatedAt = Set<members::created_at>;
+        type ConvoId = S::ConvoId;
+        type Epoch = S::Epoch;
+        type Seq = S::Seq;
         type Id = S::Id;
         type Ciphertext = S::Ciphertext;
+    }
+    ///State transition - sets the `convo_id` field to Set
+    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetConvoId<S> {}
+    impl<S: State> State for SetConvoId<S> {
+        type CreatedAt = S::CreatedAt;
+        type ConvoId = Set<members::convo_id>;
         type Epoch = S::Epoch;
         type Seq = S::Seq;
-    }
-    ///State transition - sets the `id` field to Set
-    pub struct SetId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetId<S> {}
-    impl<S: State> State for SetId<S> {
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type Id = Set<members::id>;
-        type Ciphertext = S::Ciphertext;
-        type Epoch = S::Epoch;
-        type Seq = S::Seq;
-    }
-    ///State transition - sets the `ciphertext` field to Set
-    pub struct SetCiphertext<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCiphertext<S> {}
-    impl<S: State> State for SetCiphertext<S> {
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
         type Id = S::Id;
-        type Ciphertext = Set<members::ciphertext>;
-        type Epoch = S::Epoch;
-        type Seq = S::Seq;
+        type Ciphertext = S::Ciphertext;
     }
     ///State transition - sets the `epoch` field to Set
     pub struct SetEpoch<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetEpoch<S> {}
     impl<S: State> State for SetEpoch<S> {
-        type ConvoId = S::ConvoId;
         type CreatedAt = S::CreatedAt;
-        type Id = S::Id;
-        type Ciphertext = S::Ciphertext;
+        type ConvoId = S::ConvoId;
         type Epoch = Set<members::epoch>;
         type Seq = S::Seq;
+        type Id = S::Id;
+        type Ciphertext = S::Ciphertext;
     }
     ///State transition - sets the `seq` field to Set
     pub struct SetSeq<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetSeq<S> {}
     impl<S: State> State for SetSeq<S> {
-        type ConvoId = S::ConvoId;
         type CreatedAt = S::CreatedAt;
-        type Id = S::Id;
-        type Ciphertext = S::Ciphertext;
+        type ConvoId = S::ConvoId;
         type Epoch = S::Epoch;
         type Seq = Set<members::seq>;
+        type Id = S::Id;
+        type Ciphertext = S::Ciphertext;
+    }
+    ///State transition - sets the `id` field to Set
+    pub struct SetId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetId<S> {}
+    impl<S: State> State for SetId<S> {
+        type CreatedAt = S::CreatedAt;
+        type ConvoId = S::ConvoId;
+        type Epoch = S::Epoch;
+        type Seq = S::Seq;
+        type Id = Set<members::id>;
+        type Ciphertext = S::Ciphertext;
+    }
+    ///State transition - sets the `ciphertext` field to Set
+    pub struct SetCiphertext<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCiphertext<S> {}
+    impl<S: State> State for SetCiphertext<S> {
+        type CreatedAt = S::CreatedAt;
+        type ConvoId = S::ConvoId;
+        type Epoch = S::Epoch;
+        type Seq = S::Seq;
+        type Id = S::Id;
+        type Ciphertext = Set<members::ciphertext>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `convo_id` field
-        pub struct convo_id(());
         ///Marker type for the `created_at` field
         pub struct created_at(());
-        ///Marker type for the `id` field
-        pub struct id(());
-        ///Marker type for the `ciphertext` field
-        pub struct ciphertext(());
+        ///Marker type for the `convo_id` field
+        pub struct convo_id(());
         ///Marker type for the `epoch` field
         pub struct epoch(());
         ///Marker type for the `seq` field
         pub struct seq(());
+        ///Marker type for the `id` field
+        pub struct id(());
+        ///Marker type for the `ciphertext` field
+        pub struct ciphertext(());
     }
 }
 
@@ -2260,12 +2329,12 @@ where
 impl<'a, S> MessageViewBuilder<'a, S>
 where
     S: message_view_state::State,
-    S::ConvoId: message_view_state::IsSet,
     S::CreatedAt: message_view_state::IsSet,
-    S::Id: message_view_state::IsSet,
-    S::Ciphertext: message_view_state::IsSet,
+    S::ConvoId: message_view_state::IsSet,
     S::Epoch: message_view_state::IsSet,
     S::Seq: message_view_state::IsSet,
+    S::Id: message_view_state::IsSet,
+    S::Ciphertext: message_view_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> MessageView<'a> {
