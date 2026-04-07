@@ -42,51 +42,51 @@ pub mod block_change_record_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
+        type Action;
         type BlockerDid;
         type BlockedDid;
-        type Action;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
+        type Action = Unset;
         type BlockerDid = Unset;
         type BlockedDid = Unset;
-        type Action = Unset;
-    }
-    ///State transition - sets the `blocker_did` field to Set
-    pub struct SetBlockerDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetBlockerDid<S> {}
-    impl<S: State> State for SetBlockerDid<S> {
-        type BlockerDid = Set<members::blocker_did>;
-        type BlockedDid = S::BlockedDid;
-        type Action = S::Action;
-    }
-    ///State transition - sets the `blocked_did` field to Set
-    pub struct SetBlockedDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetBlockedDid<S> {}
-    impl<S: State> State for SetBlockedDid<S> {
-        type BlockerDid = S::BlockerDid;
-        type BlockedDid = Set<members::blocked_did>;
-        type Action = S::Action;
     }
     ///State transition - sets the `action` field to Set
     pub struct SetAction<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetAction<S> {}
     impl<S: State> State for SetAction<S> {
+        type Action = Set<members::action>;
         type BlockerDid = S::BlockerDid;
         type BlockedDid = S::BlockedDid;
-        type Action = Set<members::action>;
+    }
+    ///State transition - sets the `blocker_did` field to Set
+    pub struct SetBlockerDid<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetBlockerDid<S> {}
+    impl<S: State> State for SetBlockerDid<S> {
+        type Action = S::Action;
+        type BlockerDid = Set<members::blocker_did>;
+        type BlockedDid = S::BlockedDid;
+    }
+    ///State transition - sets the `blocked_did` field to Set
+    pub struct SetBlockedDid<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetBlockedDid<S> {}
+    impl<S: State> State for SetBlockedDid<S> {
+        type Action = S::Action;
+        type BlockerDid = S::BlockerDid;
+        type BlockedDid = Set<members::blocked_did>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
+        ///Marker type for the `action` field
+        pub struct action(());
         ///Marker type for the `blocker_did` field
         pub struct blocker_did(());
         ///Marker type for the `blocked_did` field
         pub struct blocked_did(());
-        ///Marker type for the `action` field
-        pub struct action(());
     }
 }
 
@@ -199,9 +199,9 @@ where
 impl<'a, S> BlockChangeRecordBuilder<'a, S>
 where
     S: block_change_record_state::State,
+    S::Action: block_change_record_state::IsSet,
     S::BlockerDid: block_change_record_state::IsSet,
     S::BlockedDid: block_change_record_state::IsSet,
-    S::Action: block_change_record_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> BlockChangeRecord<'a> {
@@ -1073,49 +1073,49 @@ pub mod conversation_block_status_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type ConvoId;
         type HasConflicts;
+        type ConvoId;
         type MemberCount;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type ConvoId = Unset;
         type HasConflicts = Unset;
+        type ConvoId = Unset;
         type MemberCount = Unset;
-    }
-    ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type ConvoId = Set<members::convo_id>;
-        type HasConflicts = S::HasConflicts;
-        type MemberCount = S::MemberCount;
     }
     ///State transition - sets the `has_conflicts` field to Set
     pub struct SetHasConflicts<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetHasConflicts<S> {}
     impl<S: State> State for SetHasConflicts<S> {
-        type ConvoId = S::ConvoId;
         type HasConflicts = Set<members::has_conflicts>;
+        type ConvoId = S::ConvoId;
+        type MemberCount = S::MemberCount;
+    }
+    ///State transition - sets the `convo_id` field to Set
+    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetConvoId<S> {}
+    impl<S: State> State for SetConvoId<S> {
+        type HasConflicts = S::HasConflicts;
+        type ConvoId = Set<members::convo_id>;
         type MemberCount = S::MemberCount;
     }
     ///State transition - sets the `member_count` field to Set
     pub struct SetMemberCount<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetMemberCount<S> {}
     impl<S: State> State for SetMemberCount<S> {
-        type ConvoId = S::ConvoId;
         type HasConflicts = S::HasConflicts;
+        type ConvoId = S::ConvoId;
         type MemberCount = Set<members::member_count>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `convo_id` field
-        pub struct convo_id(());
         ///Marker type for the `has_conflicts` field
         pub struct has_conflicts(());
+        ///Marker type for the `convo_id` field
+        pub struct convo_id(());
         ///Marker type for the `member_count` field
         pub struct member_count(());
     }
@@ -1248,8 +1248,8 @@ where
 impl<'a, S> ConversationBlockStatusBuilder<'a, S>
 where
     S: conversation_block_status_state::State,
-    S::ConvoId: conversation_block_status_state::IsSet,
     S::HasConflicts: conversation_block_status_state::IsSet,
+    S::ConvoId: conversation_block_status_state::IsSet,
     S::MemberCount: conversation_block_status_state::IsSet,
 {
     /// Build the final struct

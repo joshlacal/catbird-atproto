@@ -434,37 +434,37 @@ pub mod key_package_hash_entry_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Did;
         type Hash;
+        type Did;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Did = Unset;
         type Hash = Unset;
-    }
-    ///State transition - sets the `did` field to Set
-    pub struct SetDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDid<S> {}
-    impl<S: State> State for SetDid<S> {
-        type Did = Set<members::did>;
-        type Hash = S::Hash;
+        type Did = Unset;
     }
     ///State transition - sets the `hash` field to Set
     pub struct SetHash<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetHash<S> {}
     impl<S: State> State for SetHash<S> {
-        type Did = S::Did;
         type Hash = Set<members::hash>;
+        type Did = S::Did;
+    }
+    ///State transition - sets the `did` field to Set
+    pub struct SetDid<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetDid<S> {}
+    impl<S: State> State for SetDid<S> {
+        type Hash = S::Hash;
+        type Did = Set<members::did>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `did` field
-        pub struct did(());
         ///Marker type for the `hash` field
         pub struct hash(());
+        ///Marker type for the `did` field
+        pub struct did(());
     }
 }
 
@@ -537,8 +537,8 @@ where
 impl<'a, S> KeyPackageHashEntryBuilder<'a, S>
 where
     S: key_package_hash_entry_state::State,
-    S::Did: key_package_hash_entry_state::IsSet,
     S::Hash: key_package_hash_entry_state::IsSet,
+    S::Did: key_package_hash_entry_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> KeyPackageHashEntry<'a> {
