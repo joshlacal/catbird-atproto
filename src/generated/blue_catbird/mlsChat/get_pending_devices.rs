@@ -179,10 +179,10 @@ pub struct PendingDeviceAddition<'a> {
     pub created_at: jacquard_common::types::string::Datetime,
     #[serde(borrow)]
     pub device_id: jacquard_common::CowStr<'a>,
-    /// MLS Welcome message if available
+    /// Base64-encoded MLS Welcome message if available
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(default, with = "jacquard_common::opt_serde_bytes_helper")]
-    pub welcome: std::option::Option<bytes::Bytes>,
+    #[serde(borrow)]
+    pub welcome: std::option::Option<jacquard_common::CowStr<'a>>,
 }
 
 pub mod pending_device_addition_state {
@@ -250,7 +250,7 @@ pub struct PendingDeviceAdditionBuilder<'a, S: pending_device_addition_state::St
         ::core::option::Option<jacquard_common::CowStr<'a>>,
         ::core::option::Option<jacquard_common::types::string::Datetime>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<bytes::Bytes>,
+        ::core::option::Option<jacquard_common::CowStr<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
@@ -341,12 +341,15 @@ where
 
 impl<'a, S: pending_device_addition_state::State> PendingDeviceAdditionBuilder<'a, S> {
     /// Set the `welcome` field (optional)
-    pub fn welcome(mut self, value: impl Into<Option<bytes::Bytes>>) -> Self {
+    pub fn welcome(
+        mut self,
+        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
+    ) -> Self {
         self.__unsafe_private_named.3 = value.into();
         self
     }
     /// Set the `welcome` field to an Option value (optional)
-    pub fn maybe_welcome(mut self, value: Option<bytes::Bytes>) -> Self {
+    pub fn maybe_welcome(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
         self.__unsafe_private_named.3 = value;
         self
     }
@@ -519,10 +522,21 @@ fn lexicon_doc_blue_catbird_mlsChat_getPendingDevices() -> ::jacquard_lexicon::l
                         );
                         map.insert(
                             ::jacquard_common::smol_str::SmolStr::new_static("welcome"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
-                                description: None,
-                                max_length: None,
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Base64-encoded MLS Welcome message if available",
+                                    ),
+                                ),
+                                format: None,
+                                default: None,
                                 min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
                             }),
                         );
                         map
