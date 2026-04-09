@@ -280,7 +280,8 @@ pub mod catbird {
             pub struct KeyPackageItemData {
                 pub cipher_suite: String,
                 pub expires: crate::types::string::Datetime,
-                pub key_package: String,
+                /// Raw key package bytes (NOT base64 — serde handles encoding)
+                pub key_package: Vec<u8>,
             }
 
             impl From<KeyPackageItemData> for KeyPackageItem {
@@ -289,7 +290,7 @@ pub mod catbird {
                         cipher_suite: value.cipher_suite.into(),
                         extra_data: Default::default(),
                         expires: value.expires,
-                        key_package: value.key_package.into(),
+                        key_package: bytes::Bytes::from(value.key_package),
                     }
                 }
             }
@@ -328,7 +329,8 @@ pub mod catbird {
             pub struct KeyPackageItemData {
                 pub cipher_suite: String,
                 pub expires: crate::types::string::Datetime,
-                pub key_package: String,
+                /// Raw key package bytes (NOT base64 — serde handles encoding)
+                pub key_package: Vec<u8>,
             }
 
             impl From<KeyPackageItemData> for KeyPackageItem {
@@ -337,7 +339,7 @@ pub mod catbird {
                         cipher_suite: value.cipher_suite.into(),
                         extra_data: Default::default(),
                         expires: value.expires,
-                        key_package: value.key_package.into(),
+                        key_package: bytes::Bytes::from(value.key_package),
                     }
                 }
             }
