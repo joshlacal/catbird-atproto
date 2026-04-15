@@ -693,151 +693,151 @@ pub mod policy_view_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type AllowMemberRemove;
-        type AdminOnlyInvites;
-        type ConvoId;
         type AllowMemberAdd;
-        type MaxMembers;
-        type UpdatedAt;
-        type RequireAdminApproval;
         type AllowInvites;
+        type MaxMembers;
+        type AdminOnlyInvites;
+        type RequireAdminApproval;
+        type ConvoId;
+        type AllowMemberRemove;
+        type UpdatedAt;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type AllowMemberRemove = Unset;
-        type AdminOnlyInvites = Unset;
-        type ConvoId = Unset;
         type AllowMemberAdd = Unset;
-        type MaxMembers = Unset;
-        type UpdatedAt = Unset;
-        type RequireAdminApproval = Unset;
         type AllowInvites = Unset;
-    }
-    ///State transition - sets the `allow_member_remove` field to Set
-    pub struct SetAllowMemberRemove<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetAllowMemberRemove<S> {}
-    impl<S: State> State for SetAllowMemberRemove<S> {
-        type AllowMemberRemove = Set<members::allow_member_remove>;
-        type AdminOnlyInvites = S::AdminOnlyInvites;
-        type ConvoId = S::ConvoId;
-        type AllowMemberAdd = S::AllowMemberAdd;
-        type MaxMembers = S::MaxMembers;
-        type UpdatedAt = S::UpdatedAt;
-        type RequireAdminApproval = S::RequireAdminApproval;
-        type AllowInvites = S::AllowInvites;
-    }
-    ///State transition - sets the `admin_only_invites` field to Set
-    pub struct SetAdminOnlyInvites<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetAdminOnlyInvites<S> {}
-    impl<S: State> State for SetAdminOnlyInvites<S> {
-        type AllowMemberRemove = S::AllowMemberRemove;
-        type AdminOnlyInvites = Set<members::admin_only_invites>;
-        type ConvoId = S::ConvoId;
-        type AllowMemberAdd = S::AllowMemberAdd;
-        type MaxMembers = S::MaxMembers;
-        type UpdatedAt = S::UpdatedAt;
-        type RequireAdminApproval = S::RequireAdminApproval;
-        type AllowInvites = S::AllowInvites;
-    }
-    ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type AllowMemberRemove = S::AllowMemberRemove;
-        type AdminOnlyInvites = S::AdminOnlyInvites;
-        type ConvoId = Set<members::convo_id>;
-        type AllowMemberAdd = S::AllowMemberAdd;
-        type MaxMembers = S::MaxMembers;
-        type UpdatedAt = S::UpdatedAt;
-        type RequireAdminApproval = S::RequireAdminApproval;
-        type AllowInvites = S::AllowInvites;
+        type MaxMembers = Unset;
+        type AdminOnlyInvites = Unset;
+        type RequireAdminApproval = Unset;
+        type ConvoId = Unset;
+        type AllowMemberRemove = Unset;
+        type UpdatedAt = Unset;
     }
     ///State transition - sets the `allow_member_add` field to Set
     pub struct SetAllowMemberAdd<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetAllowMemberAdd<S> {}
     impl<S: State> State for SetAllowMemberAdd<S> {
-        type AllowMemberRemove = S::AllowMemberRemove;
-        type AdminOnlyInvites = S::AdminOnlyInvites;
-        type ConvoId = S::ConvoId;
         type AllowMemberAdd = Set<members::allow_member_add>;
+        type AllowInvites = S::AllowInvites;
         type MaxMembers = S::MaxMembers;
-        type UpdatedAt = S::UpdatedAt;
-        type RequireAdminApproval = S::RequireAdminApproval;
-        type AllowInvites = S::AllowInvites;
-    }
-    ///State transition - sets the `max_members` field to Set
-    pub struct SetMaxMembers<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetMaxMembers<S> {}
-    impl<S: State> State for SetMaxMembers<S> {
-        type AllowMemberRemove = S::AllowMemberRemove;
         type AdminOnlyInvites = S::AdminOnlyInvites;
-        type ConvoId = S::ConvoId;
-        type AllowMemberAdd = S::AllowMemberAdd;
-        type MaxMembers = Set<members::max_members>;
-        type UpdatedAt = S::UpdatedAt;
         type RequireAdminApproval = S::RequireAdminApproval;
-        type AllowInvites = S::AllowInvites;
-    }
-    ///State transition - sets the `updated_at` field to Set
-    pub struct SetUpdatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUpdatedAt<S> {}
-    impl<S: State> State for SetUpdatedAt<S> {
-        type AllowMemberRemove = S::AllowMemberRemove;
-        type AdminOnlyInvites = S::AdminOnlyInvites;
         type ConvoId = S::ConvoId;
-        type AllowMemberAdd = S::AllowMemberAdd;
-        type MaxMembers = S::MaxMembers;
-        type UpdatedAt = Set<members::updated_at>;
-        type RequireAdminApproval = S::RequireAdminApproval;
-        type AllowInvites = S::AllowInvites;
-    }
-    ///State transition - sets the `require_admin_approval` field to Set
-    pub struct SetRequireAdminApproval<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRequireAdminApproval<S> {}
-    impl<S: State> State for SetRequireAdminApproval<S> {
         type AllowMemberRemove = S::AllowMemberRemove;
-        type AdminOnlyInvites = S::AdminOnlyInvites;
-        type ConvoId = S::ConvoId;
-        type AllowMemberAdd = S::AllowMemberAdd;
-        type MaxMembers = S::MaxMembers;
         type UpdatedAt = S::UpdatedAt;
-        type RequireAdminApproval = Set<members::require_admin_approval>;
-        type AllowInvites = S::AllowInvites;
     }
     ///State transition - sets the `allow_invites` field to Set
     pub struct SetAllowInvites<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetAllowInvites<S> {}
     impl<S: State> State for SetAllowInvites<S> {
-        type AllowMemberRemove = S::AllowMemberRemove;
-        type AdminOnlyInvites = S::AdminOnlyInvites;
-        type ConvoId = S::ConvoId;
         type AllowMemberAdd = S::AllowMemberAdd;
-        type MaxMembers = S::MaxMembers;
-        type UpdatedAt = S::UpdatedAt;
-        type RequireAdminApproval = S::RequireAdminApproval;
         type AllowInvites = Set<members::allow_invites>;
+        type MaxMembers = S::MaxMembers;
+        type AdminOnlyInvites = S::AdminOnlyInvites;
+        type RequireAdminApproval = S::RequireAdminApproval;
+        type ConvoId = S::ConvoId;
+        type AllowMemberRemove = S::AllowMemberRemove;
+        type UpdatedAt = S::UpdatedAt;
+    }
+    ///State transition - sets the `max_members` field to Set
+    pub struct SetMaxMembers<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetMaxMembers<S> {}
+    impl<S: State> State for SetMaxMembers<S> {
+        type AllowMemberAdd = S::AllowMemberAdd;
+        type AllowInvites = S::AllowInvites;
+        type MaxMembers = Set<members::max_members>;
+        type AdminOnlyInvites = S::AdminOnlyInvites;
+        type RequireAdminApproval = S::RequireAdminApproval;
+        type ConvoId = S::ConvoId;
+        type AllowMemberRemove = S::AllowMemberRemove;
+        type UpdatedAt = S::UpdatedAt;
+    }
+    ///State transition - sets the `admin_only_invites` field to Set
+    pub struct SetAdminOnlyInvites<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetAdminOnlyInvites<S> {}
+    impl<S: State> State for SetAdminOnlyInvites<S> {
+        type AllowMemberAdd = S::AllowMemberAdd;
+        type AllowInvites = S::AllowInvites;
+        type MaxMembers = S::MaxMembers;
+        type AdminOnlyInvites = Set<members::admin_only_invites>;
+        type RequireAdminApproval = S::RequireAdminApproval;
+        type ConvoId = S::ConvoId;
+        type AllowMemberRemove = S::AllowMemberRemove;
+        type UpdatedAt = S::UpdatedAt;
+    }
+    ///State transition - sets the `require_admin_approval` field to Set
+    pub struct SetRequireAdminApproval<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetRequireAdminApproval<S> {}
+    impl<S: State> State for SetRequireAdminApproval<S> {
+        type AllowMemberAdd = S::AllowMemberAdd;
+        type AllowInvites = S::AllowInvites;
+        type MaxMembers = S::MaxMembers;
+        type AdminOnlyInvites = S::AdminOnlyInvites;
+        type RequireAdminApproval = Set<members::require_admin_approval>;
+        type ConvoId = S::ConvoId;
+        type AllowMemberRemove = S::AllowMemberRemove;
+        type UpdatedAt = S::UpdatedAt;
+    }
+    ///State transition - sets the `convo_id` field to Set
+    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetConvoId<S> {}
+    impl<S: State> State for SetConvoId<S> {
+        type AllowMemberAdd = S::AllowMemberAdd;
+        type AllowInvites = S::AllowInvites;
+        type MaxMembers = S::MaxMembers;
+        type AdminOnlyInvites = S::AdminOnlyInvites;
+        type RequireAdminApproval = S::RequireAdminApproval;
+        type ConvoId = Set<members::convo_id>;
+        type AllowMemberRemove = S::AllowMemberRemove;
+        type UpdatedAt = S::UpdatedAt;
+    }
+    ///State transition - sets the `allow_member_remove` field to Set
+    pub struct SetAllowMemberRemove<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetAllowMemberRemove<S> {}
+    impl<S: State> State for SetAllowMemberRemove<S> {
+        type AllowMemberAdd = S::AllowMemberAdd;
+        type AllowInvites = S::AllowInvites;
+        type MaxMembers = S::MaxMembers;
+        type AdminOnlyInvites = S::AdminOnlyInvites;
+        type RequireAdminApproval = S::RequireAdminApproval;
+        type ConvoId = S::ConvoId;
+        type AllowMemberRemove = Set<members::allow_member_remove>;
+        type UpdatedAt = S::UpdatedAt;
+    }
+    ///State transition - sets the `updated_at` field to Set
+    pub struct SetUpdatedAt<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetUpdatedAt<S> {}
+    impl<S: State> State for SetUpdatedAt<S> {
+        type AllowMemberAdd = S::AllowMemberAdd;
+        type AllowInvites = S::AllowInvites;
+        type MaxMembers = S::MaxMembers;
+        type AdminOnlyInvites = S::AdminOnlyInvites;
+        type RequireAdminApproval = S::RequireAdminApproval;
+        type ConvoId = S::ConvoId;
+        type AllowMemberRemove = S::AllowMemberRemove;
+        type UpdatedAt = Set<members::updated_at>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `allow_member_remove` field
-        pub struct allow_member_remove(());
-        ///Marker type for the `admin_only_invites` field
-        pub struct admin_only_invites(());
-        ///Marker type for the `convo_id` field
-        pub struct convo_id(());
         ///Marker type for the `allow_member_add` field
         pub struct allow_member_add(());
-        ///Marker type for the `max_members` field
-        pub struct max_members(());
-        ///Marker type for the `updated_at` field
-        pub struct updated_at(());
-        ///Marker type for the `require_admin_approval` field
-        pub struct require_admin_approval(());
         ///Marker type for the `allow_invites` field
         pub struct allow_invites(());
+        ///Marker type for the `max_members` field
+        pub struct max_members(());
+        ///Marker type for the `admin_only_invites` field
+        pub struct admin_only_invites(());
+        ///Marker type for the `require_admin_approval` field
+        pub struct require_admin_approval(());
+        ///Marker type for the `convo_id` field
+        pub struct convo_id(());
+        ///Marker type for the `allow_member_remove` field
+        pub struct allow_member_remove(());
+        ///Marker type for the `updated_at` field
+        pub struct updated_at(());
     }
 }
 
@@ -1060,14 +1060,14 @@ impl<'a, S: policy_view_state::State> PolicyViewBuilder<'a, S> {
 impl<'a, S> PolicyViewBuilder<'a, S>
 where
     S: policy_view_state::State,
-    S::AllowMemberRemove: policy_view_state::IsSet,
-    S::AdminOnlyInvites: policy_view_state::IsSet,
-    S::ConvoId: policy_view_state::IsSet,
     S::AllowMemberAdd: policy_view_state::IsSet,
-    S::MaxMembers: policy_view_state::IsSet,
-    S::UpdatedAt: policy_view_state::IsSet,
-    S::RequireAdminApproval: policy_view_state::IsSet,
     S::AllowInvites: policy_view_state::IsSet,
+    S::MaxMembers: policy_view_state::IsSet,
+    S::AdminOnlyInvites: policy_view_state::IsSet,
+    S::RequireAdminApproval: policy_view_state::IsSet,
+    S::ConvoId: policy_view_state::IsSet,
+    S::AllowMemberRemove: policy_view_state::IsSet,
+    S::UpdatedAt: policy_view_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> PolicyView<'a> {
