@@ -711,6 +711,14 @@ pub struct CommitGroupChange<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub device_id: std::option::Option<jacquard_common::CowStr<'a>>,
+    /// ADR-002 §A7.3: Hex-encoded epoch_authenticator (RFC 9420 §8.7) for the
+    /// post-commit epoch. Optional. When present on an epoch-advancing action
+    /// (addMembers, processExternalCommit, rejoin, commit, updateMetadata),
+    /// the server records it in the epoch_authenticators table and uses it
+    /// to validate future reportRecoveryFailure votes.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub epoch_authenticator: std::option::Option<jacquard_common::CowStr<'a>>,
     /// GroupInfo to update after commit (used by processExternalCommit, addMembers)
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(default, with = "jacquard_common::opt_serde_bytes_helper")]

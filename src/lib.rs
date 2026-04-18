@@ -175,6 +175,10 @@ pub mod catbird {
                 pub confirmation_tag: Option<String>,
                 pub convo_id: String,
                 pub device_id: Option<String>,
+                /// ADR-002 §A7.3: hex-encoded RFC 9420 §8.7 epoch_authenticator
+                /// for the post-commit epoch. Optional; server records it when
+                /// present on an epoch-advancing action.
+                pub epoch_authenticator: Option<String>,
                 pub group_info: Option<String>,
                 pub idempotency_key: Option<String>,
                 pub key_package_hashes: Option<Vec<KeyPackageHashEntry>>,
@@ -191,6 +195,7 @@ pub mod catbird {
                         confirmation_tag: value.confirmation_tag.map(Into::into),
                         convo_id: value.convo_id.into(),
                         device_id: value.device_id.map(Into::into),
+                        epoch_authenticator: value.epoch_authenticator.map(Into::into),
                         extra_data: Default::default(),
                         group_info: value.group_info.map(Into::into),
                         idempotency_key: value.idempotency_key.map(Into::into),
