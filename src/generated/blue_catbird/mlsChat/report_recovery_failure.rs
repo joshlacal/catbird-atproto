@@ -54,6 +54,13 @@ pub struct ReportRecoveryFailureOutput<'a> {
     pub failure_count: i64,
     /// Total number of distinct identity DIDs in the conversation's active roster
     pub member_count: i64,
+    /// When autoResetTriggered is true, the new group_id assigned to the conversation.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub new_group_id: std::option::Option<jacquard_common::CowStr<'a>>,
+    /// When autoResetTriggered is true, the lifetime reset_count after this reset.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    pub reset_generation: std::option::Option<i64>,
     /// ADR-002 §A7.3: discriminator for why the vote was not counted (if any).
     /// Omitted on a successful vote. knownValues: stale_authenticator |
     /// missing_authenticator | rate_limited | circuit_breaker | not_member |
