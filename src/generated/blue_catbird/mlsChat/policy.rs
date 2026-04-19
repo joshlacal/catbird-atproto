@@ -8,13 +8,7 @@
 /// Chat policy preferences for MLS messaging. Single mutable record per user.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Policy<'a> {
@@ -36,9 +30,9 @@ pub struct Policy<'a> {
 
 pub mod policy_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -165,10 +159,7 @@ impl<'a, S: policy_state::State> PolicyBuilder<'a, S> {
         self
     }
     /// Set the `whoCanMessageMe` field to an Option value (optional)
-    pub fn maybe_who_can_message_me(
-        mut self,
-        value: Option<jacquard_common::CowStr<'a>>,
-    ) -> Self {
+    pub fn maybe_who_can_message_me(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
         self.__unsafe_private_named.4 = value;
         self
     }
@@ -224,13 +215,7 @@ impl<'a> Policy<'a> {
 
 /// Typed wrapper for GetRecord response with this collection's record type.
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct PolicyGetRecordOutput<'a> {
@@ -309,9 +294,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Policy<'a> {
     }
 }
 
-fn lexicon_doc_blue_catbird_mlsChat_policy() -> ::jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn lexicon_doc_blue_catbird_mlsChat_policy() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("blue.catbird.mlsChat.policy"),

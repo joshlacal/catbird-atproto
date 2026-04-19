@@ -14,7 +14,7 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct DeleteBlob<'a> {
@@ -33,7 +33,7 @@ pub struct DeleteBlob<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic
+    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -70,9 +70,8 @@ impl jacquard_common::xrpc::XrpcResp for DeleteBlobResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for DeleteBlob<'a> {
     const NSID: &'static str = "blue.catbird.mlsChat.deleteBlob";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = DeleteBlobResponse;
 }
 
@@ -81,9 +80,8 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for DeleteBlob<'a> {
 pub struct DeleteBlobRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for DeleteBlobRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.deleteBlob";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<'de> = DeleteBlob<'de>;
     type Response = DeleteBlobResponse;
 }

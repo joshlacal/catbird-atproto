@@ -7,13 +7,7 @@
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct DeleteValues<'a> {
@@ -27,9 +21,9 @@ pub struct DeleteValues<'a> {
 
 pub mod delete_values_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -175,7 +169,7 @@ where
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic
+    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -212,9 +206,8 @@ impl jacquard_common::xrpc::XrpcResp for DeleteValuesResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for DeleteValues<'a> {
     const NSID: &'static str = "tools.ozone.set.deleteValues";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = DeleteValuesResponse;
 }
 
@@ -223,9 +216,8 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for DeleteValues<'a> {
 pub struct DeleteValuesRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for DeleteValuesRequest {
     const PATH: &'static str = "/xrpc/tools.ozone.set.deleteValues";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<'de> = DeleteValues<'de>;
     type Response = DeleteValuesResponse;
 }

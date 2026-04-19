@@ -7,13 +7,7 @@
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct AccountCodes<'a> {
@@ -25,9 +19,9 @@ pub struct AccountCodes<'a> {
 
 pub mod account_codes_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -163,70 +157,73 @@ where
     }
 }
 
-fn lexicon_doc_com_atproto_server_createInviteCodes() -> ::jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn lexicon_doc_com_atproto_server_createInviteCodes(
+) -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
-        id: ::jacquard_common::CowStr::new_static(
-            "com.atproto.server.createInviteCodes",
-        ),
+        id: ::jacquard_common::CowStr::new_static("com.atproto.server.createInviteCodes"),
         revision: None,
         description: None,
         defs: {
             let mut map = ::std::collections::BTreeMap::new();
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("accountCodes"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: None,
-                    required: Some(
-                        vec![
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        description: None,
+                        required: Some(vec![
                             ::jacquard_common::smol_str::SmolStr::new_static("account"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("codes")
-                        ],
-                    ),
-                    nullable: None,
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("account"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map.insert(
                             ::jacquard_common::smol_str::SmolStr::new_static("codes"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
-                                description: None,
-                                items: ::jacquard_lexicon::lexicon::LexArrayItem::String(::jacquard_lexicon::lexicon::LexString {
-                                    description: None,
-                                    format: None,
-                                    default: None,
-                                    min_length: None,
-                                    max_length: None,
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
-                                }),
-                                min_length: None,
-                                max_length: None,
-                            }),
-                        );
-                        map
+                        ]),
+                        nullable: None,
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::std::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("account"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: None,
+                                        format: None,
+                                        default: None,
+                                        min_length: None,
+                                        max_length: None,
+                                        min_graphemes: None,
+                                        max_graphemes: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                        known_values: None,
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("codes"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Array(
+                                    ::jacquard_lexicon::lexicon::LexArray {
+                                        description: None,
+                                        items: ::jacquard_lexicon::lexicon::LexArrayItem::String(
+                                            ::jacquard_lexicon::lexicon::LexString {
+                                                description: None,
+                                                format: None,
+                                                default: None,
+                                                min_length: None,
+                                                max_length: None,
+                                                min_graphemes: None,
+                                                max_graphemes: None,
+                                                r#enum: None,
+                                                r#const: None,
+                                                known_values: None,
+                                            },
+                                        ),
+                                        min_length: None,
+                                        max_length: None,
+                                    },
+                                ),
+                            );
+                            map
+                        },
                     },
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("main"),
@@ -334,13 +331,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for AccountCodes<'a> {
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct CreateInviteCodes<'a> {
@@ -353,9 +344,9 @@ pub struct CreateInviteCodes<'a> {
 
 pub mod create_invite_codes_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -515,20 +506,12 @@ where
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct CreateInviteCodesOutput<'a> {
     #[serde(borrow)]
-    pub codes: Vec<
-        crate::generated::com_atproto::server::create_invite_codes::AccountCodes<'a>,
-    >,
+    pub codes: Vec<crate::generated::com_atproto::server::create_invite_codes::AccountCodes<'a>>,
 }
 
 /// Response type for
@@ -543,9 +526,8 @@ impl jacquard_common::xrpc::XrpcResp for CreateInviteCodesResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for CreateInviteCodes<'a> {
     const NSID: &'static str = "com.atproto.server.createInviteCodes";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = CreateInviteCodesResponse;
 }
 
@@ -554,9 +536,8 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for CreateInviteCodes<'a> {
 pub struct CreateInviteCodesRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for CreateInviteCodesRequest {
     const PATH: &'static str = "/xrpc/com.atproto.server.createInviteCodes";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<'de> = CreateInviteCodes<'de>;
     type Response = CreateInviteCodesResponse;
 }

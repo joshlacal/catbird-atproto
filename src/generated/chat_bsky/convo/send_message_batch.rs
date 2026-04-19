@@ -7,13 +7,7 @@
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct BatchItem<'a> {
@@ -25,9 +19,9 @@ pub struct BatchItem<'a> {
 
 pub mod batch_item_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -163,9 +157,8 @@ where
     }
 }
 
-fn lexicon_doc_chat_bsky_convo_sendMessageBatch() -> ::jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn lexicon_doc_chat_bsky_convo_sendMessageBatch() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static>
+{
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("chat.bsky.convo.sendMessageBatch"),
@@ -175,45 +168,49 @@ fn lexicon_doc_chat_bsky_convo_sendMessageBatch() -> ::jacquard_lexicon::lexicon
             let mut map = ::std::collections::BTreeMap::new();
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("batchItem"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: None,
-                    required: Some(
-                        vec![
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        description: None,
+                        required: Some(vec![
                             ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("message")
-                        ],
-                    ),
-                    nullable: None,
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map.insert(
                             ::jacquard_common::smol_str::SmolStr::new_static("message"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                description: None,
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "chat.bsky.convo.defs#messageInput",
+                        ]),
+                        nullable: None,
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::std::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: None,
+                                        format: None,
+                                        default: None,
+                                        min_length: None,
+                                        max_length: None,
+                                        min_graphemes: None,
+                                        max_graphemes: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                        known_values: None,
+                                    },
                                 ),
-                            }),
-                        );
-                        map
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("message"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        description: None,
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "chat.bsky.convo.defs#messageInput",
+                                        ),
+                                    },
+                                ),
+                            );
+                            map
+                        },
                     },
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("main"),
@@ -282,27 +279,19 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for BatchItem<'a> {
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct SendMessageBatch<'a> {
     #[serde(borrow)]
-    pub items: Vec<
-        crate::generated::chat_bsky::convo::send_message_batch::BatchItem<'a>,
-    >,
+    pub items: Vec<crate::generated::chat_bsky::convo::send_message_batch::BatchItem<'a>>,
 }
 
 pub mod send_message_batch_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -367,9 +356,7 @@ where
     /// Set the `items` field (required)
     pub fn items(
         mut self,
-        value: impl Into<
-            Vec<crate::generated::chat_bsky::convo::send_message_batch::BatchItem<'a>>,
-        >,
+        value: impl Into<Vec<crate::generated::chat_bsky::convo::send_message_batch::BatchItem<'a>>>,
     ) -> SendMessageBatchBuilder<'a, send_message_batch_state::SetItems<S>> {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         SendMessageBatchBuilder {
@@ -409,13 +396,7 @@ where
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct SendMessageBatchOutput<'a> {
@@ -435,9 +416,8 @@ impl jacquard_common::xrpc::XrpcResp for SendMessageBatchResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for SendMessageBatch<'a> {
     const NSID: &'static str = "chat.bsky.convo.sendMessageBatch";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = SendMessageBatchResponse;
 }
 
@@ -446,9 +426,8 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for SendMessageBatch<'a> {
 pub struct SendMessageBatchRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for SendMessageBatchRequest {
     const PATH: &'static str = "/xrpc/chat.bsky.convo.sendMessageBatch";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<'de> = SendMessageBatch<'de>;
     type Response = SendMessageBatchResponse;
 }

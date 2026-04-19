@@ -7,13 +7,7 @@
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct UpsertOption<'a> {
@@ -33,9 +27,9 @@ pub struct UpsertOption<'a> {
 
 pub mod upsert_option_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -122,18 +116,12 @@ impl<'a> UpsertOptionBuilder<'a, upsert_option_state::Empty> {
 
 impl<'a, S: upsert_option_state::State> UpsertOptionBuilder<'a, S> {
     /// Set the `description` field (optional)
-    pub fn description(
-        mut self,
-        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
-    ) -> Self {
+    pub fn description(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
         self.__unsafe_private_named.0 = value.into();
         self
     }
     /// Set the `description` field to an Option value (optional)
-    pub fn maybe_description(
-        mut self,
-        value: Option<jacquard_common::CowStr<'a>>,
-    ) -> Self {
+    pub fn maybe_description(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
         self.__unsafe_private_named.0 = value;
         self
     }
@@ -160,18 +148,12 @@ where
 
 impl<'a, S: upsert_option_state::State> UpsertOptionBuilder<'a, S> {
     /// Set the `managerRole` field (optional)
-    pub fn manager_role(
-        mut self,
-        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
-    ) -> Self {
+    pub fn manager_role(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
         self.__unsafe_private_named.2 = value.into();
         self
     }
     /// Set the `managerRole` field to an Option value (optional)
-    pub fn maybe_manager_role(
-        mut self,
-        value: Option<jacquard_common::CowStr<'a>>,
-    ) -> Self {
+    pub fn maybe_manager_role(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
         self.__unsafe_private_named.2 = value;
         self
     }
@@ -254,13 +236,7 @@ where
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct UpsertOptionOutput<'a> {
@@ -280,9 +256,8 @@ impl jacquard_common::xrpc::XrpcResp for UpsertOptionResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for UpsertOption<'a> {
     const NSID: &'static str = "tools.ozone.setting.upsertOption";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = UpsertOptionResponse;
 }
 
@@ -291,9 +266,8 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for UpsertOption<'a> {
 pub struct UpsertOptionRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for UpsertOptionRequest {
     const PATH: &'static str = "/xrpc/tools.ozone.setting.upsertOption";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<'de> = UpsertOption<'de>;
     type Response = UpsertOptionResponse;
 }

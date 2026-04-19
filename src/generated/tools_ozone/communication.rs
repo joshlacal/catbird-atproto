@@ -12,13 +12,7 @@ pub mod update_template;
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct TemplateView<'a> {
@@ -47,9 +41,9 @@ pub struct TemplateView<'a> {
 
 pub mod template_view_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -208,17 +202,7 @@ impl<'a> TemplateViewBuilder<'a, template_view_state::Empty> {
     pub fn new() -> Self {
         TemplateViewBuilder {
             _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-            ),
+            __unsafe_private_named: (None, None, None, None, None, None, None, None, None),
             _phantom: ::core::marker::PhantomData,
         }
     }
@@ -310,10 +294,7 @@ impl<'a, S: template_view_state::State> TemplateViewBuilder<'a, S> {
         self
     }
     /// Set the `lang` field to an Option value (optional)
-    pub fn maybe_lang(
-        mut self,
-        value: Option<jacquard_common::types::string::Language>,
-    ) -> Self {
+    pub fn maybe_lang(mut self, value: Option<jacquard_common::types::string::Language>) -> Self {
         self.__unsafe_private_named.4 = value;
         self
     }
@@ -359,10 +340,7 @@ where
 
 impl<'a, S: template_view_state::State> TemplateViewBuilder<'a, S> {
     /// Set the `subject` field (optional)
-    pub fn subject(
-        mut self,
-        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
-    ) -> Self {
+    pub fn subject(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
         self.__unsafe_private_named.7 = value.into();
         self
     }
@@ -441,9 +419,8 @@ where
     }
 }
 
-fn lexicon_doc_tools_ozone_communication_defs() -> ::jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn lexicon_doc_tools_ozone_communication_defs() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static>
+{
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("tools.ozone.communication.defs"),

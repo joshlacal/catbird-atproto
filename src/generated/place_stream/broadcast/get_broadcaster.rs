@@ -6,25 +6,13 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetBroadcaster;
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetBroadcasterOutput<'a> {
@@ -51,7 +39,7 @@ pub struct GetBroadcasterOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic
+    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]

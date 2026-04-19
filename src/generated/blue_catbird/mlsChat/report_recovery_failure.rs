@@ -14,62 +14,48 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ReportRecoveryFailure<'a> {
     /// Conversation identifier
     #[serde(borrow)]
     pub convo_id: jacquard_common::CowStr<'a>,
+    /// Hex-encoded epoch_authenticator (RFC 9420 §8.7) for the reporter's current epoch. Optional at the schema layer but REQUIRED for the report to count toward quorum auto-reset. Clients that omit this field will have their report accepted (HTTP 200) with reason="missing_authenticator" but not counted.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub epoch_authenticator: std::option::Option<jacquard_common::CowStr<'a>>,
     /// Type of failure that was exhausted
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub failure_type: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// ADR-002 §A7.3: Hex-encoded epoch_authenticator (RFC 9420 §8.7) for the
-    /// reporter's current epoch. Optional at the schema layer but REQUIRED for
-    /// the report to count toward quorum auto-reset. Clients that omit this
-    /// field will have their report accepted (HTTP 200) with
-    /// reason="missing_authenticator" but not counted.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub epoch_authenticator: std::option::Option<jacquard_common::CowStr<'a>>,
 }
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ReportRecoveryFailureOutput<'a> {
     /// Whether the quorum threshold was met and an automatic group reset was triggered
     pub auto_reset_triggered: bool,
-    /// Number of distinct identity DIDs whose full active device set has filed
-    /// valid votes within the expiry window
+    /// Number of distinct identity DIDs whose full active device set has filed valid votes within the expiry window
     pub failure_count: i64,
-    /// Total number of distinct identity DIDs in the conversation's active roster
+    /// Total number of distinct identity DIDs in the conversation's active member roster
     pub member_count: i64,
-    /// When autoResetTriggered is true, the new group_id assigned to the conversation.
+    /// When autoResetTriggered is true, the new group_id assigned to the conversation. Clients can begin rejoining under this identifier immediately without polling.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub new_group_id: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// When autoResetTriggered is true, the lifetime reset_count after this reset.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub reset_generation: std::option::Option<i64>,
-    /// ADR-002 §A7.3: discriminator for why the vote was not counted (if any).
-    /// Omitted on a successful vote. knownValues: stale_authenticator |
-    /// missing_authenticator | rate_limited | circuit_breaker | not_member |
-    /// convo_not_found.
+    /// Discriminator for why the vote was not counted (if any). Omitted on a successful vote.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub reason: std::option::Option<jacquard_common::CowStr<'a>>,
     /// Whether the failure report was recorded as a counted quorum vote
     pub recorded: bool,
+    /// When autoResetTriggered is true, the lifetime reset_count after this reset. Matches the resetGeneration on the GroupResetEvent SSE event for this same reset.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    pub reset_generation: std::option::Option<i64>,
 }
 
 #[jacquard_derive::open_union]
@@ -82,7 +68,7 @@ pub struct ReportRecoveryFailureOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic
+    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -129,9 +115,8 @@ impl jacquard_common::xrpc::XrpcResp for ReportRecoveryFailureResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for ReportRecoveryFailure<'a> {
     const NSID: &'static str = "blue.catbird.mlsChat.reportRecoveryFailure";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = ReportRecoveryFailureResponse;
 }
 
@@ -140,9 +125,8 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for ReportRecoveryFailure<'a> {
 pub struct ReportRecoveryFailureRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for ReportRecoveryFailureRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.reportRecoveryFailure";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<'de> = ReportRecoveryFailure<'de>;
     type Response = ReportRecoveryFailureResponse;
 }

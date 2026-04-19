@@ -6,13 +6,7 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetRecord<'a> {
@@ -24,16 +18,14 @@ pub struct GetRecord<'a> {
     #[serde(borrow)]
     pub repo: jacquard_common::types::ident::AtIdentifier<'a>,
     #[serde(borrow)]
-    pub rkey: jacquard_common::types::string::RecordKey<
-        jacquard_common::types::string::Rkey<'a>,
-    >,
+    pub rkey: jacquard_common::types::string::RecordKey<jacquard_common::types::string::Rkey<'a>>,
 }
 
 pub mod get_record_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -95,9 +87,7 @@ pub struct GetRecordBuilder<'a, S: get_record_state::State> {
         ::core::option::Option<jacquard_common::types::string::Nsid<'a>>,
         ::core::option::Option<jacquard_common::types::ident::AtIdentifier<'a>>,
         ::core::option::Option<
-            jacquard_common::types::string::RecordKey<
-                jacquard_common::types::string::Rkey<'a>,
-            >,
+            jacquard_common::types::string::RecordKey<jacquard_common::types::string::Rkey<'a>>,
         >,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
@@ -131,10 +121,7 @@ impl<'a, S: get_record_state::State> GetRecordBuilder<'a, S> {
         self
     }
     /// Set the `cid` field to an Option value (optional)
-    pub fn maybe_cid(
-        mut self,
-        value: Option<jacquard_common::types::string::Cid<'a>>,
-    ) -> Self {
+    pub fn maybe_cid(mut self, value: Option<jacquard_common::types::string::Cid<'a>>) -> Self {
         self.__unsafe_private_named.0 = value;
         self
     }
@@ -187,9 +174,7 @@ where
     pub fn rkey(
         mut self,
         value: impl Into<
-            jacquard_common::types::string::RecordKey<
-                jacquard_common::types::string::Rkey<'a>,
-            >,
+            jacquard_common::types::string::RecordKey<jacquard_common::types::string::Rkey<'a>>,
         >,
     ) -> GetRecordBuilder<'a, get_record_state::SetRkey<S>> {
         self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
@@ -221,13 +206,7 @@ where
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetRecordOutput<'a> {
@@ -250,7 +229,7 @@ pub struct GetRecordOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic
+    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]

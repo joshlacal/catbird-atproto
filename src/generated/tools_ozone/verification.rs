@@ -12,13 +12,7 @@ pub mod revoke_verifications;
 /// Verification data for the associated subject.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct VerificationView<'a> {
@@ -66,9 +60,9 @@ pub struct VerificationView<'a> {
 
 pub mod verification_view_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -210,19 +204,7 @@ impl<'a> VerificationViewBuilder<'a, verification_view_state::Empty> {
         VerificationViewBuilder {
             _phantom_state: ::core::marker::PhantomData,
             __unsafe_private_named: (
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
+                None, None, None, None, None, None, None, None, None, None, None, None, None,
             ),
             _phantom: ::core::marker::PhantomData,
         }
@@ -326,18 +308,12 @@ impl<'a, S: verification_view_state::State> VerificationViewBuilder<'a, S> {
 
 impl<'a, S: verification_view_state::State> VerificationViewBuilder<'a, S> {
     /// Set the `issuerRepo` field (optional)
-    pub fn issuer_repo(
-        mut self,
-        value: impl Into<Option<VerificationViewIssuerRepo<'a>>>,
-    ) -> Self {
+    pub fn issuer_repo(mut self, value: impl Into<Option<VerificationViewIssuerRepo<'a>>>) -> Self {
         self.__unsafe_private_named.5 = value.into();
         self
     }
     /// Set the `issuerRepo` field to an Option value (optional)
-    pub fn maybe_issuer_repo(
-        mut self,
-        value: Option<VerificationViewIssuerRepo<'a>>,
-    ) -> Self {
+    pub fn maybe_issuer_repo(mut self, value: Option<VerificationViewIssuerRepo<'a>>) -> Self {
         self.__unsafe_private_named.5 = value;
         self
     }
@@ -345,18 +321,12 @@ impl<'a, S: verification_view_state::State> VerificationViewBuilder<'a, S> {
 
 impl<'a, S: verification_view_state::State> VerificationViewBuilder<'a, S> {
     /// Set the `revokeReason` field (optional)
-    pub fn revoke_reason(
-        mut self,
-        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
-    ) -> Self {
+    pub fn revoke_reason(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
         self.__unsafe_private_named.6 = value.into();
         self
     }
     /// Set the `revokeReason` field to an Option value (optional)
-    pub fn maybe_revoke_reason(
-        mut self,
-        value: Option<jacquard_common::CowStr<'a>>,
-    ) -> Self {
+    pub fn maybe_revoke_reason(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
         self.__unsafe_private_named.6 = value;
         self
     }
@@ -448,10 +418,7 @@ impl<'a, S: verification_view_state::State> VerificationViewBuilder<'a, S> {
         self
     }
     /// Set the `subjectRepo` field to an Option value (optional)
-    pub fn maybe_subject_repo(
-        mut self,
-        value: Option<VerificationViewSubjectRepo<'a>>,
-    ) -> Self {
+    pub fn maybe_subject_repo(mut self, value: Option<VerificationViewSubjectRepo<'a>>) -> Self {
         self.__unsafe_private_named.11 = value;
         self
     }
@@ -534,13 +501,7 @@ where
 
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "$type")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -548,20 +509,12 @@ pub enum VerificationViewIssuerRepo<'a> {
     #[serde(rename = "tools.ozone.moderation.defs#repoViewDetail")]
     RepoViewDetail(Box<crate::generated::tools_ozone::moderation::RepoViewDetail<'a>>),
     #[serde(rename = "tools.ozone.moderation.defs#repoViewNotFound")]
-    RepoViewNotFound(
-        Box<crate::generated::tools_ozone::moderation::RepoViewNotFound<'a>>,
-    ),
+    RepoViewNotFound(Box<crate::generated::tools_ozone::moderation::RepoViewNotFound<'a>>),
 }
 
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "$type")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -569,14 +522,10 @@ pub enum VerificationViewSubjectRepo<'a> {
     #[serde(rename = "tools.ozone.moderation.defs#repoViewDetail")]
     RepoViewDetail(Box<crate::generated::tools_ozone::moderation::RepoViewDetail<'a>>),
     #[serde(rename = "tools.ozone.moderation.defs#repoViewNotFound")]
-    RepoViewNotFound(
-        Box<crate::generated::tools_ozone::moderation::RepoViewNotFound<'a>>,
-    ),
+    RepoViewNotFound(Box<crate::generated::tools_ozone::moderation::RepoViewNotFound<'a>>),
 }
 
-fn lexicon_doc_tools_ozone_verification_defs() -> ::jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn lexicon_doc_tools_ozone_verification_defs() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("tools.ozone.verification.defs"),

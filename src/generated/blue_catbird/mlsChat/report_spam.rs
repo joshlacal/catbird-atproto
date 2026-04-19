@@ -7,13 +7,7 @@
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ReportSpam<'a> {
@@ -31,9 +25,9 @@ pub struct ReportSpam<'a> {
 
 pub mod report_spam_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -123,10 +117,7 @@ where
 
 impl<'a, S: report_spam_state::State> ReportSpamBuilder<'a, S> {
     /// Set the `reason` field (optional)
-    pub fn reason(
-        mut self,
-        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
-    ) -> Self {
+    pub fn reason(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
         self.__unsafe_private_named.1 = value.into();
         self
     }
@@ -190,13 +181,7 @@ where
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ReportSpamOutput<'a> {
@@ -215,7 +200,7 @@ pub struct ReportSpamOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic
+    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -269,9 +254,8 @@ impl jacquard_common::xrpc::XrpcResp for ReportSpamResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for ReportSpam<'a> {
     const NSID: &'static str = "blue.catbird.mlsChat.reportSpam";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = ReportSpamResponse;
 }
 
@@ -280,9 +264,8 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for ReportSpam<'a> {
 pub struct ReportSpamRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for ReportSpamRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.reportSpam";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<'de> = ReportSpam<'de>;
     type Response = ReportSpamResponse;
 }

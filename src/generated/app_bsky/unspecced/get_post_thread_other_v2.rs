@@ -6,13 +6,7 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetPostThreadOtherV2<'a> {
@@ -22,9 +16,9 @@ pub struct GetPostThreadOtherV2<'a> {
 
 pub mod get_post_thread_other_v2_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -55,18 +49,13 @@ pub mod get_post_thread_other_v2_state {
 /// Builder for constructing an instance of this type
 pub struct GetPostThreadOtherV2Builder<'a, S: get_post_thread_other_v2_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
-    ),
+    __unsafe_private_named: (::core::option::Option<jacquard_common::types::string::AtUri<'a>>,),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
 
 impl<'a> GetPostThreadOtherV2<'a> {
     /// Create a new builder for this type
-    pub fn new() -> GetPostThreadOtherV2Builder<
-        'a,
-        get_post_thread_other_v2_state::Empty,
-    > {
+    pub fn new() -> GetPostThreadOtherV2Builder<'a, get_post_thread_other_v2_state::Empty> {
         GetPostThreadOtherV2Builder::new()
     }
 }
@@ -116,21 +105,14 @@ where
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetPostThreadOtherV2Output<'a> {
     /// A flat list of other thread items. The depth of each item is indicated by the depth property inside the item.
     #[serde(borrow)]
-    pub thread: Vec<
-        crate::generated::app_bsky::unspecced::get_post_thread_other_v2::ThreadItem<'a>,
-    >,
+    pub thread:
+        Vec<crate::generated::app_bsky::unspecced::get_post_thread_other_v2::ThreadItem<'a>>,
 }
 
 /// Response type for
@@ -161,13 +143,7 @@ impl jacquard_common::xrpc::XrpcEndpoint for GetPostThreadOtherV2Request {
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ThreadItem<'a> {
@@ -181,9 +157,9 @@ pub struct ThreadItem<'a> {
 
 pub mod thread_item_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -356,14 +332,11 @@ where
     }
 }
 
-fn lexicon_doc_app_bsky_unspecced_getPostThreadOtherV2() -> ::jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn lexicon_doc_app_bsky_unspecced_getPostThreadOtherV2(
+) -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
-        id: ::jacquard_common::CowStr::new_static(
-            "app.bsky.unspecced.getPostThreadOtherV2",
-        ),
+        id: ::jacquard_common::CowStr::new_static("app.bsky.unspecced.getPostThreadOtherV2"),
         revision: None,
         description: None,
         defs: {
@@ -414,60 +387,66 @@ fn lexicon_doc_app_bsky_unspecced_getPostThreadOtherV2() -> ::jacquard_lexicon::
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("threadItem"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: None,
-                    required: Some(
-                        vec![
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        description: None,
+                        required: Some(vec![
                             ::jacquard_common::smol_str::SmolStr::new_static("uri"),
                             ::jacquard_common::smol_str::SmolStr::new_static("depth"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("value")
-                        ],
-                    ),
-                    nullable: None,
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("depth"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                description: None,
-                                default: None,
-                                minimum: None,
-                                maximum: None,
-                                r#enum: None,
-                                r#const: None,
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("uri"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
-                                ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map.insert(
                             ::jacquard_common::smol_str::SmolStr::new_static("value"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Union(::jacquard_lexicon::lexicon::LexRefUnion {
-                                description: None,
-                                refs: vec![
-                                    ::jacquard_common::CowStr::new_static("app.bsky.unspecced.defs#threadItemPost")
-                                ],
-                                closed: None,
-                            }),
-                        );
-                        map
+                        ]),
+                        nullable: None,
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::std::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("depth"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        description: None,
+                                        default: None,
+                                        minimum: None,
+                                        maximum: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("uri"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: None,
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
+                                        ),
+                                        default: None,
+                                        min_length: None,
+                                        max_length: None,
+                                        min_graphemes: None,
+                                        max_graphemes: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                        known_values: None,
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("value"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Union(
+                                    ::jacquard_lexicon::lexicon::LexRefUnion {
+                                        description: None,
+                                        refs: vec![::jacquard_common::CowStr::new_static(
+                                            "app.bsky.unspecced.defs#threadItemPost",
+                                        )],
+                                        closed: None,
+                                    },
+                                ),
+                            );
+                            map
+                        },
                     },
-                }),
+                ),
             );
             map
         },

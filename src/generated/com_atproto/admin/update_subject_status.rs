@@ -7,35 +7,25 @@
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateSubjectStatus<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub deactivated: std::option::Option<
-        crate::generated::com_atproto::admin::StatusAttr<'a>,
-    >,
+    pub deactivated: std::option::Option<crate::generated::com_atproto::admin::StatusAttr<'a>>,
     #[serde(borrow)]
     pub subject: UpdateSubjectStatusSubject<'a>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub takedown: std::option::Option<
-        crate::generated::com_atproto::admin::StatusAttr<'a>,
-    >,
+    pub takedown: std::option::Option<crate::generated::com_atproto::admin::StatusAttr<'a>>,
 }
 
 pub mod update_subject_status_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -182,13 +172,7 @@ where
 
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "$type")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -203,13 +187,7 @@ pub enum UpdateSubjectStatusSubject<'a> {
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateSubjectStatusOutput<'a> {
@@ -217,20 +195,12 @@ pub struct UpdateSubjectStatusOutput<'a> {
     pub subject: UpdateSubjectStatusOutputSubject<'a>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub takedown: std::option::Option<
-        crate::generated::com_atproto::admin::StatusAttr<'a>,
-    >,
+    pub takedown: std::option::Option<crate::generated::com_atproto::admin::StatusAttr<'a>>,
 }
 
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "$type")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -255,9 +225,8 @@ impl jacquard_common::xrpc::XrpcResp for UpdateSubjectStatusResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for UpdateSubjectStatus<'a> {
     const NSID: &'static str = "com.atproto.admin.updateSubjectStatus";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = UpdateSubjectStatusResponse;
 }
 
@@ -266,9 +235,8 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for UpdateSubjectStatus<'a> {
 pub struct UpdateSubjectStatusRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for UpdateSubjectStatusRequest {
     const PATH: &'static str = "/xrpc/com.atproto.admin.updateSubjectStatus";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<'de> = UpdateSubjectStatus<'de>;
     type Response = UpdateSubjectStatusResponse;
 }

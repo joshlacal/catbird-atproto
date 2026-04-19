@@ -6,13 +6,7 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetGroupMetadataBlob<'a> {
@@ -25,9 +19,9 @@ pub struct GetGroupMetadataBlob<'a> {
 
 pub mod get_group_metadata_blob_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -67,10 +61,7 @@ pub struct GetGroupMetadataBlobBuilder<'a, S: get_group_metadata_blob_state::Sta
 
 impl<'a> GetGroupMetadataBlob<'a> {
     /// Create a new builder for this type
-    pub fn new() -> GetGroupMetadataBlobBuilder<
-        'a,
-        get_group_metadata_blob_state::Empty,
-    > {
+    pub fn new() -> GetGroupMetadataBlobBuilder<'a, get_group_metadata_blob_state::Empty> {
         GetGroupMetadataBlobBuilder::new()
     }
 }
@@ -88,18 +79,12 @@ impl<'a> GetGroupMetadataBlobBuilder<'a, get_group_metadata_blob_state::Empty> {
 
 impl<'a, S: get_group_metadata_blob_state::State> GetGroupMetadataBlobBuilder<'a, S> {
     /// Set the `blobLocator` field (optional)
-    pub fn blob_locator(
-        mut self,
-        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
-    ) -> Self {
+    pub fn blob_locator(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
         self.__unsafe_private_named.0 = value.into();
         self
     }
     /// Set the `blobLocator` field to an Option value (optional)
-    pub fn maybe_blob_locator(
-        mut self,
-        value: Option<jacquard_common::CowStr<'a>>,
-    ) -> Self {
+    pub fn maybe_blob_locator(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
         self.__unsafe_private_named.0 = value;
         self
     }
@@ -140,13 +125,7 @@ where
 
 /// Raw encrypted blob bytes
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetGroupMetadataBlobOutput {
@@ -163,7 +142,7 @@ pub struct GetGroupMetadataBlobOutput {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic
+    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]

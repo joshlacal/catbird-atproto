@@ -7,13 +7,7 @@
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GapInfo<'a> {
@@ -27,59 +21,59 @@ pub struct GapInfo<'a> {
 
 pub mod gap_info_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type MissingSeqs;
         type TotalMessages;
         type HasGaps;
+        type MissingSeqs;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type MissingSeqs = Unset;
         type TotalMessages = Unset;
         type HasGaps = Unset;
-    }
-    ///State transition - sets the `missing_seqs` field to Set
-    pub struct SetMissingSeqs<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetMissingSeqs<S> {}
-    impl<S: State> State for SetMissingSeqs<S> {
-        type MissingSeqs = Set<members::missing_seqs>;
-        type TotalMessages = S::TotalMessages;
-        type HasGaps = S::HasGaps;
+        type MissingSeqs = Unset;
     }
     ///State transition - sets the `total_messages` field to Set
     pub struct SetTotalMessages<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetTotalMessages<S> {}
     impl<S: State> State for SetTotalMessages<S> {
-        type MissingSeqs = S::MissingSeqs;
         type TotalMessages = Set<members::total_messages>;
         type HasGaps = S::HasGaps;
+        type MissingSeqs = S::MissingSeqs;
     }
     ///State transition - sets the `has_gaps` field to Set
     pub struct SetHasGaps<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetHasGaps<S> {}
     impl<S: State> State for SetHasGaps<S> {
-        type MissingSeqs = S::MissingSeqs;
         type TotalMessages = S::TotalMessages;
         type HasGaps = Set<members::has_gaps>;
+        type MissingSeqs = S::MissingSeqs;
+    }
+    ///State transition - sets the `missing_seqs` field to Set
+    pub struct SetMissingSeqs<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetMissingSeqs<S> {}
+    impl<S: State> State for SetMissingSeqs<S> {
+        type TotalMessages = S::TotalMessages;
+        type HasGaps = S::HasGaps;
+        type MissingSeqs = Set<members::missing_seqs>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `missing_seqs` field
-        pub struct missing_seqs(());
         ///Marker type for the `total_messages` field
         pub struct total_messages(());
         ///Marker type for the `has_gaps` field
         pub struct has_gaps(());
+        ///Marker type for the `missing_seqs` field
+        pub struct missing_seqs(());
     }
 }
 
@@ -172,9 +166,9 @@ where
 impl<'a, S> GapInfoBuilder<'a, S>
 where
     S: gap_info_state::State,
-    S::MissingSeqs: gap_info_state::IsSet,
     S::TotalMessages: gap_info_state::IsSet,
     S::HasGaps: gap_info_state::IsSet,
+    S::MissingSeqs: gap_info_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> GapInfo<'a> {
@@ -202,9 +196,8 @@ where
     }
 }
 
-fn lexicon_doc_blue_catbird_mlsChat_getMessages() -> ::jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn lexicon_doc_blue_catbird_mlsChat_getMessages() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static>
+{
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("blue.catbird.mlsChat.getMessages"),
@@ -214,65 +207,67 @@ fn lexicon_doc_blue_catbird_mlsChat_getMessages() -> ::jacquard_lexicon::lexicon
             let mut map = ::std::collections::BTreeMap::new();
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("gapInfo"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: None,
-                    required: Some(
-                        vec![
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        description: None,
+                        required: Some(vec![
                             ::jacquard_common::smol_str::SmolStr::new_static("hasGaps"),
                             ::jacquard_common::smol_str::SmolStr::new_static("missingSeqs"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("totalMessages")
-                        ],
-                    ),
-                    nullable: None,
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("hasGaps"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
-                                description: None,
-                                default: None,
-                                r#const: None,
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
-                                "missingSeqs",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "Array of missing sequence numbers",
-                                    ),
+                            ::jacquard_common::smol_str::SmolStr::new_static("totalMessages"),
+                        ]),
+                        nullable: None,
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::std::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("hasGaps"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(
+                                    ::jacquard_lexicon::lexicon::LexBoolean {
+                                        description: None,
+                                        default: None,
+                                        r#const: None,
+                                    },
                                 ),
-                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                    description: None,
-                                    default: None,
-                                    minimum: None,
-                                    maximum: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                }),
-                                min_length: None,
-                                max_length: None,
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
-                                "totalMessages",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                description: None,
-                                default: None,
-                                minimum: Some(0i64),
-                                maximum: None,
-                                r#enum: None,
-                                r#const: None,
-                            }),
-                        );
-                        map
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("missingSeqs"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Array(
+                                    ::jacquard_lexicon::lexicon::LexArray {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "Array of missing sequence numbers",
+                                        )),
+                                        items: ::jacquard_lexicon::lexicon::LexArrayItem::Integer(
+                                            ::jacquard_lexicon::lexicon::LexInteger {
+                                                description: None,
+                                                default: None,
+                                                minimum: None,
+                                                maximum: None,
+                                                r#enum: None,
+                                                r#const: None,
+                                            },
+                                        ),
+                                        min_length: None,
+                                        max_length: None,
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("totalMessages"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        description: None,
+                                        default: None,
+                                        minimum: Some(0i64),
+                                        maximum: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                    },
+                                ),
+                            );
+                            map
+                        },
                     },
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("main"),
@@ -309,6 +304,19 @@ fn lexicon_doc_blue_catbird_mlsChat_getMessages() -> ::jacquard_lexicon::lexicon
                                     }),
                                 );
                                 map.insert(
+                                    ::jacquard_common::smol_str::SmolStr::new_static(
+                                        "fromEpoch",
+                                    ),
+                                    ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                        description: None,
+                                        default: None,
+                                        minimum: None,
+                                        maximum: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                    }),
+                                );
+                                map.insert(
                                     ::jacquard_common::smol_str::SmolStr::new_static("limit"),
                                     ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
                                         description: None,
@@ -323,6 +331,17 @@ fn lexicon_doc_blue_catbird_mlsChat_getMessages() -> ::jacquard_lexicon::lexicon
                                     ::jacquard_common::smol_str::SmolStr::new_static(
                                         "sinceSeq",
                                     ),
+                                    ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                        description: None,
+                                        default: None,
+                                        minimum: None,
+                                        maximum: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                    }),
+                                );
+                                map.insert(
+                                    ::jacquard_common::smol_str::SmolStr::new_static("toEpoch"),
                                     ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
                                         description: None,
                                         default: None,
@@ -394,24 +413,24 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for GapInfo<'a> {
 }
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetMessages<'a> {
     #[serde(borrow)]
     pub convo_id: jacquard_common::CowStr<'a>,
+    ///(min: 0)
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    pub from_epoch: std::option::Option<i64>,
     ///(default: 50, min: 1, max: 100)
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     pub limit: std::option::Option<i64>,
     ///(min: 0)
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     pub since_seq: std::option::Option<i64>,
+    ///(min: 0)
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    pub to_epoch: std::option::Option<i64>,
     ///(default: "all")
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
@@ -420,9 +439,9 @@ pub struct GetMessages<'a> {
 
 pub mod get_messages_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -457,6 +476,8 @@ pub struct GetMessagesBuilder<'a, S: get_messages_state::State> {
         ::core::option::Option<jacquard_common::CowStr<'a>>,
         ::core::option::Option<i64>,
         ::core::option::Option<i64>,
+        ::core::option::Option<i64>,
+        ::core::option::Option<i64>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
@@ -474,7 +495,7 @@ impl<'a> GetMessagesBuilder<'a, get_messages_state::Empty> {
     pub fn new() -> Self {
         GetMessagesBuilder {
             _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None),
+            __unsafe_private_named: (None, None, None, None, None, None),
             _phantom: ::core::marker::PhantomData,
         }
     }
@@ -500,14 +521,27 @@ where
 }
 
 impl<'a, S: get_messages_state::State> GetMessagesBuilder<'a, S> {
+    /// Set the `fromEpoch` field (optional)
+    pub fn from_epoch(mut self, value: impl Into<Option<i64>>) -> Self {
+        self.__unsafe_private_named.1 = value.into();
+        self
+    }
+    /// Set the `fromEpoch` field to an Option value (optional)
+    pub fn maybe_from_epoch(mut self, value: Option<i64>) -> Self {
+        self.__unsafe_private_named.1 = value;
+        self
+    }
+}
+
+impl<'a, S: get_messages_state::State> GetMessagesBuilder<'a, S> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self.__unsafe_private_named.2 = value.into();
         self
     }
     /// Set the `limit` field to an Option value (optional)
     pub fn maybe_limit(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.1 = value;
+        self.__unsafe_private_named.2 = value;
         self
     }
 }
@@ -515,28 +549,38 @@ impl<'a, S: get_messages_state::State> GetMessagesBuilder<'a, S> {
 impl<'a, S: get_messages_state::State> GetMessagesBuilder<'a, S> {
     /// Set the `sinceSeq` field (optional)
     pub fn since_seq(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.2 = value.into();
+        self.__unsafe_private_named.3 = value.into();
         self
     }
     /// Set the `sinceSeq` field to an Option value (optional)
     pub fn maybe_since_seq(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.2 = value;
+        self.__unsafe_private_named.3 = value;
+        self
+    }
+}
+
+impl<'a, S: get_messages_state::State> GetMessagesBuilder<'a, S> {
+    /// Set the `toEpoch` field (optional)
+    pub fn to_epoch(mut self, value: impl Into<Option<i64>>) -> Self {
+        self.__unsafe_private_named.4 = value.into();
+        self
+    }
+    /// Set the `toEpoch` field to an Option value (optional)
+    pub fn maybe_to_epoch(mut self, value: Option<i64>) -> Self {
+        self.__unsafe_private_named.4 = value;
         self
     }
 }
 
 impl<'a, S: get_messages_state::State> GetMessagesBuilder<'a, S> {
     /// Set the `type` field (optional)
-    pub fn r#type(
-        mut self,
-        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
-    ) -> Self {
-        self.__unsafe_private_named.3 = value.into();
+    pub fn r#type(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
+        self.__unsafe_private_named.5 = value.into();
         self
     }
     /// Set the `type` field to an Option value (optional)
     pub fn maybe_type(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.3 = value;
+        self.__unsafe_private_named.5 = value;
         self
     }
 }
@@ -550,31 +594,26 @@ where
     pub fn build(self) -> GetMessages<'a> {
         GetMessages {
             convo_id: self.__unsafe_private_named.0.unwrap(),
-            limit: self.__unsafe_private_named.1,
-            since_seq: self.__unsafe_private_named.2,
-            r#type: self.__unsafe_private_named.3,
+            from_epoch: self.__unsafe_private_named.1,
+            limit: self.__unsafe_private_named.2,
+            since_seq: self.__unsafe_private_named.3,
+            to_epoch: self.__unsafe_private_named.4,
+            r#type: self.__unsafe_private_named.5,
         }
     }
 }
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetMessagesOutput<'a> {
     /// Gap detection metadata for missing messages
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub gap_info: std::option::Option<
-        crate::generated::blue_catbird::mlsChat::get_messages::GapInfo<'a>,
-    >,
+    pub gap_info:
+        std::option::Option<crate::generated::blue_catbird::mlsChat::get_messages::GapInfo<'a>>,
     /// Sequence number of the last message in this response. Use as sinceSeq for next page.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     pub last_seq: std::option::Option<i64>,
@@ -593,7 +632,7 @@ pub struct GetMessagesOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic
+    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]

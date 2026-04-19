@@ -8,13 +8,7 @@
 /// Record declaring a social 'follow' relationship of another account. Duplicate follows will be ignored by the AppView.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Follow<'a> {
@@ -23,16 +17,14 @@ pub struct Follow<'a> {
     pub subject: jacquard_common::types::string::Did<'a>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub via: std::option::Option<
-        crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>,
-    >,
+    pub via: std::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,
 }
 
 pub mod follow_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -78,9 +70,7 @@ pub struct FollowBuilder<'a, S: follow_state::State> {
     __unsafe_private_named: (
         ::core::option::Option<jacquard_common::types::string::Datetime>,
         ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<
-            crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>,
-        >,
+        ::core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
@@ -145,9 +135,7 @@ impl<'a, S: follow_state::State> FollowBuilder<'a, S> {
     /// Set the `via` field (optional)
     pub fn via(
         mut self,
-        value: impl Into<
-            Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,
-        >,
+        value: impl Into<Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.2 = value.into();
         self
@@ -209,13 +197,7 @@ impl<'a> Follow<'a> {
 
 /// Typed wrapper for GetRecord response with this collection's record type.
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct FollowGetRecordOutput<'a> {
@@ -272,9 +254,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Follow<'a> {
     }
 }
 
-fn lexicon_doc_app_bsky_graph_follow() -> ::jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn lexicon_doc_app_bsky_graph_follow() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("app.bsky.graph.follow"),

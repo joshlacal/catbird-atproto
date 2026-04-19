@@ -282,6 +282,22 @@ pub mod catbird {
             pub type KeyPackageItem =
                 crate::blue_catbird::mlsChat::publish_key_packages::KeyPackageItem<'static>;
 
+            /// Owned, lifetime-free constructor helper for the Jacquard-generated
+            /// `KeyPackageItem<'a>`. Exists for four reasons:
+            ///
+            /// 1. Lifetime erasure — callers build `KeyPackageItem<'static>` without
+            ///    threading `'a` through async code and across await points.
+            /// 2. Upstream producers give us owned types (`Vec<u8>` from OpenMLS,
+            ///    `String` from SQL) rather than `bytes::Bytes`/`CowStr`, so this
+            ///    avoids a manual `.into()` + `Bytes::from(...)` dance at every call site.
+            /// 3. Defaults Jacquard's `extra_data` passthrough dict so callers can't
+            ///    forget it when constructing.
+            /// 4. Forward-compat: new lexicon fields won't break call sites that
+            ///    construct via `KeyPackageItemData`.
+            ///
+            /// Note: if the lexicon field type changes (e.g. `bytes` → `string`),
+            /// this adapter's `From` impl will fail to compile on regen — that's
+            /// the intended tripwire. Fix the lexicon or update the adapter body.
             pub struct KeyPackageItemData {
                 pub cipher_suite: String,
                 pub expires: crate::types::string::Datetime,
@@ -331,6 +347,9 @@ pub mod catbird {
             pub type Output =
                 crate::blue_catbird::mlsChat::register_device::RegisterDeviceOutput<'static>;
 
+            /// Owned-type adapter for `KeyPackageItem<'a>`. See `publish_key_packages::KeyPackageItemData`
+            /// for the full rationale — short version: lifetime erasure + owned Vec<u8>/String
+            /// + defaults `extra_data` + forward-compat buffer vs lexicon field additions.
             pub struct KeyPackageItemData {
                 pub cipher_suite: String,
                 pub expires: crate::types::string::Datetime,

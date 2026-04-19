@@ -11,13 +11,7 @@ pub mod upload_video;
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct JobStatus<'a> {
@@ -44,9 +38,9 @@ pub struct JobStatus<'a> {
 
 pub mod job_status_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -143,10 +137,7 @@ impl<'a, S: job_status_state::State> JobStatusBuilder<'a, S> {
         self
     }
     /// Set the `blob` field to an Option value (optional)
-    pub fn maybe_blob(
-        mut self,
-        value: Option<jacquard_common::types::blob::BlobRef<'a>>,
-    ) -> Self {
+    pub fn maybe_blob(mut self, value: Option<jacquard_common::types::blob::BlobRef<'a>>) -> Self {
         self.__unsafe_private_named.0 = value;
         self
     }
@@ -173,10 +164,7 @@ where
 
 impl<'a, S: job_status_state::State> JobStatusBuilder<'a, S> {
     /// Set the `error` field (optional)
-    pub fn error(
-        mut self,
-        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
-    ) -> Self {
+    pub fn error(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
         self.__unsafe_private_named.2 = value.into();
         self
     }
@@ -208,10 +196,7 @@ where
 
 impl<'a, S: job_status_state::State> JobStatusBuilder<'a, S> {
     /// Set the `message` field (optional)
-    pub fn message(
-        mut self,
-        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
-    ) -> Self {
+    pub fn message(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
         self.__unsafe_private_named.4 = value.into();
         self
     }
@@ -295,9 +280,7 @@ where
     }
 }
 
-fn lexicon_doc_app_bsky_video_defs() -> ::jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn lexicon_doc_app_bsky_video_defs() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("app.bsky.video.defs"),
@@ -445,9 +428,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for JobStatus<'a> {
         if let Some(ref value) = self.progress {
             if *value > 100i64 {
                 return Err(::jacquard_lexicon::validation::ConstraintError::Maximum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
-                        "progress",
-                    ),
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("progress"),
                     max: 100i64,
                     actual: *value,
                 });
@@ -456,9 +437,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for JobStatus<'a> {
         if let Some(ref value) = self.progress {
             if *value < 0i64 {
                 return Err(::jacquard_lexicon::validation::ConstraintError::Minimum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
-                        "progress",
-                    ),
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("progress"),
                     min: 0i64,
                     actual: *value,
                 });

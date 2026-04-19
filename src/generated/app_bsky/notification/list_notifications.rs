@@ -6,13 +6,7 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ListNotifications<'a> {
@@ -33,9 +27,9 @@ pub struct ListNotifications<'a> {
 
 pub mod list_notifications_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -83,10 +77,7 @@ impl<'a> ListNotificationsBuilder<'a, list_notifications_state::Empty> {
 
 impl<'a, S: list_notifications_state::State> ListNotificationsBuilder<'a, S> {
     /// Set the `cursor` field (optional)
-    pub fn cursor(
-        mut self,
-        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
-    ) -> Self {
+    pub fn cursor(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
         self.__unsafe_private_named.0 = value.into();
         self
     }
@@ -125,18 +116,12 @@ impl<'a, S: list_notifications_state::State> ListNotificationsBuilder<'a, S> {
 
 impl<'a, S: list_notifications_state::State> ListNotificationsBuilder<'a, S> {
     /// Set the `reasons` field (optional)
-    pub fn reasons(
-        mut self,
-        value: impl Into<Option<Vec<jacquard_common::CowStr<'a>>>>,
-    ) -> Self {
+    pub fn reasons(mut self, value: impl Into<Option<Vec<jacquard_common::CowStr<'a>>>>) -> Self {
         self.__unsafe_private_named.3 = value.into();
         self
     }
     /// Set the `reasons` field to an Option value (optional)
-    pub fn maybe_reasons(
-        mut self,
-        value: Option<Vec<jacquard_common::CowStr<'a>>>,
-    ) -> Self {
+    pub fn maybe_reasons(mut self, value: Option<Vec<jacquard_common::CowStr<'a>>>) -> Self {
         self.__unsafe_private_named.3 = value;
         self
     }
@@ -179,13 +164,7 @@ where
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ListNotificationsOutput<'a> {
@@ -193,9 +172,8 @@ pub struct ListNotificationsOutput<'a> {
     #[serde(borrow)]
     pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(borrow)]
-    pub notifications: Vec<
-        crate::generated::app_bsky::notification::list_notifications::Notification<'a>,
-    >,
+    pub notifications:
+        Vec<crate::generated::app_bsky::notification::list_notifications::Notification<'a>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     pub priority: std::option::Option<bool>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
@@ -230,13 +208,7 @@ impl jacquard_common::xrpc::XrpcEndpoint for ListNotificationsRequest {
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Notification<'a> {
@@ -248,9 +220,7 @@ pub struct Notification<'a> {
     pub is_read: bool,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub labels: std::option::Option<
-        Vec<crate::generated::com_atproto::label::Label<'a>>,
-    >,
+    pub labels: std::option::Option<Vec<crate::generated::com_atproto::label::Label<'a>>>,
     /// The reason why this notification was delivered - e.g. your post was liked, or you received a new follower.
     #[serde(borrow)]
     pub reason: jacquard_common::CowStr<'a>,
@@ -265,9 +235,9 @@ pub struct Notification<'a> {
 
 pub mod notification_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -426,17 +396,7 @@ impl<'a> NotificationBuilder<'a, notification_state::Empty> {
     pub fn new() -> Self {
         NotificationBuilder {
             _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-            ),
+            __unsafe_private_named: (None, None, None, None, None, None, None, None, None),
             _phantom: ::core::marker::PhantomData,
         }
     }
@@ -662,14 +622,11 @@ where
     }
 }
 
-fn lexicon_doc_app_bsky_notification_listNotifications() -> ::jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn lexicon_doc_app_bsky_notification_listNotifications(
+) -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
-        id: ::jacquard_common::CowStr::new_static(
-            "app.bsky.notification.listNotifications",
-        ),
+        id: ::jacquard_common::CowStr::new_static("app.bsky.notification.listNotifications"),
         revision: None,
         description: None,
         defs: {

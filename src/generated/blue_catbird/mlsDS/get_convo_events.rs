@@ -8,13 +8,7 @@
 /// A single conversation event (message) with metadata.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ConvoEventEntry<'a> {
@@ -39,133 +33,133 @@ pub struct ConvoEventEntry<'a> {
 
 pub mod convo_event_entry_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
+        type Seq;
         type MessageType;
-        type MsgId;
         type Ciphertext;
         type PaddedSize;
         type CreatedAt;
-        type Seq;
+        type MsgId;
         type Epoch;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
+        type Seq = Unset;
         type MessageType = Unset;
-        type MsgId = Unset;
         type Ciphertext = Unset;
         type PaddedSize = Unset;
         type CreatedAt = Unset;
-        type Seq = Unset;
+        type MsgId = Unset;
         type Epoch = Unset;
+    }
+    ///State transition - sets the `seq` field to Set
+    pub struct SetSeq<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetSeq<S> {}
+    impl<S: State> State for SetSeq<S> {
+        type Seq = Set<members::seq>;
+        type MessageType = S::MessageType;
+        type Ciphertext = S::Ciphertext;
+        type PaddedSize = S::PaddedSize;
+        type CreatedAt = S::CreatedAt;
+        type MsgId = S::MsgId;
+        type Epoch = S::Epoch;
     }
     ///State transition - sets the `message_type` field to Set
     pub struct SetMessageType<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetMessageType<S> {}
     impl<S: State> State for SetMessageType<S> {
+        type Seq = S::Seq;
         type MessageType = Set<members::message_type>;
+        type Ciphertext = S::Ciphertext;
+        type PaddedSize = S::PaddedSize;
+        type CreatedAt = S::CreatedAt;
         type MsgId = S::MsgId;
-        type Ciphertext = S::Ciphertext;
-        type PaddedSize = S::PaddedSize;
-        type CreatedAt = S::CreatedAt;
-        type Seq = S::Seq;
-        type Epoch = S::Epoch;
-    }
-    ///State transition - sets the `msg_id` field to Set
-    pub struct SetMsgId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetMsgId<S> {}
-    impl<S: State> State for SetMsgId<S> {
-        type MessageType = S::MessageType;
-        type MsgId = Set<members::msg_id>;
-        type Ciphertext = S::Ciphertext;
-        type PaddedSize = S::PaddedSize;
-        type CreatedAt = S::CreatedAt;
-        type Seq = S::Seq;
         type Epoch = S::Epoch;
     }
     ///State transition - sets the `ciphertext` field to Set
     pub struct SetCiphertext<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCiphertext<S> {}
     impl<S: State> State for SetCiphertext<S> {
+        type Seq = S::Seq;
         type MessageType = S::MessageType;
-        type MsgId = S::MsgId;
         type Ciphertext = Set<members::ciphertext>;
         type PaddedSize = S::PaddedSize;
         type CreatedAt = S::CreatedAt;
-        type Seq = S::Seq;
+        type MsgId = S::MsgId;
         type Epoch = S::Epoch;
     }
     ///State transition - sets the `padded_size` field to Set
     pub struct SetPaddedSize<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetPaddedSize<S> {}
     impl<S: State> State for SetPaddedSize<S> {
+        type Seq = S::Seq;
         type MessageType = S::MessageType;
-        type MsgId = S::MsgId;
         type Ciphertext = S::Ciphertext;
         type PaddedSize = Set<members::padded_size>;
         type CreatedAt = S::CreatedAt;
-        type Seq = S::Seq;
+        type MsgId = S::MsgId;
         type Epoch = S::Epoch;
     }
     ///State transition - sets the `created_at` field to Set
     pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
     impl<S: State> State for SetCreatedAt<S> {
+        type Seq = S::Seq;
         type MessageType = S::MessageType;
-        type MsgId = S::MsgId;
         type Ciphertext = S::Ciphertext;
         type PaddedSize = S::PaddedSize;
         type CreatedAt = Set<members::created_at>;
-        type Seq = S::Seq;
+        type MsgId = S::MsgId;
         type Epoch = S::Epoch;
     }
-    ///State transition - sets the `seq` field to Set
-    pub struct SetSeq<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetSeq<S> {}
-    impl<S: State> State for SetSeq<S> {
+    ///State transition - sets the `msg_id` field to Set
+    pub struct SetMsgId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetMsgId<S> {}
+    impl<S: State> State for SetMsgId<S> {
+        type Seq = S::Seq;
         type MessageType = S::MessageType;
-        type MsgId = S::MsgId;
         type Ciphertext = S::Ciphertext;
         type PaddedSize = S::PaddedSize;
         type CreatedAt = S::CreatedAt;
-        type Seq = Set<members::seq>;
+        type MsgId = Set<members::msg_id>;
         type Epoch = S::Epoch;
     }
     ///State transition - sets the `epoch` field to Set
     pub struct SetEpoch<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetEpoch<S> {}
     impl<S: State> State for SetEpoch<S> {
+        type Seq = S::Seq;
         type MessageType = S::MessageType;
-        type MsgId = S::MsgId;
         type Ciphertext = S::Ciphertext;
         type PaddedSize = S::PaddedSize;
         type CreatedAt = S::CreatedAt;
-        type Seq = S::Seq;
+        type MsgId = S::MsgId;
         type Epoch = Set<members::epoch>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
+        ///Marker type for the `seq` field
+        pub struct seq(());
         ///Marker type for the `message_type` field
         pub struct message_type(());
-        ///Marker type for the `msg_id` field
-        pub struct msg_id(());
         ///Marker type for the `ciphertext` field
         pub struct ciphertext(());
         ///Marker type for the `padded_size` field
         pub struct padded_size(());
         ///Marker type for the `created_at` field
         pub struct created_at(());
-        ///Marker type for the `seq` field
-        pub struct seq(());
+        ///Marker type for the `msg_id` field
+        pub struct msg_id(());
         ///Marker type for the `epoch` field
         pub struct epoch(());
     }
@@ -340,12 +334,12 @@ where
 impl<'a, S> ConvoEventEntryBuilder<'a, S>
 where
     S: convo_event_entry_state::State,
+    S::Seq: convo_event_entry_state::IsSet,
     S::MessageType: convo_event_entry_state::IsSet,
-    S::MsgId: convo_event_entry_state::IsSet,
     S::Ciphertext: convo_event_entry_state::IsSet,
     S::PaddedSize: convo_event_entry_state::IsSet,
     S::CreatedAt: convo_event_entry_state::IsSet,
-    S::Seq: convo_event_entry_state::IsSet,
+    S::MsgId: convo_event_entry_state::IsSet,
     S::Epoch: convo_event_entry_state::IsSet,
 {
     /// Build the final struct
@@ -382,9 +376,8 @@ where
     }
 }
 
-fn lexicon_doc_blue_catbird_mlsDS_getConvoEvents() -> ::jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn lexicon_doc_blue_catbird_mlsDS_getConvoEvents(
+) -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("blue.catbird.mlsDS.getConvoEvents"),
@@ -394,134 +387,136 @@ fn lexicon_doc_blue_catbird_mlsDS_getConvoEvents() -> ::jacquard_lexicon::lexico
             let mut map = ::std::collections::BTreeMap::new();
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("convoEventEntry"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: Some(
-                        ::jacquard_common::CowStr::new_static(
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        description: Some(::jacquard_common::CowStr::new_static(
                             "A single conversation event (message) with metadata.",
-                        ),
-                    ),
-                    required: Some(
-                        vec![
+                        )),
+                        required: Some(vec![
                             ::jacquard_common::smol_str::SmolStr::new_static("seq"),
                             ::jacquard_common::smol_str::SmolStr::new_static("epoch"),
                             ::jacquard_common::smol_str::SmolStr::new_static("msgId"),
                             ::jacquard_common::smol_str::SmolStr::new_static("messageType"),
                             ::jacquard_common::smol_str::SmolStr::new_static("ciphertext"),
                             ::jacquard_common::smol_str::SmolStr::new_static("paddedSize"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("createdAt")
-                        ],
-                    ),
-                    nullable: None,
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
-                                "ciphertext",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
-                                description: None,
-                                max_length: None,
-                                min_length: None,
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
-                                "createdAt",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static("Creation timestamp"),
+                            ::jacquard_common::smol_str::SmolStr::new_static("createdAt"),
+                        ]),
+                        nullable: None,
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::std::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("ciphertext"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        description: None,
+                                        max_length: None,
+                                        min_length: None,
+                                    },
                                 ),
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("createdAt"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "Creation timestamp",
+                                        )),
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                        ),
+                                        default: None,
+                                        min_length: None,
+                                        max_length: None,
+                                        min_graphemes: None,
+                                        max_graphemes: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                        known_values: None,
+                                    },
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("epoch"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                description: None,
-                                default: None,
-                                minimum: None,
-                                maximum: None,
-                                r#enum: None,
-                                r#const: None,
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
-                                "messageType",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "Message type (e.g., 'app')",
-                                    ),
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("epoch"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        description: None,
+                                        default: None,
+                                        minimum: None,
+                                        maximum: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                    },
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("msgId"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static("Message ID"),
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("messageType"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "Message type (e.g., 'app')",
+                                        )),
+                                        format: None,
+                                        default: None,
+                                        min_length: None,
+                                        max_length: None,
+                                        min_graphemes: None,
+                                        max_graphemes: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                        known_values: None,
+                                    },
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
-                                "paddedSize",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                description: None,
-                                default: None,
-                                minimum: None,
-                                maximum: None,
-                                r#enum: None,
-                                r#const: None,
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("seq"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                description: None,
-                                default: None,
-                                minimum: None,
-                                maximum: None,
-                                r#enum: None,
-                                r#const: None,
-                            }),
-                        );
-                        map
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("msgId"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "Message ID",
+                                        )),
+                                        format: None,
+                                        default: None,
+                                        min_length: None,
+                                        max_length: None,
+                                        min_graphemes: None,
+                                        max_graphemes: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                        known_values: None,
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("paddedSize"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        description: None,
+                                        default: None,
+                                        minimum: None,
+                                        maximum: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("seq"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        description: None,
+                                        default: None,
+                                        minimum: None,
+                                        maximum: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                    },
+                                ),
+                            );
+                            map
+                        },
                     },
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("main"),
@@ -610,13 +605,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ConvoEventEntry<'a> {
 }
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetConvoEvents<'a> {
@@ -631,9 +620,9 @@ pub struct GetConvoEvents<'a> {
 
 pub mod get_convo_events_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -752,13 +741,7 @@ where
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetConvoEventsOutput<'a> {
@@ -767,9 +750,7 @@ pub struct GetConvoEventsOutput<'a> {
     pub convo_id: jacquard_common::CowStr<'a>,
     /// Ordered list of conversation events
     #[serde(borrow)]
-    pub events: Vec<
-        crate::generated::blue_catbird::mlsDS::get_convo_events::ConvoEventEntry<'a>,
-    >,
+    pub events: Vec<crate::generated::blue_catbird::mlsDS::get_convo_events::ConvoEventEntry<'a>>,
     /// Lower bound sequence number (exclusive)
     pub from_seq_exclusive: i64,
     /// Upper bound sequence number (inclusive)
@@ -786,7 +767,7 @@ pub struct GetConvoEventsOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic
+    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]

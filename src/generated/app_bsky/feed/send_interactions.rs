@@ -7,13 +7,7 @@
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct SendInteractions<'a> {
@@ -23,9 +17,9 @@ pub struct SendInteractions<'a> {
 
 pub mod send_interactions_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -56,9 +50,8 @@ pub mod send_interactions_state {
 /// Builder for constructing an instance of this type
 pub struct SendInteractionsBuilder<'a, S: send_interactions_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<Vec<crate::generated::app_bsky::feed::Interaction<'a>>>,
-    ),
+    __unsafe_private_named:
+        (::core::option::Option<Vec<crate::generated::app_bsky::feed::Interaction<'a>>>,),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
 
@@ -135,7 +128,7 @@ where
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct SendInteractionsOutput<'a> {}
@@ -151,9 +144,8 @@ impl jacquard_common::xrpc::XrpcResp for SendInteractionsResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for SendInteractions<'a> {
     const NSID: &'static str = "app.bsky.feed.sendInteractions";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = SendInteractionsResponse;
 }
 
@@ -162,9 +154,8 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for SendInteractions<'a> {
 pub struct SendInteractionsRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for SendInteractionsRequest {
     const PATH: &'static str = "/xrpc/app.bsky.feed.sendInteractions";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<'de> = SendInteractions<'de>;
     type Response = SendInteractionsResponse;
 }

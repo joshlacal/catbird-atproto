@@ -15,13 +15,11 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct FollowerRule<'a> {}
-fn lexicon_doc_app_bsky_feed_threadgate() -> ::jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn lexicon_doc_app_bsky_feed_threadgate() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("app.bsky.feed.threadgate"),
@@ -31,73 +29,75 @@ fn lexicon_doc_app_bsky_feed_threadgate() -> ::jacquard_lexicon::lexicon::Lexico
             let mut map = ::std::collections::BTreeMap::new();
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("followerRule"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: Some(
-                        ::jacquard_common::CowStr::new_static(
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        description: Some(::jacquard_common::CowStr::new_static(
                             "Allow replies from actors who follow you.",
-                        ),
-                    ),
-                    required: None,
-                    nullable: None,
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
-                        map
+                        )),
+                        required: None,
+                        nullable: None,
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::std::collections::BTreeMap::new();
+                            map
+                        },
                     },
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("followingRule"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: Some(
-                        ::jacquard_common::CowStr::new_static(
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        description: Some(::jacquard_common::CowStr::new_static(
                             "Allow replies from actors you follow.",
-                        ),
-                    ),
-                    required: None,
-                    nullable: None,
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
-                        map
+                        )),
+                        required: None,
+                        nullable: None,
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::std::collections::BTreeMap::new();
+                            map
+                        },
                     },
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("listRule"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: Some(
-                        ::jacquard_common::CowStr::new_static(
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        description: Some(::jacquard_common::CowStr::new_static(
                             "Allow replies from actors on a list.",
-                        ),
-                    ),
-                    required: Some(
-                        vec![::jacquard_common::smol_str::SmolStr::new_static("list")],
-                    ),
-                    nullable: None,
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("list"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
+                        )),
+                        required: Some(vec![::jacquard_common::smol_str::SmolStr::new_static(
+                            "list",
+                        )]),
+                        nullable: None,
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::std::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("list"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: None,
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
+                                        ),
+                                        default: None,
+                                        min_length: None,
+                                        max_length: None,
+                                        min_graphemes: None,
+                                        max_graphemes: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                        known_values: None,
+                                    },
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map
+                            );
+                            map
+                        },
                     },
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("main"),
@@ -217,20 +217,20 @@ fn lexicon_doc_app_bsky_feed_threadgate() -> ::jacquard_lexicon::lexicon::Lexico
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("mentionRule"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: Some(
-                        ::jacquard_common::CowStr::new_static(
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        description: Some(::jacquard_common::CowStr::new_static(
                             "Allow replies from actors mentioned in your post.",
-                        ),
-                    ),
-                    required: None,
-                    nullable: None,
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
-                        map
+                        )),
+                        required: None,
+                        nullable: None,
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::std::collections::BTreeMap::new();
+                            map
+                        },
                     },
-                }),
+                ),
             );
             map
         },
@@ -264,7 +264,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for FollowerRule<'a> {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct FollowingRule<'a> {}
@@ -288,13 +288,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for FollowingRule<'a> {
 /// Allow replies from actors on a list.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ListRule<'a> {
@@ -304,9 +298,9 @@ pub struct ListRule<'a> {
 
 pub mod list_rule_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -337,9 +331,7 @@ pub mod list_rule_state {
 /// Builder for constructing an instance of this type
 pub struct ListRuleBuilder<'a, S: list_rule_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
-    ),
+    __unsafe_private_named: (::core::option::Option<jacquard_common::types::string::AtUri<'a>>,),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
 
@@ -427,13 +419,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ListRule<'a> {
 /// Record defining interaction gating rules for a thread (aka, reply controls). The record key (rkey) of the threadgate record must match the record key of the thread's root post, and that record must be in the same repository.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Threadgate<'a> {
@@ -445,9 +431,7 @@ pub struct Threadgate<'a> {
     /// List of hidden reply URIs.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub hidden_replies: std::option::Option<
-        Vec<jacquard_common::types::string::AtUri<'a>>,
-    >,
+    pub hidden_replies: std::option::Option<Vec<jacquard_common::types::string::AtUri<'a>>>,
     /// Reference (AT-URI) to the post record.
     #[serde(borrow)]
     pub post: jacquard_common::types::string::AtUri<'a>,
@@ -455,9 +439,9 @@ pub struct Threadgate<'a> {
 
 pub mod threadgate_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -529,10 +513,7 @@ impl<'a> ThreadgateBuilder<'a, threadgate_state::Empty> {
 
 impl<'a, S: threadgate_state::State> ThreadgateBuilder<'a, S> {
     /// Set the `allow` field (optional)
-    pub fn allow(
-        mut self,
-        value: impl Into<Option<Vec<ThreadgateAllowItem<'a>>>>,
-    ) -> Self {
+    pub fn allow(mut self, value: impl Into<Option<Vec<ThreadgateAllowItem<'a>>>>) -> Self {
         self.__unsafe_private_named.0 = value.into();
         self
     }
@@ -649,13 +630,7 @@ impl<'a> Threadgate<'a> {
 
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "$type")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -672,13 +647,7 @@ pub enum ThreadgateAllowItem<'a> {
 
 /// Typed wrapper for GetRecord response with this collection's record type.
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ThreadgateGetRecordOutput<'a> {
@@ -735,9 +704,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Threadgate<'a> {
             #[allow(unused_comparisons)]
             if value.len() > 5usize {
                 return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
-                        "allow",
-                    ),
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("allow"),
                     max: 5usize,
                     actual: value.len(),
                 });
@@ -769,7 +736,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Threadgate<'a> {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct MentionRule<'a> {}

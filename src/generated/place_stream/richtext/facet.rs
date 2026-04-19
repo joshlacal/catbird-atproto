@@ -8,13 +8,7 @@
 /// Annotation of a sub-string within rich text.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Facet<'a> {
@@ -26,9 +20,9 @@ pub struct Facet<'a> {
 
 pub mod facet_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -73,9 +67,7 @@ pub struct FacetBuilder<'a, S: facet_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
         ::core::option::Option<Vec<FacetFeaturesItem<'a>>>,
-        ::core::option::Option<
-            crate::generated::app_bsky::richtext::facet::ByteSlice<'a>,
-        >,
+        ::core::option::Option<crate::generated::app_bsky::richtext::facet::ByteSlice<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
@@ -168,13 +160,7 @@ where
 
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "$type")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -185,9 +171,7 @@ pub enum FacetFeaturesItem<'a> {
     FacetLink(Box<crate::generated::app_bsky::richtext::facet::Link<'a>>),
 }
 
-fn lexicon_doc_place_stream_richtext_facet() -> ::jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn lexicon_doc_place_stream_richtext_facet() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("place.stream.richtext.facet"),
@@ -197,50 +181,58 @@ fn lexicon_doc_place_stream_richtext_facet() -> ::jacquard_lexicon::lexicon::Lex
             let mut map = ::std::collections::BTreeMap::new();
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("main"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: Some(
-                        ::jacquard_common::CowStr::new_static(
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        description: Some(::jacquard_common::CowStr::new_static(
                             "Annotation of a sub-string within rich text.",
-                        ),
-                    ),
-                    required: Some(
-                        vec![
+                        )),
+                        required: Some(vec![
                             ::jacquard_common::smol_str::SmolStr::new_static("index"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("features")
-                        ],
-                    ),
-                    nullable: None,
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
-                        map.insert(
                             ::jacquard_common::smol_str::SmolStr::new_static("features"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
-                                description: None,
-                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Union(::jacquard_lexicon::lexicon::LexRefUnion {
-                                    description: None,
-                                    refs: vec![
-                                        ::jacquard_common::CowStr::new_static("app.bsky.richtext.facet#mention"),
-                                        ::jacquard_common::CowStr::new_static("app.bsky.richtext.facet#link")
-                                    ],
-                                    closed: None,
-                                }),
-                                min_length: None,
-                                max_length: None,
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("index"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                description: None,
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "app.bsky.richtext.facet#byteSlice",
+                        ]),
+                        nullable: None,
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::std::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("features"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Array(
+                                    ::jacquard_lexicon::lexicon::LexArray {
+                                        description: None,
+                                        items: ::jacquard_lexicon::lexicon::LexArrayItem::Union(
+                                            ::jacquard_lexicon::lexicon::LexRefUnion {
+                                                description: None,
+                                                refs: vec![
+                                                    ::jacquard_common::CowStr::new_static(
+                                                        "app.bsky.richtext.facet#mention",
+                                                    ),
+                                                    ::jacquard_common::CowStr::new_static(
+                                                        "app.bsky.richtext.facet#link",
+                                                    ),
+                                                ],
+                                                closed: None,
+                                            },
+                                        ),
+                                        min_length: None,
+                                        max_length: None,
+                                    },
                                 ),
-                            }),
-                        );
-                        map
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("index"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        description: None,
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "app.bsky.richtext.facet#byteSlice",
+                                        ),
+                                    },
+                                ),
+                            );
+                            map
+                        },
                     },
-                }),
+                ),
             );
             map
         },

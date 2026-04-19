@@ -8,13 +8,7 @@
 /// Record indicating a livestream is published and available for replication at a given address. By convention, the record key is streamer::server
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Origin<'a> {
@@ -42,9 +36,9 @@ pub struct Origin<'a> {
 
 pub mod origin_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -151,18 +145,12 @@ impl<'a, S: origin_state::State> OriginBuilder<'a, S> {
 
 impl<'a, S: origin_state::State> OriginBuilder<'a, S> {
     /// Set the `irohTicket` field (optional)
-    pub fn iroh_ticket(
-        mut self,
-        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
-    ) -> Self {
+    pub fn iroh_ticket(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
         self.__unsafe_private_named.1 = value.into();
         self
     }
     /// Set the `irohTicket` field to an Option value (optional)
-    pub fn maybe_iroh_ticket(
-        mut self,
-        value: Option<jacquard_common::CowStr<'a>>,
-    ) -> Self {
+    pub fn maybe_iroh_ticket(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
         self.__unsafe_private_named.1 = value;
         self
     }
@@ -298,13 +286,7 @@ impl<'a> Origin<'a> {
 
 /// Typed wrapper for GetRecord response with this collection's record type.
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct OriginGetRecordOutput<'a> {
@@ -361,9 +343,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Origin<'a> {
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) > 2048usize {
                 return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
-                        "iroh_ticket",
-                    ),
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("iroh_ticket"),
                     max: 2048usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -373,9 +353,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Origin<'a> {
     }
 }
 
-fn lexicon_doc_place_stream_broadcast_origin() -> ::jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn lexicon_doc_place_stream_broadcast_origin() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("place.stream.broadcast.origin"),

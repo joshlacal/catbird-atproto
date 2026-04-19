@@ -7,13 +7,7 @@
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct SubmitCommit<'a> {
@@ -36,113 +30,113 @@ pub struct SubmitCommit<'a> {
 
 pub mod submit_commit_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Epoch;
-        type ProposedEpoch;
         type CommitData;
+        type Epoch;
         type SequencerTerm;
-        type SenderDsDid;
         type ConvoId;
+        type SenderDsDid;
+        type ProposedEpoch;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Epoch = Unset;
-        type ProposedEpoch = Unset;
         type CommitData = Unset;
+        type Epoch = Unset;
         type SequencerTerm = Unset;
-        type SenderDsDid = Unset;
         type ConvoId = Unset;
-    }
-    ///State transition - sets the `epoch` field to Set
-    pub struct SetEpoch<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetEpoch<S> {}
-    impl<S: State> State for SetEpoch<S> {
-        type Epoch = Set<members::epoch>;
-        type ProposedEpoch = S::ProposedEpoch;
-        type CommitData = S::CommitData;
-        type SequencerTerm = S::SequencerTerm;
-        type SenderDsDid = S::SenderDsDid;
-        type ConvoId = S::ConvoId;
-    }
-    ///State transition - sets the `proposed_epoch` field to Set
-    pub struct SetProposedEpoch<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetProposedEpoch<S> {}
-    impl<S: State> State for SetProposedEpoch<S> {
-        type Epoch = S::Epoch;
-        type ProposedEpoch = Set<members::proposed_epoch>;
-        type CommitData = S::CommitData;
-        type SequencerTerm = S::SequencerTerm;
-        type SenderDsDid = S::SenderDsDid;
-        type ConvoId = S::ConvoId;
+        type SenderDsDid = Unset;
+        type ProposedEpoch = Unset;
     }
     ///State transition - sets the `commit_data` field to Set
     pub struct SetCommitData<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCommitData<S> {}
     impl<S: State> State for SetCommitData<S> {
-        type Epoch = S::Epoch;
-        type ProposedEpoch = S::ProposedEpoch;
         type CommitData = Set<members::commit_data>;
+        type Epoch = S::Epoch;
         type SequencerTerm = S::SequencerTerm;
-        type SenderDsDid = S::SenderDsDid;
         type ConvoId = S::ConvoId;
+        type SenderDsDid = S::SenderDsDid;
+        type ProposedEpoch = S::ProposedEpoch;
+    }
+    ///State transition - sets the `epoch` field to Set
+    pub struct SetEpoch<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetEpoch<S> {}
+    impl<S: State> State for SetEpoch<S> {
+        type CommitData = S::CommitData;
+        type Epoch = Set<members::epoch>;
+        type SequencerTerm = S::SequencerTerm;
+        type ConvoId = S::ConvoId;
+        type SenderDsDid = S::SenderDsDid;
+        type ProposedEpoch = S::ProposedEpoch;
     }
     ///State transition - sets the `sequencer_term` field to Set
     pub struct SetSequencerTerm<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetSequencerTerm<S> {}
     impl<S: State> State for SetSequencerTerm<S> {
-        type Epoch = S::Epoch;
-        type ProposedEpoch = S::ProposedEpoch;
         type CommitData = S::CommitData;
+        type Epoch = S::Epoch;
         type SequencerTerm = Set<members::sequencer_term>;
+        type ConvoId = S::ConvoId;
         type SenderDsDid = S::SenderDsDid;
-        type ConvoId = S::ConvoId;
-    }
-    ///State transition - sets the `sender_ds_did` field to Set
-    pub struct SetSenderDsDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetSenderDsDid<S> {}
-    impl<S: State> State for SetSenderDsDid<S> {
-        type Epoch = S::Epoch;
         type ProposedEpoch = S::ProposedEpoch;
-        type CommitData = S::CommitData;
-        type SequencerTerm = S::SequencerTerm;
-        type SenderDsDid = Set<members::sender_ds_did>;
-        type ConvoId = S::ConvoId;
     }
     ///State transition - sets the `convo_id` field to Set
     pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetConvoId<S> {}
     impl<S: State> State for SetConvoId<S> {
-        type Epoch = S::Epoch;
-        type ProposedEpoch = S::ProposedEpoch;
         type CommitData = S::CommitData;
+        type Epoch = S::Epoch;
         type SequencerTerm = S::SequencerTerm;
-        type SenderDsDid = S::SenderDsDid;
         type ConvoId = Set<members::convo_id>;
+        type SenderDsDid = S::SenderDsDid;
+        type ProposedEpoch = S::ProposedEpoch;
+    }
+    ///State transition - sets the `sender_ds_did` field to Set
+    pub struct SetSenderDsDid<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetSenderDsDid<S> {}
+    impl<S: State> State for SetSenderDsDid<S> {
+        type CommitData = S::CommitData;
+        type Epoch = S::Epoch;
+        type SequencerTerm = S::SequencerTerm;
+        type ConvoId = S::ConvoId;
+        type SenderDsDid = Set<members::sender_ds_did>;
+        type ProposedEpoch = S::ProposedEpoch;
+    }
+    ///State transition - sets the `proposed_epoch` field to Set
+    pub struct SetProposedEpoch<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetProposedEpoch<S> {}
+    impl<S: State> State for SetProposedEpoch<S> {
+        type CommitData = S::CommitData;
+        type Epoch = S::Epoch;
+        type SequencerTerm = S::SequencerTerm;
+        type ConvoId = S::ConvoId;
+        type SenderDsDid = S::SenderDsDid;
+        type ProposedEpoch = Set<members::proposed_epoch>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `epoch` field
-        pub struct epoch(());
-        ///Marker type for the `proposed_epoch` field
-        pub struct proposed_epoch(());
         ///Marker type for the `commit_data` field
         pub struct commit_data(());
+        ///Marker type for the `epoch` field
+        pub struct epoch(());
         ///Marker type for the `sequencer_term` field
         pub struct sequencer_term(());
-        ///Marker type for the `sender_ds_did` field
-        pub struct sender_ds_did(());
         ///Marker type for the `convo_id` field
         pub struct convo_id(());
+        ///Marker type for the `sender_ds_did` field
+        pub struct sender_ds_did(());
+        ///Marker type for the `proposed_epoch` field
+        pub struct proposed_epoch(());
     }
 }
 
@@ -295,12 +289,12 @@ where
 impl<'a, S> SubmitCommitBuilder<'a, S>
 where
     S: submit_commit_state::State,
-    S::Epoch: submit_commit_state::IsSet,
-    S::ProposedEpoch: submit_commit_state::IsSet,
     S::CommitData: submit_commit_state::IsSet,
+    S::Epoch: submit_commit_state::IsSet,
     S::SequencerTerm: submit_commit_state::IsSet,
-    S::SenderDsDid: submit_commit_state::IsSet,
     S::ConvoId: submit_commit_state::IsSet,
+    S::SenderDsDid: submit_commit_state::IsSet,
+    S::ProposedEpoch: submit_commit_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> SubmitCommit<'a> {
@@ -336,13 +330,7 @@ where
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct SubmitCommitOutput<'a> {
@@ -368,7 +356,7 @@ pub struct SubmitCommitOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic
+    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -431,9 +419,8 @@ impl jacquard_common::xrpc::XrpcResp for SubmitCommitResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for SubmitCommit<'a> {
     const NSID: &'static str = "blue.catbird.mlsDS.submitCommit";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = SubmitCommitResponse;
 }
 
@@ -442,9 +429,8 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for SubmitCommit<'a> {
 pub struct SubmitCommitRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for SubmitCommitRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.mlsDS.submitCommit";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<'de> = SubmitCommit<'de>;
     type Response = SubmitCommitResponse;
 }

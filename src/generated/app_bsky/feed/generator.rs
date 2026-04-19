@@ -8,13 +8,7 @@
 /// Record declaring of the existence of a feed generator, and containing metadata about it. The record can exist in any repository.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Generator<'a> {
@@ -33,9 +27,8 @@ pub struct Generator<'a> {
     pub description: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub description_facets: std::option::Option<
-        Vec<crate::generated::app_bsky::richtext::facet::Facet<'a>>,
-    >,
+    pub description_facets:
+        std::option::Option<Vec<crate::generated::app_bsky::richtext::facet::Facet<'a>>>,
     #[serde(borrow)]
     pub did: jacquard_common::types::string::Did<'a>,
     #[serde(borrow)]
@@ -43,16 +36,14 @@ pub struct Generator<'a> {
     /// Self-label values
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub labels: std::option::Option<
-        crate::generated::com_atproto::label::SelfLabels<'a>,
-    >,
+    pub labels: std::option::Option<crate::generated::com_atproto::label::SelfLabels<'a>>,
 }
 
 pub mod generator_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -115,9 +106,7 @@ pub struct GeneratorBuilder<'a, S: generator_state::State> {
         ::core::option::Option<jacquard_common::CowStr<'a>>,
         ::core::option::Option<jacquard_common::types::string::Datetime>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<
-            Vec<crate::generated::app_bsky::richtext::facet::Facet<'a>>,
-        >,
+        ::core::option::Option<Vec<crate::generated::app_bsky::richtext::facet::Facet<'a>>>,
         ::core::option::Option<jacquard_common::types::string::Did<'a>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
         ::core::option::Option<crate::generated::com_atproto::label::SelfLabels<'a>>,
@@ -137,17 +126,7 @@ impl<'a> GeneratorBuilder<'a, generator_state::Empty> {
     pub fn new() -> Self {
         GeneratorBuilder {
             _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-            ),
+            __unsafe_private_named: (None, None, None, None, None, None, None, None, None),
             _phantom: ::core::marker::PhantomData,
         }
     }
@@ -187,18 +166,12 @@ impl<'a, S: generator_state::State> GeneratorBuilder<'a, S> {
 
 impl<'a, S: generator_state::State> GeneratorBuilder<'a, S> {
     /// Set the `contentMode` field (optional)
-    pub fn content_mode(
-        mut self,
-        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
-    ) -> Self {
+    pub fn content_mode(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
         self.__unsafe_private_named.2 = value.into();
         self
     }
     /// Set the `contentMode` field to an Option value (optional)
-    pub fn maybe_content_mode(
-        mut self,
-        value: Option<jacquard_common::CowStr<'a>>,
-    ) -> Self {
+    pub fn maybe_content_mode(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
         self.__unsafe_private_named.2 = value;
         self
     }
@@ -225,18 +198,12 @@ where
 
 impl<'a, S: generator_state::State> GeneratorBuilder<'a, S> {
     /// Set the `description` field (optional)
-    pub fn description(
-        mut self,
-        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
-    ) -> Self {
+    pub fn description(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
         self.__unsafe_private_named.4 = value.into();
         self
     }
     /// Set the `description` field to an Option value (optional)
-    pub fn maybe_description(
-        mut self,
-        value: Option<jacquard_common::CowStr<'a>>,
-    ) -> Self {
+    pub fn maybe_description(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
         self.__unsafe_private_named.4 = value;
         self
     }
@@ -246,9 +213,7 @@ impl<'a, S: generator_state::State> GeneratorBuilder<'a, S> {
     /// Set the `descriptionFacets` field (optional)
     pub fn description_facets(
         mut self,
-        value: impl Into<
-            Option<Vec<crate::generated::app_bsky::richtext::facet::Facet<'a>>>,
-        >,
+        value: impl Into<Option<Vec<crate::generated::app_bsky::richtext::facet::Facet<'a>>>>,
     ) -> Self {
         self.__unsafe_private_named.5 = value.into();
         self
@@ -380,13 +345,7 @@ impl<'a> Generator<'a> {
 
 /// Typed wrapper for GetRecord response with this collection's record type.
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GeneratorGetRecordOutput<'a> {
@@ -443,9 +402,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Generator<'a> {
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) > 3000usize {
                 return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
-                        "description",
-                    ),
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("description"),
                     max: 3000usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -453,19 +410,19 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Generator<'a> {
         }
         if let Some(ref value) = self.description {
             {
-                let count = ::unicode_segmentation::UnicodeSegmentation::graphemes(
-                        value.as_ref(),
-                        true,
-                    )
-                    .count();
+                let count =
+                    ::unicode_segmentation::UnicodeSegmentation::graphemes(value.as_ref(), true)
+                        .count();
                 if count > 300usize {
-                    return Err(::jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
-                        path: ::jacquard_lexicon::validation::ValidationPath::from_field(
-                            "description",
-                        ),
-                        max: 300usize,
-                        actual: count,
-                    });
+                    return Err(
+                        ::jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
+                            path: ::jacquard_lexicon::validation::ValidationPath::from_field(
+                                "description",
+                            ),
+                            max: 300usize,
+                            actual: count,
+                        },
+                    );
                 }
             }
         }
@@ -485,19 +442,19 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Generator<'a> {
         {
             let value = &self.display_name;
             {
-                let count = ::unicode_segmentation::UnicodeSegmentation::graphemes(
-                        value.as_ref(),
-                        true,
-                    )
-                    .count();
+                let count =
+                    ::unicode_segmentation::UnicodeSegmentation::graphemes(value.as_ref(), true)
+                        .count();
                 if count > 24usize {
-                    return Err(::jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
-                        path: ::jacquard_lexicon::validation::ValidationPath::from_field(
-                            "display_name",
-                        ),
-                        max: 24usize,
-                        actual: count,
-                    });
+                    return Err(
+                        ::jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
+                            path: ::jacquard_lexicon::validation::ValidationPath::from_field(
+                                "display_name",
+                            ),
+                            max: 24usize,
+                            actual: count,
+                        },
+                    );
                 }
             }
         }
@@ -505,9 +462,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Generator<'a> {
     }
 }
 
-fn lexicon_doc_app_bsky_feed_generator() -> ::jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn lexicon_doc_app_bsky_feed_generator() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("app.bsky.feed.generator"),

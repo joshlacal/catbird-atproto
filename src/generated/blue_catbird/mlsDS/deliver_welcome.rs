@@ -7,13 +7,7 @@
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct DeliverWelcome<'a> {
@@ -38,113 +32,113 @@ pub struct DeliverWelcome<'a> {
 
 pub mod deliver_welcome_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
         type WelcomeData;
+        type SenderDsDid;
+        type InitialEpoch;
         type RecipientDid;
         type ConvoId;
         type KeyPackageHash;
-        type InitialEpoch;
-        type SenderDsDid;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
         type WelcomeData = Unset;
+        type SenderDsDid = Unset;
+        type InitialEpoch = Unset;
         type RecipientDid = Unset;
         type ConvoId = Unset;
         type KeyPackageHash = Unset;
-        type InitialEpoch = Unset;
-        type SenderDsDid = Unset;
     }
     ///State transition - sets the `welcome_data` field to Set
     pub struct SetWelcomeData<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetWelcomeData<S> {}
     impl<S: State> State for SetWelcomeData<S> {
         type WelcomeData = Set<members::welcome_data>;
+        type SenderDsDid = S::SenderDsDid;
+        type InitialEpoch = S::InitialEpoch;
         type RecipientDid = S::RecipientDid;
         type ConvoId = S::ConvoId;
         type KeyPackageHash = S::KeyPackageHash;
-        type InitialEpoch = S::InitialEpoch;
-        type SenderDsDid = S::SenderDsDid;
-    }
-    ///State transition - sets the `recipient_did` field to Set
-    pub struct SetRecipientDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRecipientDid<S> {}
-    impl<S: State> State for SetRecipientDid<S> {
-        type WelcomeData = S::WelcomeData;
-        type RecipientDid = Set<members::recipient_did>;
-        type ConvoId = S::ConvoId;
-        type KeyPackageHash = S::KeyPackageHash;
-        type InitialEpoch = S::InitialEpoch;
-        type SenderDsDid = S::SenderDsDid;
-    }
-    ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type WelcomeData = S::WelcomeData;
-        type RecipientDid = S::RecipientDid;
-        type ConvoId = Set<members::convo_id>;
-        type KeyPackageHash = S::KeyPackageHash;
-        type InitialEpoch = S::InitialEpoch;
-        type SenderDsDid = S::SenderDsDid;
-    }
-    ///State transition - sets the `key_package_hash` field to Set
-    pub struct SetKeyPackageHash<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetKeyPackageHash<S> {}
-    impl<S: State> State for SetKeyPackageHash<S> {
-        type WelcomeData = S::WelcomeData;
-        type RecipientDid = S::RecipientDid;
-        type ConvoId = S::ConvoId;
-        type KeyPackageHash = Set<members::key_package_hash>;
-        type InitialEpoch = S::InitialEpoch;
-        type SenderDsDid = S::SenderDsDid;
-    }
-    ///State transition - sets the `initial_epoch` field to Set
-    pub struct SetInitialEpoch<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetInitialEpoch<S> {}
-    impl<S: State> State for SetInitialEpoch<S> {
-        type WelcomeData = S::WelcomeData;
-        type RecipientDid = S::RecipientDid;
-        type ConvoId = S::ConvoId;
-        type KeyPackageHash = S::KeyPackageHash;
-        type InitialEpoch = Set<members::initial_epoch>;
-        type SenderDsDid = S::SenderDsDid;
     }
     ///State transition - sets the `sender_ds_did` field to Set
     pub struct SetSenderDsDid<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetSenderDsDid<S> {}
     impl<S: State> State for SetSenderDsDid<S> {
         type WelcomeData = S::WelcomeData;
+        type SenderDsDid = Set<members::sender_ds_did>;
+        type InitialEpoch = S::InitialEpoch;
         type RecipientDid = S::RecipientDid;
         type ConvoId = S::ConvoId;
         type KeyPackageHash = S::KeyPackageHash;
+    }
+    ///State transition - sets the `initial_epoch` field to Set
+    pub struct SetInitialEpoch<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetInitialEpoch<S> {}
+    impl<S: State> State for SetInitialEpoch<S> {
+        type WelcomeData = S::WelcomeData;
+        type SenderDsDid = S::SenderDsDid;
+        type InitialEpoch = Set<members::initial_epoch>;
+        type RecipientDid = S::RecipientDid;
+        type ConvoId = S::ConvoId;
+        type KeyPackageHash = S::KeyPackageHash;
+    }
+    ///State transition - sets the `recipient_did` field to Set
+    pub struct SetRecipientDid<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetRecipientDid<S> {}
+    impl<S: State> State for SetRecipientDid<S> {
+        type WelcomeData = S::WelcomeData;
+        type SenderDsDid = S::SenderDsDid;
         type InitialEpoch = S::InitialEpoch;
-        type SenderDsDid = Set<members::sender_ds_did>;
+        type RecipientDid = Set<members::recipient_did>;
+        type ConvoId = S::ConvoId;
+        type KeyPackageHash = S::KeyPackageHash;
+    }
+    ///State transition - sets the `convo_id` field to Set
+    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetConvoId<S> {}
+    impl<S: State> State for SetConvoId<S> {
+        type WelcomeData = S::WelcomeData;
+        type SenderDsDid = S::SenderDsDid;
+        type InitialEpoch = S::InitialEpoch;
+        type RecipientDid = S::RecipientDid;
+        type ConvoId = Set<members::convo_id>;
+        type KeyPackageHash = S::KeyPackageHash;
+    }
+    ///State transition - sets the `key_package_hash` field to Set
+    pub struct SetKeyPackageHash<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetKeyPackageHash<S> {}
+    impl<S: State> State for SetKeyPackageHash<S> {
+        type WelcomeData = S::WelcomeData;
+        type SenderDsDid = S::SenderDsDid;
+        type InitialEpoch = S::InitialEpoch;
+        type RecipientDid = S::RecipientDid;
+        type ConvoId = S::ConvoId;
+        type KeyPackageHash = Set<members::key_package_hash>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
         ///Marker type for the `welcome_data` field
         pub struct welcome_data(());
+        ///Marker type for the `sender_ds_did` field
+        pub struct sender_ds_did(());
+        ///Marker type for the `initial_epoch` field
+        pub struct initial_epoch(());
         ///Marker type for the `recipient_did` field
         pub struct recipient_did(());
         ///Marker type for the `convo_id` field
         pub struct convo_id(());
         ///Marker type for the `key_package_hash` field
         pub struct key_package_hash(());
-        ///Marker type for the `initial_epoch` field
-        pub struct initial_epoch(());
-        ///Marker type for the `sender_ds_did` field
-        pub struct sender_ds_did(());
     }
 }
 
@@ -298,11 +292,11 @@ impl<'a, S> DeliverWelcomeBuilder<'a, S>
 where
     S: deliver_welcome_state::State,
     S::WelcomeData: deliver_welcome_state::IsSet,
+    S::SenderDsDid: deliver_welcome_state::IsSet,
+    S::InitialEpoch: deliver_welcome_state::IsSet,
     S::RecipientDid: deliver_welcome_state::IsSet,
     S::ConvoId: deliver_welcome_state::IsSet,
     S::KeyPackageHash: deliver_welcome_state::IsSet,
-    S::InitialEpoch: deliver_welcome_state::IsSet,
-    S::SenderDsDid: deliver_welcome_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> DeliverWelcome<'a> {
@@ -338,13 +332,7 @@ where
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct DeliverWelcomeOutput<'a> {
@@ -367,7 +355,7 @@ pub struct DeliverWelcomeOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic
+    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -412,9 +400,8 @@ impl jacquard_common::xrpc::XrpcResp for DeliverWelcomeResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for DeliverWelcome<'a> {
     const NSID: &'static str = "blue.catbird.mlsDS.deliverWelcome";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = DeliverWelcomeResponse;
 }
 
@@ -423,9 +410,8 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for DeliverWelcome<'a> {
 pub struct DeliverWelcomeRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for DeliverWelcomeRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.mlsDS.deliverWelcome";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<'de> = DeliverWelcome<'de>;
     type Response = DeliverWelcomeResponse;
 }

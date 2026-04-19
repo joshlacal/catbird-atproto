@@ -7,13 +7,7 @@
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateMuteStatus<'a> {
@@ -26,9 +20,9 @@ pub struct UpdateMuteStatus<'a> {
 
 pub mod update_mute_status_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -166,13 +160,7 @@ where
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateMuteStatusOutput<'a> {
@@ -191,9 +179,8 @@ impl jacquard_common::xrpc::XrpcResp for UpdateMuteStatusResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for UpdateMuteStatus<'a> {
     const NSID: &'static str = "blue.catbird.bskychat.updateMuteStatus";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = UpdateMuteStatusResponse;
 }
 
@@ -202,9 +189,8 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for UpdateMuteStatus<'a> {
 pub struct UpdateMuteStatusRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for UpdateMuteStatusRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.bskychat.updateMuteStatus";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<'de> = UpdateMuteStatus<'de>;
     type Response = UpdateMuteStatusResponse;
 }

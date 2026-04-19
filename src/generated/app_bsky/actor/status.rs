@@ -14,7 +14,7 @@
     PartialEq,
     Eq,
     Hash,
-    jacquard_derive::IntoStatic
+    jacquard_derive::IntoStatic,
 )]
 pub struct Live;
 impl std::fmt::Display for Live {
@@ -26,13 +26,7 @@ impl std::fmt::Display for Live {
 /// A declaration of a Bluesky account status.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Status<'a> {
@@ -43,9 +37,7 @@ pub struct Status<'a> {
     /// An optional embed associated with the status.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub embed: std::option::Option<
-        crate::generated::app_bsky::embed::external::ExternalRecord<'a>,
-    >,
+    pub embed: std::option::Option<crate::generated::app_bsky::embed::external::ExternalRecord<'a>>,
     /// The status for the account.
     #[serde(borrow)]
     pub status: jacquard_common::CowStr<'a>,
@@ -53,9 +45,9 @@ pub struct Status<'a> {
 
 pub mod status_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -101,9 +93,7 @@ pub struct StatusBuilder<'a, S: status_state::State> {
     __unsafe_private_named: (
         ::core::option::Option<jacquard_common::types::string::Datetime>,
         ::core::option::Option<i64>,
-        ::core::option::Option<
-            crate::generated::app_bsky::embed::external::ExternalRecord<'a>,
-        >,
+        ::core::option::Option<crate::generated::app_bsky::embed::external::ExternalRecord<'a>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
@@ -163,9 +153,7 @@ impl<'a, S: status_state::State> StatusBuilder<'a, S> {
     /// Set the `embed` field (optional)
     pub fn embed(
         mut self,
-        value: impl Into<
-            Option<crate::generated::app_bsky::embed::external::ExternalRecord<'a>>,
-        >,
+        value: impl Into<Option<crate::generated::app_bsky::embed::external::ExternalRecord<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.2 = value.into();
         self
@@ -248,13 +236,7 @@ impl<'a> Status<'a> {
 
 /// Typed wrapper for GetRecord response with this collection's record type.
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct StatusGetRecordOutput<'a> {
@@ -322,9 +304,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Status<'a> {
     }
 }
 
-fn lexicon_doc_app_bsky_actor_status() -> ::jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn lexicon_doc_app_bsky_actor_status() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("app.bsky.actor.status"),
@@ -334,9 +314,9 @@ fn lexicon_doc_app_bsky_actor_status() -> ::jacquard_lexicon::lexicon::LexiconDo
             let mut map = ::std::collections::BTreeMap::new();
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("live"),
-                ::jacquard_lexicon::lexicon::LexUserType::Token(::jacquard_lexicon::lexicon::LexToken {
-                    description: None,
-                }),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken { description: None },
+                ),
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("main"),

@@ -7,13 +7,7 @@
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateRule<'a> {
@@ -38,9 +32,9 @@ pub struct UpdateRule<'a> {
 
 pub mod update_rule_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -163,10 +157,7 @@ where
 
 impl<'a, S: update_rule_state::State> UpdateRuleBuilder<'a, S> {
     /// Set the `comment` field (optional)
-    pub fn comment(
-        mut self,
-        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
-    ) -> Self {
+    pub fn comment(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
         self.__unsafe_private_named.1 = value.into();
         self
     }
@@ -295,13 +286,7 @@ where
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateRuleOutput<'a> {
@@ -320,7 +305,7 @@ pub struct UpdateRuleOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic
+    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -357,9 +342,8 @@ impl jacquard_common::xrpc::XrpcResp for UpdateRuleResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for UpdateRule<'a> {
     const NSID: &'static str = "tools.ozone.safelink.updateRule";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = UpdateRuleResponse;
 }
 
@@ -368,9 +352,8 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for UpdateRule<'a> {
 pub struct UpdateRuleRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for UpdateRuleRequest {
     const PATH: &'static str = "/xrpc/tools.ozone.safelink.updateRule";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<'de> = UpdateRule<'de>;
     type Response = UpdateRuleResponse;
 }
