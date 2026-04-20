@@ -424,151 +424,151 @@ pub mod deliver_message_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Epoch;
-        type ConvoId;
-        type DeliveryId;
-        type MsgId;
-        type Ciphertext;
         type PaddedSize;
-        type SequencerTerm;
+        type MsgId;
+        type ConvoId;
+        type Epoch;
+        type DeliveryId;
         type SenderDsDid;
+        type SequencerTerm;
+        type Ciphertext;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Epoch = Unset;
-        type ConvoId = Unset;
-        type DeliveryId = Unset;
-        type MsgId = Unset;
-        type Ciphertext = Unset;
         type PaddedSize = Unset;
-        type SequencerTerm = Unset;
+        type MsgId = Unset;
+        type ConvoId = Unset;
+        type Epoch = Unset;
+        type DeliveryId = Unset;
         type SenderDsDid = Unset;
-    }
-    ///State transition - sets the `epoch` field to Set
-    pub struct SetEpoch<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetEpoch<S> {}
-    impl<S: State> State for SetEpoch<S> {
-        type Epoch = Set<members::epoch>;
-        type ConvoId = S::ConvoId;
-        type DeliveryId = S::DeliveryId;
-        type MsgId = S::MsgId;
-        type Ciphertext = S::Ciphertext;
-        type PaddedSize = S::PaddedSize;
-        type SequencerTerm = S::SequencerTerm;
-        type SenderDsDid = S::SenderDsDid;
-    }
-    ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type Epoch = S::Epoch;
-        type ConvoId = Set<members::convo_id>;
-        type DeliveryId = S::DeliveryId;
-        type MsgId = S::MsgId;
-        type Ciphertext = S::Ciphertext;
-        type PaddedSize = S::PaddedSize;
-        type SequencerTerm = S::SequencerTerm;
-        type SenderDsDid = S::SenderDsDid;
-    }
-    ///State transition - sets the `delivery_id` field to Set
-    pub struct SetDeliveryId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDeliveryId<S> {}
-    impl<S: State> State for SetDeliveryId<S> {
-        type Epoch = S::Epoch;
-        type ConvoId = S::ConvoId;
-        type DeliveryId = Set<members::delivery_id>;
-        type MsgId = S::MsgId;
-        type Ciphertext = S::Ciphertext;
-        type PaddedSize = S::PaddedSize;
-        type SequencerTerm = S::SequencerTerm;
-        type SenderDsDid = S::SenderDsDid;
-    }
-    ///State transition - sets the `msg_id` field to Set
-    pub struct SetMsgId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetMsgId<S> {}
-    impl<S: State> State for SetMsgId<S> {
-        type Epoch = S::Epoch;
-        type ConvoId = S::ConvoId;
-        type DeliveryId = S::DeliveryId;
-        type MsgId = Set<members::msg_id>;
-        type Ciphertext = S::Ciphertext;
-        type PaddedSize = S::PaddedSize;
-        type SequencerTerm = S::SequencerTerm;
-        type SenderDsDid = S::SenderDsDid;
-    }
-    ///State transition - sets the `ciphertext` field to Set
-    pub struct SetCiphertext<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCiphertext<S> {}
-    impl<S: State> State for SetCiphertext<S> {
-        type Epoch = S::Epoch;
-        type ConvoId = S::ConvoId;
-        type DeliveryId = S::DeliveryId;
-        type MsgId = S::MsgId;
-        type Ciphertext = Set<members::ciphertext>;
-        type PaddedSize = S::PaddedSize;
-        type SequencerTerm = S::SequencerTerm;
-        type SenderDsDid = S::SenderDsDid;
+        type SequencerTerm = Unset;
+        type Ciphertext = Unset;
     }
     ///State transition - sets the `padded_size` field to Set
     pub struct SetPaddedSize<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetPaddedSize<S> {}
     impl<S: State> State for SetPaddedSize<S> {
-        type Epoch = S::Epoch;
-        type ConvoId = S::ConvoId;
-        type DeliveryId = S::DeliveryId;
-        type MsgId = S::MsgId;
-        type Ciphertext = S::Ciphertext;
         type PaddedSize = Set<members::padded_size>;
-        type SequencerTerm = S::SequencerTerm;
-        type SenderDsDid = S::SenderDsDid;
-    }
-    ///State transition - sets the `sequencer_term` field to Set
-    pub struct SetSequencerTerm<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetSequencerTerm<S> {}
-    impl<S: State> State for SetSequencerTerm<S> {
-        type Epoch = S::Epoch;
-        type ConvoId = S::ConvoId;
-        type DeliveryId = S::DeliveryId;
         type MsgId = S::MsgId;
-        type Ciphertext = S::Ciphertext;
-        type PaddedSize = S::PaddedSize;
-        type SequencerTerm = Set<members::sequencer_term>;
+        type ConvoId = S::ConvoId;
+        type Epoch = S::Epoch;
+        type DeliveryId = S::DeliveryId;
         type SenderDsDid = S::SenderDsDid;
+        type SequencerTerm = S::SequencerTerm;
+        type Ciphertext = S::Ciphertext;
+    }
+    ///State transition - sets the `msg_id` field to Set
+    pub struct SetMsgId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetMsgId<S> {}
+    impl<S: State> State for SetMsgId<S> {
+        type PaddedSize = S::PaddedSize;
+        type MsgId = Set<members::msg_id>;
+        type ConvoId = S::ConvoId;
+        type Epoch = S::Epoch;
+        type DeliveryId = S::DeliveryId;
+        type SenderDsDid = S::SenderDsDid;
+        type SequencerTerm = S::SequencerTerm;
+        type Ciphertext = S::Ciphertext;
+    }
+    ///State transition - sets the `convo_id` field to Set
+    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetConvoId<S> {}
+    impl<S: State> State for SetConvoId<S> {
+        type PaddedSize = S::PaddedSize;
+        type MsgId = S::MsgId;
+        type ConvoId = Set<members::convo_id>;
+        type Epoch = S::Epoch;
+        type DeliveryId = S::DeliveryId;
+        type SenderDsDid = S::SenderDsDid;
+        type SequencerTerm = S::SequencerTerm;
+        type Ciphertext = S::Ciphertext;
+    }
+    ///State transition - sets the `epoch` field to Set
+    pub struct SetEpoch<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetEpoch<S> {}
+    impl<S: State> State for SetEpoch<S> {
+        type PaddedSize = S::PaddedSize;
+        type MsgId = S::MsgId;
+        type ConvoId = S::ConvoId;
+        type Epoch = Set<members::epoch>;
+        type DeliveryId = S::DeliveryId;
+        type SenderDsDid = S::SenderDsDid;
+        type SequencerTerm = S::SequencerTerm;
+        type Ciphertext = S::Ciphertext;
+    }
+    ///State transition - sets the `delivery_id` field to Set
+    pub struct SetDeliveryId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetDeliveryId<S> {}
+    impl<S: State> State for SetDeliveryId<S> {
+        type PaddedSize = S::PaddedSize;
+        type MsgId = S::MsgId;
+        type ConvoId = S::ConvoId;
+        type Epoch = S::Epoch;
+        type DeliveryId = Set<members::delivery_id>;
+        type SenderDsDid = S::SenderDsDid;
+        type SequencerTerm = S::SequencerTerm;
+        type Ciphertext = S::Ciphertext;
     }
     ///State transition - sets the `sender_ds_did` field to Set
     pub struct SetSenderDsDid<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetSenderDsDid<S> {}
     impl<S: State> State for SetSenderDsDid<S> {
-        type Epoch = S::Epoch;
-        type ConvoId = S::ConvoId;
-        type DeliveryId = S::DeliveryId;
-        type MsgId = S::MsgId;
-        type Ciphertext = S::Ciphertext;
         type PaddedSize = S::PaddedSize;
-        type SequencerTerm = S::SequencerTerm;
+        type MsgId = S::MsgId;
+        type ConvoId = S::ConvoId;
+        type Epoch = S::Epoch;
+        type DeliveryId = S::DeliveryId;
         type SenderDsDid = Set<members::sender_ds_did>;
+        type SequencerTerm = S::SequencerTerm;
+        type Ciphertext = S::Ciphertext;
+    }
+    ///State transition - sets the `sequencer_term` field to Set
+    pub struct SetSequencerTerm<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetSequencerTerm<S> {}
+    impl<S: State> State for SetSequencerTerm<S> {
+        type PaddedSize = S::PaddedSize;
+        type MsgId = S::MsgId;
+        type ConvoId = S::ConvoId;
+        type Epoch = S::Epoch;
+        type DeliveryId = S::DeliveryId;
+        type SenderDsDid = S::SenderDsDid;
+        type SequencerTerm = Set<members::sequencer_term>;
+        type Ciphertext = S::Ciphertext;
+    }
+    ///State transition - sets the `ciphertext` field to Set
+    pub struct SetCiphertext<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCiphertext<S> {}
+    impl<S: State> State for SetCiphertext<S> {
+        type PaddedSize = S::PaddedSize;
+        type MsgId = S::MsgId;
+        type ConvoId = S::ConvoId;
+        type Epoch = S::Epoch;
+        type DeliveryId = S::DeliveryId;
+        type SenderDsDid = S::SenderDsDid;
+        type SequencerTerm = S::SequencerTerm;
+        type Ciphertext = Set<members::ciphertext>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `epoch` field
-        pub struct epoch(());
-        ///Marker type for the `convo_id` field
-        pub struct convo_id(());
-        ///Marker type for the `delivery_id` field
-        pub struct delivery_id(());
-        ///Marker type for the `msg_id` field
-        pub struct msg_id(());
-        ///Marker type for the `ciphertext` field
-        pub struct ciphertext(());
         ///Marker type for the `padded_size` field
         pub struct padded_size(());
-        ///Marker type for the `sequencer_term` field
-        pub struct sequencer_term(());
+        ///Marker type for the `msg_id` field
+        pub struct msg_id(());
+        ///Marker type for the `convo_id` field
+        pub struct convo_id(());
+        ///Marker type for the `epoch` field
+        pub struct epoch(());
+        ///Marker type for the `delivery_id` field
+        pub struct delivery_id(());
         ///Marker type for the `sender_ds_did` field
         pub struct sender_ds_did(());
+        ///Marker type for the `sequencer_term` field
+        pub struct sequencer_term(());
+        ///Marker type for the `ciphertext` field
+        pub struct ciphertext(());
     }
 }
 
@@ -775,14 +775,14 @@ where
 impl<'a, S> DeliverMessageBuilder<'a, S>
 where
     S: deliver_message_state::State,
-    S::Epoch: deliver_message_state::IsSet,
-    S::ConvoId: deliver_message_state::IsSet,
-    S::DeliveryId: deliver_message_state::IsSet,
-    S::MsgId: deliver_message_state::IsSet,
-    S::Ciphertext: deliver_message_state::IsSet,
     S::PaddedSize: deliver_message_state::IsSet,
-    S::SequencerTerm: deliver_message_state::IsSet,
+    S::MsgId: deliver_message_state::IsSet,
+    S::ConvoId: deliver_message_state::IsSet,
+    S::Epoch: deliver_message_state::IsSet,
+    S::DeliveryId: deliver_message_state::IsSet,
     S::SenderDsDid: deliver_message_state::IsSet,
+    S::SequencerTerm: deliver_message_state::IsSet,
+    S::Ciphertext: deliver_message_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> DeliverMessage<'a> {
