@@ -652,49 +652,49 @@ pub mod key_package_history_item_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Action;
         type Id;
+        type Action;
         type CreatedAt;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Action = Unset;
         type Id = Unset;
+        type Action = Unset;
         type CreatedAt = Unset;
-    }
-    ///State transition - sets the `action` field to Set
-    pub struct SetAction<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetAction<S> {}
-    impl<S: State> State for SetAction<S> {
-        type Action = Set<members::action>;
-        type Id = S::Id;
-        type CreatedAt = S::CreatedAt;
     }
     ///State transition - sets the `id` field to Set
     pub struct SetId<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetId<S> {}
     impl<S: State> State for SetId<S> {
-        type Action = S::Action;
         type Id = Set<members::id>;
+        type Action = S::Action;
+        type CreatedAt = S::CreatedAt;
+    }
+    ///State transition - sets the `action` field to Set
+    pub struct SetAction<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetAction<S> {}
+    impl<S: State> State for SetAction<S> {
+        type Id = S::Id;
+        type Action = Set<members::action>;
         type CreatedAt = S::CreatedAt;
     }
     ///State transition - sets the `created_at` field to Set
     pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
     impl<S: State> State for SetCreatedAt<S> {
-        type Action = S::Action;
         type Id = S::Id;
+        type Action = S::Action;
         type CreatedAt = Set<members::created_at>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `action` field
-        pub struct action(());
         ///Marker type for the `id` field
         pub struct id(());
+        ///Marker type for the `action` field
+        pub struct action(());
         ///Marker type for the `created_at` field
         pub struct created_at(());
     }
@@ -809,8 +809,8 @@ where
 impl<'a, S> KeyPackageHistoryItemBuilder<'a, S>
 where
     S: key_package_history_item_state::State,
-    S::Action: key_package_history_item_state::IsSet,
     S::Id: key_package_history_item_state::IsSet,
+    S::Action: key_package_history_item_state::IsSet,
     S::CreatedAt: key_package_history_item_state::IsSet,
 {
     /// Build the final struct
@@ -887,37 +887,37 @@ pub mod key_package_stats_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type TotalConsumed;
         type TotalAvailable;
+        type TotalConsumed;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type TotalConsumed = Unset;
         type TotalAvailable = Unset;
-    }
-    ///State transition - sets the `total_consumed` field to Set
-    pub struct SetTotalConsumed<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetTotalConsumed<S> {}
-    impl<S: State> State for SetTotalConsumed<S> {
-        type TotalConsumed = Set<members::total_consumed>;
-        type TotalAvailable = S::TotalAvailable;
+        type TotalConsumed = Unset;
     }
     ///State transition - sets the `total_available` field to Set
     pub struct SetTotalAvailable<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetTotalAvailable<S> {}
     impl<S: State> State for SetTotalAvailable<S> {
-        type TotalConsumed = S::TotalConsumed;
         type TotalAvailable = Set<members::total_available>;
+        type TotalConsumed = S::TotalConsumed;
+    }
+    ///State transition - sets the `total_consumed` field to Set
+    pub struct SetTotalConsumed<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetTotalConsumed<S> {}
+    impl<S: State> State for SetTotalConsumed<S> {
+        type TotalAvailable = S::TotalAvailable;
+        type TotalConsumed = Set<members::total_consumed>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `total_consumed` field
-        pub struct total_consumed(());
         ///Marker type for the `total_available` field
         pub struct total_available(());
+        ///Marker type for the `total_consumed` field
+        pub struct total_consumed(());
     }
 }
 
@@ -1030,8 +1030,8 @@ where
 impl<'a, S> KeyPackageStatsBuilder<'a, S>
 where
     S: key_package_stats_state::State,
-    S::TotalConsumed: key_package_stats_state::IsSet,
     S::TotalAvailable: key_package_stats_state::IsSet,
+    S::TotalConsumed: key_package_stats_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> KeyPackageStats<'a> {
@@ -1128,83 +1128,83 @@ pub mod key_package_status_item_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type CipherSuite;
-        type Id;
-        type DeviceId;
         type Consumed;
+        type DeviceId;
+        type Id;
+        type CipherSuite;
         type CreatedAt;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type CipherSuite = Unset;
-        type Id = Unset;
-        type DeviceId = Unset;
         type Consumed = Unset;
+        type DeviceId = Unset;
+        type Id = Unset;
+        type CipherSuite = Unset;
         type CreatedAt = Unset;
     }
-    ///State transition - sets the `cipher_suite` field to Set
-    pub struct SetCipherSuite<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCipherSuite<S> {}
-    impl<S: State> State for SetCipherSuite<S> {
-        type CipherSuite = Set<members::cipher_suite>;
+    ///State transition - sets the `consumed` field to Set
+    pub struct SetConsumed<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetConsumed<S> {}
+    impl<S: State> State for SetConsumed<S> {
+        type Consumed = Set<members::consumed>;
+        type DeviceId = S::DeviceId;
         type Id = S::Id;
-        type DeviceId = S::DeviceId;
-        type Consumed = S::Consumed;
-        type CreatedAt = S::CreatedAt;
-    }
-    ///State transition - sets the `id` field to Set
-    pub struct SetId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetId<S> {}
-    impl<S: State> State for SetId<S> {
         type CipherSuite = S::CipherSuite;
-        type Id = Set<members::id>;
-        type DeviceId = S::DeviceId;
-        type Consumed = S::Consumed;
         type CreatedAt = S::CreatedAt;
     }
     ///State transition - sets the `device_id` field to Set
     pub struct SetDeviceId<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetDeviceId<S> {}
     impl<S: State> State for SetDeviceId<S> {
-        type CipherSuite = S::CipherSuite;
-        type Id = S::Id;
-        type DeviceId = Set<members::device_id>;
         type Consumed = S::Consumed;
+        type DeviceId = Set<members::device_id>;
+        type Id = S::Id;
+        type CipherSuite = S::CipherSuite;
         type CreatedAt = S::CreatedAt;
     }
-    ///State transition - sets the `consumed` field to Set
-    pub struct SetConsumed<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConsumed<S> {}
-    impl<S: State> State for SetConsumed<S> {
-        type CipherSuite = S::CipherSuite;
-        type Id = S::Id;
+    ///State transition - sets the `id` field to Set
+    pub struct SetId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetId<S> {}
+    impl<S: State> State for SetId<S> {
+        type Consumed = S::Consumed;
         type DeviceId = S::DeviceId;
-        type Consumed = Set<members::consumed>;
+        type Id = Set<members::id>;
+        type CipherSuite = S::CipherSuite;
+        type CreatedAt = S::CreatedAt;
+    }
+    ///State transition - sets the `cipher_suite` field to Set
+    pub struct SetCipherSuite<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCipherSuite<S> {}
+    impl<S: State> State for SetCipherSuite<S> {
+        type Consumed = S::Consumed;
+        type DeviceId = S::DeviceId;
+        type Id = S::Id;
+        type CipherSuite = Set<members::cipher_suite>;
         type CreatedAt = S::CreatedAt;
     }
     ///State transition - sets the `created_at` field to Set
     pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
     impl<S: State> State for SetCreatedAt<S> {
-        type CipherSuite = S::CipherSuite;
-        type Id = S::Id;
-        type DeviceId = S::DeviceId;
         type Consumed = S::Consumed;
+        type DeviceId = S::DeviceId;
+        type Id = S::Id;
+        type CipherSuite = S::CipherSuite;
         type CreatedAt = Set<members::created_at>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `cipher_suite` field
-        pub struct cipher_suite(());
-        ///Marker type for the `id` field
-        pub struct id(());
-        ///Marker type for the `device_id` field
-        pub struct device_id(());
         ///Marker type for the `consumed` field
         pub struct consumed(());
+        ///Marker type for the `device_id` field
+        pub struct device_id(());
+        ///Marker type for the `id` field
+        pub struct id(());
+        ///Marker type for the `cipher_suite` field
+        pub struct cipher_suite(());
         ///Marker type for the `created_at` field
         pub struct created_at(());
     }
@@ -1359,10 +1359,10 @@ where
 impl<'a, S> KeyPackageStatusItemBuilder<'a, S>
 where
     S: key_package_status_item_state::State,
-    S::CipherSuite: key_package_status_item_state::IsSet,
-    S::Id: key_package_status_item_state::IsSet,
-    S::DeviceId: key_package_status_item_state::IsSet,
     S::Consumed: key_package_status_item_state::IsSet,
+    S::DeviceId: key_package_status_item_state::IsSet,
+    S::Id: key_package_status_item_state::IsSet,
+    S::CipherSuite: key_package_status_item_state::IsSet,
     S::CreatedAt: key_package_status_item_state::IsSet,
 {
     /// Build the final struct
