@@ -14,7 +14,7 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ReportRecoveryFailure<'a> {
@@ -25,6 +25,10 @@ pub struct ReportRecoveryFailure<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub epoch_authenticator: std::option::Option<jacquard_common::CowStr<'a>>,
+    /// Per ADR-008 D1: distinguishes local state loss (Mode A) from group state unrecoverable (Mode B). Only Mode B reports SHOULD count toward server-side quorum auto-reset; Mode A reports indicate that this client lost local state and should self-heal via §6.6 / §8.4 External Commit + self-Remove rather than triggering a global reset. Optional during interim deployment; servers that don't yet enforce the distinction MUST count any vote that satisfies the §8.6 / ADR-002 invariants.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub failure_mode: std::option::Option<jacquard_common::CowStr<'a>>,
     /// Type of failure that was exhausted
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
@@ -33,7 +37,13 @@ pub struct ReportRecoveryFailure<'a> {
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ReportRecoveryFailureOutput<'a> {
@@ -68,7 +78,7 @@ pub struct ReportRecoveryFailureOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
+    jacquard_derive::IntoStatic
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -115,8 +125,9 @@ impl jacquard_common::xrpc::XrpcResp for ReportRecoveryFailureResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for ReportRecoveryFailure<'a> {
     const NSID: &'static str = "blue.catbird.mlsChat.reportRecoveryFailure";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = ReportRecoveryFailureResponse;
 }
 
@@ -125,8 +136,9 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for ReportRecoveryFailure<'a> {
 pub struct ReportRecoveryFailureRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for ReportRecoveryFailureRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.reportRecoveryFailure";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<'de> = ReportRecoveryFailure<'de>;
     type Response = ReportRecoveryFailureResponse;
 }
