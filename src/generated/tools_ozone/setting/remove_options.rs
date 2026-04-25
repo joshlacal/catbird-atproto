@@ -7,7 +7,13 @@
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct RemoveOptions<'a> {
@@ -19,45 +25,45 @@ pub struct RemoveOptions<'a> {
 
 pub mod remove_options_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Keys;
         type Scope;
+        type Keys;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Keys = Unset;
         type Scope = Unset;
-    }
-    ///State transition - sets the `keys` field to Set
-    pub struct SetKeys<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetKeys<S> {}
-    impl<S: State> State for SetKeys<S> {
-        type Keys = Set<members::keys>;
-        type Scope = S::Scope;
+        type Keys = Unset;
     }
     ///State transition - sets the `scope` field to Set
     pub struct SetScope<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetScope<S> {}
     impl<S: State> State for SetScope<S> {
-        type Keys = S::Keys;
         type Scope = Set<members::scope>;
+        type Keys = S::Keys;
+    }
+    ///State transition - sets the `keys` field to Set
+    pub struct SetKeys<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetKeys<S> {}
+    impl<S: State> State for SetKeys<S> {
+        type Scope = S::Scope;
+        type Keys = Set<members::keys>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `keys` field
-        pub struct keys(());
         ///Marker type for the `scope` field
         pub struct scope(());
+        ///Marker type for the `keys` field
+        pub struct keys(());
     }
 }
 
@@ -130,8 +136,8 @@ where
 impl<'a, S> RemoveOptionsBuilder<'a, S>
 where
     S: remove_options_state::State,
-    S::Keys: remove_options_state::IsSet,
     S::Scope: remove_options_state::IsSet,
+    S::Keys: remove_options_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> RemoveOptions<'a> {
@@ -166,7 +172,7 @@ where
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
 #[serde(rename_all = "camelCase")]
 pub struct RemoveOptionsOutput<'a> {}
@@ -182,8 +188,9 @@ impl jacquard_common::xrpc::XrpcResp for RemoveOptionsResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for RemoveOptions<'a> {
     const NSID: &'static str = "tools.ozone.setting.removeOptions";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = RemoveOptionsResponse;
 }
 
@@ -192,8 +199,9 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for RemoveOptions<'a> {
 pub struct RemoveOptionsRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for RemoveOptionsRequest {
     const PATH: &'static str = "/xrpc/tools.ozone.setting.removeOptions";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<'de> = RemoveOptions<'de>;
     type Response = RemoveOptionsResponse;
 }

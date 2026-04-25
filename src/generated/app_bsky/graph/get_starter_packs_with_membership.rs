@@ -6,7 +6,13 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetStarterPacksWithMembership<'a> {
@@ -22,9 +28,9 @@ pub struct GetStarterPacksWithMembership<'a> {
 
 pub mod get_starter_packs_with_membership_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -68,14 +74,20 @@ pub struct GetStarterPacksWithMembershipBuilder<
 
 impl<'a> GetStarterPacksWithMembership<'a> {
     /// Create a new builder for this type
-    pub fn new(
-    ) -> GetStarterPacksWithMembershipBuilder<'a, get_starter_packs_with_membership_state::Empty>
-    {
+    pub fn new() -> GetStarterPacksWithMembershipBuilder<
+        'a,
+        get_starter_packs_with_membership_state::Empty,
+    > {
         GetStarterPacksWithMembershipBuilder::new()
     }
 }
 
-impl<'a> GetStarterPacksWithMembershipBuilder<'a, get_starter_packs_with_membership_state::Empty> {
+impl<
+    'a,
+> GetStarterPacksWithMembershipBuilder<
+    'a,
+    get_starter_packs_with_membership_state::Empty,
+> {
     /// Create a new builder with all fields unset
     pub fn new() -> Self {
         GetStarterPacksWithMembershipBuilder {
@@ -108,11 +120,15 @@ where
     }
 }
 
-impl<'a, S: get_starter_packs_with_membership_state::State>
-    GetStarterPacksWithMembershipBuilder<'a, S>
-{
+impl<
+    'a,
+    S: get_starter_packs_with_membership_state::State,
+> GetStarterPacksWithMembershipBuilder<'a, S> {
     /// Set the `cursor` field (optional)
-    pub fn cursor(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
+    pub fn cursor(
+        mut self,
+        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
+    ) -> Self {
         self.__unsafe_private_named.1 = value.into();
         self
     }
@@ -123,9 +139,10 @@ impl<'a, S: get_starter_packs_with_membership_state::State>
     }
 }
 
-impl<'a, S: get_starter_packs_with_membership_state::State>
-    GetStarterPacksWithMembershipBuilder<'a, S>
-{
+impl<
+    'a,
+    S: get_starter_packs_with_membership_state::State,
+> GetStarterPacksWithMembershipBuilder<'a, S> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
         self.__unsafe_private_named.2 = value.into();
@@ -155,7 +172,13 @@ where
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetStarterPacksWithMembershipOutput<'a> {
@@ -164,7 +187,7 @@ pub struct GetStarterPacksWithMembershipOutput<'a> {
     pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(borrow)]
     pub starter_packs_with_membership: Vec<
-        crate::generated::app_bsky::graph::get_starter_packs_with_membership::StarterPackWithMembership<
+        crate::app_bsky::graph::get_starter_packs_with_membership::StarterPackWithMembership<
             'a,
         >,
     >,
@@ -199,22 +222,28 @@ impl jacquard_common::xrpc::XrpcEndpoint for GetStarterPacksWithMembershipReques
 /// A starter pack and an optional list item indicating membership of a target user to that starter pack.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct StarterPackWithMembership<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub list_item: std::option::Option<crate::generated::app_bsky::graph::ListItemView<'a>>,
+    pub list_item: std::option::Option<crate::app_bsky::graph::ListItemView<'a>>,
     #[serde(borrow)]
-    pub starter_pack: crate::generated::app_bsky::graph::StarterPackView<'a>,
+    pub starter_pack: crate::app_bsky::graph::StarterPackView<'a>,
 }
 
 pub mod starter_pack_with_membership_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -243,24 +272,31 @@ pub mod starter_pack_with_membership_state {
 }
 
 /// Builder for constructing an instance of this type
-pub struct StarterPackWithMembershipBuilder<'a, S: starter_pack_with_membership_state::State> {
+pub struct StarterPackWithMembershipBuilder<
+    'a,
+    S: starter_pack_with_membership_state::State,
+> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
-        ::core::option::Option<crate::generated::app_bsky::graph::ListItemView<'a>>,
-        ::core::option::Option<crate::generated::app_bsky::graph::StarterPackView<'a>>,
+        ::core::option::Option<crate::app_bsky::graph::ListItemView<'a>>,
+        ::core::option::Option<crate::app_bsky::graph::StarterPackView<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
 
 impl<'a> StarterPackWithMembership<'a> {
     /// Create a new builder for this type
-    pub fn new() -> StarterPackWithMembershipBuilder<'a, starter_pack_with_membership_state::Empty>
-    {
+    pub fn new() -> StarterPackWithMembershipBuilder<
+        'a,
+        starter_pack_with_membership_state::Empty,
+    > {
         StarterPackWithMembershipBuilder::new()
     }
 }
 
-impl<'a> StarterPackWithMembershipBuilder<'a, starter_pack_with_membership_state::Empty> {
+impl<
+    'a,
+> StarterPackWithMembershipBuilder<'a, starter_pack_with_membership_state::Empty> {
     /// Create a new builder with all fields unset
     pub fn new() -> Self {
         StarterPackWithMembershipBuilder {
@@ -271,11 +307,14 @@ impl<'a> StarterPackWithMembershipBuilder<'a, starter_pack_with_membership_state
     }
 }
 
-impl<'a, S: starter_pack_with_membership_state::State> StarterPackWithMembershipBuilder<'a, S> {
+impl<
+    'a,
+    S: starter_pack_with_membership_state::State,
+> StarterPackWithMembershipBuilder<'a, S> {
     /// Set the `listItem` field (optional)
     pub fn list_item(
         mut self,
-        value: impl Into<Option<crate::generated::app_bsky::graph::ListItemView<'a>>>,
+        value: impl Into<Option<crate::app_bsky::graph::ListItemView<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.0 = value.into();
         self
@@ -283,7 +322,7 @@ impl<'a, S: starter_pack_with_membership_state::State> StarterPackWithMembership
     /// Set the `listItem` field to an Option value (optional)
     pub fn maybe_list_item(
         mut self,
-        value: Option<crate::generated::app_bsky::graph::ListItemView<'a>>,
+        value: Option<crate::app_bsky::graph::ListItemView<'a>>,
     ) -> Self {
         self.__unsafe_private_named.0 = value;
         self
@@ -298,9 +337,11 @@ where
     /// Set the `starterPack` field (required)
     pub fn starter_pack(
         mut self,
-        value: impl Into<crate::generated::app_bsky::graph::StarterPackView<'a>>,
-    ) -> StarterPackWithMembershipBuilder<'a, starter_pack_with_membership_state::SetStarterPack<S>>
-    {
+        value: impl Into<crate::app_bsky::graph::StarterPackView<'a>>,
+    ) -> StarterPackWithMembershipBuilder<
+        'a,
+        starter_pack_with_membership_state::SetStarterPack<S>,
+    > {
         self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
         StarterPackWithMembershipBuilder {
             _phantom_state: ::core::marker::PhantomData,
@@ -339,11 +380,14 @@ where
     }
 }
 
-fn lexicon_doc_app_bsky_graph_getStarterPacksWithMembership(
-) -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_app_bsky_graph_getStarterPacksWithMembership() -> ::jacquard_lexicon::lexicon::LexiconDoc<
+    'static,
+> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
-        id: ::jacquard_common::CowStr::new_static("app.bsky.graph.getStarterPacksWithMembership"),
+        id: ::jacquard_common::CowStr::new_static(
+            "app.bsky.graph.getStarterPacksWithMembership",
+        ),
         revision: None,
         description: None,
         defs: {

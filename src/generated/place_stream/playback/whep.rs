@@ -6,7 +6,13 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct WhepParams<'a> {
@@ -18,9 +24,9 @@ pub struct WhepParams<'a> {
 
 pub mod whep_params_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -142,7 +148,13 @@ where
 }
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Whep {
@@ -150,7 +162,13 @@ pub struct Whep {
 }
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct WhepOutput {
@@ -167,7 +185,7 @@ pub struct WhepOutput {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
+    jacquard_derive::IntoStatic
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -219,19 +237,24 @@ impl jacquard_common::xrpc::XrpcResp for WhepResponse {
 
 impl jacquard_common::xrpc::XrpcRequest for Whep {
     const NSID: &'static str = "place.stream.playback.whep";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("*/*");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "*/*",
+    );
     type Response = WhepResponse;
     fn encode_body(&self) -> Result<Vec<u8>, jacquard_common::xrpc::EncodeError> {
         Ok(self.body.to_vec())
     }
-    fn decode_body<'de>(body: &'de [u8]) -> Result<Box<Self>, jacquard_common::error::DecodeError>
+    fn decode_body<'de>(
+        body: &'de [u8],
+    ) -> Result<Box<Self>, jacquard_common::error::DecodeError>
     where
         Self: serde::Deserialize<'de>,
     {
-        Ok(Box::new(Self {
-            body: bytes::Bytes::copy_from_slice(body),
-        }))
+        Ok(
+            Box::new(Self {
+                body: bytes::Bytes::copy_from_slice(body),
+            }),
+        )
     }
 }
 
@@ -240,8 +263,9 @@ impl jacquard_common::xrpc::XrpcRequest for Whep {
 pub struct WhepRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for WhepRequest {
     const PATH: &'static str = "/xrpc/place.stream.playback.whep";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("*/*");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "*/*",
+    );
     type Request<'de> = Whep;
     type Response = WhepResponse;
 }

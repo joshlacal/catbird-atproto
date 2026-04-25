@@ -6,7 +6,13 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetFollowingUser<'a> {
@@ -18,45 +24,45 @@ pub struct GetFollowingUser<'a> {
 
 pub mod get_following_user_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type SubjectDid;
         type UserDid;
+        type SubjectDid;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type SubjectDid = Unset;
         type UserDid = Unset;
-    }
-    ///State transition - sets the `subject_did` field to Set
-    pub struct SetSubjectDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetSubjectDid<S> {}
-    impl<S: State> State for SetSubjectDid<S> {
-        type SubjectDid = Set<members::subject_did>;
-        type UserDid = S::UserDid;
+        type SubjectDid = Unset;
     }
     ///State transition - sets the `user_did` field to Set
     pub struct SetUserDid<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetUserDid<S> {}
     impl<S: State> State for SetUserDid<S> {
-        type SubjectDid = S::SubjectDid;
         type UserDid = Set<members::user_did>;
+        type SubjectDid = S::SubjectDid;
+    }
+    ///State transition - sets the `subject_did` field to Set
+    pub struct SetSubjectDid<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetSubjectDid<S> {}
+    impl<S: State> State for SetSubjectDid<S> {
+        type UserDid = S::UserDid;
+        type SubjectDid = Set<members::subject_did>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `subject_did` field
-        pub struct subject_did(());
         ///Marker type for the `user_did` field
         pub struct user_did(());
+        ///Marker type for the `subject_did` field
+        pub struct subject_did(());
     }
 }
 
@@ -129,8 +135,8 @@ where
 impl<'a, S> GetFollowingUserBuilder<'a, S>
 where
     S: get_following_user_state::State,
-    S::SubjectDid: get_following_user_state::IsSet,
     S::UserDid: get_following_user_state::IsSet,
+    S::SubjectDid: get_following_user_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> GetFollowingUser<'a> {
@@ -150,13 +156,13 @@ where
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetFollowingUserOutput<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub follow: std::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,
+    pub follow: std::option::Option<crate::com_atproto::repo::strong_ref::StrongRef<'a>>,
 }
 
 /// Response type for

@@ -6,7 +6,13 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetLog<'a> {
@@ -17,9 +23,9 @@ pub struct GetLog<'a> {
 
 pub mod get_log_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -61,7 +67,10 @@ impl<'a> GetLogBuilder<'a, get_log_state::Empty> {
 
 impl<'a, S: get_log_state::State> GetLogBuilder<'a, S> {
     /// Set the `cursor` field (optional)
-    pub fn cursor(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
+    pub fn cursor(
+        mut self,
+        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
+    ) -> Self {
         self.__unsafe_private_named.0 = value.into();
         self
     }
@@ -86,7 +95,13 @@ where
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetLogOutput<'a> {
@@ -99,31 +114,37 @@ pub struct GetLogOutput<'a> {
 
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(tag = "$type")]
 #[serde(bound(deserialize = "'de: 'a"))]
 pub enum GetLogOutputLogsItem<'a> {
     #[serde(rename = "chat.bsky.convo.defs#logBeginConvo")]
-    LogBeginConvo(Box<crate::generated::chat_bsky::convo::LogBeginConvo<'a>>),
+    LogBeginConvo(Box<crate::chat_bsky::convo::LogBeginConvo<'a>>),
     #[serde(rename = "chat.bsky.convo.defs#logAcceptConvo")]
-    LogAcceptConvo(Box<crate::generated::chat_bsky::convo::LogAcceptConvo<'a>>),
+    LogAcceptConvo(Box<crate::chat_bsky::convo::LogAcceptConvo<'a>>),
     #[serde(rename = "chat.bsky.convo.defs#logLeaveConvo")]
-    LogLeaveConvo(Box<crate::generated::chat_bsky::convo::LogLeaveConvo<'a>>),
+    LogLeaveConvo(Box<crate::chat_bsky::convo::LogLeaveConvo<'a>>),
     #[serde(rename = "chat.bsky.convo.defs#logMuteConvo")]
-    LogMuteConvo(Box<crate::generated::chat_bsky::convo::LogMuteConvo<'a>>),
+    LogMuteConvo(Box<crate::chat_bsky::convo::LogMuteConvo<'a>>),
     #[serde(rename = "chat.bsky.convo.defs#logUnmuteConvo")]
-    LogUnmuteConvo(Box<crate::generated::chat_bsky::convo::LogUnmuteConvo<'a>>),
+    LogUnmuteConvo(Box<crate::chat_bsky::convo::LogUnmuteConvo<'a>>),
     #[serde(rename = "chat.bsky.convo.defs#logCreateMessage")]
-    LogCreateMessage(Box<crate::generated::chat_bsky::convo::LogCreateMessage<'a>>),
+    LogCreateMessage(Box<crate::chat_bsky::convo::LogCreateMessage<'a>>),
     #[serde(rename = "chat.bsky.convo.defs#logDeleteMessage")]
-    LogDeleteMessage(Box<crate::generated::chat_bsky::convo::LogDeleteMessage<'a>>),
+    LogDeleteMessage(Box<crate::chat_bsky::convo::LogDeleteMessage<'a>>),
     #[serde(rename = "chat.bsky.convo.defs#logReadMessage")]
-    LogReadMessage(Box<crate::generated::chat_bsky::convo::LogReadMessage<'a>>),
+    LogReadMessage(Box<crate::chat_bsky::convo::LogReadMessage<'a>>),
     #[serde(rename = "chat.bsky.convo.defs#logAddReaction")]
-    LogAddReaction(Box<crate::generated::chat_bsky::convo::LogAddReaction<'a>>),
+    LogAddReaction(Box<crate::chat_bsky::convo::LogAddReaction<'a>>),
     #[serde(rename = "chat.bsky.convo.defs#logRemoveReaction")]
-    LogRemoveReaction(Box<crate::generated::chat_bsky::convo::LogRemoveReaction<'a>>),
+    LogRemoveReaction(Box<crate::chat_bsky::convo::LogRemoveReaction<'a>>),
 }
 
 /// Response type for

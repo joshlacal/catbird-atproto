@@ -14,7 +14,7 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
 #[serde(rename_all = "camelCase")]
 pub struct InitAgeAssurance<'a> {
@@ -31,13 +31,19 @@ pub struct InitAgeAssurance<'a> {
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct InitAgeAssuranceOutput<'a> {
     #[serde(flatten)]
     #[serde(borrow)]
-    pub value: crate::generated::app_bsky::unspecced::AgeAssuranceState<'a>,
+    pub value: crate::app_bsky::unspecced::AgeAssuranceState<'a>,
 }
 
 #[jacquard_derive::open_union]
@@ -50,7 +56,7 @@ pub struct InitAgeAssuranceOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
+    jacquard_derive::IntoStatic
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -104,8 +110,9 @@ impl jacquard_common::xrpc::XrpcResp for InitAgeAssuranceResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for InitAgeAssurance<'a> {
     const NSID: &'static str = "app.bsky.unspecced.initAgeAssurance";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = InitAgeAssuranceResponse;
 }
 
@@ -114,8 +121,9 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for InitAgeAssurance<'a> {
 pub struct InitAgeAssuranceRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for InitAgeAssuranceRequest {
     const PATH: &'static str = "/xrpc/app.bsky.unspecced.initAgeAssurance";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<'de> = InitAgeAssurance<'de>;
     type Response = InitAgeAssuranceResponse;
 }

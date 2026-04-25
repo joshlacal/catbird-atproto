@@ -7,21 +7,27 @@
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct SendMessage<'a> {
     #[serde(borrow)]
     pub convo_id: jacquard_common::CowStr<'a>,
     #[serde(borrow)]
-    pub message: crate::generated::chat_bsky::convo::MessageInput<'a>,
+    pub message: crate::chat_bsky::convo::MessageInput<'a>,
 }
 
 pub mod send_message_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -66,7 +72,7 @@ pub struct SendMessageBuilder<'a, S: send_message_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
         ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<crate::generated::chat_bsky::convo::MessageInput<'a>>,
+        ::core::option::Option<crate::chat_bsky::convo::MessageInput<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
@@ -116,7 +122,7 @@ where
     /// Set the `message` field (required)
     pub fn message(
         mut self,
-        value: impl Into<crate::generated::chat_bsky::convo::MessageInput<'a>>,
+        value: impl Into<crate::chat_bsky::convo::MessageInput<'a>>,
     ) -> SendMessageBuilder<'a, send_message_state::SetMessage<S>> {
         self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
         SendMessageBuilder {
@@ -159,13 +165,19 @@ where
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct SendMessageOutput<'a> {
     #[serde(flatten)]
     #[serde(borrow)]
-    pub value: crate::generated::chat_bsky::convo::MessageView<'a>,
+    pub value: crate::chat_bsky::convo::MessageView<'a>,
 }
 
 /// Response type for
@@ -180,8 +192,9 @@ impl jacquard_common::xrpc::XrpcResp for SendMessageResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for SendMessage<'a> {
     const NSID: &'static str = "chat.bsky.convo.sendMessage";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = SendMessageResponse;
 }
 
@@ -190,8 +203,9 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for SendMessage<'a> {
 pub struct SendMessageRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for SendMessageRequest {
     const PATH: &'static str = "/xrpc/chat.bsky.convo.sendMessage";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<'de> = SendMessage<'de>;
     type Response = SendMessageResponse;
 }

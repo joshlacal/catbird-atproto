@@ -7,7 +7,13 @@
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateLivestream<'a> {
@@ -25,9 +31,9 @@ pub struct UpdateLivestream<'a> {
 
 pub mod update_livestream_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -136,7 +142,10 @@ where
 
 impl<'a, S: update_livestream_state::State> UpdateLivestreamBuilder<'a, S> {
     /// Set the `title` field (optional)
-    pub fn title(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
+    pub fn title(
+        mut self,
+        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
+    ) -> Self {
         self.__unsafe_private_named.2 = value.into();
         self
     }
@@ -181,7 +190,13 @@ where
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateLivestreamOutput<'a> {
@@ -203,7 +218,7 @@ pub struct UpdateLivestreamOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
+    jacquard_derive::IntoStatic
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -270,8 +285,9 @@ impl jacquard_common::xrpc::XrpcResp for UpdateLivestreamResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for UpdateLivestream<'a> {
     const NSID: &'static str = "place.stream.moderation.updateLivestream";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = UpdateLivestreamResponse;
 }
 
@@ -280,8 +296,9 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for UpdateLivestream<'a> {
 pub struct UpdateLivestreamRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for UpdateLivestreamRequest {
     const PATH: &'static str = "/xrpc/place.stream.moderation.updateLivestream";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<'de> = UpdateLivestream<'de>;
     type Response = UpdateLivestreamResponse;
 }

@@ -7,7 +7,13 @@
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct CreateBlock<'a> {
@@ -25,45 +31,45 @@ pub struct CreateBlock<'a> {
 
 pub mod create_block_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Streamer;
         type Subject;
+        type Streamer;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Streamer = Unset;
         type Subject = Unset;
-    }
-    ///State transition - sets the `streamer` field to Set
-    pub struct SetStreamer<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetStreamer<S> {}
-    impl<S: State> State for SetStreamer<S> {
-        type Streamer = Set<members::streamer>;
-        type Subject = S::Subject;
+        type Streamer = Unset;
     }
     ///State transition - sets the `subject` field to Set
     pub struct SetSubject<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetSubject<S> {}
     impl<S: State> State for SetSubject<S> {
-        type Streamer = S::Streamer;
         type Subject = Set<members::subject>;
+        type Streamer = S::Streamer;
+    }
+    ///State transition - sets the `streamer` field to Set
+    pub struct SetStreamer<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetStreamer<S> {}
+    impl<S: State> State for SetStreamer<S> {
+        type Subject = S::Subject;
+        type Streamer = Set<members::streamer>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `streamer` field
-        pub struct streamer(());
         ///Marker type for the `subject` field
         pub struct subject(());
+        ///Marker type for the `streamer` field
+        pub struct streamer(());
     }
 }
 
@@ -98,7 +104,10 @@ impl<'a> CreateBlockBuilder<'a, create_block_state::Empty> {
 
 impl<'a, S: create_block_state::State> CreateBlockBuilder<'a, S> {
     /// Set the `reason` field (optional)
-    pub fn reason(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
+    pub fn reason(
+        mut self,
+        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
+    ) -> Self {
         self.__unsafe_private_named.0 = value.into();
         self
     }
@@ -150,8 +159,8 @@ where
 impl<'a, S> CreateBlockBuilder<'a, S>
 where
     S: create_block_state::State,
-    S::Streamer: create_block_state::IsSet,
     S::Subject: create_block_state::IsSet,
+    S::Streamer: create_block_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> CreateBlock<'a> {
@@ -181,7 +190,13 @@ where
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct CreateBlockOutput<'a> {
@@ -203,7 +218,7 @@ pub struct CreateBlockOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
+    jacquard_derive::IntoStatic
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -260,8 +275,9 @@ impl jacquard_common::xrpc::XrpcResp for CreateBlockResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for CreateBlock<'a> {
     const NSID: &'static str = "place.stream.moderation.createBlock";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = CreateBlockResponse;
 }
 
@@ -270,8 +286,9 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for CreateBlock<'a> {
 pub struct CreateBlockRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for CreateBlockRequest {
     const PATH: &'static str = "/xrpc/place.stream.moderation.createBlock";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<'de> = CreateBlock<'de>;
     type Response = CreateBlockResponse;
 }

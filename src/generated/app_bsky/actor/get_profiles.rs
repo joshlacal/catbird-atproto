@@ -6,7 +6,13 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetProfiles<'a> {
@@ -16,9 +22,9 @@ pub struct GetProfiles<'a> {
 
 pub mod get_profiles_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -49,8 +55,9 @@ pub mod get_profiles_state {
 /// Builder for constructing an instance of this type
 pub struct GetProfilesBuilder<'a, S: get_profiles_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named:
-        (::core::option::Option<Vec<jacquard_common::types::ident::AtIdentifier<'a>>>,),
+    __unsafe_private_named: (
+        ::core::option::Option<Vec<jacquard_common::types::ident::AtIdentifier<'a>>>,
+    ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
 
@@ -106,12 +113,18 @@ where
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetProfilesOutput<'a> {
     #[serde(borrow)]
-    pub profiles: Vec<crate::generated::app_bsky::actor::ProfileViewDetailed<'a>>,
+    pub profiles: Vec<crate::app_bsky::actor::ProfileViewDetailed<'a>>,
 }
 
 /// Response type for

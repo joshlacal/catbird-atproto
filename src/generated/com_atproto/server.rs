@@ -33,7 +33,13 @@ pub mod update_email;
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct InviteCode<'a> {
@@ -47,140 +53,140 @@ pub struct InviteCode<'a> {
     #[serde(borrow)]
     pub for_account: jacquard_common::CowStr<'a>,
     #[serde(borrow)]
-    pub uses: Vec<crate::generated::com_atproto::server::InviteCodeUse<'a>>,
+    pub uses: Vec<crate::com_atproto::server::InviteCodeUse<'a>>,
 }
 
 pub mod invite_code_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type ForAccount;
-        type CreatedBy;
-        type CreatedAt;
+        type Code;
         type Uses;
+        type CreatedBy;
         type Available;
         type Disabled;
-        type Code;
+        type ForAccount;
+        type CreatedAt;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type ForAccount = Unset;
-        type CreatedBy = Unset;
-        type CreatedAt = Unset;
+        type Code = Unset;
         type Uses = Unset;
+        type CreatedBy = Unset;
         type Available = Unset;
         type Disabled = Unset;
-        type Code = Unset;
-    }
-    ///State transition - sets the `for_account` field to Set
-    pub struct SetForAccount<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetForAccount<S> {}
-    impl<S: State> State for SetForAccount<S> {
-        type ForAccount = Set<members::for_account>;
-        type CreatedBy = S::CreatedBy;
-        type CreatedAt = S::CreatedAt;
-        type Uses = S::Uses;
-        type Available = S::Available;
-        type Disabled = S::Disabled;
-        type Code = S::Code;
-    }
-    ///State transition - sets the `created_by` field to Set
-    pub struct SetCreatedBy<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedBy<S> {}
-    impl<S: State> State for SetCreatedBy<S> {
-        type ForAccount = S::ForAccount;
-        type CreatedBy = Set<members::created_by>;
-        type CreatedAt = S::CreatedAt;
-        type Uses = S::Uses;
-        type Available = S::Available;
-        type Disabled = S::Disabled;
-        type Code = S::Code;
-    }
-    ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type ForAccount = S::ForAccount;
-        type CreatedBy = S::CreatedBy;
-        type CreatedAt = Set<members::created_at>;
-        type Uses = S::Uses;
-        type Available = S::Available;
-        type Disabled = S::Disabled;
-        type Code = S::Code;
-    }
-    ///State transition - sets the `uses` field to Set
-    pub struct SetUses<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUses<S> {}
-    impl<S: State> State for SetUses<S> {
-        type ForAccount = S::ForAccount;
-        type CreatedBy = S::CreatedBy;
-        type CreatedAt = S::CreatedAt;
-        type Uses = Set<members::uses>;
-        type Available = S::Available;
-        type Disabled = S::Disabled;
-        type Code = S::Code;
-    }
-    ///State transition - sets the `available` field to Set
-    pub struct SetAvailable<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetAvailable<S> {}
-    impl<S: State> State for SetAvailable<S> {
-        type ForAccount = S::ForAccount;
-        type CreatedBy = S::CreatedBy;
-        type CreatedAt = S::CreatedAt;
-        type Uses = S::Uses;
-        type Available = Set<members::available>;
-        type Disabled = S::Disabled;
-        type Code = S::Code;
-    }
-    ///State transition - sets the `disabled` field to Set
-    pub struct SetDisabled<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDisabled<S> {}
-    impl<S: State> State for SetDisabled<S> {
-        type ForAccount = S::ForAccount;
-        type CreatedBy = S::CreatedBy;
-        type CreatedAt = S::CreatedAt;
-        type Uses = S::Uses;
-        type Available = S::Available;
-        type Disabled = Set<members::disabled>;
-        type Code = S::Code;
+        type ForAccount = Unset;
+        type CreatedAt = Unset;
     }
     ///State transition - sets the `code` field to Set
     pub struct SetCode<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCode<S> {}
     impl<S: State> State for SetCode<S> {
-        type ForAccount = S::ForAccount;
-        type CreatedBy = S::CreatedBy;
-        type CreatedAt = S::CreatedAt;
+        type Code = Set<members::code>;
         type Uses = S::Uses;
+        type CreatedBy = S::CreatedBy;
         type Available = S::Available;
         type Disabled = S::Disabled;
-        type Code = Set<members::code>;
+        type ForAccount = S::ForAccount;
+        type CreatedAt = S::CreatedAt;
+    }
+    ///State transition - sets the `uses` field to Set
+    pub struct SetUses<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetUses<S> {}
+    impl<S: State> State for SetUses<S> {
+        type Code = S::Code;
+        type Uses = Set<members::uses>;
+        type CreatedBy = S::CreatedBy;
+        type Available = S::Available;
+        type Disabled = S::Disabled;
+        type ForAccount = S::ForAccount;
+        type CreatedAt = S::CreatedAt;
+    }
+    ///State transition - sets the `created_by` field to Set
+    pub struct SetCreatedBy<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCreatedBy<S> {}
+    impl<S: State> State for SetCreatedBy<S> {
+        type Code = S::Code;
+        type Uses = S::Uses;
+        type CreatedBy = Set<members::created_by>;
+        type Available = S::Available;
+        type Disabled = S::Disabled;
+        type ForAccount = S::ForAccount;
+        type CreatedAt = S::CreatedAt;
+    }
+    ///State transition - sets the `available` field to Set
+    pub struct SetAvailable<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetAvailable<S> {}
+    impl<S: State> State for SetAvailable<S> {
+        type Code = S::Code;
+        type Uses = S::Uses;
+        type CreatedBy = S::CreatedBy;
+        type Available = Set<members::available>;
+        type Disabled = S::Disabled;
+        type ForAccount = S::ForAccount;
+        type CreatedAt = S::CreatedAt;
+    }
+    ///State transition - sets the `disabled` field to Set
+    pub struct SetDisabled<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetDisabled<S> {}
+    impl<S: State> State for SetDisabled<S> {
+        type Code = S::Code;
+        type Uses = S::Uses;
+        type CreatedBy = S::CreatedBy;
+        type Available = S::Available;
+        type Disabled = Set<members::disabled>;
+        type ForAccount = S::ForAccount;
+        type CreatedAt = S::CreatedAt;
+    }
+    ///State transition - sets the `for_account` field to Set
+    pub struct SetForAccount<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetForAccount<S> {}
+    impl<S: State> State for SetForAccount<S> {
+        type Code = S::Code;
+        type Uses = S::Uses;
+        type CreatedBy = S::CreatedBy;
+        type Available = S::Available;
+        type Disabled = S::Disabled;
+        type ForAccount = Set<members::for_account>;
+        type CreatedAt = S::CreatedAt;
+    }
+    ///State transition - sets the `created_at` field to Set
+    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
+    impl<S: State> State for SetCreatedAt<S> {
+        type Code = S::Code;
+        type Uses = S::Uses;
+        type CreatedBy = S::CreatedBy;
+        type Available = S::Available;
+        type Disabled = S::Disabled;
+        type ForAccount = S::ForAccount;
+        type CreatedAt = Set<members::created_at>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `for_account` field
-        pub struct for_account(());
-        ///Marker type for the `created_by` field
-        pub struct created_by(());
-        ///Marker type for the `created_at` field
-        pub struct created_at(());
+        ///Marker type for the `code` field
+        pub struct code(());
         ///Marker type for the `uses` field
         pub struct uses(());
+        ///Marker type for the `created_by` field
+        pub struct created_by(());
         ///Marker type for the `available` field
         pub struct available(());
         ///Marker type for the `disabled` field
         pub struct disabled(());
-        ///Marker type for the `code` field
-        pub struct code(());
+        ///Marker type for the `for_account` field
+        pub struct for_account(());
+        ///Marker type for the `created_at` field
+        pub struct created_at(());
     }
 }
 
@@ -194,7 +200,7 @@ pub struct InviteCodeBuilder<'a, S: invite_code_state::State> {
         ::core::option::Option<jacquard_common::CowStr<'a>>,
         ::core::option::Option<bool>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<Vec<crate::generated::com_atproto::server::InviteCodeUse<'a>>>,
+        ::core::option::Option<Vec<crate::com_atproto::server::InviteCodeUse<'a>>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
@@ -339,7 +345,7 @@ where
     /// Set the `uses` field (required)
     pub fn uses(
         mut self,
-        value: impl Into<Vec<crate::generated::com_atproto::server::InviteCodeUse<'a>>>,
+        value: impl Into<Vec<crate::com_atproto::server::InviteCodeUse<'a>>>,
     ) -> InviteCodeBuilder<'a, invite_code_state::SetUses<S>> {
         self.__unsafe_private_named.6 = ::core::option::Option::Some(value.into());
         InviteCodeBuilder {
@@ -353,13 +359,13 @@ where
 impl<'a, S> InviteCodeBuilder<'a, S>
 where
     S: invite_code_state::State,
-    S::ForAccount: invite_code_state::IsSet,
-    S::CreatedBy: invite_code_state::IsSet,
-    S::CreatedAt: invite_code_state::IsSet,
+    S::Code: invite_code_state::IsSet,
     S::Uses: invite_code_state::IsSet,
+    S::CreatedBy: invite_code_state::IsSet,
     S::Available: invite_code_state::IsSet,
     S::Disabled: invite_code_state::IsSet,
-    S::Code: invite_code_state::IsSet,
+    S::ForAccount: invite_code_state::IsSet,
+    S::CreatedAt: invite_code_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> InviteCode<'a> {
@@ -395,7 +401,9 @@ where
     }
 }
 
-fn lexicon_doc_com_atproto_server_defs() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_com_atproto_server_defs() -> ::jacquard_lexicon::lexicon::LexiconDoc<
+    'static,
+> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("com.atproto.server.defs"),
@@ -405,193 +413,181 @@ fn lexicon_doc_com_atproto_server_defs() -> ::jacquard_lexicon::lexicon::Lexicon
             let mut map = ::std::collections::BTreeMap::new();
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("inviteCode"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
-                        required: Some(vec![
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: None,
+                    required: Some(
+                        vec![
                             ::jacquard_common::smol_str::SmolStr::new_static("code"),
                             ::jacquard_common::smol_str::SmolStr::new_static("available"),
                             ::jacquard_common::smol_str::SmolStr::new_static("disabled"),
                             ::jacquard_common::smol_str::SmolStr::new_static("forAccount"),
                             ::jacquard_common::smol_str::SmolStr::new_static("createdBy"),
                             ::jacquard_common::smol_str::SmolStr::new_static("createdAt"),
+                            ::jacquard_common::smol_str::SmolStr::new_static("uses")
+                        ],
+                    ),
+                    nullable: None,
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::std::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "available",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                description: None,
+                                default: None,
+                                minimum: None,
+                                maximum: None,
+                                r#enum: None,
+                                r#const: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("code"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: None,
+                                format: None,
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "createdAt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: None,
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                ),
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "createdBy",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: None,
+                                format: None,
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("disabled"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
+                                description: None,
+                                default: None,
+                                r#const: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "forAccount",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: None,
+                                format: None,
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map.insert(
                             ::jacquard_common::smol_str::SmolStr::new_static("uses"),
-                        ]),
-                        nullable: None,
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("available"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                    ::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
-                                        minimum: None,
-                                        maximum: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("code"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("createdAt"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
-                                        ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("createdBy"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("disabled"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(
-                                    ::jacquard_lexicon::lexicon::LexBoolean {
-                                        description: None,
-                                        default: None,
-                                        r#const: None,
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("forAccount"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("uses"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Array(
-                                    ::jacquard_lexicon::lexicon::LexArray {
-                                        description: None,
-                                        items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(
-                                            ::jacquard_lexicon::lexicon::LexRef {
-                                                description: None,
-                                                r#ref: ::jacquard_common::CowStr::new_static(
-                                                    "#inviteCodeUse",
-                                                ),
-                                            },
-                                        ),
-                                        min_length: None,
-                                        max_length: None,
-                                    },
-                                ),
-                            );
-                            map
-                        },
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                description: None,
+                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                    description: None,
+                                    r#ref: ::jacquard_common::CowStr::new_static(
+                                        "#inviteCodeUse",
+                                    ),
+                                }),
+                                min_length: None,
+                                max_length: None,
+                            }),
+                        );
+                        map
                     },
-                ),
+                }),
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("inviteCodeUse"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
-                        required: Some(vec![
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: None,
+                    required: Some(
+                        vec![
                             ::jacquard_common::smol_str::SmolStr::new_static("usedBy"),
+                            ::jacquard_common::smol_str::SmolStr::new_static("usedAt")
+                        ],
+                    ),
+                    nullable: None,
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::std::collections::BTreeMap::new();
+                        map.insert(
                             ::jacquard_common::smol_str::SmolStr::new_static("usedAt"),
-                        ]),
-                        nullable: None,
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("usedAt"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
-                                        ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
-                                    },
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: None,
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("usedBy"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Did,
-                                        ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
-                                    },
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("usedBy"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: None,
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                 ),
-                            );
-                            map
-                        },
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map
                     },
-                ),
+                }),
             );
             map
         },
@@ -617,7 +613,13 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for InviteCode<'a> {
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct InviteCodeUse<'a> {
@@ -628,9 +630,9 @@ pub struct InviteCodeUse<'a> {
 
 pub mod invite_code_use_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

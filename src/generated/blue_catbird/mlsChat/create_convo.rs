@@ -15,7 +15,7 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
 #[serde(rename_all = "camelCase")]
 pub struct InviteAction<'a> {
@@ -28,8 +28,9 @@ pub struct InviteAction<'a> {
     pub code: std::option::Option<jacquard_common::CowStr<'a>>,
 }
 
-fn lexicon_doc_blue_catbird_mlsChat_createConvo() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static>
-{
+fn lexicon_doc_blue_catbird_mlsChat_createConvo() -> ::jacquard_lexicon::lexicon::LexiconDoc<
+    'static,
+> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("blue.catbird.mlsChat.createConvo"),
@@ -96,61 +97,59 @@ fn lexicon_doc_blue_catbird_mlsChat_createConvo() -> ::jacquard_lexicon::lexicon
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("keyPackageHashEntry"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
-                        required: Some(vec![
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: None,
+                    required: Some(
+                        vec![
                             ::jacquard_common::smol_str::SmolStr::new_static("did"),
+                            ::jacquard_common::smol_str::SmolStr::new_static("hash")
+                        ],
+                    ),
+                    nullable: None,
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::std::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("did"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static("DID of the member"),
+                                ),
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                ),
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map.insert(
                             ::jacquard_common::smol_str::SmolStr::new_static("hash"),
-                        ]),
-                        nullable: None,
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("did"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: Some(::jacquard_common::CowStr::new_static(
-                                            "DID of the member",
-                                        )),
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Did,
-                                        ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
-                                    },
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Hex-encoded SHA-256 hash of the key package used",
+                                    ),
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("hash"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: Some(::jacquard_common::CowStr::new_static(
-                                            "Hex-encoded SHA-256 hash of the key package used",
-                                        )),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
-                                    },
-                                ),
-                            );
-                            map
-                        },
+                                format: None,
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map
                     },
-                ),
+                }),
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("main"),
@@ -317,58 +316,60 @@ fn lexicon_doc_blue_catbird_mlsChat_createConvo() -> ::jacquard_lexicon::lexicon
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("metadataInput"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: Some(::jacquard_common::CowStr::new_static(
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
                             "Input metadata for conversation creation",
-                        )),
-                        required: None,
-                        nullable: None,
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("description"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: Some(::jacquard_common::CowStr::new_static(
-                                            "Conversation description",
-                                        )),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: Some(512usize),
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
-                                    },
+                        ),
+                    ),
+                    required: None,
+                    nullable: None,
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::std::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "description",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Conversation description",
+                                    ),
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("name"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: Some(::jacquard_common::CowStr::new_static(
-                                            "Conversation display name",
-                                        )),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: Some(128usize),
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
-                                    },
+                                format: None,
+                                default: None,
+                                min_length: None,
+                                max_length: Some(512usize),
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("name"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Conversation display name",
+                                    ),
                                 ),
-                            );
-                            map
-                        },
+                                format: None,
+                                default: None,
+                                min_length: None,
+                                max_length: Some(128usize),
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map
                     },
-                ),
+                }),
             );
             map
         },
@@ -394,7 +395,13 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for InviteAction<'a> {
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct KeyPackageHashEntry<'a> {
@@ -408,9 +415,9 @@ pub struct KeyPackageHashEntry<'a> {
 
 pub mod key_package_hash_entry_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -572,7 +579,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for KeyPackageHashEntry<'a> {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
 #[serde(rename_all = "camelCase")]
 pub struct CreateConvo<'a> {
@@ -588,24 +595,26 @@ pub struct CreateConvo<'a> {
     /// DIDs of initial members to add (max 999 excluding creator)
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub initial_members: std::option::Option<Vec<jacquard_common::types::string::Did<'a>>>,
+    pub initial_members: std::option::Option<
+        Vec<jacquard_common::types::string::Did<'a>>,
+    >,
     /// Optional invite link management: create or revoke invite codes at conversation creation time
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub invite: std::option::Option<
-        crate::generated::blue_catbird::mlsChat::create_convo::InviteAction<'a>,
+        crate::blue_catbird::mlsChat::create_convo::InviteAction<'a>,
     >,
     /// Array of {did, hash} objects mapping each initial member to their key package hash
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub key_package_hashes: std::option::Option<
-        Vec<crate::generated::blue_catbird::mlsChat::create_convo::KeyPackageHashEntry<'a>>,
+        Vec<crate::blue_catbird::mlsChat::create_convo::KeyPackageHashEntry<'a>>,
     >,
     /// Optional conversation metadata (name, description)
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub metadata: std::option::Option<
-        crate::generated::blue_catbird::mlsChat::create_convo::MetadataInput<'a>,
+        crate::blue_catbird::mlsChat::create_convo::MetadataInput<'a>,
     >,
     /// MLS Welcome message for ALL initial members
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
@@ -615,13 +624,19 @@ pub struct CreateConvo<'a> {
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct CreateConvoOutput<'a> {
     /// The created conversation view
     #[serde(borrow)]
-    pub convo: crate::generated::blue_catbird::mlsChat::ConvoView<'a>,
+    pub convo: crate::blue_catbird::mlsChat::ConvoView<'a>,
     /// Generated invite code (only present if invite.action was 'create')
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
@@ -642,7 +657,7 @@ pub struct CreateConvoOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
+    jacquard_derive::IntoStatic
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -709,8 +724,9 @@ impl jacquard_common::xrpc::XrpcResp for CreateConvoResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for CreateConvo<'a> {
     const NSID: &'static str = "blue.catbird.mlsChat.createConvo";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = CreateConvoResponse;
 }
 
@@ -719,8 +735,9 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for CreateConvo<'a> {
 pub struct CreateConvoRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for CreateConvoRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.createConvo";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<'de> = CreateConvo<'de>;
     type Response = CreateConvoResponse;
 }
@@ -735,7 +752,7 @@ impl jacquard_common::xrpc::XrpcEndpoint for CreateConvoRequest {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
 #[serde(rename_all = "camelCase")]
 pub struct MetadataInput<'a> {
@@ -766,7 +783,9 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for MetadataInput<'a> {
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) > 512usize {
                 return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("description"),
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
+                        "description",
+                    ),
                     max: 512usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -776,7 +795,9 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for MetadataInput<'a> {
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) > 128usize {
                 return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("name"),
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
+                        "name",
+                    ),
                     max: 128usize,
                     actual: <str>::len(value.as_ref()),
                 });

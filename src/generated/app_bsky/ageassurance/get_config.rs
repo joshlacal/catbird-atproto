@@ -7,13 +7,19 @@
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetConfigOutput<'a> {
     #[serde(flatten)]
     #[serde(borrow)]
-    pub value: crate::generated::app_bsky::ageassurance::Config<'a>,
+    pub value: crate::app_bsky::ageassurance::Config<'a>,
 }
 
 /// XRPC request marker type
@@ -25,7 +31,7 @@ pub struct GetConfigOutput<'a> {
     Eq,
     serde::Serialize,
     serde::Deserialize,
-    jacquard_derive::IntoStatic,
+    jacquard_derive::IntoStatic
 )]
 pub struct GetConfig;
 /// Response type for

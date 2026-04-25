@@ -6,7 +6,13 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct SubscribeSegments<'a> {
@@ -16,9 +22,9 @@ pub struct SubscribeSegments<'a> {
 
 pub mod subscribe_segments_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -105,13 +111,19 @@ where
 
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(tag = "$type")]
 #[serde(bound(deserialize = "'de: 'a"))]
 pub enum SubscribeSegmentsMessage<'a> {
     #[serde(rename = "#segment")]
-    Segment(Box<crate::generated::place_stream::live::subscribe_segments::Segment>),
+    Segment(Box<crate::place_stream::live::subscribe_segments::Segment>),
 }
 
 impl<'a> SubscribeSegmentsMessage<'a> {
@@ -119,15 +131,19 @@ impl<'a> SubscribeSegmentsMessage<'a> {
     pub fn decode_framed<'de: 'a>(
         bytes: &'de [u8],
     ) -> Result<SubscribeSegmentsMessage<'a>, jacquard_common::error::DecodeError> {
-        let (header, body) = jacquard_common::xrpc::subscription::parse_event_header(bytes)?;
+        let (header, body) = jacquard_common::xrpc::subscription::parse_event_header(
+            bytes,
+        )?;
         match header.t.as_str() {
             "#segment" => {
                 let variant = serde_ipld_dagcbor::from_slice(body)?;
                 Ok(Self::Segment(Box::new(variant)))
             }
-            unknown => Err(jacquard_common::error::DecodeError::UnknownEventType(
-                unknown.into(),
-            )),
+            unknown => {
+                Err(
+                    jacquard_common::error::DecodeError::UnknownEventType(unknown.into()),
+                )
+            }
         }
     }
 }
@@ -142,7 +158,7 @@ impl<'a> SubscribeSegmentsMessage<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
+    jacquard_derive::IntoStatic
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -160,24 +176,21 @@ impl std::fmt::Display for SubscribeSegmentsError<'_> {
 pub struct SubscribeSegmentsStream;
 impl jacquard_common::xrpc::SubscriptionResp for SubscribeSegmentsStream {
     const NSID: &'static str = "place.stream.live.subscribeSegments";
-    const ENCODING: jacquard_common::xrpc::MessageEncoding =
-        jacquard_common::xrpc::MessageEncoding::Json;
+    const ENCODING: jacquard_common::xrpc::MessageEncoding = jacquard_common::xrpc::MessageEncoding::Json;
     type Message<'de> = SubscribeSegmentsMessage<'de>;
     type Error<'de> = SubscribeSegmentsError<'de>;
 }
 
 impl<'a> jacquard_common::xrpc::XrpcSubscription for SubscribeSegments<'a> {
     const NSID: &'static str = "place.stream.live.subscribeSegments";
-    const ENCODING: jacquard_common::xrpc::MessageEncoding =
-        jacquard_common::xrpc::MessageEncoding::Json;
+    const ENCODING: jacquard_common::xrpc::MessageEncoding = jacquard_common::xrpc::MessageEncoding::Json;
     type Stream = SubscribeSegmentsStream;
 }
 
 pub struct SubscribeSegmentsEndpoint;
 impl jacquard_common::xrpc::SubscriptionEndpoint for SubscribeSegmentsEndpoint {
     const PATH: &'static str = "/xrpc/place.stream.live.subscribeSegments";
-    const ENCODING: jacquard_common::xrpc::MessageEncoding =
-        jacquard_common::xrpc::MessageEncoding::Json;
+    const ENCODING: jacquard_common::xrpc::MessageEncoding = jacquard_common::xrpc::MessageEncoding::Json;
     type Params<'de> = SubscribeSegments<'de>;
     type Stream = SubscribeSegmentsStream;
 }

@@ -7,7 +7,13 @@
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ImportContacts<'a> {
@@ -21,9 +27,9 @@ pub struct ImportContacts<'a> {
 
 pub mod import_contacts_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -161,14 +167,21 @@ where
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ImportContactsOutput<'a> {
     /// The users that matched during import and their indexes on the input contacts, so the client can correlate with its local list.
     #[serde(borrow)]
-    pub matches_and_contact_indexes:
-        Vec<crate::generated::app_bsky::contact::MatchAndContactIndex<'a>>,
+    pub matches_and_contact_indexes: Vec<
+        crate::app_bsky::contact::MatchAndContactIndex<'a>,
+    >,
 }
 
 #[jacquard_derive::open_union]
@@ -181,7 +194,7 @@ pub struct ImportContactsOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
+    jacquard_derive::IntoStatic
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -253,8 +266,9 @@ impl jacquard_common::xrpc::XrpcResp for ImportContactsResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for ImportContacts<'a> {
     const NSID: &'static str = "app.bsky.contact.importContacts";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = ImportContactsResponse;
 }
 
@@ -263,8 +277,9 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for ImportContacts<'a> {
 pub struct ImportContactsRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for ImportContactsRequest {
     const PATH: &'static str = "/xrpc/app.bsky.contact.importContacts";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<'de> = ImportContacts<'de>;
     type Response = ImportContactsResponse;
 }

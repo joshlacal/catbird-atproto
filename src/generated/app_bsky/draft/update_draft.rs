@@ -7,19 +7,25 @@
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateDraft<'a> {
     #[serde(borrow)]
-    pub draft: crate::generated::app_bsky::draft::DraftWithId<'a>,
+    pub draft: crate::app_bsky::draft::DraftWithId<'a>,
 }
 
 pub mod update_draft_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -50,8 +56,9 @@ pub mod update_draft_state {
 /// Builder for constructing an instance of this type
 pub struct UpdateDraftBuilder<'a, S: update_draft_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named:
-        (::core::option::Option<crate::generated::app_bsky::draft::DraftWithId<'a>>,),
+    __unsafe_private_named: (
+        ::core::option::Option<crate::app_bsky::draft::DraftWithId<'a>>,
+    ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
 
@@ -81,7 +88,7 @@ where
     /// Set the `draft` field (required)
     pub fn draft(
         mut self,
-        value: impl Into<crate::generated::app_bsky::draft::DraftWithId<'a>>,
+        value: impl Into<crate::app_bsky::draft::DraftWithId<'a>>,
     ) -> UpdateDraftBuilder<'a, update_draft_state::SetDraft<S>> {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         UpdateDraftBuilder {
@@ -131,8 +138,9 @@ impl jacquard_common::xrpc::XrpcResp for UpdateDraftResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for UpdateDraft<'a> {
     const NSID: &'static str = "app.bsky.draft.updateDraft";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = UpdateDraftResponse;
 }
 
@@ -141,8 +149,9 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for UpdateDraft<'a> {
 pub struct UpdateDraftRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for UpdateDraftRequest {
     const PATH: &'static str = "/xrpc/app.bsky.draft.updateDraft";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<'de> = UpdateDraft<'de>;
     type Response = UpdateDraftResponse;
 }

@@ -6,7 +6,13 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetActorStarterPacks<'a> {
@@ -22,9 +28,9 @@ pub struct GetActorStarterPacks<'a> {
 
 pub mod get_actor_starter_packs_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -65,7 +71,10 @@ pub struct GetActorStarterPacksBuilder<'a, S: get_actor_starter_packs_state::Sta
 
 impl<'a> GetActorStarterPacks<'a> {
     /// Create a new builder for this type
-    pub fn new() -> GetActorStarterPacksBuilder<'a, get_actor_starter_packs_state::Empty> {
+    pub fn new() -> GetActorStarterPacksBuilder<
+        'a,
+        get_actor_starter_packs_state::Empty,
+    > {
         GetActorStarterPacksBuilder::new()
     }
 }
@@ -102,7 +111,10 @@ where
 
 impl<'a, S: get_actor_starter_packs_state::State> GetActorStarterPacksBuilder<'a, S> {
     /// Set the `cursor` field (optional)
-    pub fn cursor(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
+    pub fn cursor(
+        mut self,
+        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
+    ) -> Self {
         self.__unsafe_private_named.1 = value.into();
         self
     }
@@ -143,7 +155,13 @@ where
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetActorStarterPacksOutput<'a> {
@@ -151,7 +169,7 @@ pub struct GetActorStarterPacksOutput<'a> {
     #[serde(borrow)]
     pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(borrow)]
-    pub starter_packs: Vec<crate::generated::app_bsky::graph::StarterPackViewBasic<'a>>,
+    pub starter_packs: Vec<crate::app_bsky::graph::StarterPackViewBasic<'a>>,
 }
 
 /// Response type for

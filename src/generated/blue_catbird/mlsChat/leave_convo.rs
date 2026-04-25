@@ -14,7 +14,7 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
 #[serde(rename_all = "camelCase")]
 pub struct LeaveConvo<'a> {
@@ -33,7 +33,13 @@ pub struct LeaveConvo<'a> {
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct LeaveConvoOutput<'a> {
@@ -53,7 +59,7 @@ pub struct LeaveConvoOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
+    jacquard_derive::IntoStatic
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -130,8 +136,9 @@ impl jacquard_common::xrpc::XrpcResp for LeaveConvoResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for LeaveConvo<'a> {
     const NSID: &'static str = "blue.catbird.mlsChat.leaveConvo";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = LeaveConvoResponse;
 }
 
@@ -140,8 +147,9 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for LeaveConvo<'a> {
 pub struct LeaveConvoRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for LeaveConvoRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.leaveConvo";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<'de> = LeaveConvo<'de>;
     type Response = LeaveConvoResponse;
 }

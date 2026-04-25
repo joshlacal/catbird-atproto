@@ -13,7 +13,13 @@ pub mod subscribe_labels;
 /// Metadata tag on an atproto resource (eg, repo or record).
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Label<'a> {
@@ -49,73 +55,73 @@ pub struct Label<'a> {
 
 pub mod label_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Cts;
         type Uri;
         type Src;
+        type Cts;
         type Val;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Cts = Unset;
         type Uri = Unset;
         type Src = Unset;
+        type Cts = Unset;
         type Val = Unset;
-    }
-    ///State transition - sets the `cts` field to Set
-    pub struct SetCts<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCts<S> {}
-    impl<S: State> State for SetCts<S> {
-        type Cts = Set<members::cts>;
-        type Uri = S::Uri;
-        type Src = S::Src;
-        type Val = S::Val;
     }
     ///State transition - sets the `uri` field to Set
     pub struct SetUri<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetUri<S> {}
     impl<S: State> State for SetUri<S> {
-        type Cts = S::Cts;
         type Uri = Set<members::uri>;
         type Src = S::Src;
+        type Cts = S::Cts;
         type Val = S::Val;
     }
     ///State transition - sets the `src` field to Set
     pub struct SetSrc<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetSrc<S> {}
     impl<S: State> State for SetSrc<S> {
-        type Cts = S::Cts;
         type Uri = S::Uri;
         type Src = Set<members::src>;
+        type Cts = S::Cts;
+        type Val = S::Val;
+    }
+    ///State transition - sets the `cts` field to Set
+    pub struct SetCts<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCts<S> {}
+    impl<S: State> State for SetCts<S> {
+        type Uri = S::Uri;
+        type Src = S::Src;
+        type Cts = Set<members::cts>;
         type Val = S::Val;
     }
     ///State transition - sets the `val` field to Set
     pub struct SetVal<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetVal<S> {}
     impl<S: State> State for SetVal<S> {
-        type Cts = S::Cts;
         type Uri = S::Uri;
         type Src = S::Src;
+        type Cts = S::Cts;
         type Val = Set<members::val>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `cts` field
-        pub struct cts(());
         ///Marker type for the `uri` field
         pub struct uri(());
         ///Marker type for the `src` field
         pub struct src(());
+        ///Marker type for the `cts` field
+        pub struct cts(());
         ///Marker type for the `val` field
         pub struct val(());
     }
@@ -150,7 +156,17 @@ impl<'a> LabelBuilder<'a, label_state::Empty> {
     pub fn new() -> Self {
         LabelBuilder {
             _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None, None, None, None, None),
+            __unsafe_private_named: (
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+            ),
             _phantom: ::core::marker::PhantomData,
         }
     }
@@ -166,7 +182,10 @@ impl<'a, S: label_state::State> LabelBuilder<'a, S> {
         self
     }
     /// Set the `cid` field to an Option value (optional)
-    pub fn maybe_cid(mut self, value: Option<jacquard_common::types::string::Cid<'a>>) -> Self {
+    pub fn maybe_cid(
+        mut self,
+        value: Option<jacquard_common::types::string::Cid<'a>>,
+    ) -> Self {
         self.__unsafe_private_named.0 = value;
         self
     }
@@ -201,7 +220,10 @@ impl<'a, S: label_state::State> LabelBuilder<'a, S> {
         self
     }
     /// Set the `exp` field to an Option value (optional)
-    pub fn maybe_exp(mut self, value: Option<jacquard_common::types::string::Datetime>) -> Self {
+    pub fn maybe_exp(
+        mut self,
+        value: Option<jacquard_common::types::string::Datetime>,
+    ) -> Self {
         self.__unsafe_private_named.2 = value;
         self
     }
@@ -306,9 +328,9 @@ impl<'a, S: label_state::State> LabelBuilder<'a, S> {
 impl<'a, S> LabelBuilder<'a, S>
 where
     S: label_state::State,
-    S::Cts: label_state::IsSet,
     S::Uri: label_state::IsSet,
     S::Src: label_state::IsSet,
+    S::Cts: label_state::IsSet,
     S::Val: label_state::IsSet,
 {
     /// Build the final struct
@@ -349,7 +371,9 @@ where
     }
 }
 
-fn lexicon_doc_com_atproto_label_defs() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_com_atproto_label_defs() -> ::jacquard_lexicon::lexicon::LexiconDoc<
+    'static,
+> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("com.atproto.label.defs"),
@@ -534,20 +558,18 @@ fn lexicon_doc_com_atproto_label_defs() -> ::jacquard_lexicon::lexicon::LexiconD
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("labelValue"),
-                ::jacquard_lexicon::lexicon::LexUserType::String(
-                    ::jacquard_lexicon::lexicon::LexString {
-                        description: None,
-                        format: None,
-                        default: None,
-                        min_length: None,
-                        max_length: None,
-                        min_graphemes: None,
-                        max_graphemes: None,
-                        r#enum: None,
-                        r#const: None,
-                        known_values: None,
-                    },
-                ),
+                ::jacquard_lexicon::lexicon::LexUserType::String(::jacquard_lexicon::lexicon::LexString {
+                    description: None,
+                    format: None,
+                    default: None,
+                    min_length: None,
+                    max_length: None,
+                    min_graphemes: None,
+                    max_graphemes: None,
+                    r#enum: None,
+                    r#const: None,
+                    known_values: None,
+                }),
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("labelValueDefinition"),
@@ -855,7 +877,9 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Label<'a> {
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) > 128usize {
                 return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("val"),
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
+                        "val",
+                    ),
                     max: 128usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -989,7 +1013,13 @@ impl jacquard_common::IntoStatic for LabelValue<'_> {
 /// Declares a label value and its expected interpretations and behaviors.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct LabelValueDefinition<'a> {
@@ -1007,7 +1037,7 @@ pub struct LabelValueDefinition<'a> {
     #[serde(borrow)]
     pub identifier: jacquard_common::CowStr<'a>,
     #[serde(borrow)]
-    pub locales: Vec<crate::generated::com_atproto::label::LabelValueDefinitionStrings<'a>>,
+    pub locales: Vec<crate::com_atproto::label::LabelValueDefinitionStrings<'a>>,
     /// How should a client visually convey this label? 'inform' means neutral and informational; 'alert' means negative and warning; 'none' means show nothing.
     #[serde(borrow)]
     pub severity: jacquard_common::CowStr<'a>,
@@ -1015,75 +1045,75 @@ pub struct LabelValueDefinition<'a> {
 
 pub mod label_value_definition_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
+        type Blurs;
         type Identifier;
         type Locales;
         type Severity;
-        type Blurs;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
+        type Blurs = Unset;
         type Identifier = Unset;
         type Locales = Unset;
         type Severity = Unset;
-        type Blurs = Unset;
-    }
-    ///State transition - sets the `identifier` field to Set
-    pub struct SetIdentifier<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetIdentifier<S> {}
-    impl<S: State> State for SetIdentifier<S> {
-        type Identifier = Set<members::identifier>;
-        type Locales = S::Locales;
-        type Severity = S::Severity;
-        type Blurs = S::Blurs;
-    }
-    ///State transition - sets the `locales` field to Set
-    pub struct SetLocales<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetLocales<S> {}
-    impl<S: State> State for SetLocales<S> {
-        type Identifier = S::Identifier;
-        type Locales = Set<members::locales>;
-        type Severity = S::Severity;
-        type Blurs = S::Blurs;
-    }
-    ///State transition - sets the `severity` field to Set
-    pub struct SetSeverity<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetSeverity<S> {}
-    impl<S: State> State for SetSeverity<S> {
-        type Identifier = S::Identifier;
-        type Locales = S::Locales;
-        type Severity = Set<members::severity>;
-        type Blurs = S::Blurs;
     }
     ///State transition - sets the `blurs` field to Set
     pub struct SetBlurs<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetBlurs<S> {}
     impl<S: State> State for SetBlurs<S> {
+        type Blurs = Set<members::blurs>;
         type Identifier = S::Identifier;
         type Locales = S::Locales;
         type Severity = S::Severity;
-        type Blurs = Set<members::blurs>;
+    }
+    ///State transition - sets the `identifier` field to Set
+    pub struct SetIdentifier<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetIdentifier<S> {}
+    impl<S: State> State for SetIdentifier<S> {
+        type Blurs = S::Blurs;
+        type Identifier = Set<members::identifier>;
+        type Locales = S::Locales;
+        type Severity = S::Severity;
+    }
+    ///State transition - sets the `locales` field to Set
+    pub struct SetLocales<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetLocales<S> {}
+    impl<S: State> State for SetLocales<S> {
+        type Blurs = S::Blurs;
+        type Identifier = S::Identifier;
+        type Locales = Set<members::locales>;
+        type Severity = S::Severity;
+    }
+    ///State transition - sets the `severity` field to Set
+    pub struct SetSeverity<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetSeverity<S> {}
+    impl<S: State> State for SetSeverity<S> {
+        type Blurs = S::Blurs;
+        type Identifier = S::Identifier;
+        type Locales = S::Locales;
+        type Severity = Set<members::severity>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
+        ///Marker type for the `blurs` field
+        pub struct blurs(());
         ///Marker type for the `identifier` field
         pub struct identifier(());
         ///Marker type for the `locales` field
         pub struct locales(());
         ///Marker type for the `severity` field
         pub struct severity(());
-        ///Marker type for the `blurs` field
-        pub struct blurs(());
     }
 }
 
@@ -1096,7 +1126,7 @@ pub struct LabelValueDefinitionBuilder<'a, S: label_value_definition_state::Stat
         ::core::option::Option<jacquard_common::CowStr<'a>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
         ::core::option::Option<
-            Vec<crate::generated::com_atproto::label::LabelValueDefinitionStrings<'a>>,
+            Vec<crate::com_atproto::label::LabelValueDefinitionStrings<'a>>,
         >,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
     ),
@@ -1105,7 +1135,10 @@ pub struct LabelValueDefinitionBuilder<'a, S: label_value_definition_state::Stat
 
 impl<'a> LabelValueDefinition<'a> {
     /// Create a new builder for this type
-    pub fn new() -> LabelValueDefinitionBuilder<'a, label_value_definition_state::Empty> {
+    pub fn new() -> LabelValueDefinitionBuilder<
+        'a,
+        label_value_definition_state::Empty,
+    > {
         LabelValueDefinitionBuilder::new()
     }
 }
@@ -1163,7 +1196,10 @@ impl<'a, S: label_value_definition_state::State> LabelValueDefinitionBuilder<'a,
         self
     }
     /// Set the `defaultSetting` field to an Option value (optional)
-    pub fn maybe_default_setting(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
+    pub fn maybe_default_setting(
+        mut self,
+        value: Option<jacquard_common::CowStr<'a>>,
+    ) -> Self {
         self.__unsafe_private_named.2 = value;
         self
     }
@@ -1178,7 +1214,10 @@ where
     pub fn identifier(
         mut self,
         value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> LabelValueDefinitionBuilder<'a, label_value_definition_state::SetIdentifier<S>> {
+    ) -> LabelValueDefinitionBuilder<
+        'a,
+        label_value_definition_state::SetIdentifier<S>,
+    > {
         self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
         LabelValueDefinitionBuilder {
             _phantom_state: ::core::marker::PhantomData,
@@ -1196,7 +1235,7 @@ where
     /// Set the `locales` field (required)
     pub fn locales(
         mut self,
-        value: impl Into<Vec<crate::generated::com_atproto::label::LabelValueDefinitionStrings<'a>>>,
+        value: impl Into<Vec<crate::com_atproto::label::LabelValueDefinitionStrings<'a>>>,
     ) -> LabelValueDefinitionBuilder<'a, label_value_definition_state::SetLocales<S>> {
         self.__unsafe_private_named.4 = ::core::option::Option::Some(value.into());
         LabelValueDefinitionBuilder {
@@ -1229,10 +1268,10 @@ where
 impl<'a, S> LabelValueDefinitionBuilder<'a, S>
 where
     S: label_value_definition_state::State,
+    S::Blurs: label_value_definition_state::IsSet,
     S::Identifier: label_value_definition_state::IsSet,
     S::Locales: label_value_definition_state::IsSet,
     S::Severity: label_value_definition_state::IsSet,
-    S::Blurs: label_value_definition_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> LabelValueDefinition<'a> {
@@ -1284,7 +1323,9 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for LabelValueDefinition<'a> 
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) > 100usize {
                 return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("identifier"),
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
+                        "identifier",
+                    ),
                     max: 100usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -1293,19 +1334,19 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for LabelValueDefinition<'a> 
         {
             let value = &self.identifier;
             {
-                let count =
-                    ::unicode_segmentation::UnicodeSegmentation::graphemes(value.as_ref(), true)
-                        .count();
+                let count = ::unicode_segmentation::UnicodeSegmentation::graphemes(
+                        value.as_ref(),
+                        true,
+                    )
+                    .count();
                 if count > 100usize {
-                    return Err(
-                        ::jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
-                            path: ::jacquard_lexicon::validation::ValidationPath::from_field(
-                                "identifier",
-                            ),
-                            max: 100usize,
-                            actual: count,
-                        },
-                    );
+                    return Err(::jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
+                        path: ::jacquard_lexicon::validation::ValidationPath::from_field(
+                            "identifier",
+                        ),
+                        max: 100usize,
+                        actual: count,
+                    });
                 }
             }
         }
@@ -1316,7 +1357,13 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for LabelValueDefinition<'a> 
 /// Strings which describe the label in the UI, localized into a specific language.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct LabelValueDefinitionStrings<'a> {
@@ -1332,64 +1379,67 @@ pub struct LabelValueDefinitionStrings<'a> {
 
 pub mod label_value_definition_strings_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Name;
-        type Description;
         type Lang;
+        type Description;
+        type Name;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Name = Unset;
-        type Description = Unset;
         type Lang = Unset;
-    }
-    ///State transition - sets the `name` field to Set
-    pub struct SetName<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetName<S> {}
-    impl<S: State> State for SetName<S> {
-        type Name = Set<members::name>;
-        type Description = S::Description;
-        type Lang = S::Lang;
-    }
-    ///State transition - sets the `description` field to Set
-    pub struct SetDescription<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDescription<S> {}
-    impl<S: State> State for SetDescription<S> {
-        type Name = S::Name;
-        type Description = Set<members::description>;
-        type Lang = S::Lang;
+        type Description = Unset;
+        type Name = Unset;
     }
     ///State transition - sets the `lang` field to Set
     pub struct SetLang<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetLang<S> {}
     impl<S: State> State for SetLang<S> {
-        type Name = S::Name;
-        type Description = S::Description;
         type Lang = Set<members::lang>;
+        type Description = S::Description;
+        type Name = S::Name;
+    }
+    ///State transition - sets the `description` field to Set
+    pub struct SetDescription<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetDescription<S> {}
+    impl<S: State> State for SetDescription<S> {
+        type Lang = S::Lang;
+        type Description = Set<members::description>;
+        type Name = S::Name;
+    }
+    ///State transition - sets the `name` field to Set
+    pub struct SetName<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetName<S> {}
+    impl<S: State> State for SetName<S> {
+        type Lang = S::Lang;
+        type Description = S::Description;
+        type Name = Set<members::name>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `name` field
-        pub struct name(());
-        ///Marker type for the `description` field
-        pub struct description(());
         ///Marker type for the `lang` field
         pub struct lang(());
+        ///Marker type for the `description` field
+        pub struct description(());
+        ///Marker type for the `name` field
+        pub struct name(());
     }
 }
 
 /// Builder for constructing an instance of this type
-pub struct LabelValueDefinitionStringsBuilder<'a, S: label_value_definition_strings_state::State> {
+pub struct LabelValueDefinitionStringsBuilder<
+    'a,
+    S: label_value_definition_strings_state::State,
+> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
         ::core::option::Option<jacquard_common::CowStr<'a>>,
@@ -1401,13 +1451,17 @@ pub struct LabelValueDefinitionStringsBuilder<'a, S: label_value_definition_stri
 
 impl<'a> LabelValueDefinitionStrings<'a> {
     /// Create a new builder for this type
-    pub fn new(
-    ) -> LabelValueDefinitionStringsBuilder<'a, label_value_definition_strings_state::Empty> {
+    pub fn new() -> LabelValueDefinitionStringsBuilder<
+        'a,
+        label_value_definition_strings_state::Empty,
+    > {
         LabelValueDefinitionStringsBuilder::new()
     }
 }
 
-impl<'a> LabelValueDefinitionStringsBuilder<'a, label_value_definition_strings_state::Empty> {
+impl<
+    'a,
+> LabelValueDefinitionStringsBuilder<'a, label_value_definition_strings_state::Empty> {
     /// Create a new builder with all fields unset
     pub fn new() -> Self {
         LabelValueDefinitionStringsBuilder {
@@ -1449,8 +1503,10 @@ where
     pub fn lang(
         mut self,
         value: impl Into<jacquard_common::types::string::Language>,
-    ) -> LabelValueDefinitionStringsBuilder<'a, label_value_definition_strings_state::SetLang<S>>
-    {
+    ) -> LabelValueDefinitionStringsBuilder<
+        'a,
+        label_value_definition_strings_state::SetLang<S>,
+    > {
         self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
         LabelValueDefinitionStringsBuilder {
             _phantom_state: ::core::marker::PhantomData,
@@ -1469,8 +1525,10 @@ where
     pub fn name(
         mut self,
         value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> LabelValueDefinitionStringsBuilder<'a, label_value_definition_strings_state::SetName<S>>
-    {
+    ) -> LabelValueDefinitionStringsBuilder<
+        'a,
+        label_value_definition_strings_state::SetName<S>,
+    > {
         self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
         LabelValueDefinitionStringsBuilder {
             _phantom_state: ::core::marker::PhantomData,
@@ -1483,9 +1541,9 @@ where
 impl<'a, S> LabelValueDefinitionStringsBuilder<'a, S>
 where
     S: label_value_definition_strings_state::State,
-    S::Name: label_value_definition_strings_state::IsSet,
-    S::Description: label_value_definition_strings_state::IsSet,
     S::Lang: label_value_definition_strings_state::IsSet,
+    S::Description: label_value_definition_strings_state::IsSet,
+    S::Name: label_value_definition_strings_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> LabelValueDefinitionStrings<'a> {
@@ -1531,7 +1589,9 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for LabelValueDefinitionStrin
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) > 100000usize {
                 return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("description"),
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
+                        "description",
+                    ),
                     max: 100000usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -1540,19 +1600,19 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for LabelValueDefinitionStrin
         {
             let value = &self.description;
             {
-                let count =
-                    ::unicode_segmentation::UnicodeSegmentation::graphemes(value.as_ref(), true)
-                        .count();
+                let count = ::unicode_segmentation::UnicodeSegmentation::graphemes(
+                        value.as_ref(),
+                        true,
+                    )
+                    .count();
                 if count > 10000usize {
-                    return Err(
-                        ::jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
-                            path: ::jacquard_lexicon::validation::ValidationPath::from_field(
-                                "description",
-                            ),
-                            max: 10000usize,
-                            actual: count,
-                        },
-                    );
+                    return Err(::jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
+                        path: ::jacquard_lexicon::validation::ValidationPath::from_field(
+                            "description",
+                        ),
+                        max: 10000usize,
+                        actual: count,
+                    });
                 }
             }
         }
@@ -1561,7 +1621,9 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for LabelValueDefinitionStrin
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) > 640usize {
                 return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("name"),
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
+                        "name",
+                    ),
                     max: 640usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -1570,19 +1632,19 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for LabelValueDefinitionStrin
         {
             let value = &self.name;
             {
-                let count =
-                    ::unicode_segmentation::UnicodeSegmentation::graphemes(value.as_ref(), true)
-                        .count();
+                let count = ::unicode_segmentation::UnicodeSegmentation::graphemes(
+                        value.as_ref(),
+                        true,
+                    )
+                    .count();
                 if count > 64usize {
-                    return Err(
-                        ::jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
-                            path: ::jacquard_lexicon::validation::ValidationPath::from_field(
-                                "name",
-                            ),
-                            max: 64usize,
-                            actual: count,
-                        },
-                    );
+                    return Err(::jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
+                        path: ::jacquard_lexicon::validation::ValidationPath::from_field(
+                            "name",
+                        ),
+                        max: 64usize,
+                        actual: count,
+                    });
                 }
             }
         }
@@ -1600,7 +1662,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for LabelValueDefinitionStrin
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
 #[serde(rename_all = "camelCase")]
 pub struct SelfLabel<'a> {
@@ -1627,7 +1689,9 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for SelfLabel<'a> {
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) > 128usize {
                 return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("val"),
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
+                        "val",
+                    ),
                     max: 128usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -1640,19 +1704,25 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for SelfLabel<'a> {
 /// Metadata tags on an atproto record, published by the author within the record.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct SelfLabels<'a> {
     #[serde(borrow)]
-    pub values: Vec<crate::generated::com_atproto::label::SelfLabel<'a>>,
+    pub values: Vec<crate::com_atproto::label::SelfLabel<'a>>,
 }
 
 pub mod self_labels_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -1683,8 +1753,9 @@ pub mod self_labels_state {
 /// Builder for constructing an instance of this type
 pub struct SelfLabelsBuilder<'a, S: self_labels_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named:
-        (::core::option::Option<Vec<crate::generated::com_atproto::label::SelfLabel<'a>>>,),
+    __unsafe_private_named: (
+        ::core::option::Option<Vec<crate::com_atproto::label::SelfLabel<'a>>>,
+    ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
 
@@ -1714,7 +1785,7 @@ where
     /// Set the `values` field (required)
     pub fn values(
         mut self,
-        value: impl Into<Vec<crate::generated::com_atproto::label::SelfLabel<'a>>>,
+        value: impl Into<Vec<crate::com_atproto::label::SelfLabel<'a>>>,
     ) -> SelfLabelsBuilder<'a, self_labels_state::SetValues<S>> {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         SelfLabelsBuilder {
@@ -1770,7 +1841,9 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for SelfLabels<'a> {
             #[allow(unused_comparisons)]
             if value.len() > 10usize {
                 return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("values"),
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
+                        "values",
+                    ),
                     max: 10usize,
                     actual: value.len(),
                 });

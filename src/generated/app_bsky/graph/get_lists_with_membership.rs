@@ -8,22 +8,28 @@
 /// A list and an optional list item indicating membership of a target user to that list.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ListWithMembership<'a> {
     #[serde(borrow)]
-    pub list: crate::generated::app_bsky::graph::ListView<'a>,
+    pub list: crate::app_bsky::graph::ListView<'a>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub list_item: std::option::Option<crate::generated::app_bsky::graph::ListItemView<'a>>,
+    pub list_item: std::option::Option<crate::app_bsky::graph::ListItemView<'a>>,
 }
 
 pub mod list_with_membership_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -55,8 +61,8 @@ pub mod list_with_membership_state {
 pub struct ListWithMembershipBuilder<'a, S: list_with_membership_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
-        ::core::option::Option<crate::generated::app_bsky::graph::ListView<'a>>,
-        ::core::option::Option<crate::generated::app_bsky::graph::ListItemView<'a>>,
+        ::core::option::Option<crate::app_bsky::graph::ListView<'a>>,
+        ::core::option::Option<crate::app_bsky::graph::ListItemView<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
@@ -87,7 +93,7 @@ where
     /// Set the `list` field (required)
     pub fn list(
         mut self,
-        value: impl Into<crate::generated::app_bsky::graph::ListView<'a>>,
+        value: impl Into<crate::app_bsky::graph::ListView<'a>>,
     ) -> ListWithMembershipBuilder<'a, list_with_membership_state::SetList<S>> {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         ListWithMembershipBuilder {
@@ -102,7 +108,7 @@ impl<'a, S: list_with_membership_state::State> ListWithMembershipBuilder<'a, S> 
     /// Set the `listItem` field (optional)
     pub fn list_item(
         mut self,
-        value: impl Into<Option<crate::generated::app_bsky::graph::ListItemView<'a>>>,
+        value: impl Into<Option<crate::app_bsky::graph::ListItemView<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.1 = value.into();
         self
@@ -110,7 +116,7 @@ impl<'a, S: list_with_membership_state::State> ListWithMembershipBuilder<'a, S> 
     /// Set the `listItem` field to an Option value (optional)
     pub fn maybe_list_item(
         mut self,
-        value: Option<crate::generated::app_bsky::graph::ListItemView<'a>>,
+        value: Option<crate::app_bsky::graph::ListItemView<'a>>,
     ) -> Self {
         self.__unsafe_private_named.1 = value;
         self
@@ -146,11 +152,14 @@ where
     }
 }
 
-fn lexicon_doc_app_bsky_graph_getListsWithMembership(
-) -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_app_bsky_graph_getListsWithMembership() -> ::jacquard_lexicon::lexicon::LexiconDoc<
+    'static,
+> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
-        id: ::jacquard_common::CowStr::new_static("app.bsky.graph.getListsWithMembership"),
+        id: ::jacquard_common::CowStr::new_static(
+            "app.bsky.graph.getListsWithMembership",
+        ),
         revision: None,
         description: None,
         defs: {
@@ -307,7 +316,13 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ListWithMembership<'a> {
 }
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetListsWithMembership<'a> {
@@ -326,9 +341,9 @@ pub struct GetListsWithMembership<'a> {
 
 pub mod get_lists_with_membership_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -370,7 +385,10 @@ pub struct GetListsWithMembershipBuilder<'a, S: get_lists_with_membership_state:
 
 impl<'a> GetListsWithMembership<'a> {
     /// Create a new builder for this type
-    pub fn new() -> GetListsWithMembershipBuilder<'a, get_lists_with_membership_state::Empty> {
+    pub fn new() -> GetListsWithMembershipBuilder<
+        'a,
+        get_lists_with_membership_state::Empty,
+    > {
         GetListsWithMembershipBuilder::new()
     }
 }
@@ -395,7 +413,10 @@ where
     pub fn actor(
         mut self,
         value: impl Into<jacquard_common::types::ident::AtIdentifier<'a>>,
-    ) -> GetListsWithMembershipBuilder<'a, get_lists_with_membership_state::SetActor<S>> {
+    ) -> GetListsWithMembershipBuilder<
+        'a,
+        get_lists_with_membership_state::SetActor<S>,
+    > {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         GetListsWithMembershipBuilder {
             _phantom_state: ::core::marker::PhantomData,
@@ -405,9 +426,15 @@ where
     }
 }
 
-impl<'a, S: get_lists_with_membership_state::State> GetListsWithMembershipBuilder<'a, S> {
+impl<
+    'a,
+    S: get_lists_with_membership_state::State,
+> GetListsWithMembershipBuilder<'a, S> {
     /// Set the `cursor` field (optional)
-    pub fn cursor(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
+    pub fn cursor(
+        mut self,
+        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
+    ) -> Self {
         self.__unsafe_private_named.1 = value.into();
         self
     }
@@ -418,7 +445,10 @@ impl<'a, S: get_lists_with_membership_state::State> GetListsWithMembershipBuilde
     }
 }
 
-impl<'a, S: get_lists_with_membership_state::State> GetListsWithMembershipBuilder<'a, S> {
+impl<
+    'a,
+    S: get_lists_with_membership_state::State,
+> GetListsWithMembershipBuilder<'a, S> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
         self.__unsafe_private_named.2 = value.into();
@@ -431,14 +461,23 @@ impl<'a, S: get_lists_with_membership_state::State> GetListsWithMembershipBuilde
     }
 }
 
-impl<'a, S: get_lists_with_membership_state::State> GetListsWithMembershipBuilder<'a, S> {
+impl<
+    'a,
+    S: get_lists_with_membership_state::State,
+> GetListsWithMembershipBuilder<'a, S> {
     /// Set the `purposes` field (optional)
-    pub fn purposes(mut self, value: impl Into<Option<Vec<jacquard_common::CowStr<'a>>>>) -> Self {
+    pub fn purposes(
+        mut self,
+        value: impl Into<Option<Vec<jacquard_common::CowStr<'a>>>>,
+    ) -> Self {
         self.__unsafe_private_named.3 = value.into();
         self
     }
     /// Set the `purposes` field to an Option value (optional)
-    pub fn maybe_purposes(mut self, value: Option<Vec<jacquard_common::CowStr<'a>>>) -> Self {
+    pub fn maybe_purposes(
+        mut self,
+        value: Option<Vec<jacquard_common::CowStr<'a>>>,
+    ) -> Self {
         self.__unsafe_private_named.3 = value;
         self
     }
@@ -462,7 +501,13 @@ where
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetListsWithMembershipOutput<'a> {
@@ -470,8 +515,9 @@ pub struct GetListsWithMembershipOutput<'a> {
     #[serde(borrow)]
     pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(borrow)]
-    pub lists_with_membership:
-        Vec<crate::generated::app_bsky::graph::get_lists_with_membership::ListWithMembership<'a>>,
+    pub lists_with_membership: Vec<
+        crate::app_bsky::graph::get_lists_with_membership::ListWithMembership<'a>,
+    >,
 }
 
 /// Response type for

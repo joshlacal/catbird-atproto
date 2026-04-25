@@ -7,19 +7,25 @@
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct CreateTarget<'a> {
     #[serde(borrow)]
-    pub multistream_target: crate::generated::place_stream::multistream::target::Target<'a>,
+    pub multistream_target: crate::place_stream::multistream::target::Target<'a>,
 }
 
 pub mod create_target_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -50,8 +56,9 @@ pub mod create_target_state {
 /// Builder for constructing an instance of this type
 pub struct CreateTargetBuilder<'a, S: create_target_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named:
-        (::core::option::Option<crate::generated::place_stream::multistream::target::Target<'a>>,),
+    __unsafe_private_named: (
+        ::core::option::Option<crate::place_stream::multistream::target::Target<'a>>,
+    ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
 
@@ -81,7 +88,7 @@ where
     /// Set the `multistreamTarget` field (required)
     pub fn multistream_target(
         mut self,
-        value: impl Into<crate::generated::place_stream::multistream::target::Target<'a>>,
+        value: impl Into<crate::place_stream::multistream::target::Target<'a>>,
     ) -> CreateTargetBuilder<'a, create_target_state::SetMultistreamTarget<S>> {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         CreateTargetBuilder {
@@ -121,13 +128,19 @@ where
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct CreateTargetOutput<'a> {
     #[serde(flatten)]
     #[serde(borrow)]
-    pub value: crate::generated::place_stream::multistream::TargetView<'a>,
+    pub value: crate::place_stream::multistream::TargetView<'a>,
 }
 
 #[jacquard_derive::open_union]
@@ -140,7 +153,7 @@ pub struct CreateTargetOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
+    jacquard_derive::IntoStatic
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -177,8 +190,9 @@ impl jacquard_common::xrpc::XrpcResp for CreateTargetResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for CreateTarget<'a> {
     const NSID: &'static str = "place.stream.multistream.createTarget";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = CreateTargetResponse;
 }
 
@@ -187,8 +201,9 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for CreateTarget<'a> {
 pub struct CreateTargetRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for CreateTargetRequest {
     const PATH: &'static str = "/xrpc/place.stream.multistream.createTarget";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<'de> = CreateTarget<'de>;
     type Response = CreateTargetResponse;
 }

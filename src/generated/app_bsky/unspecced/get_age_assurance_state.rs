@@ -7,13 +7,19 @@
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetAgeAssuranceStateOutput<'a> {
     #[serde(flatten)]
     #[serde(borrow)]
-    pub value: crate::generated::app_bsky::unspecced::AgeAssuranceState<'a>,
+    pub value: crate::app_bsky::unspecced::AgeAssuranceState<'a>,
 }
 
 /// XRPC request marker type
@@ -25,7 +31,7 @@ pub struct GetAgeAssuranceStateOutput<'a> {
     Eq,
     serde::Serialize,
     serde::Deserialize,
-    jacquard_derive::IntoStatic,
+    jacquard_derive::IntoStatic
 )]
 pub struct GetAgeAssuranceState;
 /// Response type for

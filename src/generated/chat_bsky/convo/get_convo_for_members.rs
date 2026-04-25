@@ -6,7 +6,13 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetConvoForMembers<'a> {
@@ -16,9 +22,9 @@ pub struct GetConvoForMembers<'a> {
 
 pub mod get_convo_for_members_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -49,7 +55,9 @@ pub mod get_convo_for_members_state {
 /// Builder for constructing an instance of this type
 pub struct GetConvoForMembersBuilder<'a, S: get_convo_for_members_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<Vec<jacquard_common::types::string::Did<'a>>>,),
+    __unsafe_private_named: (
+        ::core::option::Option<Vec<jacquard_common::types::string::Did<'a>>>,
+    ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
 
@@ -105,12 +113,18 @@ where
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetConvoForMembersOutput<'a> {
     #[serde(borrow)]
-    pub convo: crate::generated::chat_bsky::convo::ConvoView<'a>,
+    pub convo: crate::chat_bsky::convo::ConvoView<'a>,
 }
 
 /// Response type for

@@ -7,7 +7,13 @@
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateAccountPassword<'a> {
@@ -19,45 +25,45 @@ pub struct UpdateAccountPassword<'a> {
 
 pub mod update_account_password_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Password;
         type Did;
+        type Password;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Password = Unset;
         type Did = Unset;
-    }
-    ///State transition - sets the `password` field to Set
-    pub struct SetPassword<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetPassword<S> {}
-    impl<S: State> State for SetPassword<S> {
-        type Password = Set<members::password>;
-        type Did = S::Did;
+        type Password = Unset;
     }
     ///State transition - sets the `did` field to Set
     pub struct SetDid<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetDid<S> {}
     impl<S: State> State for SetDid<S> {
-        type Password = S::Password;
         type Did = Set<members::did>;
+        type Password = S::Password;
+    }
+    ///State transition - sets the `password` field to Set
+    pub struct SetPassword<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetPassword<S> {}
+    impl<S: State> State for SetPassword<S> {
+        type Did = S::Did;
+        type Password = Set<members::password>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `password` field
-        pub struct password(());
         ///Marker type for the `did` field
         pub struct did(());
+        ///Marker type for the `password` field
+        pub struct password(());
     }
 }
 
@@ -73,7 +79,10 @@ pub struct UpdateAccountPasswordBuilder<'a, S: update_account_password_state::St
 
 impl<'a> UpdateAccountPassword<'a> {
     /// Create a new builder for this type
-    pub fn new() -> UpdateAccountPasswordBuilder<'a, update_account_password_state::Empty> {
+    pub fn new() -> UpdateAccountPasswordBuilder<
+        'a,
+        update_account_password_state::Empty,
+    > {
         UpdateAccountPasswordBuilder::new()
     }
 }
@@ -117,7 +126,10 @@ where
     pub fn password(
         mut self,
         value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> UpdateAccountPasswordBuilder<'a, update_account_password_state::SetPassword<S>> {
+    ) -> UpdateAccountPasswordBuilder<
+        'a,
+        update_account_password_state::SetPassword<S>,
+    > {
         self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
         UpdateAccountPasswordBuilder {
             _phantom_state: ::core::marker::PhantomData,
@@ -130,8 +142,8 @@ where
 impl<'a, S> UpdateAccountPasswordBuilder<'a, S>
 where
     S: update_account_password_state::State,
-    S::Password: update_account_password_state::IsSet,
     S::Did: update_account_password_state::IsSet,
+    S::Password: update_account_password_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> UpdateAccountPassword<'a> {
@@ -169,8 +181,9 @@ impl jacquard_common::xrpc::XrpcResp for UpdateAccountPasswordResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for UpdateAccountPassword<'a> {
     const NSID: &'static str = "com.atproto.admin.updateAccountPassword";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = UpdateAccountPasswordResponse;
 }
 
@@ -179,8 +192,9 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for UpdateAccountPassword<'a> {
 pub struct UpdateAccountPasswordRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for UpdateAccountPasswordRequest {
     const PATH: &'static str = "/xrpc/com.atproto.admin.updateAccountPassword";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<'de> = UpdateAccountPassword<'de>;
     type Response = UpdateAccountPasswordResponse;
 }

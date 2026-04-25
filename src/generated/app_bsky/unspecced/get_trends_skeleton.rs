@@ -6,7 +6,13 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetTrendsSkeleton<'a> {
@@ -20,9 +26,9 @@ pub struct GetTrendsSkeleton<'a> {
 
 pub mod get_trends_skeleton_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -88,7 +94,10 @@ impl<'a, S: get_trends_skeleton_state::State> GetTrendsSkeletonBuilder<'a, S> {
         self
     }
     /// Set the `viewer` field to an Option value (optional)
-    pub fn maybe_viewer(mut self, value: Option<jacquard_common::types::string::Did<'a>>) -> Self {
+    pub fn maybe_viewer(
+        mut self,
+        value: Option<jacquard_common::types::string::Did<'a>>,
+    ) -> Self {
         self.__unsafe_private_named.1 = value;
         self
     }
@@ -109,12 +118,18 @@ where
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetTrendsSkeletonOutput<'a> {
     #[serde(borrow)]
-    pub trends: Vec<crate::generated::app_bsky::unspecced::SkeletonTrend<'a>>,
+    pub trends: Vec<crate::app_bsky::unspecced::SkeletonTrend<'a>>,
 }
 
 /// Response type for

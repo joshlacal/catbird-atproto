@@ -6,7 +6,13 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetSubjectStatus<'a> {
@@ -23,9 +29,9 @@ pub struct GetSubjectStatus<'a> {
 
 pub mod get_subject_status_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -79,7 +85,10 @@ impl<'a, S: get_subject_status_state::State> GetSubjectStatusBuilder<'a, S> {
         self
     }
     /// Set the `blob` field to an Option value (optional)
-    pub fn maybe_blob(mut self, value: Option<jacquard_common::types::string::Cid<'a>>) -> Self {
+    pub fn maybe_blob(
+        mut self,
+        value: Option<jacquard_common::types::string::Cid<'a>>,
+    ) -> Self {
         self.__unsafe_private_named.0 = value;
         self
     }
@@ -95,7 +104,10 @@ impl<'a, S: get_subject_status_state::State> GetSubjectStatusBuilder<'a, S> {
         self
     }
     /// Set the `did` field to an Option value (optional)
-    pub fn maybe_did(mut self, value: Option<jacquard_common::types::string::Did<'a>>) -> Self {
+    pub fn maybe_did(
+        mut self,
+        value: Option<jacquard_common::types::string::Did<'a>>,
+    ) -> Self {
         self.__unsafe_private_named.1 = value;
         self
     }
@@ -111,7 +123,10 @@ impl<'a, S: get_subject_status_state::State> GetSubjectStatusBuilder<'a, S> {
         self
     }
     /// Set the `uri` field to an Option value (optional)
-    pub fn maybe_uri(mut self, value: Option<jacquard_common::types::string::AtUri<'a>>) -> Self {
+    pub fn maybe_uri(
+        mut self,
+        value: Option<jacquard_common::types::string::AtUri<'a>>,
+    ) -> Self {
         self.__unsafe_private_named.2 = value;
         self
     }
@@ -133,33 +148,45 @@ where
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetSubjectStatusOutput<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub deactivated: std::option::Option<crate::generated::com_atproto::admin::StatusAttr<'a>>,
+    pub deactivated: std::option::Option<crate::com_atproto::admin::StatusAttr<'a>>,
     #[serde(borrow)]
     pub subject: GetSubjectStatusOutputSubject<'a>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub takedown: std::option::Option<crate::generated::com_atproto::admin::StatusAttr<'a>>,
+    pub takedown: std::option::Option<crate::com_atproto::admin::StatusAttr<'a>>,
 }
 
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(tag = "$type")]
 #[serde(bound(deserialize = "'de: 'a"))]
 pub enum GetSubjectStatusOutputSubject<'a> {
     #[serde(rename = "com.atproto.admin.defs#repoRef")]
-    RepoRef(Box<crate::generated::com_atproto::admin::RepoRef<'a>>),
+    RepoRef(Box<crate::com_atproto::admin::RepoRef<'a>>),
     #[serde(rename = "com.atproto.repo.strongRef")]
-    StrongRef(Box<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>),
+    StrongRef(Box<crate::com_atproto::repo::strong_ref::StrongRef<'a>>),
     #[serde(rename = "com.atproto.admin.defs#repoBlobRef")]
-    RepoBlobRef(Box<crate::generated::com_atproto::admin::RepoBlobRef<'a>>),
+    RepoBlobRef(Box<crate::com_atproto::admin::RepoBlobRef<'a>>),
 }
 
 /// Response type for

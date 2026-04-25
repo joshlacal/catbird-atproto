@@ -6,7 +6,13 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetPostThreadV2<'a> {
@@ -29,9 +35,9 @@ pub struct GetPostThreadV2<'a> {
 
 pub mod get_post_thread_v2_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -150,7 +156,10 @@ impl<'a, S: get_post_thread_v2_state::State> GetPostThreadV2Builder<'a, S> {
 
 impl<'a, S: get_post_thread_v2_state::State> GetPostThreadV2Builder<'a, S> {
     /// Set the `sort` field (optional)
-    pub fn sort(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
+    pub fn sort(
+        mut self,
+        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
+    ) -> Self {
         self.__unsafe_private_named.4 = value.into();
         self
     }
@@ -180,7 +189,13 @@ where
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetPostThreadV2Output<'a> {
@@ -188,10 +203,10 @@ pub struct GetPostThreadV2Output<'a> {
     pub has_other_replies: bool,
     /// A flat list of thread items. The depth of each item is indicated by the depth property inside the item.
     #[serde(borrow)]
-    pub thread: Vec<crate::generated::app_bsky::unspecced::get_post_thread_v2::ThreadItem<'a>>,
+    pub thread: Vec<crate::app_bsky::unspecced::get_post_thread_v2::ThreadItem<'a>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub threadgate: std::option::Option<crate::generated::app_bsky::feed::ThreadgateView<'a>>,
+    pub threadgate: std::option::Option<crate::app_bsky::feed::ThreadgateView<'a>>,
 }
 
 /// Response type for
@@ -222,7 +237,13 @@ impl jacquard_common::xrpc::XrpcEndpoint for GetPostThreadV2Request {
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ThreadItem<'a> {
@@ -236,59 +257,59 @@ pub struct ThreadItem<'a> {
 
 pub mod thread_item_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
+        type Depth;
         type Uri;
         type Value;
-        type Depth;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
+        type Depth = Unset;
         type Uri = Unset;
         type Value = Unset;
-        type Depth = Unset;
-    }
-    ///State transition - sets the `uri` field to Set
-    pub struct SetUri<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUri<S> {}
-    impl<S: State> State for SetUri<S> {
-        type Uri = Set<members::uri>;
-        type Value = S::Value;
-        type Depth = S::Depth;
-    }
-    ///State transition - sets the `value` field to Set
-    pub struct SetValue<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetValue<S> {}
-    impl<S: State> State for SetValue<S> {
-        type Uri = S::Uri;
-        type Value = Set<members::value>;
-        type Depth = S::Depth;
     }
     ///State transition - sets the `depth` field to Set
     pub struct SetDepth<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetDepth<S> {}
     impl<S: State> State for SetDepth<S> {
+        type Depth = Set<members::depth>;
         type Uri = S::Uri;
         type Value = S::Value;
-        type Depth = Set<members::depth>;
+    }
+    ///State transition - sets the `uri` field to Set
+    pub struct SetUri<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetUri<S> {}
+    impl<S: State> State for SetUri<S> {
+        type Depth = S::Depth;
+        type Uri = Set<members::uri>;
+        type Value = S::Value;
+    }
+    ///State transition - sets the `value` field to Set
+    pub struct SetValue<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetValue<S> {}
+    impl<S: State> State for SetValue<S> {
+        type Depth = S::Depth;
+        type Uri = S::Uri;
+        type Value = Set<members::value>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
+        ///Marker type for the `depth` field
+        pub struct depth(());
         ///Marker type for the `uri` field
         pub struct uri(());
         ///Marker type for the `value` field
         pub struct value(());
-        ///Marker type for the `depth` field
-        pub struct depth(());
     }
 }
 
@@ -381,9 +402,9 @@ where
 impl<'a, S> ThreadItemBuilder<'a, S>
 where
     S: thread_item_state::State,
+    S::Depth: thread_item_state::IsSet,
     S::Uri: thread_item_state::IsSet,
     S::Value: thread_item_state::IsSet,
-    S::Depth: thread_item_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> ThreadItem<'a> {
@@ -413,25 +434,32 @@ where
 
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(tag = "$type")]
 #[serde(bound(deserialize = "'de: 'a"))]
 pub enum ThreadItemValue<'a> {
     #[serde(rename = "app.bsky.unspecced.defs#threadItemPost")]
-    ThreadItemPost(Box<crate::generated::app_bsky::unspecced::ThreadItemPost<'a>>),
+    ThreadItemPost(Box<crate::app_bsky::unspecced::ThreadItemPost<'a>>),
     #[serde(rename = "app.bsky.unspecced.defs#threadItemNoUnauthenticated")]
     ThreadItemNoUnauthenticated(
-        Box<crate::generated::app_bsky::unspecced::ThreadItemNoUnauthenticated<'a>>,
+        Box<crate::app_bsky::unspecced::ThreadItemNoUnauthenticated<'a>>,
     ),
     #[serde(rename = "app.bsky.unspecced.defs#threadItemNotFound")]
-    ThreadItemNotFound(Box<crate::generated::app_bsky::unspecced::ThreadItemNotFound<'a>>),
+    ThreadItemNotFound(Box<crate::app_bsky::unspecced::ThreadItemNotFound<'a>>),
     #[serde(rename = "app.bsky.unspecced.defs#threadItemBlocked")]
-    ThreadItemBlocked(Box<crate::generated::app_bsky::unspecced::ThreadItemBlocked<'a>>),
+    ThreadItemBlocked(Box<crate::app_bsky::unspecced::ThreadItemBlocked<'a>>),
 }
 
-fn lexicon_doc_app_bsky_unspecced_getPostThreadV2(
-) -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_app_bsky_unspecced_getPostThreadV2() -> ::jacquard_lexicon::lexicon::LexiconDoc<
+    'static,
+> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("app.bsky.unspecced.getPostThreadV2"),

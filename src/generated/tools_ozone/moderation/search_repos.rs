@@ -6,7 +6,13 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct SearchRepos<'a> {
@@ -26,9 +32,9 @@ pub struct SearchRepos<'a> {
 
 pub mod search_repos_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -75,7 +81,10 @@ impl<'a> SearchReposBuilder<'a, search_repos_state::Empty> {
 
 impl<'a, S: search_repos_state::State> SearchReposBuilder<'a, S> {
     /// Set the `cursor` field (optional)
-    pub fn cursor(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
+    pub fn cursor(
+        mut self,
+        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
+    ) -> Self {
         self.__unsafe_private_named.0 = value.into();
         self
     }
@@ -114,7 +123,10 @@ impl<'a, S: search_repos_state::State> SearchReposBuilder<'a, S> {
 
 impl<'a, S: search_repos_state::State> SearchReposBuilder<'a, S> {
     /// Set the `term` field (optional)
-    pub fn term(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
+    pub fn term(
+        mut self,
+        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
+    ) -> Self {
         self.__unsafe_private_named.3 = value.into();
         self
     }
@@ -142,7 +154,13 @@ where
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct SearchReposOutput<'a> {
@@ -150,7 +168,7 @@ pub struct SearchReposOutput<'a> {
     #[serde(borrow)]
     pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(borrow)]
-    pub repos: Vec<crate::generated::tools_ozone::moderation::RepoView<'a>>,
+    pub repos: Vec<crate::tools_ozone::moderation::RepoView<'a>>,
 }
 
 /// Response type for

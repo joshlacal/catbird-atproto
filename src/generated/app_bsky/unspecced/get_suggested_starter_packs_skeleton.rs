@@ -6,7 +6,13 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetSuggestedStarterPacksSkeleton<'a> {
@@ -20,9 +26,9 @@ pub struct GetSuggestedStarterPacksSkeleton<'a> {
 
 pub mod get_suggested_starter_packs_skeleton_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -60,9 +66,12 @@ impl<'a> GetSuggestedStarterPacksSkeleton<'a> {
     }
 }
 
-impl<'a>
-    GetSuggestedStarterPacksSkeletonBuilder<'a, get_suggested_starter_packs_skeleton_state::Empty>
-{
+impl<
+    'a,
+> GetSuggestedStarterPacksSkeletonBuilder<
+    'a,
+    get_suggested_starter_packs_skeleton_state::Empty,
+> {
     /// Create a new builder with all fields unset
     pub fn new() -> Self {
         GetSuggestedStarterPacksSkeletonBuilder {
@@ -73,9 +82,10 @@ impl<'a>
     }
 }
 
-impl<'a, S: get_suggested_starter_packs_skeleton_state::State>
-    GetSuggestedStarterPacksSkeletonBuilder<'a, S>
-{
+impl<
+    'a,
+    S: get_suggested_starter_packs_skeleton_state::State,
+> GetSuggestedStarterPacksSkeletonBuilder<'a, S> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
         self.__unsafe_private_named.0 = value.into();
@@ -88,9 +98,10 @@ impl<'a, S: get_suggested_starter_packs_skeleton_state::State>
     }
 }
 
-impl<'a, S: get_suggested_starter_packs_skeleton_state::State>
-    GetSuggestedStarterPacksSkeletonBuilder<'a, S>
-{
+impl<
+    'a,
+    S: get_suggested_starter_packs_skeleton_state::State,
+> GetSuggestedStarterPacksSkeletonBuilder<'a, S> {
     /// Set the `viewer` field (optional)
     pub fn viewer(
         mut self,
@@ -100,7 +111,10 @@ impl<'a, S: get_suggested_starter_packs_skeleton_state::State>
         self
     }
     /// Set the `viewer` field to an Option value (optional)
-    pub fn maybe_viewer(mut self, value: Option<jacquard_common::types::string::Did<'a>>) -> Self {
+    pub fn maybe_viewer(
+        mut self,
+        value: Option<jacquard_common::types::string::Did<'a>>,
+    ) -> Self {
         self.__unsafe_private_named.1 = value;
         self
     }
@@ -121,7 +135,13 @@ where
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetSuggestedStarterPacksSkeletonOutput<'a> {

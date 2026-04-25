@@ -6,7 +6,13 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetPostThread<'a> {
@@ -22,9 +28,9 @@ pub struct GetPostThread<'a> {
 
 pub mod get_post_thread_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -143,7 +149,13 @@ where
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetPostThreadOutput<'a> {
@@ -151,22 +163,28 @@ pub struct GetPostThreadOutput<'a> {
     pub thread: GetPostThreadOutputThread<'a>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub threadgate: std::option::Option<crate::generated::app_bsky::feed::ThreadgateView<'a>>,
+    pub threadgate: std::option::Option<crate::app_bsky::feed::ThreadgateView<'a>>,
 }
 
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(tag = "$type")]
 #[serde(bound(deserialize = "'de: 'a"))]
 pub enum GetPostThreadOutputThread<'a> {
     #[serde(rename = "app.bsky.feed.defs#threadViewPost")]
-    ThreadViewPost(Box<crate::generated::app_bsky::feed::ThreadViewPost<'a>>),
+    ThreadViewPost(Box<crate::app_bsky::feed::ThreadViewPost<'a>>),
     #[serde(rename = "app.bsky.feed.defs#notFoundPost")]
-    NotFoundPost(Box<crate::generated::app_bsky::feed::NotFoundPost<'a>>),
+    NotFoundPost(Box<crate::app_bsky::feed::NotFoundPost<'a>>),
     #[serde(rename = "app.bsky.feed.defs#blockedPost")]
-    BlockedPost(Box<crate::generated::app_bsky::feed::BlockedPost<'a>>),
+    BlockedPost(Box<crate::app_bsky::feed::BlockedPost<'a>>),
 }
 
 #[jacquard_derive::open_union]
@@ -179,7 +197,7 @@ pub enum GetPostThreadOutputThread<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
+    jacquard_derive::IntoStatic
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]

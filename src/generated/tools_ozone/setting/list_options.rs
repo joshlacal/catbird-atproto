@@ -6,7 +6,13 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ListOptions<'a> {
@@ -30,9 +36,9 @@ pub struct ListOptions<'a> {
 
 pub mod list_options_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -80,7 +86,10 @@ impl<'a> ListOptionsBuilder<'a, list_options_state::Empty> {
 
 impl<'a, S: list_options_state::State> ListOptionsBuilder<'a, S> {
     /// Set the `cursor` field (optional)
-    pub fn cursor(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
+    pub fn cursor(
+        mut self,
+        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
+    ) -> Self {
         self.__unsafe_private_named.0 = value.into();
         self
     }
@@ -125,7 +134,10 @@ impl<'a, S: list_options_state::State> ListOptionsBuilder<'a, S> {
 
 impl<'a, S: list_options_state::State> ListOptionsBuilder<'a, S> {
     /// Set the `prefix` field (optional)
-    pub fn prefix(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
+    pub fn prefix(
+        mut self,
+        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
+    ) -> Self {
         self.__unsafe_private_named.3 = value.into();
         self
     }
@@ -138,7 +150,10 @@ impl<'a, S: list_options_state::State> ListOptionsBuilder<'a, S> {
 
 impl<'a, S: list_options_state::State> ListOptionsBuilder<'a, S> {
     /// Set the `scope` field (optional)
-    pub fn scope(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
+    pub fn scope(
+        mut self,
+        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
+    ) -> Self {
         self.__unsafe_private_named.4 = value.into();
         self
     }
@@ -167,7 +182,13 @@ where
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ListOptionsOutput<'a> {
@@ -175,7 +196,7 @@ pub struct ListOptionsOutput<'a> {
     #[serde(borrow)]
     pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(borrow)]
-    pub options: Vec<crate::generated::tools_ozone::setting::DefsOption<'a>>,
+    pub options: Vec<crate::tools_ozone::setting::DefsOption<'a>>,
 }
 
 /// Response type for

@@ -14,7 +14,7 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
 #[serde(rename_all = "camelCase")]
 pub struct CreateTemplate<'a> {
@@ -38,13 +38,19 @@ pub struct CreateTemplate<'a> {
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct CreateTemplateOutput<'a> {
     #[serde(flatten)]
     #[serde(borrow)]
-    pub value: crate::generated::tools_ozone::communication::TemplateView<'a>,
+    pub value: crate::tools_ozone::communication::TemplateView<'a>,
 }
 
 #[jacquard_derive::open_union]
@@ -57,7 +63,7 @@ pub struct CreateTemplateOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
+    jacquard_derive::IntoStatic
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -93,8 +99,9 @@ impl jacquard_common::xrpc::XrpcResp for CreateTemplateResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for CreateTemplate<'a> {
     const NSID: &'static str = "tools.ozone.communication.createTemplate";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = CreateTemplateResponse;
 }
 
@@ -103,8 +110,9 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for CreateTemplate<'a> {
 pub struct CreateTemplateRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for CreateTemplateRequest {
     const PATH: &'static str = "/xrpc/tools.ozone.communication.createTemplate";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<'de> = CreateTemplate<'de>;
     type Response = CreateTemplateResponse;
 }

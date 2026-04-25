@@ -17,7 +17,13 @@ pub mod verify_phone;
 /// Associates a profile with the positional index of the contact import input in the call to `app.bsky.contact.importContacts`, so clients can know which phone caused a particular match.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct MatchAndContactIndex<'a> {
@@ -25,50 +31,50 @@ pub struct MatchAndContactIndex<'a> {
     pub contact_index: i64,
     /// Profile of the matched user.
     #[serde(borrow)]
-    pub r#match: crate::generated::app_bsky::actor::ProfileView<'a>,
+    pub r#match: crate::app_bsky::actor::ProfileView<'a>,
 }
 
 pub mod match_and_contact_index_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type ContactIndex;
         type Match;
+        type ContactIndex;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type ContactIndex = Unset;
         type Match = Unset;
-    }
-    ///State transition - sets the `contact_index` field to Set
-    pub struct SetContactIndex<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetContactIndex<S> {}
-    impl<S: State> State for SetContactIndex<S> {
-        type ContactIndex = Set<members::contact_index>;
-        type Match = S::Match;
+        type ContactIndex = Unset;
     }
     ///State transition - sets the `match` field to Set
     pub struct SetMatch<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetMatch<S> {}
     impl<S: State> State for SetMatch<S> {
-        type ContactIndex = S::ContactIndex;
         type Match = Set<members::r#match>;
+        type ContactIndex = S::ContactIndex;
+    }
+    ///State transition - sets the `contact_index` field to Set
+    pub struct SetContactIndex<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetContactIndex<S> {}
+    impl<S: State> State for SetContactIndex<S> {
+        type Match = S::Match;
+        type ContactIndex = Set<members::contact_index>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `contact_index` field
-        pub struct contact_index(());
         ///Marker type for the `match` field
         pub struct r#match(());
+        ///Marker type for the `contact_index` field
+        pub struct contact_index(());
     }
 }
 
@@ -77,14 +83,17 @@ pub struct MatchAndContactIndexBuilder<'a, S: match_and_contact_index_state::Sta
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
         ::core::option::Option<i64>,
-        ::core::option::Option<crate::generated::app_bsky::actor::ProfileView<'a>>,
+        ::core::option::Option<crate::app_bsky::actor::ProfileView<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
 
 impl<'a> MatchAndContactIndex<'a> {
     /// Create a new builder for this type
-    pub fn new() -> MatchAndContactIndexBuilder<'a, match_and_contact_index_state::Empty> {
+    pub fn new() -> MatchAndContactIndexBuilder<
+        'a,
+        match_and_contact_index_state::Empty,
+    > {
         MatchAndContactIndexBuilder::new()
     }
 }
@@ -109,7 +118,10 @@ where
     pub fn contact_index(
         mut self,
         value: impl Into<i64>,
-    ) -> MatchAndContactIndexBuilder<'a, match_and_contact_index_state::SetContactIndex<S>> {
+    ) -> MatchAndContactIndexBuilder<
+        'a,
+        match_and_contact_index_state::SetContactIndex<S>,
+    > {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         MatchAndContactIndexBuilder {
             _phantom_state: ::core::marker::PhantomData,
@@ -127,7 +139,7 @@ where
     /// Set the `match` field (required)
     pub fn r#match(
         mut self,
-        value: impl Into<crate::generated::app_bsky::actor::ProfileView<'a>>,
+        value: impl Into<crate::app_bsky::actor::ProfileView<'a>>,
     ) -> MatchAndContactIndexBuilder<'a, match_and_contact_index_state::SetMatch<S>> {
         self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
         MatchAndContactIndexBuilder {
@@ -141,8 +153,8 @@ where
 impl<'a, S> MatchAndContactIndexBuilder<'a, S>
 where
     S: match_and_contact_index_state::State,
-    S::ContactIndex: match_and_contact_index_state::IsSet,
     S::Match: match_and_contact_index_state::IsSet,
+    S::ContactIndex: match_and_contact_index_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> MatchAndContactIndex<'a> {
@@ -168,7 +180,9 @@ where
     }
 }
 
-fn lexicon_doc_app_bsky_contact_defs() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_app_bsky_contact_defs() -> ::jacquard_lexicon::lexicon::LexiconDoc<
+    'static,
+> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("app.bsky.contact.defs"),
@@ -286,55 +300,55 @@ fn lexicon_doc_app_bsky_contact_defs() -> ::jacquard_lexicon::lexicon::LexiconDo
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("syncStatus"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
-                        required: Some(vec![
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: None,
+                    required: Some(
+                        vec![
                             ::jacquard_common::smol_str::SmolStr::new_static("syncedAt"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("matchesCount"),
-                        ]),
-                        nullable: None,
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("matchesCount"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                    ::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
-                                        minimum: Some(0i64),
-                                        maximum: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                    },
+                            ::jacquard_common::smol_str::SmolStr::new_static("matchesCount")
+                        ],
+                    ),
+                    nullable: None,
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::std::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "matchesCount",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                description: None,
+                                default: None,
+                                minimum: Some(0i64),
+                                maximum: None,
+                                r#enum: None,
+                                r#const: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("syncedAt"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Last date when contacts where imported.",
+                                    ),
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("syncedAt"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: Some(::jacquard_common::CowStr::new_static(
-                                            "Last date when contacts where imported.",
-                                        )),
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
-                                        ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
-                                    },
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                            );
-                            map
-                        },
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map
                     },
-                ),
+                }),
             );
             map
         },
@@ -385,7 +399,13 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for MatchAndContactIndex<'a> 
 /// A stash object to be sent via bsync representing a notification to be created.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Notification<'a> {
@@ -399,9 +419,9 @@ pub struct Notification<'a> {
 
 pub mod notification_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -556,7 +576,13 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Notification<'a> {
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct SyncStatus<'a> {
@@ -568,9 +594,9 @@ pub struct SyncStatus<'a> {
 
 pub mod sync_status_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

@@ -6,7 +6,13 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct QueryStatuses<'a> {
@@ -28,19 +34,29 @@ pub struct QueryStatuses<'a> {
     #[serde(borrow)]
     pub exclude_tags: std::option::Option<Vec<jacquard_common::CowStr<'a>>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub hosting_deleted_after: std::option::Option<jacquard_common::types::string::Datetime>,
+    pub hosting_deleted_after: std::option::Option<
+        jacquard_common::types::string::Datetime,
+    >,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub hosting_deleted_before: std::option::Option<jacquard_common::types::string::Datetime>,
+    pub hosting_deleted_before: std::option::Option<
+        jacquard_common::types::string::Datetime,
+    >,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub hosting_statuses: std::option::Option<Vec<jacquard_common::CowStr<'a>>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub hosting_updated_after: std::option::Option<jacquard_common::types::string::Datetime>,
+    pub hosting_updated_after: std::option::Option<
+        jacquard_common::types::string::Datetime,
+    >,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub hosting_updated_before: std::option::Option<jacquard_common::types::string::Datetime>,
+    pub hosting_updated_before: std::option::Option<
+        jacquard_common::types::string::Datetime,
+    >,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub ignore_subjects: std::option::Option<Vec<jacquard_common::types::string::Uri<'a>>>,
+    pub ignore_subjects: std::option::Option<
+        Vec<jacquard_common::types::string::Uri<'a>>,
+    >,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     pub include_all_user_records: std::option::Option<bool>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
@@ -106,9 +122,9 @@ pub struct QueryStatuses<'a> {
 
 pub mod query_statuses_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -180,9 +196,42 @@ impl<'a> QueryStatusesBuilder<'a, query_statuses_state::Empty> {
         QueryStatusesBuilder {
             _phantom_state: ::core::marker::PhantomData,
             __unsafe_private_named: (
-                None, None, None, None, None, None, None, None, None, None, None, None, None, None,
-                None, None, None, None, None, None, None, None, None, None, None, None, None, None,
-                None, None, None, None, None, None, None, None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
             ),
             _phantom: ::core::marker::PhantomData,
         }
@@ -199,7 +248,10 @@ impl<'a, S: query_statuses_state::State> QueryStatusesBuilder<'a, S> {
         self
     }
     /// Set the `ageAssuranceState` field to an Option value (optional)
-    pub fn maybe_age_assurance_state(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
+    pub fn maybe_age_assurance_state(
+        mut self,
+        value: Option<jacquard_common::CowStr<'a>>,
+    ) -> Self {
         self.__unsafe_private_named.0 = value;
         self
     }
@@ -239,7 +291,10 @@ impl<'a, S: query_statuses_state::State> QueryStatusesBuilder<'a, S> {
 
 impl<'a, S: query_statuses_state::State> QueryStatusesBuilder<'a, S> {
     /// Set the `comment` field (optional)
-    pub fn comment(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
+    pub fn comment(
+        mut self,
+        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
+    ) -> Self {
         self.__unsafe_private_named.3 = value.into();
         self
     }
@@ -252,7 +307,10 @@ impl<'a, S: query_statuses_state::State> QueryStatusesBuilder<'a, S> {
 
 impl<'a, S: query_statuses_state::State> QueryStatusesBuilder<'a, S> {
     /// Set the `cursor` field (optional)
-    pub fn cursor(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
+    pub fn cursor(
+        mut self,
+        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
+    ) -> Self {
         self.__unsafe_private_named.4 = value.into();
         self
     }
@@ -273,7 +331,10 @@ impl<'a, S: query_statuses_state::State> QueryStatusesBuilder<'a, S> {
         self
     }
     /// Set the `excludeTags` field to an Option value (optional)
-    pub fn maybe_exclude_tags(mut self, value: Option<Vec<jacquard_common::CowStr<'a>>>) -> Self {
+    pub fn maybe_exclude_tags(
+        mut self,
+        value: Option<Vec<jacquard_common::CowStr<'a>>>,
+    ) -> Self {
         self.__unsafe_private_named.5 = value;
         self
     }
@@ -557,12 +618,18 @@ impl<'a, S: query_statuses_state::State> QueryStatusesBuilder<'a, S> {
 
 impl<'a, S: query_statuses_state::State> QueryStatusesBuilder<'a, S> {
     /// Set the `queueSeed` field (optional)
-    pub fn queue_seed(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
+    pub fn queue_seed(
+        mut self,
+        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
+    ) -> Self {
         self.__unsafe_private_named.24 = value.into();
         self
     }
     /// Set the `queueSeed` field to an Option value (optional)
-    pub fn maybe_queue_seed(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
+    pub fn maybe_queue_seed(
+        mut self,
+        value: Option<jacquard_common::CowStr<'a>>,
+    ) -> Self {
         self.__unsafe_private_named.24 = value;
         self
     }
@@ -608,12 +675,18 @@ impl<'a, S: query_statuses_state::State> QueryStatusesBuilder<'a, S> {
 
 impl<'a, S: query_statuses_state::State> QueryStatusesBuilder<'a, S> {
     /// Set the `reviewState` field (optional)
-    pub fn review_state(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
+    pub fn review_state(
+        mut self,
+        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
+    ) -> Self {
         self.__unsafe_private_named.27 = value.into();
         self
     }
     /// Set the `reviewState` field to an Option value (optional)
-    pub fn maybe_review_state(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
+    pub fn maybe_review_state(
+        mut self,
+        value: Option<jacquard_common::CowStr<'a>>,
+    ) -> Self {
         self.__unsafe_private_named.27 = value;
         self
     }
@@ -659,12 +732,18 @@ impl<'a, S: query_statuses_state::State> QueryStatusesBuilder<'a, S> {
 
 impl<'a, S: query_statuses_state::State> QueryStatusesBuilder<'a, S> {
     /// Set the `sortDirection` field (optional)
-    pub fn sort_direction(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
+    pub fn sort_direction(
+        mut self,
+        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
+    ) -> Self {
         self.__unsafe_private_named.30 = value.into();
         self
     }
     /// Set the `sortDirection` field to an Option value (optional)
-    pub fn maybe_sort_direction(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
+    pub fn maybe_sort_direction(
+        mut self,
+        value: Option<jacquard_common::CowStr<'a>>,
+    ) -> Self {
         self.__unsafe_private_named.30 = value;
         self
     }
@@ -672,12 +751,18 @@ impl<'a, S: query_statuses_state::State> QueryStatusesBuilder<'a, S> {
 
 impl<'a, S: query_statuses_state::State> QueryStatusesBuilder<'a, S> {
     /// Set the `sortField` field (optional)
-    pub fn sort_field(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
+    pub fn sort_field(
+        mut self,
+        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
+    ) -> Self {
         self.__unsafe_private_named.31 = value.into();
         self
     }
     /// Set the `sortField` field to an Option value (optional)
-    pub fn maybe_sort_field(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
+    pub fn maybe_sort_field(
+        mut self,
+        value: Option<jacquard_common::CowStr<'a>>,
+    ) -> Self {
         self.__unsafe_private_named.31 = value;
         self
     }
@@ -693,7 +778,10 @@ impl<'a, S: query_statuses_state::State> QueryStatusesBuilder<'a, S> {
         self
     }
     /// Set the `subject` field to an Option value (optional)
-    pub fn maybe_subject(mut self, value: Option<jacquard_common::types::string::Uri<'a>>) -> Self {
+    pub fn maybe_subject(
+        mut self,
+        value: Option<jacquard_common::types::string::Uri<'a>>,
+    ) -> Self {
         self.__unsafe_private_named.32 = value;
         self
     }
@@ -701,12 +789,18 @@ impl<'a, S: query_statuses_state::State> QueryStatusesBuilder<'a, S> {
 
 impl<'a, S: query_statuses_state::State> QueryStatusesBuilder<'a, S> {
     /// Set the `subjectType` field (optional)
-    pub fn subject_type(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
+    pub fn subject_type(
+        mut self,
+        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
+    ) -> Self {
         self.__unsafe_private_named.33 = value.into();
         self
     }
     /// Set the `subjectType` field to an Option value (optional)
-    pub fn maybe_subject_type(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
+    pub fn maybe_subject_type(
+        mut self,
+        value: Option<jacquard_common::CowStr<'a>>,
+    ) -> Self {
         self.__unsafe_private_named.33 = value;
         self
     }
@@ -714,12 +808,18 @@ impl<'a, S: query_statuses_state::State> QueryStatusesBuilder<'a, S> {
 
 impl<'a, S: query_statuses_state::State> QueryStatusesBuilder<'a, S> {
     /// Set the `tags` field (optional)
-    pub fn tags(mut self, value: impl Into<Option<Vec<jacquard_common::CowStr<'a>>>>) -> Self {
+    pub fn tags(
+        mut self,
+        value: impl Into<Option<Vec<jacquard_common::CowStr<'a>>>>,
+    ) -> Self {
         self.__unsafe_private_named.34 = value.into();
         self
     }
     /// Set the `tags` field to an Option value (optional)
-    pub fn maybe_tags(mut self, value: Option<Vec<jacquard_common::CowStr<'a>>>) -> Self {
+    pub fn maybe_tags(
+        mut self,
+        value: Option<Vec<jacquard_common::CowStr<'a>>>,
+    ) -> Self {
         self.__unsafe_private_named.34 = value;
         self
     }
@@ -787,7 +887,13 @@ where
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct QueryStatusesOutput<'a> {
@@ -795,7 +901,7 @@ pub struct QueryStatusesOutput<'a> {
     #[serde(borrow)]
     pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(borrow)]
-    pub subject_statuses: Vec<crate::generated::tools_ozone::moderation::SubjectStatusView<'a>>,
+    pub subject_statuses: Vec<crate::tools_ozone::moderation::SubjectStatusView<'a>>,
 }
 
 /// Response type for

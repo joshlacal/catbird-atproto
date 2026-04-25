@@ -6,7 +6,13 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetEvent {
@@ -15,9 +21,9 @@ pub struct GetEvent {
 
 pub mod get_event_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -74,7 +80,10 @@ where
     S::Id: get_event_state::IsUnset,
 {
     /// Set the `id` field (required)
-    pub fn id(mut self, value: impl Into<i64>) -> GetEventBuilder<get_event_state::SetId<S>> {
+    pub fn id(
+        mut self,
+        value: impl Into<i64>,
+    ) -> GetEventBuilder<get_event_state::SetId<S>> {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         GetEventBuilder {
             _phantom_state: ::core::marker::PhantomData,
@@ -98,13 +107,19 @@ where
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetEventOutput<'a> {
     #[serde(flatten)]
     #[serde(borrow)]
-    pub value: crate::generated::tools_ozone::moderation::ModEventViewDetail<'a>,
+    pub value: crate::tools_ozone::moderation::ModEventViewDetail<'a>,
 }
 
 /// Response type for

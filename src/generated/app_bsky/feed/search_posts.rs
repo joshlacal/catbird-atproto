@@ -6,7 +6,13 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct SearchPosts<'a> {
@@ -49,9 +55,9 @@ pub struct SearchPosts<'a> {
 
 pub mod search_posts_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -112,7 +118,18 @@ impl<'a> SearchPostsBuilder<'a, search_posts_state::Empty> {
         SearchPostsBuilder {
             _phantom_state: ::core::marker::PhantomData,
             __unsafe_private_named: (
-                None, None, None, None, None, None, None, None, None, None, None, None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
             ),
             _phantom: ::core::marker::PhantomData,
         }
@@ -140,7 +157,10 @@ impl<'a, S: search_posts_state::State> SearchPostsBuilder<'a, S> {
 
 impl<'a, S: search_posts_state::State> SearchPostsBuilder<'a, S> {
     /// Set the `cursor` field (optional)
-    pub fn cursor(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
+    pub fn cursor(
+        mut self,
+        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
+    ) -> Self {
         self.__unsafe_private_named.1 = value.into();
         self
     }
@@ -153,7 +173,10 @@ impl<'a, S: search_posts_state::State> SearchPostsBuilder<'a, S> {
 
 impl<'a, S: search_posts_state::State> SearchPostsBuilder<'a, S> {
     /// Set the `domain` field (optional)
-    pub fn domain(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
+    pub fn domain(
+        mut self,
+        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
+    ) -> Self {
         self.__unsafe_private_named.2 = value.into();
         self
     }
@@ -174,7 +197,10 @@ impl<'a, S: search_posts_state::State> SearchPostsBuilder<'a, S> {
         self
     }
     /// Set the `lang` field to an Option value (optional)
-    pub fn maybe_lang(mut self, value: Option<jacquard_common::types::string::Language>) -> Self {
+    pub fn maybe_lang(
+        mut self,
+        value: Option<jacquard_common::types::string::Language>,
+    ) -> Self {
         self.__unsafe_private_named.3 = value;
         self
     }
@@ -233,7 +259,10 @@ where
 
 impl<'a, S: search_posts_state::State> SearchPostsBuilder<'a, S> {
     /// Set the `since` field (optional)
-    pub fn since(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
+    pub fn since(
+        mut self,
+        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
+    ) -> Self {
         self.__unsafe_private_named.7 = value.into();
         self
     }
@@ -246,7 +275,10 @@ impl<'a, S: search_posts_state::State> SearchPostsBuilder<'a, S> {
 
 impl<'a, S: search_posts_state::State> SearchPostsBuilder<'a, S> {
     /// Set the `sort` field (optional)
-    pub fn sort(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
+    pub fn sort(
+        mut self,
+        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
+    ) -> Self {
         self.__unsafe_private_named.8 = value.into();
         self
     }
@@ -259,7 +291,10 @@ impl<'a, S: search_posts_state::State> SearchPostsBuilder<'a, S> {
 
 impl<'a, S: search_posts_state::State> SearchPostsBuilder<'a, S> {
     /// Set the `tag` field (optional)
-    pub fn tag(mut self, value: impl Into<Option<Vec<jacquard_common::CowStr<'a>>>>) -> Self {
+    pub fn tag(
+        mut self,
+        value: impl Into<Option<Vec<jacquard_common::CowStr<'a>>>>,
+    ) -> Self {
         self.__unsafe_private_named.9 = value.into();
         self
     }
@@ -272,7 +307,10 @@ impl<'a, S: search_posts_state::State> SearchPostsBuilder<'a, S> {
 
 impl<'a, S: search_posts_state::State> SearchPostsBuilder<'a, S> {
     /// Set the `until` field (optional)
-    pub fn until(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
+    pub fn until(
+        mut self,
+        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
+    ) -> Self {
         self.__unsafe_private_named.10 = value.into();
         self
     }
@@ -293,7 +331,10 @@ impl<'a, S: search_posts_state::State> SearchPostsBuilder<'a, S> {
         self
     }
     /// Set the `url` field to an Option value (optional)
-    pub fn maybe_url(mut self, value: Option<jacquard_common::types::string::Uri<'a>>) -> Self {
+    pub fn maybe_url(
+        mut self,
+        value: Option<jacquard_common::types::string::Uri<'a>>,
+    ) -> Self {
         self.__unsafe_private_named.11 = value;
         self
     }
@@ -325,7 +366,13 @@ where
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct SearchPostsOutput<'a> {
@@ -336,7 +383,7 @@ pub struct SearchPostsOutput<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     pub hits_total: std::option::Option<i64>,
     #[serde(borrow)]
-    pub posts: Vec<crate::generated::app_bsky::feed::PostView<'a>>,
+    pub posts: Vec<crate::app_bsky::feed::PostView<'a>>,
 }
 
 #[jacquard_derive::open_union]
@@ -349,7 +396,7 @@ pub struct SearchPostsOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
+    jacquard_derive::IntoStatic
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]

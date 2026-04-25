@@ -6,7 +6,13 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetServices<'a> {
@@ -19,9 +25,9 @@ pub struct GetServices<'a> {
 
 pub mod get_services_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -125,7 +131,13 @@ where
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetServicesOutput<'a> {
@@ -135,15 +147,21 @@ pub struct GetServicesOutput<'a> {
 
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(tag = "$type")]
 #[serde(bound(deserialize = "'de: 'a"))]
 pub enum GetServicesOutputViewsItem<'a> {
     #[serde(rename = "app.bsky.labeler.defs#labelerView")]
-    LabelerView(Box<crate::generated::app_bsky::labeler::LabelerView<'a>>),
+    LabelerView(Box<crate::app_bsky::labeler::LabelerView<'a>>),
     #[serde(rename = "app.bsky.labeler.defs#labelerViewDetailed")]
-    LabelerViewDetailed(Box<crate::generated::app_bsky::labeler::LabelerViewDetailed<'a>>),
+    LabelerViewDetailed(Box<crate::app_bsky::labeler::LabelerViewDetailed<'a>>),
 }
 
 /// Response type for

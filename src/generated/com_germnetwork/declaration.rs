@@ -8,7 +8,13 @@
 /// A delegate messaging id
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Declaration<'a> {
@@ -21,53 +27,54 @@ pub struct Declaration<'a> {
     pub key_package: std::option::Option<bytes::Bytes>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub message_me:
-        std::option::Option<crate::generated::com_germnetwork::declaration::MessageMe<'a>>,
+    pub message_me: std::option::Option<
+        crate::com_germnetwork::declaration::MessageMe<'a>,
+    >,
     #[serde(borrow)]
     pub version: jacquard_common::CowStr<'a>,
 }
 
 pub mod declaration_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type CurrentKey;
         type Version;
+        type CurrentKey;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type CurrentKey = Unset;
         type Version = Unset;
-    }
-    ///State transition - sets the `current_key` field to Set
-    pub struct SetCurrentKey<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCurrentKey<S> {}
-    impl<S: State> State for SetCurrentKey<S> {
-        type CurrentKey = Set<members::current_key>;
-        type Version = S::Version;
+        type CurrentKey = Unset;
     }
     ///State transition - sets the `version` field to Set
     pub struct SetVersion<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetVersion<S> {}
     impl<S: State> State for SetVersion<S> {
-        type CurrentKey = S::CurrentKey;
         type Version = Set<members::version>;
+        type CurrentKey = S::CurrentKey;
+    }
+    ///State transition - sets the `current_key` field to Set
+    pub struct SetCurrentKey<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCurrentKey<S> {}
+    impl<S: State> State for SetCurrentKey<S> {
+        type Version = S::Version;
+        type CurrentKey = Set<members::current_key>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `current_key` field
-        pub struct current_key(());
         ///Marker type for the `version` field
         pub struct version(());
+        ///Marker type for the `current_key` field
+        pub struct current_key(());
     }
 }
 
@@ -78,7 +85,7 @@ pub struct DeclarationBuilder<'a, S: declaration_state::State> {
         ::core::option::Option<Vec<bytes::Bytes>>,
         ::core::option::Option<bytes::Bytes>,
         ::core::option::Option<bytes::Bytes>,
-        ::core::option::Option<crate::generated::com_germnetwork::declaration::MessageMe<'a>>,
+        ::core::option::Option<crate::com_germnetwork::declaration::MessageMe<'a>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
@@ -104,7 +111,10 @@ impl<'a> DeclarationBuilder<'a, declaration_state::Empty> {
 
 impl<'a, S: declaration_state::State> DeclarationBuilder<'a, S> {
     /// Set the `continuityProofs` field (optional)
-    pub fn continuity_proofs(mut self, value: impl Into<Option<Vec<bytes::Bytes>>>) -> Self {
+    pub fn continuity_proofs(
+        mut self,
+        value: impl Into<Option<Vec<bytes::Bytes>>>,
+    ) -> Self {
         self.__unsafe_private_named.0 = value.into();
         self
     }
@@ -151,7 +161,7 @@ impl<'a, S: declaration_state::State> DeclarationBuilder<'a, S> {
     /// Set the `messageMe` field (optional)
     pub fn message_me(
         mut self,
-        value: impl Into<Option<crate::generated::com_germnetwork::declaration::MessageMe<'a>>>,
+        value: impl Into<Option<crate::com_germnetwork::declaration::MessageMe<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.3 = value.into();
         self
@@ -159,7 +169,7 @@ impl<'a, S: declaration_state::State> DeclarationBuilder<'a, S> {
     /// Set the `messageMe` field to an Option value (optional)
     pub fn maybe_message_me(
         mut self,
-        value: Option<crate::generated::com_germnetwork::declaration::MessageMe<'a>>,
+        value: Option<crate::com_germnetwork::declaration::MessageMe<'a>>,
     ) -> Self {
         self.__unsafe_private_named.3 = value;
         self
@@ -188,8 +198,8 @@ where
 impl<'a, S> DeclarationBuilder<'a, S>
 where
     S: declaration_state::State,
-    S::CurrentKey: declaration_state::IsSet,
     S::Version: declaration_state::IsSet,
+    S::CurrentKey: declaration_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> Declaration<'a> {
@@ -236,7 +246,13 @@ impl<'a> Declaration<'a> {
 
 /// Typed wrapper for GetRecord response with this collection's record type.
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct DeclarationGetRecordOutput<'a> {
@@ -293,7 +309,9 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Declaration<'a> {
     }
 }
 
-fn lexicon_doc_com_germnetwork_declaration() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_com_germnetwork_declaration() -> ::jacquard_lexicon::lexicon::LexiconDoc<
+    'static,
+> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("com.germnetwork.declaration"),
@@ -386,57 +404,57 @@ fn lexicon_doc_com_germnetwork_declaration() -> ::jacquard_lexicon::lexicon::Lex
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("messageMe"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
-                        required: Some(vec![
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: None,
+                    required: Some(
+                        vec![
                             ::jacquard_common::smol_str::SmolStr::new_static("showButtonTo"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("messageMeUrl"),
-                        ]),
-                        nullable: None,
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("messageMeUrl"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Uri,
-                                        ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
-                                    },
+                            ::jacquard_common::smol_str::SmolStr::new_static("messageMeUrl")
+                        ],
+                    ),
+                    nullable: None,
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::std::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "messageMeUrl",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: None,
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Uri,
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("showButtonTo"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
-                                    },
-                                ),
-                            );
-                            map
-                        },
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "showButtonTo",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: None,
+                                format: None,
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map
                     },
-                ),
+                }),
             );
             map
         },
@@ -445,7 +463,13 @@ fn lexicon_doc_com_germnetwork_declaration() -> ::jacquard_lexicon::lexicon::Lex
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct MessageMe<'a> {
@@ -457,9 +481,9 @@ pub struct MessageMe<'a> {
 
 pub mod message_me_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

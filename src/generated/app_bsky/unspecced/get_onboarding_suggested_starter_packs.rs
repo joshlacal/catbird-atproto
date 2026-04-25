@@ -6,7 +6,13 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetOnboardingSuggestedStarterPacks {
@@ -17,9 +23,9 @@ pub struct GetOnboardingSuggestedStarterPacks {
 
 pub mod get_onboarding_suggested_starter_packs_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -51,9 +57,9 @@ impl GetOnboardingSuggestedStarterPacks {
     }
 }
 
-impl
-    GetOnboardingSuggestedStarterPacksBuilder<get_onboarding_suggested_starter_packs_state::Empty>
-{
+impl GetOnboardingSuggestedStarterPacksBuilder<
+    get_onboarding_suggested_starter_packs_state::Empty,
+> {
     /// Create a new builder with all fields unset
     pub fn new() -> Self {
         GetOnboardingSuggestedStarterPacksBuilder {
@@ -63,9 +69,9 @@ impl
     }
 }
 
-impl<S: get_onboarding_suggested_starter_packs_state::State>
-    GetOnboardingSuggestedStarterPacksBuilder<S>
-{
+impl<
+    S: get_onboarding_suggested_starter_packs_state::State,
+> GetOnboardingSuggestedStarterPacksBuilder<S> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
         self.__unsafe_private_named.0 = value.into();
@@ -92,12 +98,18 @@ where
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetOnboardingSuggestedStarterPacksOutput<'a> {
     #[serde(borrow)]
-    pub starter_packs: Vec<crate::generated::app_bsky::graph::StarterPackView<'a>>,
+    pub starter_packs: Vec<crate::app_bsky::graph::StarterPackView<'a>>,
 }
 
 /// Response type for

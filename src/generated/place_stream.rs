@@ -27,110 +27,116 @@ pub mod video;
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct BlockView<'a> {
     #[serde(borrow)]
-    pub blocker: crate::generated::app_bsky::actor::ProfileViewBasic<'a>,
+    pub blocker: crate::app_bsky::actor::ProfileViewBasic<'a>,
     #[serde(borrow)]
     pub cid: jacquard_common::types::string::Cid<'a>,
     pub indexed_at: jacquard_common::types::string::Datetime,
     #[serde(borrow)]
-    pub record: crate::generated::app_bsky::graph::block::Block<'a>,
+    pub record: crate::app_bsky::graph::block::Block<'a>,
     #[serde(borrow)]
     pub uri: jacquard_common::types::string::AtUri<'a>,
 }
 
 pub mod block_view_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Uri;
-        type IndexedAt;
-        type Record;
-        type Blocker;
         type Cid;
+        type Blocker;
+        type Record;
+        type IndexedAt;
+        type Uri;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Uri = Unset;
-        type IndexedAt = Unset;
-        type Record = Unset;
-        type Blocker = Unset;
         type Cid = Unset;
-    }
-    ///State transition - sets the `uri` field to Set
-    pub struct SetUri<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUri<S> {}
-    impl<S: State> State for SetUri<S> {
-        type Uri = Set<members::uri>;
-        type IndexedAt = S::IndexedAt;
-        type Record = S::Record;
-        type Blocker = S::Blocker;
-        type Cid = S::Cid;
-    }
-    ///State transition - sets the `indexed_at` field to Set
-    pub struct SetIndexedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetIndexedAt<S> {}
-    impl<S: State> State for SetIndexedAt<S> {
-        type Uri = S::Uri;
-        type IndexedAt = Set<members::indexed_at>;
-        type Record = S::Record;
-        type Blocker = S::Blocker;
-        type Cid = S::Cid;
-    }
-    ///State transition - sets the `record` field to Set
-    pub struct SetRecord<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRecord<S> {}
-    impl<S: State> State for SetRecord<S> {
-        type Uri = S::Uri;
-        type IndexedAt = S::IndexedAt;
-        type Record = Set<members::record>;
-        type Blocker = S::Blocker;
-        type Cid = S::Cid;
-    }
-    ///State transition - sets the `blocker` field to Set
-    pub struct SetBlocker<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetBlocker<S> {}
-    impl<S: State> State for SetBlocker<S> {
-        type Uri = S::Uri;
-        type IndexedAt = S::IndexedAt;
-        type Record = S::Record;
-        type Blocker = Set<members::blocker>;
-        type Cid = S::Cid;
+        type Blocker = Unset;
+        type Record = Unset;
+        type IndexedAt = Unset;
+        type Uri = Unset;
     }
     ///State transition - sets the `cid` field to Set
     pub struct SetCid<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCid<S> {}
     impl<S: State> State for SetCid<S> {
-        type Uri = S::Uri;
-        type IndexedAt = S::IndexedAt;
-        type Record = S::Record;
-        type Blocker = S::Blocker;
         type Cid = Set<members::cid>;
+        type Blocker = S::Blocker;
+        type Record = S::Record;
+        type IndexedAt = S::IndexedAt;
+        type Uri = S::Uri;
+    }
+    ///State transition - sets the `blocker` field to Set
+    pub struct SetBlocker<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetBlocker<S> {}
+    impl<S: State> State for SetBlocker<S> {
+        type Cid = S::Cid;
+        type Blocker = Set<members::blocker>;
+        type Record = S::Record;
+        type IndexedAt = S::IndexedAt;
+        type Uri = S::Uri;
+    }
+    ///State transition - sets the `record` field to Set
+    pub struct SetRecord<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetRecord<S> {}
+    impl<S: State> State for SetRecord<S> {
+        type Cid = S::Cid;
+        type Blocker = S::Blocker;
+        type Record = Set<members::record>;
+        type IndexedAt = S::IndexedAt;
+        type Uri = S::Uri;
+    }
+    ///State transition - sets the `indexed_at` field to Set
+    pub struct SetIndexedAt<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetIndexedAt<S> {}
+    impl<S: State> State for SetIndexedAt<S> {
+        type Cid = S::Cid;
+        type Blocker = S::Blocker;
+        type Record = S::Record;
+        type IndexedAt = Set<members::indexed_at>;
+        type Uri = S::Uri;
+    }
+    ///State transition - sets the `uri` field to Set
+    pub struct SetUri<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetUri<S> {}
+    impl<S: State> State for SetUri<S> {
+        type Cid = S::Cid;
+        type Blocker = S::Blocker;
+        type Record = S::Record;
+        type IndexedAt = S::IndexedAt;
+        type Uri = Set<members::uri>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `uri` field
-        pub struct uri(());
-        ///Marker type for the `indexed_at` field
-        pub struct indexed_at(());
-        ///Marker type for the `record` field
-        pub struct record(());
-        ///Marker type for the `blocker` field
-        pub struct blocker(());
         ///Marker type for the `cid` field
         pub struct cid(());
+        ///Marker type for the `blocker` field
+        pub struct blocker(());
+        ///Marker type for the `record` field
+        pub struct record(());
+        ///Marker type for the `indexed_at` field
+        pub struct indexed_at(());
+        ///Marker type for the `uri` field
+        pub struct uri(());
     }
 }
 
@@ -138,10 +144,10 @@ pub mod block_view_state {
 pub struct BlockViewBuilder<'a, S: block_view_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
-        ::core::option::Option<crate::generated::app_bsky::actor::ProfileViewBasic<'a>>,
+        ::core::option::Option<crate::app_bsky::actor::ProfileViewBasic<'a>>,
         ::core::option::Option<jacquard_common::types::string::Cid<'a>>,
         ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<crate::generated::app_bsky::graph::block::Block<'a>>,
+        ::core::option::Option<crate::app_bsky::graph::block::Block<'a>>,
         ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
@@ -173,7 +179,7 @@ where
     /// Set the `blocker` field (required)
     pub fn blocker(
         mut self,
-        value: impl Into<crate::generated::app_bsky::actor::ProfileViewBasic<'a>>,
+        value: impl Into<crate::app_bsky::actor::ProfileViewBasic<'a>>,
     ) -> BlockViewBuilder<'a, block_view_state::SetBlocker<S>> {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         BlockViewBuilder {
@@ -230,7 +236,7 @@ where
     /// Set the `record` field (required)
     pub fn record(
         mut self,
-        value: impl Into<crate::generated::app_bsky::graph::block::Block<'a>>,
+        value: impl Into<crate::app_bsky::graph::block::Block<'a>>,
     ) -> BlockViewBuilder<'a, block_view_state::SetRecord<S>> {
         self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
         BlockViewBuilder {
@@ -263,11 +269,11 @@ where
 impl<'a, S> BlockViewBuilder<'a, S>
 where
     S: block_view_state::State,
-    S::Uri: block_view_state::IsSet,
-    S::IndexedAt: block_view_state::IsSet,
-    S::Record: block_view_state::IsSet,
-    S::Blocker: block_view_state::IsSet,
     S::Cid: block_view_state::IsSet,
+    S::Blocker: block_view_state::IsSet,
+    S::Record: block_view_state::IsSet,
+    S::IndexedAt: block_view_state::IsSet,
+    S::Uri: block_view_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> BlockView<'a> {
@@ -309,172 +315,156 @@ fn lexicon_doc_place_stream_defs() -> ::jacquard_lexicon::lexicon::LexiconDoc<'s
             let mut map = ::std::collections::BTreeMap::new();
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("blockView"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
-                        required: Some(vec![
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: None,
+                    required: Some(
+                        vec![
                             ::jacquard_common::smol_str::SmolStr::new_static("uri"),
                             ::jacquard_common::smol_str::SmolStr::new_static("cid"),
                             ::jacquard_common::smol_str::SmolStr::new_static("blocker"),
                             ::jacquard_common::smol_str::SmolStr::new_static("record"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("indexedAt"),
-                        ]),
-                        nullable: None,
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("blocker"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        description: None,
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "app.bsky.actor.defs#profileViewBasic",
-                                        ),
-                                    },
+                            ::jacquard_common::smol_str::SmolStr::new_static("indexedAt")
+                        ],
+                    ),
+                    nullable: None,
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::std::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("blocker"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                description: None,
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "app.bsky.actor.defs#profileViewBasic",
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("cid"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Cid,
-                                        ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
-                                    },
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("cid"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: None,
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Cid,
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("indexedAt"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
-                                        ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
-                                    },
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "indexedAt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: None,
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("record"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        description: None,
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "app.bsky.graph.block",
-                                        ),
-                                    },
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("record"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                description: None,
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "app.bsky.graph.block",
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("uri"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
-                                        ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
-                                    },
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("uri"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: None,
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
                                 ),
-                            );
-                            map
-                        },
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map
                     },
-                ),
+                }),
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("rendition"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
-                        required: Some(vec![::jacquard_common::smol_str::SmolStr::new_static(
-                            "name",
-                        )]),
-                        nullable: None,
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("name"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
-                                    },
-                                ),
-                            );
-                            map
-                        },
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: None,
+                    required: Some(
+                        vec![::jacquard_common::smol_str::SmolStr::new_static("name")],
+                    ),
+                    nullable: None,
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::std::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("name"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: None,
+                                format: None,
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map
                     },
-                ),
+                }),
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("renditions"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
-                        required: Some(vec![::jacquard_common::smol_str::SmolStr::new_static(
-                            "renditions",
-                        )]),
-                        nullable: None,
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("renditions"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Array(
-                                    ::jacquard_lexicon::lexicon::LexArray {
-                                        description: None,
-                                        items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(
-                                            ::jacquard_lexicon::lexicon::LexRef {
-                                                description: None,
-                                                r#ref: ::jacquard_common::CowStr::new_static(
-                                                    "#rendition",
-                                                ),
-                                            },
-                                        ),
-                                        min_length: None,
-                                        max_length: None,
-                                    },
-                                ),
-                            );
-                            map
-                        },
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: None,
+                    required: Some(
+                        vec![
+                            ::jacquard_common::smol_str::SmolStr::new_static("renditions")
+                        ],
+                    ),
+                    nullable: None,
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::std::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "renditions",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                description: None,
+                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                    description: None,
+                                    r#ref: ::jacquard_common::CowStr::new_static("#rendition"),
+                                }),
+                                min_length: None,
+                                max_length: None,
+                            }),
+                        );
+                        map
                     },
-                ),
+                }),
             );
             map
         },
@@ -507,7 +497,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for BlockView<'a> {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Rendition<'a> {
@@ -534,19 +524,25 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Rendition<'a> {
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Renditions<'a> {
     #[serde(borrow)]
-    pub renditions: Vec<crate::generated::place_stream::Rendition<'a>>,
+    pub renditions: Vec<crate::place_stream::Rendition<'a>>,
 }
 
 pub mod renditions_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -577,8 +573,9 @@ pub mod renditions_state {
 /// Builder for constructing an instance of this type
 pub struct RenditionsBuilder<'a, S: renditions_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named:
-        (::core::option::Option<Vec<crate::generated::place_stream::Rendition<'a>>>,),
+    __unsafe_private_named: (
+        ::core::option::Option<Vec<crate::place_stream::Rendition<'a>>>,
+    ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
 
@@ -608,7 +605,7 @@ where
     /// Set the `renditions` field (required)
     pub fn renditions(
         mut self,
-        value: impl Into<Vec<crate::generated::place_stream::Rendition<'a>>>,
+        value: impl Into<Vec<crate::place_stream::Rendition<'a>>>,
     ) -> RenditionsBuilder<'a, renditions_state::SetRenditions<S>> {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         RenditionsBuilder {

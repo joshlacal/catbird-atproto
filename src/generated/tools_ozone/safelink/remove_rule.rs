@@ -7,7 +7,13 @@
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct RemoveRule<'a> {
@@ -20,7 +26,7 @@ pub struct RemoveRule<'a> {
     #[serde(borrow)]
     pub created_by: std::option::Option<jacquard_common::types::string::Did<'a>>,
     #[serde(borrow)]
-    pub pattern: crate::generated::tools_ozone::safelink::PatternType<'a>,
+    pub pattern: crate::tools_ozone::safelink::PatternType<'a>,
     /// The URL or domain to remove the rule for
     #[serde(borrow)]
     pub url: jacquard_common::CowStr<'a>,
@@ -28,9 +34,9 @@ pub struct RemoveRule<'a> {
 
 pub mod remove_rule_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -76,7 +82,7 @@ pub struct RemoveRuleBuilder<'a, S: remove_rule_state::State> {
     __unsafe_private_named: (
         ::core::option::Option<jacquard_common::CowStr<'a>>,
         ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<crate::generated::tools_ozone::safelink::PatternType<'a>>,
+        ::core::option::Option<crate::tools_ozone::safelink::PatternType<'a>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
@@ -102,7 +108,10 @@ impl<'a> RemoveRuleBuilder<'a, remove_rule_state::Empty> {
 
 impl<'a, S: remove_rule_state::State> RemoveRuleBuilder<'a, S> {
     /// Set the `comment` field (optional)
-    pub fn comment(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
+    pub fn comment(
+        mut self,
+        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
+    ) -> Self {
         self.__unsafe_private_named.0 = value.into();
         self
     }
@@ -140,7 +149,7 @@ where
     /// Set the `pattern` field (required)
     pub fn pattern(
         mut self,
-        value: impl Into<crate::generated::tools_ozone::safelink::PatternType<'a>>,
+        value: impl Into<crate::tools_ozone::safelink::PatternType<'a>>,
     ) -> RemoveRuleBuilder<'a, remove_rule_state::SetPattern<S>> {
         self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
         RemoveRuleBuilder {
@@ -206,13 +215,19 @@ where
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct RemoveRuleOutput<'a> {
     #[serde(flatten)]
     #[serde(borrow)]
-    pub value: crate::generated::tools_ozone::safelink::Event<'a>,
+    pub value: crate::tools_ozone::safelink::Event<'a>,
 }
 
 #[jacquard_derive::open_union]
@@ -225,7 +240,7 @@ pub struct RemoveRuleOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
+    jacquard_derive::IntoStatic
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -262,8 +277,9 @@ impl jacquard_common::xrpc::XrpcResp for RemoveRuleResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for RemoveRule<'a> {
     const NSID: &'static str = "tools.ozone.safelink.removeRule";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = RemoveRuleResponse;
 }
 
@@ -272,8 +288,9 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for RemoveRule<'a> {
 pub struct RemoveRuleRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for RemoveRuleRequest {
     const PATH: &'static str = "/xrpc/tools.ozone.safelink.removeRule";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<'de> = RemoveRule<'de>;
     type Response = RemoveRuleResponse;
 }

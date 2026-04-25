@@ -8,7 +8,13 @@
 /// Current viewer count for a livestream on a particular server. Record keys are streamer_did::server_did by convention.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ViewerCount<'a> {
@@ -27,59 +33,59 @@ pub struct ViewerCount<'a> {
 
 pub mod viewer_count_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
         type Count;
-        type Streamer;
         type Server;
+        type Streamer;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
         type Count = Unset;
-        type Streamer = Unset;
         type Server = Unset;
+        type Streamer = Unset;
     }
     ///State transition - sets the `count` field to Set
     pub struct SetCount<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCount<S> {}
     impl<S: State> State for SetCount<S> {
         type Count = Set<members::count>;
+        type Server = S::Server;
         type Streamer = S::Streamer;
-        type Server = S::Server;
-    }
-    ///State transition - sets the `streamer` field to Set
-    pub struct SetStreamer<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetStreamer<S> {}
-    impl<S: State> State for SetStreamer<S> {
-        type Count = S::Count;
-        type Streamer = Set<members::streamer>;
-        type Server = S::Server;
     }
     ///State transition - sets the `server` field to Set
     pub struct SetServer<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetServer<S> {}
     impl<S: State> State for SetServer<S> {
         type Count = S::Count;
-        type Streamer = S::Streamer;
         type Server = Set<members::server>;
+        type Streamer = S::Streamer;
+    }
+    ///State transition - sets the `streamer` field to Set
+    pub struct SetStreamer<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetStreamer<S> {}
+    impl<S: State> State for SetStreamer<S> {
+        type Count = S::Count;
+        type Server = S::Server;
+        type Streamer = Set<members::streamer>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
         ///Marker type for the `count` field
         pub struct count(());
-        ///Marker type for the `streamer` field
-        pub struct streamer(());
         ///Marker type for the `server` field
         pub struct server(());
+        ///Marker type for the `streamer` field
+        pub struct streamer(());
     }
 }
 
@@ -193,8 +199,8 @@ impl<'a, S> ViewerCountBuilder<'a, S>
 where
     S: viewer_count_state::State,
     S::Count: viewer_count_state::IsSet,
-    S::Streamer: viewer_count_state::IsSet,
     S::Server: viewer_count_state::IsSet,
+    S::Streamer: viewer_count_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> ViewerCount<'a> {
@@ -239,7 +245,13 @@ impl<'a> ViewerCount<'a> {
 
 /// Typed wrapper for GetRecord response with this collection's record type.
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ViewerCountGetRecordOutput<'a> {
@@ -296,7 +308,9 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ViewerCount<'a> {
     }
 }
 
-fn lexicon_doc_place_stream_live_viewerCount() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_place_stream_live_viewerCount() -> ::jacquard_lexicon::lexicon::LexiconDoc<
+    'static,
+> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("place.stream.live.viewerCount"),

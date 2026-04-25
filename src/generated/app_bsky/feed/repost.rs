@@ -8,59 +8,65 @@
 /// Record representing a 'repost' of an existing Bluesky post.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Repost<'a> {
     pub created_at: jacquard_common::types::string::Datetime,
     #[serde(borrow)]
-    pub subject: crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>,
+    pub subject: crate::com_atproto::repo::strong_ref::StrongRef<'a>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub via: std::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,
+    pub via: std::option::Option<crate::com_atproto::repo::strong_ref::StrongRef<'a>>,
 }
 
 pub mod repost_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type CreatedAt;
         type Subject;
+        type CreatedAt;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type CreatedAt = Unset;
         type Subject = Unset;
-    }
-    ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type CreatedAt = Set<members::created_at>;
-        type Subject = S::Subject;
+        type CreatedAt = Unset;
     }
     ///State transition - sets the `subject` field to Set
     pub struct SetSubject<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetSubject<S> {}
     impl<S: State> State for SetSubject<S> {
-        type CreatedAt = S::CreatedAt;
         type Subject = Set<members::subject>;
+        type CreatedAt = S::CreatedAt;
+    }
+    ///State transition - sets the `created_at` field to Set
+    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
+    impl<S: State> State for SetCreatedAt<S> {
+        type Subject = S::Subject;
+        type CreatedAt = Set<members::created_at>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `created_at` field
-        pub struct created_at(());
         ///Marker type for the `subject` field
         pub struct subject(());
+        ///Marker type for the `created_at` field
+        pub struct created_at(());
     }
 }
 
@@ -69,8 +75,8 @@ pub struct RepostBuilder<'a, S: repost_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
         ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,
-        ::core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,
+        ::core::option::Option<crate::com_atproto::repo::strong_ref::StrongRef<'a>>,
+        ::core::option::Option<crate::com_atproto::repo::strong_ref::StrongRef<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
@@ -120,7 +126,7 @@ where
     /// Set the `subject` field (required)
     pub fn subject(
         mut self,
-        value: impl Into<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,
+        value: impl Into<crate::com_atproto::repo::strong_ref::StrongRef<'a>>,
     ) -> RepostBuilder<'a, repost_state::SetSubject<S>> {
         self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
         RepostBuilder {
@@ -135,7 +141,7 @@ impl<'a, S: repost_state::State> RepostBuilder<'a, S> {
     /// Set the `via` field (optional)
     pub fn via(
         mut self,
-        value: impl Into<Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>>,
+        value: impl Into<Option<crate::com_atproto::repo::strong_ref::StrongRef<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.2 = value.into();
         self
@@ -143,7 +149,7 @@ impl<'a, S: repost_state::State> RepostBuilder<'a, S> {
     /// Set the `via` field to an Option value (optional)
     pub fn maybe_via(
         mut self,
-        value: Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,
+        value: Option<crate::com_atproto::repo::strong_ref::StrongRef<'a>>,
     ) -> Self {
         self.__unsafe_private_named.2 = value;
         self
@@ -153,8 +159,8 @@ impl<'a, S: repost_state::State> RepostBuilder<'a, S> {
 impl<'a, S> RepostBuilder<'a, S>
 where
     S: repost_state::State,
-    S::CreatedAt: repost_state::IsSet,
     S::Subject: repost_state::IsSet,
+    S::CreatedAt: repost_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> Repost<'a> {
@@ -197,7 +203,13 @@ impl<'a> Repost<'a> {
 
 /// Typed wrapper for GetRecord response with this collection's record type.
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct RepostGetRecordOutput<'a> {
@@ -254,7 +266,9 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Repost<'a> {
     }
 }
 
-fn lexicon_doc_app_bsky_feed_repost() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_app_bsky_feed_repost() -> ::jacquard_lexicon::lexicon::LexiconDoc<
+    'static,
+> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("app.bsky.feed.repost"),

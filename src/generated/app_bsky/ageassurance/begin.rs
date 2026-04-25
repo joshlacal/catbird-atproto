@@ -14,7 +14,7 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Begin<'a> {
@@ -35,13 +35,19 @@ pub struct Begin<'a> {
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct BeginOutput<'a> {
     #[serde(flatten)]
     #[serde(borrow)]
-    pub value: crate::generated::app_bsky::ageassurance::State<'a>,
+    pub value: crate::app_bsky::ageassurance::State<'a>,
 }
 
 #[jacquard_derive::open_union]
@@ -54,7 +60,7 @@ pub struct BeginOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
+    jacquard_derive::IntoStatic
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -117,8 +123,9 @@ impl jacquard_common::xrpc::XrpcResp for BeginResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for Begin<'a> {
     const NSID: &'static str = "app.bsky.ageassurance.begin";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = BeginResponse;
 }
 
@@ -127,8 +134,9 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for Begin<'a> {
 pub struct BeginRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for BeginRequest {
     const PATH: &'static str = "/xrpc/app.bsky.ageassurance.begin";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<'de> = Begin<'de>;
     type Response = BeginResponse;
 }

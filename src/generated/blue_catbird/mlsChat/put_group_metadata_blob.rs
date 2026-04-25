@@ -6,7 +6,13 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct PutGroupMetadataBlobParams<'a> {
@@ -18,9 +24,9 @@ pub struct PutGroupMetadataBlobParams<'a> {
 
 pub mod put_group_metadata_blob_params_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -61,7 +67,10 @@ pub mod put_group_metadata_blob_params_state {
 }
 
 /// Builder for constructing an instance of this type
-pub struct PutGroupMetadataBlobParamsBuilder<'a, S: put_group_metadata_blob_params_state::State> {
+pub struct PutGroupMetadataBlobParamsBuilder<
+    'a,
+    S: put_group_metadata_blob_params_state::State,
+> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
         ::core::option::Option<jacquard_common::CowStr<'a>>,
@@ -72,13 +81,17 @@ pub struct PutGroupMetadataBlobParamsBuilder<'a, S: put_group_metadata_blob_para
 
 impl<'a> PutGroupMetadataBlobParams<'a> {
     /// Create a new builder for this type
-    pub fn new(
-    ) -> PutGroupMetadataBlobParamsBuilder<'a, put_group_metadata_blob_params_state::Empty> {
+    pub fn new() -> PutGroupMetadataBlobParamsBuilder<
+        'a,
+        put_group_metadata_blob_params_state::Empty,
+    > {
         PutGroupMetadataBlobParamsBuilder::new()
     }
 }
 
-impl<'a> PutGroupMetadataBlobParamsBuilder<'a, put_group_metadata_blob_params_state::Empty> {
+impl<
+    'a,
+> PutGroupMetadataBlobParamsBuilder<'a, put_group_metadata_blob_params_state::Empty> {
     /// Create a new builder with all fields unset
     pub fn new() -> Self {
         PutGroupMetadataBlobParamsBuilder {
@@ -120,8 +133,10 @@ where
     pub fn group_id(
         mut self,
         value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> PutGroupMetadataBlobParamsBuilder<'a, put_group_metadata_blob_params_state::SetGroupId<S>>
-    {
+    ) -> PutGroupMetadataBlobParamsBuilder<
+        'a,
+        put_group_metadata_blob_params_state::SetGroupId<S>,
+    > {
         self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
         PutGroupMetadataBlobParamsBuilder {
             _phantom_state: ::core::marker::PhantomData,
@@ -146,9 +161,14 @@ where
     }
 }
 
-/// Encrypted blob bytes (nonce || ciphertext || tag)
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct PutGroupMetadataBlob {
@@ -157,7 +177,13 @@ pub struct PutGroupMetadataBlob {
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct PutGroupMetadataBlobOutput<'a> {
@@ -178,7 +204,7 @@ pub struct PutGroupMetadataBlobOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
+    jacquard_derive::IntoStatic
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -235,19 +261,24 @@ impl jacquard_common::xrpc::XrpcResp for PutGroupMetadataBlobResponse {
 
 impl jacquard_common::xrpc::XrpcRequest for PutGroupMetadataBlob {
     const NSID: &'static str = "blue.catbird.mlsChat.putGroupMetadataBlob";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("*/*");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "*/*",
+    );
     type Response = PutGroupMetadataBlobResponse;
     fn encode_body(&self) -> Result<Vec<u8>, jacquard_common::xrpc::EncodeError> {
         Ok(self.body.to_vec())
     }
-    fn decode_body<'de>(body: &'de [u8]) -> Result<Box<Self>, jacquard_common::error::DecodeError>
+    fn decode_body<'de>(
+        body: &'de [u8],
+    ) -> Result<Box<Self>, jacquard_common::error::DecodeError>
     where
         Self: serde::Deserialize<'de>,
     {
-        Ok(Box::new(Self {
-            body: bytes::Bytes::copy_from_slice(body),
-        }))
+        Ok(
+            Box::new(Self {
+                body: bytes::Bytes::copy_from_slice(body),
+            }),
+        )
     }
 }
 
@@ -256,8 +287,9 @@ impl jacquard_common::xrpc::XrpcRequest for PutGroupMetadataBlob {
 pub struct PutGroupMetadataBlobRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for PutGroupMetadataBlobRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.putGroupMetadataBlob";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("*/*");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "*/*",
+    );
     type Request<'de> = PutGroupMetadataBlob;
     type Response = PutGroupMetadataBlobResponse;
 }

@@ -7,12 +7,18 @@
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateRule<'a> {
     #[serde(borrow)]
-    pub action: crate::generated::tools_ozone::safelink::ActionType<'a>,
+    pub action: crate::tools_ozone::safelink::ActionType<'a>,
     /// Optional comment about the update
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
@@ -22,9 +28,9 @@ pub struct UpdateRule<'a> {
     #[serde(borrow)]
     pub created_by: std::option::Option<jacquard_common::types::string::Did<'a>>,
     #[serde(borrow)]
-    pub pattern: crate::generated::tools_ozone::safelink::PatternType<'a>,
+    pub pattern: crate::tools_ozone::safelink::PatternType<'a>,
     #[serde(borrow)]
-    pub reason: crate::generated::tools_ozone::safelink::ReasonType<'a>,
+    pub reason: crate::tools_ozone::safelink::ReasonType<'a>,
     /// The URL or domain to update the rule for
     #[serde(borrow)]
     pub url: jacquard_common::CowStr<'a>,
@@ -32,75 +38,75 @@ pub struct UpdateRule<'a> {
 
 pub mod update_rule_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
         type Url;
-        type Pattern;
-        type Action;
         type Reason;
+        type Action;
+        type Pattern;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
         type Url = Unset;
-        type Pattern = Unset;
-        type Action = Unset;
         type Reason = Unset;
+        type Action = Unset;
+        type Pattern = Unset;
     }
     ///State transition - sets the `url` field to Set
     pub struct SetUrl<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetUrl<S> {}
     impl<S: State> State for SetUrl<S> {
         type Url = Set<members::url>;
-        type Pattern = S::Pattern;
+        type Reason = S::Reason;
         type Action = S::Action;
-        type Reason = S::Reason;
-    }
-    ///State transition - sets the `pattern` field to Set
-    pub struct SetPattern<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetPattern<S> {}
-    impl<S: State> State for SetPattern<S> {
-        type Url = S::Url;
-        type Pattern = Set<members::pattern>;
-        type Action = S::Action;
-        type Reason = S::Reason;
-    }
-    ///State transition - sets the `action` field to Set
-    pub struct SetAction<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetAction<S> {}
-    impl<S: State> State for SetAction<S> {
-        type Url = S::Url;
         type Pattern = S::Pattern;
-        type Action = Set<members::action>;
-        type Reason = S::Reason;
     }
     ///State transition - sets the `reason` field to Set
     pub struct SetReason<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetReason<S> {}
     impl<S: State> State for SetReason<S> {
         type Url = S::Url;
-        type Pattern = S::Pattern;
-        type Action = S::Action;
         type Reason = Set<members::reason>;
+        type Action = S::Action;
+        type Pattern = S::Pattern;
+    }
+    ///State transition - sets the `action` field to Set
+    pub struct SetAction<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetAction<S> {}
+    impl<S: State> State for SetAction<S> {
+        type Url = S::Url;
+        type Reason = S::Reason;
+        type Action = Set<members::action>;
+        type Pattern = S::Pattern;
+    }
+    ///State transition - sets the `pattern` field to Set
+    pub struct SetPattern<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetPattern<S> {}
+    impl<S: State> State for SetPattern<S> {
+        type Url = S::Url;
+        type Reason = S::Reason;
+        type Action = S::Action;
+        type Pattern = Set<members::pattern>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
         ///Marker type for the `url` field
         pub struct url(());
-        ///Marker type for the `pattern` field
-        pub struct pattern(());
-        ///Marker type for the `action` field
-        pub struct action(());
         ///Marker type for the `reason` field
         pub struct reason(());
+        ///Marker type for the `action` field
+        pub struct action(());
+        ///Marker type for the `pattern` field
+        pub struct pattern(());
     }
 }
 
@@ -108,11 +114,11 @@ pub mod update_rule_state {
 pub struct UpdateRuleBuilder<'a, S: update_rule_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
-        ::core::option::Option<crate::generated::tools_ozone::safelink::ActionType<'a>>,
+        ::core::option::Option<crate::tools_ozone::safelink::ActionType<'a>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
         ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<crate::generated::tools_ozone::safelink::PatternType<'a>>,
-        ::core::option::Option<crate::generated::tools_ozone::safelink::ReasonType<'a>>,
+        ::core::option::Option<crate::tools_ozone::safelink::PatternType<'a>>,
+        ::core::option::Option<crate::tools_ozone::safelink::ReasonType<'a>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
@@ -144,7 +150,7 @@ where
     /// Set the `action` field (required)
     pub fn action(
         mut self,
-        value: impl Into<crate::generated::tools_ozone::safelink::ActionType<'a>>,
+        value: impl Into<crate::tools_ozone::safelink::ActionType<'a>>,
     ) -> UpdateRuleBuilder<'a, update_rule_state::SetAction<S>> {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         UpdateRuleBuilder {
@@ -157,7 +163,10 @@ where
 
 impl<'a, S: update_rule_state::State> UpdateRuleBuilder<'a, S> {
     /// Set the `comment` field (optional)
-    pub fn comment(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
+    pub fn comment(
+        mut self,
+        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
+    ) -> Self {
         self.__unsafe_private_named.1 = value.into();
         self
     }
@@ -195,7 +204,7 @@ where
     /// Set the `pattern` field (required)
     pub fn pattern(
         mut self,
-        value: impl Into<crate::generated::tools_ozone::safelink::PatternType<'a>>,
+        value: impl Into<crate::tools_ozone::safelink::PatternType<'a>>,
     ) -> UpdateRuleBuilder<'a, update_rule_state::SetPattern<S>> {
         self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
         UpdateRuleBuilder {
@@ -214,7 +223,7 @@ where
     /// Set the `reason` field (required)
     pub fn reason(
         mut self,
-        value: impl Into<crate::generated::tools_ozone::safelink::ReasonType<'a>>,
+        value: impl Into<crate::tools_ozone::safelink::ReasonType<'a>>,
     ) -> UpdateRuleBuilder<'a, update_rule_state::SetReason<S>> {
         self.__unsafe_private_named.4 = ::core::option::Option::Some(value.into());
         UpdateRuleBuilder {
@@ -248,9 +257,9 @@ impl<'a, S> UpdateRuleBuilder<'a, S>
 where
     S: update_rule_state::State,
     S::Url: update_rule_state::IsSet,
-    S::Pattern: update_rule_state::IsSet,
-    S::Action: update_rule_state::IsSet,
     S::Reason: update_rule_state::IsSet,
+    S::Action: update_rule_state::IsSet,
+    S::Pattern: update_rule_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> UpdateRule<'a> {
@@ -286,13 +295,19 @@ where
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateRuleOutput<'a> {
     #[serde(flatten)]
     #[serde(borrow)]
-    pub value: crate::generated::tools_ozone::safelink::Event<'a>,
+    pub value: crate::tools_ozone::safelink::Event<'a>,
 }
 
 #[jacquard_derive::open_union]
@@ -305,7 +320,7 @@ pub struct UpdateRuleOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
+    jacquard_derive::IntoStatic
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -342,8 +357,9 @@ impl jacquard_common::xrpc::XrpcResp for UpdateRuleResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for UpdateRule<'a> {
     const NSID: &'static str = "tools.ozone.safelink.updateRule";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = UpdateRuleResponse;
 }
 
@@ -352,8 +368,9 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for UpdateRule<'a> {
 pub struct UpdateRuleRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for UpdateRuleRequest {
     const PATH: &'static str = "/xrpc/tools.ozone.safelink.updateRule";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<'de> = UpdateRule<'de>;
     type Response = UpdateRuleResponse;
 }

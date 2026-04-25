@@ -8,7 +8,13 @@
 /// Record representing a list of accounts (actors). Scope includes both moderation-oriented lists and curration-oriented lists.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct List<'a> {
@@ -21,74 +27,75 @@ pub struct List<'a> {
     pub description: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub description_facets:
-        std::option::Option<Vec<crate::generated::app_bsky::richtext::facet::Facet<'a>>>,
+    pub description_facets: std::option::Option<
+        Vec<crate::app_bsky::richtext::facet::Facet<'a>>,
+    >,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub labels: std::option::Option<crate::generated::com_atproto::label::SelfLabels<'a>>,
+    pub labels: std::option::Option<crate::com_atproto::label::SelfLabels<'a>>,
     /// Display name for list; can not be empty.
     #[serde(borrow)]
     pub name: jacquard_common::CowStr<'a>,
     /// Defines the purpose of the list (aka, moderation-oriented or curration-oriented)
     #[serde(borrow)]
-    pub purpose: crate::generated::app_bsky::graph::ListPurpose<'a>,
+    pub purpose: crate::app_bsky::graph::ListPurpose<'a>,
 }
 
 pub mod list_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type CreatedAt;
-        type Name;
         type Purpose;
+        type Name;
+        type CreatedAt;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type CreatedAt = Unset;
-        type Name = Unset;
         type Purpose = Unset;
-    }
-    ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type CreatedAt = Set<members::created_at>;
-        type Name = S::Name;
-        type Purpose = S::Purpose;
-    }
-    ///State transition - sets the `name` field to Set
-    pub struct SetName<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetName<S> {}
-    impl<S: State> State for SetName<S> {
-        type CreatedAt = S::CreatedAt;
-        type Name = Set<members::name>;
-        type Purpose = S::Purpose;
+        type Name = Unset;
+        type CreatedAt = Unset;
     }
     ///State transition - sets the `purpose` field to Set
     pub struct SetPurpose<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetPurpose<S> {}
     impl<S: State> State for SetPurpose<S> {
-        type CreatedAt = S::CreatedAt;
-        type Name = S::Name;
         type Purpose = Set<members::purpose>;
+        type Name = S::Name;
+        type CreatedAt = S::CreatedAt;
+    }
+    ///State transition - sets the `name` field to Set
+    pub struct SetName<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetName<S> {}
+    impl<S: State> State for SetName<S> {
+        type Purpose = S::Purpose;
+        type Name = Set<members::name>;
+        type CreatedAt = S::CreatedAt;
+    }
+    ///State transition - sets the `created_at` field to Set
+    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
+    impl<S: State> State for SetCreatedAt<S> {
+        type Purpose = S::Purpose;
+        type Name = S::Name;
+        type CreatedAt = Set<members::created_at>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `created_at` field
-        pub struct created_at(());
-        ///Marker type for the `name` field
-        pub struct name(());
         ///Marker type for the `purpose` field
         pub struct purpose(());
+        ///Marker type for the `name` field
+        pub struct name(());
+        ///Marker type for the `created_at` field
+        pub struct created_at(());
     }
 }
 
@@ -99,10 +106,10 @@ pub struct ListBuilder<'a, S: list_state::State> {
         ::core::option::Option<jacquard_common::types::blob::BlobRef<'a>>,
         ::core::option::Option<jacquard_common::types::string::Datetime>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<Vec<crate::generated::app_bsky::richtext::facet::Facet<'a>>>,
-        ::core::option::Option<crate::generated::com_atproto::label::SelfLabels<'a>>,
+        ::core::option::Option<Vec<crate::app_bsky::richtext::facet::Facet<'a>>>,
+        ::core::option::Option<crate::com_atproto::label::SelfLabels<'a>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<crate::generated::app_bsky::graph::ListPurpose<'a>>,
+        ::core::option::Option<crate::app_bsky::graph::ListPurpose<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
@@ -165,12 +172,18 @@ where
 
 impl<'a, S: list_state::State> ListBuilder<'a, S> {
     /// Set the `description` field (optional)
-    pub fn description(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
+    pub fn description(
+        mut self,
+        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
+    ) -> Self {
         self.__unsafe_private_named.2 = value.into();
         self
     }
     /// Set the `description` field to an Option value (optional)
-    pub fn maybe_description(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
+    pub fn maybe_description(
+        mut self,
+        value: Option<jacquard_common::CowStr<'a>>,
+    ) -> Self {
         self.__unsafe_private_named.2 = value;
         self
     }
@@ -180,7 +193,7 @@ impl<'a, S: list_state::State> ListBuilder<'a, S> {
     /// Set the `descriptionFacets` field (optional)
     pub fn description_facets(
         mut self,
-        value: impl Into<Option<Vec<crate::generated::app_bsky::richtext::facet::Facet<'a>>>>,
+        value: impl Into<Option<Vec<crate::app_bsky::richtext::facet::Facet<'a>>>>,
     ) -> Self {
         self.__unsafe_private_named.3 = value.into();
         self
@@ -188,7 +201,7 @@ impl<'a, S: list_state::State> ListBuilder<'a, S> {
     /// Set the `descriptionFacets` field to an Option value (optional)
     pub fn maybe_description_facets(
         mut self,
-        value: Option<Vec<crate::generated::app_bsky::richtext::facet::Facet<'a>>>,
+        value: Option<Vec<crate::app_bsky::richtext::facet::Facet<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.3 = value;
         self
@@ -199,7 +212,7 @@ impl<'a, S: list_state::State> ListBuilder<'a, S> {
     /// Set the `labels` field (optional)
     pub fn labels(
         mut self,
-        value: impl Into<Option<crate::generated::com_atproto::label::SelfLabels<'a>>>,
+        value: impl Into<Option<crate::com_atproto::label::SelfLabels<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.4 = value.into();
         self
@@ -207,7 +220,7 @@ impl<'a, S: list_state::State> ListBuilder<'a, S> {
     /// Set the `labels` field to an Option value (optional)
     pub fn maybe_labels(
         mut self,
-        value: Option<crate::generated::com_atproto::label::SelfLabels<'a>>,
+        value: Option<crate::com_atproto::label::SelfLabels<'a>>,
     ) -> Self {
         self.__unsafe_private_named.4 = value;
         self
@@ -241,7 +254,7 @@ where
     /// Set the `purpose` field (required)
     pub fn purpose(
         mut self,
-        value: impl Into<crate::generated::app_bsky::graph::ListPurpose<'a>>,
+        value: impl Into<crate::app_bsky::graph::ListPurpose<'a>>,
     ) -> ListBuilder<'a, list_state::SetPurpose<S>> {
         self.__unsafe_private_named.6 = ::core::option::Option::Some(value.into());
         ListBuilder {
@@ -255,9 +268,9 @@ where
 impl<'a, S> ListBuilder<'a, S>
 where
     S: list_state::State,
-    S::CreatedAt: list_state::IsSet,
-    S::Name: list_state::IsSet,
     S::Purpose: list_state::IsSet,
+    S::Name: list_state::IsSet,
+    S::CreatedAt: list_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> List<'a> {
@@ -308,7 +321,13 @@ impl<'a> List<'a> {
 
 /// Typed wrapper for GetRecord response with this collection's record type.
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ListGetRecordOutput<'a> {
@@ -365,7 +384,9 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for List<'a> {
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) > 3000usize {
                 return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("description"),
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
+                        "description",
+                    ),
                     max: 3000usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -373,19 +394,19 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for List<'a> {
         }
         if let Some(ref value) = self.description {
             {
-                let count =
-                    ::unicode_segmentation::UnicodeSegmentation::graphemes(value.as_ref(), true)
-                        .count();
+                let count = ::unicode_segmentation::UnicodeSegmentation::graphemes(
+                        value.as_ref(),
+                        true,
+                    )
+                    .count();
                 if count > 300usize {
-                    return Err(
-                        ::jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
-                            path: ::jacquard_lexicon::validation::ValidationPath::from_field(
-                                "description",
-                            ),
-                            max: 300usize,
-                            actual: count,
-                        },
-                    );
+                    return Err(::jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
+                        path: ::jacquard_lexicon::validation::ValidationPath::from_field(
+                            "description",
+                        ),
+                        max: 300usize,
+                        actual: count,
+                    });
                 }
             }
         }
@@ -394,7 +415,9 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for List<'a> {
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) > 64usize {
                 return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("name"),
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
+                        "name",
+                    ),
                     max: 64usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -405,7 +428,9 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for List<'a> {
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) < 1usize {
                 return Err(::jacquard_lexicon::validation::ConstraintError::MinLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("name"),
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
+                        "name",
+                    ),
                     min: 1usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -415,7 +440,9 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for List<'a> {
     }
 }
 
-fn lexicon_doc_app_bsky_graph_list() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_app_bsky_graph_list() -> ::jacquard_lexicon::lexicon::LexiconDoc<
+    'static,
+> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("app.bsky.graph.list"),

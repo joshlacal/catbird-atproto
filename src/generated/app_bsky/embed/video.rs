@@ -7,7 +7,13 @@
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Caption<'a> {
@@ -18,45 +24,45 @@ pub struct Caption<'a> {
 
 pub mod caption_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type File;
         type Lang;
+        type File;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type File = Unset;
         type Lang = Unset;
-    }
-    ///State transition - sets the `file` field to Set
-    pub struct SetFile<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetFile<S> {}
-    impl<S: State> State for SetFile<S> {
-        type File = Set<members::file>;
-        type Lang = S::Lang;
+        type File = Unset;
     }
     ///State transition - sets the `lang` field to Set
     pub struct SetLang<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetLang<S> {}
     impl<S: State> State for SetLang<S> {
-        type File = S::File;
         type Lang = Set<members::lang>;
+        type File = S::File;
+    }
+    ///State transition - sets the `file` field to Set
+    pub struct SetFile<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetFile<S> {}
+    impl<S: State> State for SetFile<S> {
+        type Lang = S::Lang;
+        type File = Set<members::file>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `file` field
-        pub struct file(());
         ///Marker type for the `lang` field
         pub struct lang(());
+        ///Marker type for the `file` field
+        pub struct file(());
     }
 }
 
@@ -129,8 +135,8 @@ where
 impl<'a, S> CaptionBuilder<'a, S>
 where
     S: caption_state::State,
-    S::File: caption_state::IsSet,
     S::Lang: caption_state::IsSet,
+    S::File: caption_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> Caption<'a> {
@@ -156,7 +162,9 @@ where
     }
 }
 
-fn lexicon_doc_app_bsky_embed_video() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_app_bsky_embed_video() -> ::jacquard_lexicon::lexicon::LexiconDoc<
+    'static,
+> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("app.bsky.embed.video"),
@@ -166,266 +174,250 @@ fn lexicon_doc_app_bsky_embed_video() -> ::jacquard_lexicon::lexicon::LexiconDoc
             let mut map = ::std::collections::BTreeMap::new();
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("caption"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
-                        required: Some(vec![
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: None,
+                    required: Some(
+                        vec![
                             ::jacquard_common::smol_str::SmolStr::new_static("lang"),
+                            ::jacquard_common::smol_str::SmolStr::new_static("file")
+                        ],
+                    ),
+                    nullable: None,
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::std::collections::BTreeMap::new();
+                        map.insert(
                             ::jacquard_common::smol_str::SmolStr::new_static("file"),
-                        ]),
-                        nullable: None,
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("file"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Blob(
-                                    ::jacquard_lexicon::lexicon::LexBlob {
-                                        description: None,
-                                        accept: None,
-                                        max_size: None,
-                                    },
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Blob(::jacquard_lexicon::lexicon::LexBlob {
+                                description: None,
+                                accept: None,
+                                max_size: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("lang"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: None,
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Language,
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("lang"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Language,
-                                        ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
-                                    },
-                                ),
-                            );
-                            map
-                        },
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map
                     },
-                ),
+                }),
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("main"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
-                        required: Some(vec![::jacquard_common::smol_str::SmolStr::new_static(
-                            "video",
-                        )]),
-                        nullable: None,
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("alt"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: Some(::jacquard_common::CowStr::new_static(
-                                            "Alt text description of the video, for accessibility.",
-                                        )),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: Some(10000usize),
-                                        min_graphemes: None,
-                                        max_graphemes: Some(1000usize),
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
-                                    },
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: None,
+                    required: Some(
+                        vec![::jacquard_common::smol_str::SmolStr::new_static("video")],
+                    ),
+                    nullable: None,
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::std::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("alt"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Alt text description of the video, for accessibility.",
+                                    ),
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("aspectRatio"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        description: None,
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "app.bsky.embed.defs#aspectRatio",
-                                        ),
-                                    },
+                                format: None,
+                                default: None,
+                                min_length: None,
+                                max_length: Some(10000usize),
+                                min_graphemes: None,
+                                max_graphemes: Some(1000usize),
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "aspectRatio",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                description: None,
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "app.bsky.embed.defs#aspectRatio",
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("captions"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Array(
-                                    ::jacquard_lexicon::lexicon::LexArray {
-                                        description: None,
-                                        items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(
-                                            ::jacquard_lexicon::lexicon::LexRef {
-                                                description: None,
-                                                r#ref: ::jacquard_common::CowStr::new_static(
-                                                    "#caption",
-                                                ),
-                                            },
-                                        ),
-                                        min_length: None,
-                                        max_length: Some(20usize),
-                                    },
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("captions"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                description: None,
+                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                    description: None,
+                                    r#ref: ::jacquard_common::CowStr::new_static("#caption"),
+                                }),
+                                min_length: None,
+                                max_length: Some(20usize),
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "presentation",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "A hint to the client about how to present the video.",
+                                    ),
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("presentation"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: Some(::jacquard_common::CowStr::new_static(
-                                            "A hint to the client about how to present the video.",
-                                        )),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("video"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Blob(
-                                    ::jacquard_lexicon::lexicon::LexBlob {
-                                        description: None,
-                                        accept: None,
-                                        max_size: None,
-                                    },
-                                ),
-                            );
-                            map
-                        },
+                                format: None,
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("video"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Blob(::jacquard_lexicon::lexicon::LexBlob {
+                                description: None,
+                                accept: None,
+                                max_size: None,
+                            }),
+                        );
+                        map
                     },
-                ),
+                }),
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("view"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
-                        required: Some(vec![
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: None,
+                    required: Some(
+                        vec![
                             ::jacquard_common::smol_str::SmolStr::new_static("cid"),
+                            ::jacquard_common::smol_str::SmolStr::new_static("playlist")
+                        ],
+                    ),
+                    nullable: None,
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::std::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("alt"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: None,
+                                format: None,
+                                default: None,
+                                min_length: None,
+                                max_length: Some(10000usize),
+                                min_graphemes: None,
+                                max_graphemes: Some(1000usize),
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "aspectRatio",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                description: None,
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "app.bsky.embed.defs#aspectRatio",
+                                ),
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("cid"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: None,
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Cid,
+                                ),
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map.insert(
                             ::jacquard_common::smol_str::SmolStr::new_static("playlist"),
-                        ]),
-                        nullable: None,
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("alt"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: Some(10000usize),
-                                        min_graphemes: None,
-                                        max_graphemes: Some(1000usize),
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
-                                    },
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: None,
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Uri,
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("aspectRatio"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        description: None,
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "app.bsky.embed.defs#aspectRatio",
-                                        ),
-                                    },
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "presentation",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "A hint to the client about how to present the video.",
+                                    ),
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("cid"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Cid,
-                                        ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
-                                    },
+                                format: None,
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "thumbnail",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: None,
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Uri,
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("playlist"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Uri,
-                                        ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("presentation"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: Some(::jacquard_common::CowStr::new_static(
-                                            "A hint to the client about how to present the video.",
-                                        )),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("thumbnail"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Uri,
-                                        ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
-                                    },
-                                ),
-                            );
-                            map
-                        },
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map
                     },
-                ),
+                }),
             );
             map
         },
@@ -451,7 +443,13 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Caption<'a> {
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Video<'a> {
@@ -461,10 +459,10 @@ pub struct Video<'a> {
     pub alt: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub aspect_ratio: std::option::Option<crate::generated::app_bsky::embed::AspectRatio<'a>>,
+    pub aspect_ratio: std::option::Option<crate::app_bsky::embed::AspectRatio<'a>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub captions: std::option::Option<Vec<crate::generated::app_bsky::embed::video::Caption<'a>>>,
+    pub captions: std::option::Option<Vec<crate::app_bsky::embed::video::Caption<'a>>>,
     /// A hint to the client about how to present the video.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
@@ -476,9 +474,9 @@ pub struct Video<'a> {
 
 pub mod video_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -511,8 +509,8 @@ pub struct VideoBuilder<'a, S: video_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
         ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<crate::generated::app_bsky::embed::AspectRatio<'a>>,
-        ::core::option::Option<Vec<crate::generated::app_bsky::embed::video::Caption<'a>>>,
+        ::core::option::Option<crate::app_bsky::embed::AspectRatio<'a>>,
+        ::core::option::Option<Vec<crate::app_bsky::embed::video::Caption<'a>>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
         ::core::option::Option<jacquard_common::types::blob::BlobRef<'a>>,
     ),
@@ -554,7 +552,7 @@ impl<'a, S: video_state::State> VideoBuilder<'a, S> {
     /// Set the `aspectRatio` field (optional)
     pub fn aspect_ratio(
         mut self,
-        value: impl Into<Option<crate::generated::app_bsky::embed::AspectRatio<'a>>>,
+        value: impl Into<Option<crate::app_bsky::embed::AspectRatio<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.1 = value.into();
         self
@@ -562,7 +560,7 @@ impl<'a, S: video_state::State> VideoBuilder<'a, S> {
     /// Set the `aspectRatio` field to an Option value (optional)
     pub fn maybe_aspect_ratio(
         mut self,
-        value: Option<crate::generated::app_bsky::embed::AspectRatio<'a>>,
+        value: Option<crate::app_bsky::embed::AspectRatio<'a>>,
     ) -> Self {
         self.__unsafe_private_named.1 = value;
         self
@@ -573,7 +571,7 @@ impl<'a, S: video_state::State> VideoBuilder<'a, S> {
     /// Set the `captions` field (optional)
     pub fn captions(
         mut self,
-        value: impl Into<Option<Vec<crate::generated::app_bsky::embed::video::Caption<'a>>>>,
+        value: impl Into<Option<Vec<crate::app_bsky::embed::video::Caption<'a>>>>,
     ) -> Self {
         self.__unsafe_private_named.2 = value.into();
         self
@@ -581,7 +579,7 @@ impl<'a, S: video_state::State> VideoBuilder<'a, S> {
     /// Set the `captions` field to an Option value (optional)
     pub fn maybe_captions(
         mut self,
-        value: Option<Vec<crate::generated::app_bsky::embed::video::Caption<'a>>>,
+        value: Option<Vec<crate::app_bsky::embed::video::Caption<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.2 = value;
         self
@@ -590,12 +588,18 @@ impl<'a, S: video_state::State> VideoBuilder<'a, S> {
 
 impl<'a, S: video_state::State> VideoBuilder<'a, S> {
     /// Set the `presentation` field (optional)
-    pub fn presentation(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
+    pub fn presentation(
+        mut self,
+        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
+    ) -> Self {
         self.__unsafe_private_named.3 = value.into();
         self
     }
     /// Set the `presentation` field to an Option value (optional)
-    pub fn maybe_presentation(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
+    pub fn maybe_presentation(
+        mut self,
+        value: Option<jacquard_common::CowStr<'a>>,
+    ) -> Self {
         self.__unsafe_private_named.3 = value;
         self
     }
@@ -672,7 +676,9 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Video<'a> {
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) > 10000usize {
                 return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("alt"),
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
+                        "alt",
+                    ),
                     max: 10000usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -680,17 +686,19 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Video<'a> {
         }
         if let Some(ref value) = self.alt {
             {
-                let count =
-                    ::unicode_segmentation::UnicodeSegmentation::graphemes(value.as_ref(), true)
-                        .count();
+                let count = ::unicode_segmentation::UnicodeSegmentation::graphemes(
+                        value.as_ref(),
+                        true,
+                    )
+                    .count();
                 if count > 1000usize {
-                    return Err(
-                        ::jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
-                            path: ::jacquard_lexicon::validation::ValidationPath::from_field("alt"),
-                            max: 1000usize,
-                            actual: count,
-                        },
-                    );
+                    return Err(::jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
+                        path: ::jacquard_lexicon::validation::ValidationPath::from_field(
+                            "alt",
+                        ),
+                        max: 1000usize,
+                        actual: count,
+                    });
                 }
             }
         }
@@ -698,7 +706,9 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Video<'a> {
             #[allow(unused_comparisons)]
             if value.len() > 20usize {
                 return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("captions"),
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
+                        "captions",
+                    ),
                     max: 20usize,
                     actual: value.len(),
                 });
@@ -710,7 +720,13 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Video<'a> {
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct View<'a> {
@@ -719,7 +735,7 @@ pub struct View<'a> {
     pub alt: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub aspect_ratio: std::option::Option<crate::generated::app_bsky::embed::AspectRatio<'a>>,
+    pub aspect_ratio: std::option::Option<crate::app_bsky::embed::AspectRatio<'a>>,
     #[serde(borrow)]
     pub cid: jacquard_common::types::string::Cid<'a>,
     #[serde(borrow)]
@@ -735,9 +751,9 @@ pub struct View<'a> {
 
 pub mod view_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -782,7 +798,7 @@ pub struct ViewBuilder<'a, S: view_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
         ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<crate::generated::app_bsky::embed::AspectRatio<'a>>,
+        ::core::option::Option<crate::app_bsky::embed::AspectRatio<'a>>,
         ::core::option::Option<jacquard_common::types::string::Cid<'a>>,
         ::core::option::Option<jacquard_common::types::string::Uri<'a>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
@@ -826,7 +842,7 @@ impl<'a, S: view_state::State> ViewBuilder<'a, S> {
     /// Set the `aspectRatio` field (optional)
     pub fn aspect_ratio(
         mut self,
-        value: impl Into<Option<crate::generated::app_bsky::embed::AspectRatio<'a>>>,
+        value: impl Into<Option<crate::app_bsky::embed::AspectRatio<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.1 = value.into();
         self
@@ -834,7 +850,7 @@ impl<'a, S: view_state::State> ViewBuilder<'a, S> {
     /// Set the `aspectRatio` field to an Option value (optional)
     pub fn maybe_aspect_ratio(
         mut self,
-        value: Option<crate::generated::app_bsky::embed::AspectRatio<'a>>,
+        value: Option<crate::app_bsky::embed::AspectRatio<'a>>,
     ) -> Self {
         self.__unsafe_private_named.1 = value;
         self
@@ -881,12 +897,18 @@ where
 
 impl<'a, S: view_state::State> ViewBuilder<'a, S> {
     /// Set the `presentation` field (optional)
-    pub fn presentation(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
+    pub fn presentation(
+        mut self,
+        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
+    ) -> Self {
         self.__unsafe_private_named.4 = value.into();
         self
     }
     /// Set the `presentation` field to an Option value (optional)
-    pub fn maybe_presentation(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
+    pub fn maybe_presentation(
+        mut self,
+        value: Option<jacquard_common::CowStr<'a>>,
+    ) -> Self {
         self.__unsafe_private_named.4 = value;
         self
     }
@@ -966,7 +988,9 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for View<'a> {
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) > 10000usize {
                 return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("alt"),
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
+                        "alt",
+                    ),
                     max: 10000usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -974,17 +998,19 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for View<'a> {
         }
         if let Some(ref value) = self.alt {
             {
-                let count =
-                    ::unicode_segmentation::UnicodeSegmentation::graphemes(value.as_ref(), true)
-                        .count();
+                let count = ::unicode_segmentation::UnicodeSegmentation::graphemes(
+                        value.as_ref(),
+                        true,
+                    )
+                    .count();
                 if count > 1000usize {
-                    return Err(
-                        ::jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
-                            path: ::jacquard_lexicon::validation::ValidationPath::from_field("alt"),
-                            max: 1000usize,
-                            actual: count,
-                        },
-                    );
+                    return Err(::jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
+                        path: ::jacquard_lexicon::validation::ValidationPath::from_field(
+                            "alt",
+                        ),
+                        max: 1000usize,
+                        actual: count,
+                    });
                 }
             }
         }

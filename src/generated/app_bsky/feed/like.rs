@@ -8,23 +8,29 @@
 /// Record declaring a 'like' of a piece of subject content.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Like<'a> {
     pub created_at: jacquard_common::types::string::Datetime,
     #[serde(borrow)]
-    pub subject: crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>,
+    pub subject: crate::com_atproto::repo::strong_ref::StrongRef<'a>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub via: std::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,
+    pub via: std::option::Option<crate::com_atproto::repo::strong_ref::StrongRef<'a>>,
 }
 
 pub mod like_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -69,8 +75,8 @@ pub struct LikeBuilder<'a, S: like_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
         ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,
-        ::core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,
+        ::core::option::Option<crate::com_atproto::repo::strong_ref::StrongRef<'a>>,
+        ::core::option::Option<crate::com_atproto::repo::strong_ref::StrongRef<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
@@ -120,7 +126,7 @@ where
     /// Set the `subject` field (required)
     pub fn subject(
         mut self,
-        value: impl Into<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,
+        value: impl Into<crate::com_atproto::repo::strong_ref::StrongRef<'a>>,
     ) -> LikeBuilder<'a, like_state::SetSubject<S>> {
         self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
         LikeBuilder {
@@ -135,7 +141,7 @@ impl<'a, S: like_state::State> LikeBuilder<'a, S> {
     /// Set the `via` field (optional)
     pub fn via(
         mut self,
-        value: impl Into<Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>>,
+        value: impl Into<Option<crate::com_atproto::repo::strong_ref::StrongRef<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.2 = value.into();
         self
@@ -143,7 +149,7 @@ impl<'a, S: like_state::State> LikeBuilder<'a, S> {
     /// Set the `via` field to an Option value (optional)
     pub fn maybe_via(
         mut self,
-        value: Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,
+        value: Option<crate::com_atproto::repo::strong_ref::StrongRef<'a>>,
     ) -> Self {
         self.__unsafe_private_named.2 = value;
         self
@@ -197,7 +203,13 @@ impl<'a> Like<'a> {
 
 /// Typed wrapper for GetRecord response with this collection's record type.
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct LikeGetRecordOutput<'a> {

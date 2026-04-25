@@ -15,11 +15,13 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
 #[serde(rename_all = "camelCase")]
 pub struct DisableRule<'a> {}
-fn lexicon_doc_app_bsky_feed_postgate() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_app_bsky_feed_postgate() -> ::jacquard_lexicon::lexicon::LexiconDoc<
+    'static,
+> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("app.bsky.feed.postgate"),
@@ -29,20 +31,20 @@ fn lexicon_doc_app_bsky_feed_postgate() -> ::jacquard_lexicon::lexicon::LexiconD
             let mut map = ::std::collections::BTreeMap::new();
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("disableRule"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: Some(::jacquard_common::CowStr::new_static(
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
                             "Disables embedding of this post.",
-                        )),
-                        required: None,
-                        nullable: None,
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
-                            map
-                        },
+                        ),
+                    ),
+                    required: None,
+                    nullable: None,
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::std::collections::BTreeMap::new();
+                        map
                     },
-                ),
+                }),
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("main"),
@@ -184,7 +186,13 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for DisableRule<'a> {
 /// Record defining interaction rules for a post. The record key (rkey) of the postgate record must match the record key of the post, and that record must be in the same repository.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Postgate<'a> {
@@ -192,13 +200,15 @@ pub struct Postgate<'a> {
     /// List of AT-URIs embedding this post that the author has detached from.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub detached_embedding_uris:
-        std::option::Option<Vec<jacquard_common::types::string::AtUri<'a>>>,
+    pub detached_embedding_uris: std::option::Option<
+        Vec<jacquard_common::types::string::AtUri<'a>>,
+    >,
     /// List of rules defining who can embed this post. If value is an empty array or is undefined, no particular rules apply and anyone can embed.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub embedding_rules:
-        std::option::Option<Vec<crate::generated::app_bsky::feed::postgate::DisableRule<'a>>>,
+    pub embedding_rules: std::option::Option<
+        Vec<crate::app_bsky::feed::postgate::DisableRule<'a>>,
+    >,
     /// Reference (AT-URI) to the post record.
     #[serde(borrow)]
     pub post: jacquard_common::types::string::AtUri<'a>,
@@ -206,9 +216,9 @@ pub struct Postgate<'a> {
 
 pub mod postgate_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -254,7 +264,7 @@ pub struct PostgateBuilder<'a, S: postgate_state::State> {
     __unsafe_private_named: (
         ::core::option::Option<jacquard_common::types::string::Datetime>,
         ::core::option::Option<Vec<jacquard_common::types::string::AtUri<'a>>>,
-        ::core::option::Option<Vec<crate::generated::app_bsky::feed::postgate::DisableRule<'a>>>,
+        ::core::option::Option<Vec<crate::app_bsky::feed::postgate::DisableRule<'a>>>,
         ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
@@ -320,7 +330,7 @@ impl<'a, S: postgate_state::State> PostgateBuilder<'a, S> {
     /// Set the `embeddingRules` field (optional)
     pub fn embedding_rules(
         mut self,
-        value: impl Into<Option<Vec<crate::generated::app_bsky::feed::postgate::DisableRule<'a>>>>,
+        value: impl Into<Option<Vec<crate::app_bsky::feed::postgate::DisableRule<'a>>>>,
     ) -> Self {
         self.__unsafe_private_named.2 = value.into();
         self
@@ -328,7 +338,7 @@ impl<'a, S: postgate_state::State> PostgateBuilder<'a, S> {
     /// Set the `embeddingRules` field to an Option value (optional)
     pub fn maybe_embedding_rules(
         mut self,
-        value: Option<Vec<crate::generated::app_bsky::feed::postgate::DisableRule<'a>>>,
+        value: Option<Vec<crate::app_bsky::feed::postgate::DisableRule<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.2 = value;
         self
@@ -403,7 +413,13 @@ impl<'a> Postgate<'a> {
 
 /// Typed wrapper for GetRecord response with this collection's record type.
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct PostgateGetRecordOutput<'a> {

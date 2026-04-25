@@ -8,7 +8,13 @@
 /// Specifies the sub-string range a facet feature applies to. Start index is inclusive, end index is exclusive. Indices are zero-indexed, counting bytes of the UTF-8 encoded text. NOTE: some languages, like Javascript, use UTF-16 or Unicode codepoints for string slice indexing; in these languages, convert to byte arrays before working with facets.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ByteSlice<'a> {
@@ -18,9 +24,9 @@ pub struct ByteSlice<'a> {
 
 pub mod byte_slice_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -153,7 +159,9 @@ where
     }
 }
 
-fn lexicon_doc_app_bsky_richtext_facet() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_app_bsky_richtext_facet() -> ::jacquard_lexicon::lexicon::LexiconDoc<
+    'static,
+> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("app.bsky.richtext.facet"),
@@ -245,55 +253,49 @@ fn lexicon_doc_app_bsky_richtext_facet() -> ::jacquard_lexicon::lexicon::Lexicon
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("main"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: Some(::jacquard_common::CowStr::new_static(
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
                             "Annotation of a sub-string within rich text.",
-                        )),
-                        required: Some(vec![
+                        ),
+                    ),
+                    required: Some(
+                        vec![
                             ::jacquard_common::smol_str::SmolStr::new_static("index"),
+                            ::jacquard_common::smol_str::SmolStr::new_static("features")
+                        ],
+                    ),
+                    nullable: None,
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::std::collections::BTreeMap::new();
+                        map.insert(
                             ::jacquard_common::smol_str::SmolStr::new_static("features"),
-                        ]),
-                        nullable: None,
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("features"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Array(
-                                    ::jacquard_lexicon::lexicon::LexArray {
-                                        description: None,
-                                        items: ::jacquard_lexicon::lexicon::LexArrayItem::Union(
-                                            ::jacquard_lexicon::lexicon::LexRefUnion {
-                                                description: None,
-                                                refs: vec![
-                                                    ::jacquard_common::CowStr::new_static(
-                                                        "#mention",
-                                                    ),
-                                                    ::jacquard_common::CowStr::new_static("#link"),
-                                                    ::jacquard_common::CowStr::new_static("#tag"),
-                                                ],
-                                                closed: None,
-                                            },
-                                        ),
-                                        min_length: None,
-                                        max_length: None,
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("index"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        description: None,
-                                        r#ref: ::jacquard_common::CowStr::new_static("#byteSlice"),
-                                    },
-                                ),
-                            );
-                            map
-                        },
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                description: None,
+                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Union(::jacquard_lexicon::lexicon::LexRefUnion {
+                                    description: None,
+                                    refs: vec![
+                                        ::jacquard_common::CowStr::new_static("#mention"),
+                                        ::jacquard_common::CowStr::new_static("#link"),
+                                        ::jacquard_common::CowStr::new_static("#tag")
+                                    ],
+                                    closed: None,
+                                }),
+                                min_length: None,
+                                max_length: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("index"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                description: None,
+                                r#ref: ::jacquard_common::CowStr::new_static("#byteSlice"),
+                            }),
+                        );
+                        map
                     },
-                ),
+                }),
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("mention"),
@@ -387,7 +389,9 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ByteSlice<'a> {
             let value = &self.byte_end;
             if *value < 0i64 {
                 return Err(::jacquard_lexicon::validation::ConstraintError::Minimum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("byte_end"),
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
+                        "byte_end",
+                    ),
                     min: 0i64,
                     actual: *value,
                 });
@@ -397,7 +401,9 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ByteSlice<'a> {
             let value = &self.byte_start;
             if *value < 0i64 {
                 return Err(::jacquard_lexicon::validation::ConstraintError::Minimum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("byte_start"),
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
+                        "byte_start",
+                    ),
                     min: 0i64,
                     actual: *value,
                 });
@@ -410,7 +416,13 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ByteSlice<'a> {
 /// Facet feature for a URL. The text URL may have been simplified or truncated, but the facet reference should be a complete URL.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Link<'a> {
@@ -420,9 +432,9 @@ pub struct Link<'a> {
 
 pub mod link_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -453,7 +465,9 @@ pub mod link_state {
 /// Builder for constructing an instance of this type
 pub struct LinkBuilder<'a, S: link_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<jacquard_common::types::string::Uri<'a>>,),
+    __unsafe_private_named: (
+        ::core::option::Option<jacquard_common::types::string::Uri<'a>>,
+    ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
 
@@ -541,57 +555,63 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Link<'a> {
 /// Annotation of a sub-string within rich text.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Facet<'a> {
     #[serde(borrow)]
     pub features: Vec<FacetFeaturesItem<'a>>,
     #[serde(borrow)]
-    pub index: crate::generated::app_bsky::richtext::facet::ByteSlice<'a>,
+    pub index: crate::app_bsky::richtext::facet::ByteSlice<'a>,
 }
 
 pub mod facet_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Index;
         type Features;
+        type Index;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Index = Unset;
         type Features = Unset;
-    }
-    ///State transition - sets the `index` field to Set
-    pub struct SetIndex<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetIndex<S> {}
-    impl<S: State> State for SetIndex<S> {
-        type Index = Set<members::index>;
-        type Features = S::Features;
+        type Index = Unset;
     }
     ///State transition - sets the `features` field to Set
     pub struct SetFeatures<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetFeatures<S> {}
     impl<S: State> State for SetFeatures<S> {
-        type Index = S::Index;
         type Features = Set<members::features>;
+        type Index = S::Index;
+    }
+    ///State transition - sets the `index` field to Set
+    pub struct SetIndex<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetIndex<S> {}
+    impl<S: State> State for SetIndex<S> {
+        type Features = S::Features;
+        type Index = Set<members::index>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `index` field
-        pub struct index(());
         ///Marker type for the `features` field
         pub struct features(());
+        ///Marker type for the `index` field
+        pub struct index(());
     }
 }
 
@@ -600,7 +620,7 @@ pub struct FacetBuilder<'a, S: facet_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
         ::core::option::Option<Vec<FacetFeaturesItem<'a>>>,
-        ::core::option::Option<crate::generated::app_bsky::richtext::facet::ByteSlice<'a>>,
+        ::core::option::Option<crate::app_bsky::richtext::facet::ByteSlice<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
@@ -650,7 +670,7 @@ where
     /// Set the `index` field (required)
     pub fn index(
         mut self,
-        value: impl Into<crate::generated::app_bsky::richtext::facet::ByteSlice<'a>>,
+        value: impl Into<crate::app_bsky::richtext::facet::ByteSlice<'a>>,
     ) -> FacetBuilder<'a, facet_state::SetIndex<S>> {
         self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
         FacetBuilder {
@@ -664,8 +684,8 @@ where
 impl<'a, S> FacetBuilder<'a, S>
 where
     S: facet_state::State,
-    S::Index: facet_state::IsSet,
     S::Features: facet_state::IsSet,
+    S::Index: facet_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> Facet<'a> {
@@ -693,17 +713,23 @@ where
 
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(tag = "$type")]
 #[serde(bound(deserialize = "'de: 'a"))]
 pub enum FacetFeaturesItem<'a> {
     #[serde(rename = "app.bsky.richtext.facet#mention")]
-    Mention(Box<crate::generated::app_bsky::richtext::facet::Mention<'a>>),
+    Mention(Box<crate::app_bsky::richtext::facet::Mention<'a>>),
     #[serde(rename = "app.bsky.richtext.facet#link")]
-    Link(Box<crate::generated::app_bsky::richtext::facet::Link<'a>>),
+    Link(Box<crate::app_bsky::richtext::facet::Link<'a>>),
     #[serde(rename = "app.bsky.richtext.facet#tag")]
-    Tag(Box<crate::generated::app_bsky::richtext::facet::Tag<'a>>),
+    Tag(Box<crate::app_bsky::richtext::facet::Tag<'a>>),
 }
 
 impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Facet<'a> {
@@ -726,7 +752,13 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Facet<'a> {
 /// Facet feature for mention of another account. The text is usually a handle, including a '@' prefix, but the facet reference is a DID.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Mention<'a> {
@@ -736,9 +768,9 @@ pub struct Mention<'a> {
 
 pub mod mention_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -769,7 +801,9 @@ pub mod mention_state {
 /// Builder for constructing an instance of this type
 pub struct MentionBuilder<'a, S: mention_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<jacquard_common::types::string::Did<'a>>,),
+    __unsafe_private_named: (
+        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
+    ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
 
@@ -864,7 +898,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Mention<'a> {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Tag<'a> {
@@ -890,7 +924,9 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Tag<'a> {
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) > 640usize {
                 return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("tag"),
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
+                        "tag",
+                    ),
                     max: 640usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -899,17 +935,19 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Tag<'a> {
         {
             let value = &self.tag;
             {
-                let count =
-                    ::unicode_segmentation::UnicodeSegmentation::graphemes(value.as_ref(), true)
-                        .count();
+                let count = ::unicode_segmentation::UnicodeSegmentation::graphemes(
+                        value.as_ref(),
+                        true,
+                    )
+                    .count();
                 if count > 64usize {
-                    return Err(
-                        ::jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
-                            path: ::jacquard_lexicon::validation::ValidationPath::from_field("tag"),
-                            max: 64usize,
-                            actual: count,
-                        },
-                    );
+                    return Err(::jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
+                        path: ::jacquard_lexicon::validation::ValidationPath::from_field(
+                            "tag",
+                        ),
+                        max: 64usize,
+                        actual: count,
+                    });
                 }
             }
         }

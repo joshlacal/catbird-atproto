@@ -6,7 +6,13 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetTimeline<'a> {
@@ -23,9 +29,9 @@ pub struct GetTimeline<'a> {
 
 pub mod get_timeline_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -71,12 +77,18 @@ impl<'a> GetTimelineBuilder<'a, get_timeline_state::Empty> {
 
 impl<'a, S: get_timeline_state::State> GetTimelineBuilder<'a, S> {
     /// Set the `algorithm` field (optional)
-    pub fn algorithm(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
+    pub fn algorithm(
+        mut self,
+        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
+    ) -> Self {
         self.__unsafe_private_named.0 = value.into();
         self
     }
     /// Set the `algorithm` field to an Option value (optional)
-    pub fn maybe_algorithm(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
+    pub fn maybe_algorithm(
+        mut self,
+        value: Option<jacquard_common::CowStr<'a>>,
+    ) -> Self {
         self.__unsafe_private_named.0 = value;
         self
     }
@@ -84,7 +96,10 @@ impl<'a, S: get_timeline_state::State> GetTimelineBuilder<'a, S> {
 
 impl<'a, S: get_timeline_state::State> GetTimelineBuilder<'a, S> {
     /// Set the `cursor` field (optional)
-    pub fn cursor(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
+    pub fn cursor(
+        mut self,
+        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
+    ) -> Self {
         self.__unsafe_private_named.1 = value.into();
         self
     }
@@ -124,7 +139,13 @@ where
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetTimelineOutput<'a> {
@@ -132,7 +153,7 @@ pub struct GetTimelineOutput<'a> {
     #[serde(borrow)]
     pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(borrow)]
-    pub feed: Vec<crate::generated::app_bsky::feed::FeedViewPost<'a>>,
+    pub feed: Vec<crate::app_bsky::feed::FeedViewPost<'a>>,
 }
 
 /// Response type for

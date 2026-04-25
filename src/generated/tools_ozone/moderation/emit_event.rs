@@ -7,7 +7,13 @@
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct EmitEvent<'a> {
@@ -21,69 +27,71 @@ pub struct EmitEvent<'a> {
     pub external_id: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub mod_tool: std::option::Option<crate::generated::tools_ozone::moderation::ModTool<'a>>,
+    pub mod_tool: std::option::Option<crate::tools_ozone::moderation::ModTool<'a>>,
     #[serde(borrow)]
     pub subject: EmitEventSubject<'a>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub subject_blob_cids: std::option::Option<Vec<jacquard_common::types::string::Cid<'a>>>,
+    pub subject_blob_cids: std::option::Option<
+        Vec<jacquard_common::types::string::Cid<'a>>,
+    >,
 }
 
 pub mod emit_event_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type CreatedBy;
         type Subject;
         type Event;
+        type CreatedBy;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type CreatedBy = Unset;
         type Subject = Unset;
         type Event = Unset;
-    }
-    ///State transition - sets the `created_by` field to Set
-    pub struct SetCreatedBy<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedBy<S> {}
-    impl<S: State> State for SetCreatedBy<S> {
-        type CreatedBy = Set<members::created_by>;
-        type Subject = S::Subject;
-        type Event = S::Event;
+        type CreatedBy = Unset;
     }
     ///State transition - sets the `subject` field to Set
     pub struct SetSubject<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetSubject<S> {}
     impl<S: State> State for SetSubject<S> {
-        type CreatedBy = S::CreatedBy;
         type Subject = Set<members::subject>;
         type Event = S::Event;
+        type CreatedBy = S::CreatedBy;
     }
     ///State transition - sets the `event` field to Set
     pub struct SetEvent<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetEvent<S> {}
     impl<S: State> State for SetEvent<S> {
-        type CreatedBy = S::CreatedBy;
         type Subject = S::Subject;
         type Event = Set<members::event>;
+        type CreatedBy = S::CreatedBy;
+    }
+    ///State transition - sets the `created_by` field to Set
+    pub struct SetCreatedBy<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCreatedBy<S> {}
+    impl<S: State> State for SetCreatedBy<S> {
+        type Subject = S::Subject;
+        type Event = S::Event;
+        type CreatedBy = Set<members::created_by>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `created_by` field
-        pub struct created_by(());
         ///Marker type for the `subject` field
         pub struct subject(());
         ///Marker type for the `event` field
         pub struct event(());
+        ///Marker type for the `created_by` field
+        pub struct created_by(());
     }
 }
 
@@ -94,7 +102,7 @@ pub struct EmitEventBuilder<'a, S: emit_event_state::State> {
         ::core::option::Option<jacquard_common::types::string::Did<'a>>,
         ::core::option::Option<EmitEventEvent<'a>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<crate::generated::tools_ozone::moderation::ModTool<'a>>,
+        ::core::option::Option<crate::tools_ozone::moderation::ModTool<'a>>,
         ::core::option::Option<EmitEventSubject<'a>>,
         ::core::option::Option<Vec<jacquard_common::types::string::Cid<'a>>>,
     ),
@@ -159,12 +167,18 @@ where
 
 impl<'a, S: emit_event_state::State> EmitEventBuilder<'a, S> {
     /// Set the `externalId` field (optional)
-    pub fn external_id(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
+    pub fn external_id(
+        mut self,
+        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
+    ) -> Self {
         self.__unsafe_private_named.2 = value.into();
         self
     }
     /// Set the `externalId` field to an Option value (optional)
-    pub fn maybe_external_id(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
+    pub fn maybe_external_id(
+        mut self,
+        value: Option<jacquard_common::CowStr<'a>>,
+    ) -> Self {
         self.__unsafe_private_named.2 = value;
         self
     }
@@ -174,7 +188,7 @@ impl<'a, S: emit_event_state::State> EmitEventBuilder<'a, S> {
     /// Set the `modTool` field (optional)
     pub fn mod_tool(
         mut self,
-        value: impl Into<Option<crate::generated::tools_ozone::moderation::ModTool<'a>>>,
+        value: impl Into<Option<crate::tools_ozone::moderation::ModTool<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.3 = value.into();
         self
@@ -182,7 +196,7 @@ impl<'a, S: emit_event_state::State> EmitEventBuilder<'a, S> {
     /// Set the `modTool` field to an Option value (optional)
     pub fn maybe_mod_tool(
         mut self,
-        value: Option<crate::generated::tools_ozone::moderation::ModTool<'a>>,
+        value: Option<crate::tools_ozone::moderation::ModTool<'a>>,
     ) -> Self {
         self.__unsafe_private_named.3 = value;
         self
@@ -230,9 +244,9 @@ impl<'a, S: emit_event_state::State> EmitEventBuilder<'a, S> {
 impl<'a, S> EmitEventBuilder<'a, S>
 where
     S: emit_event_state::State,
-    S::CreatedBy: emit_event_state::IsSet,
     S::Subject: emit_event_state::IsSet,
     S::Event: emit_event_state::IsSet,
+    S::CreatedBy: emit_event_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> EmitEvent<'a> {
@@ -268,99 +282,117 @@ where
 
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(tag = "$type")]
 #[serde(bound(deserialize = "'de: 'a"))]
 pub enum EmitEventEvent<'a> {
     #[serde(rename = "tools.ozone.moderation.defs#modEventTakedown")]
-    ModEventTakedown(Box<crate::generated::tools_ozone::moderation::ModEventTakedown<'a>>),
+    ModEventTakedown(Box<crate::tools_ozone::moderation::ModEventTakedown<'a>>),
     #[serde(rename = "tools.ozone.moderation.defs#modEventAcknowledge")]
-    ModEventAcknowledge(Box<crate::generated::tools_ozone::moderation::ModEventAcknowledge<'a>>),
+    ModEventAcknowledge(Box<crate::tools_ozone::moderation::ModEventAcknowledge<'a>>),
     #[serde(rename = "tools.ozone.moderation.defs#modEventEscalate")]
-    ModEventEscalate(Box<crate::generated::tools_ozone::moderation::ModEventEscalate<'a>>),
+    ModEventEscalate(Box<crate::tools_ozone::moderation::ModEventEscalate<'a>>),
     #[serde(rename = "tools.ozone.moderation.defs#modEventComment")]
-    ModEventComment(Box<crate::generated::tools_ozone::moderation::ModEventComment<'a>>),
+    ModEventComment(Box<crate::tools_ozone::moderation::ModEventComment<'a>>),
     #[serde(rename = "tools.ozone.moderation.defs#modEventLabel")]
-    ModEventLabel(Box<crate::generated::tools_ozone::moderation::ModEventLabel<'a>>),
+    ModEventLabel(Box<crate::tools_ozone::moderation::ModEventLabel<'a>>),
     #[serde(rename = "tools.ozone.moderation.defs#modEventReport")]
-    ModEventReport(Box<crate::generated::tools_ozone::moderation::ModEventReport<'a>>),
+    ModEventReport(Box<crate::tools_ozone::moderation::ModEventReport<'a>>),
     #[serde(rename = "tools.ozone.moderation.defs#modEventMute")]
-    ModEventMute(Box<crate::generated::tools_ozone::moderation::ModEventMute<'a>>),
+    ModEventMute(Box<crate::tools_ozone::moderation::ModEventMute<'a>>),
     #[serde(rename = "tools.ozone.moderation.defs#modEventUnmute")]
-    ModEventUnmute(Box<crate::generated::tools_ozone::moderation::ModEventUnmute<'a>>),
+    ModEventUnmute(Box<crate::tools_ozone::moderation::ModEventUnmute<'a>>),
     #[serde(rename = "tools.ozone.moderation.defs#modEventMuteReporter")]
-    ModEventMuteReporter(Box<crate::generated::tools_ozone::moderation::ModEventMuteReporter<'a>>),
+    ModEventMuteReporter(Box<crate::tools_ozone::moderation::ModEventMuteReporter<'a>>),
     #[serde(rename = "tools.ozone.moderation.defs#modEventUnmuteReporter")]
     ModEventUnmuteReporter(
-        Box<crate::generated::tools_ozone::moderation::ModEventUnmuteReporter<'a>>,
+        Box<crate::tools_ozone::moderation::ModEventUnmuteReporter<'a>>,
     ),
     #[serde(rename = "tools.ozone.moderation.defs#modEventReverseTakedown")]
     ModEventReverseTakedown(
-        Box<crate::generated::tools_ozone::moderation::ModEventReverseTakedown<'a>>,
+        Box<crate::tools_ozone::moderation::ModEventReverseTakedown<'a>>,
     ),
     #[serde(rename = "tools.ozone.moderation.defs#modEventResolveAppeal")]
     ModEventResolveAppeal(
-        Box<crate::generated::tools_ozone::moderation::ModEventResolveAppeal<'a>>,
+        Box<crate::tools_ozone::moderation::ModEventResolveAppeal<'a>>,
     ),
     #[serde(rename = "tools.ozone.moderation.defs#modEventEmail")]
-    ModEventEmail(Box<crate::generated::tools_ozone::moderation::ModEventEmail<'a>>),
+    ModEventEmail(Box<crate::tools_ozone::moderation::ModEventEmail<'a>>),
     #[serde(rename = "tools.ozone.moderation.defs#modEventDivert")]
-    ModEventDivert(Box<crate::generated::tools_ozone::moderation::ModEventDivert<'a>>),
+    ModEventDivert(Box<crate::tools_ozone::moderation::ModEventDivert<'a>>),
     #[serde(rename = "tools.ozone.moderation.defs#modEventTag")]
-    ModEventTag(Box<crate::generated::tools_ozone::moderation::ModEventTag<'a>>),
+    ModEventTag(Box<crate::tools_ozone::moderation::ModEventTag<'a>>),
     #[serde(rename = "tools.ozone.moderation.defs#accountEvent")]
-    AccountEvent(Box<crate::generated::tools_ozone::moderation::AccountEvent<'a>>),
+    AccountEvent(Box<crate::tools_ozone::moderation::AccountEvent<'a>>),
     #[serde(rename = "tools.ozone.moderation.defs#identityEvent")]
-    IdentityEvent(Box<crate::generated::tools_ozone::moderation::IdentityEvent<'a>>),
+    IdentityEvent(Box<crate::tools_ozone::moderation::IdentityEvent<'a>>),
     #[serde(rename = "tools.ozone.moderation.defs#recordEvent")]
-    RecordEvent(Box<crate::generated::tools_ozone::moderation::RecordEvent<'a>>),
+    RecordEvent(Box<crate::tools_ozone::moderation::RecordEvent<'a>>),
     #[serde(rename = "tools.ozone.moderation.defs#modEventPriorityScore")]
     ModEventPriorityScore(
-        Box<crate::generated::tools_ozone::moderation::ModEventPriorityScore<'a>>,
+        Box<crate::tools_ozone::moderation::ModEventPriorityScore<'a>>,
     ),
     #[serde(rename = "tools.ozone.moderation.defs#ageAssuranceEvent")]
-    AgeAssuranceEvent(Box<crate::generated::tools_ozone::moderation::AgeAssuranceEvent<'a>>),
+    AgeAssuranceEvent(Box<crate::tools_ozone::moderation::AgeAssuranceEvent<'a>>),
     #[serde(rename = "tools.ozone.moderation.defs#ageAssuranceOverrideEvent")]
     AgeAssuranceOverrideEvent(
-        Box<crate::generated::tools_ozone::moderation::AgeAssuranceOverrideEvent<'a>>,
+        Box<crate::tools_ozone::moderation::AgeAssuranceOverrideEvent<'a>>,
     ),
     #[serde(rename = "tools.ozone.moderation.defs#revokeAccountCredentialsEvent")]
     RevokeAccountCredentialsEvent(
-        Box<crate::generated::tools_ozone::moderation::RevokeAccountCredentialsEvent<'a>>,
+        Box<crate::tools_ozone::moderation::RevokeAccountCredentialsEvent<'a>>,
     ),
     #[serde(rename = "tools.ozone.moderation.defs#scheduleTakedownEvent")]
     ScheduleTakedownEvent(
-        Box<crate::generated::tools_ozone::moderation::ScheduleTakedownEvent<'a>>,
+        Box<crate::tools_ozone::moderation::ScheduleTakedownEvent<'a>>,
     ),
     #[serde(rename = "tools.ozone.moderation.defs#cancelScheduledTakedownEvent")]
     CancelScheduledTakedownEvent(
-        Box<crate::generated::tools_ozone::moderation::CancelScheduledTakedownEvent<'a>>,
+        Box<crate::tools_ozone::moderation::CancelScheduledTakedownEvent<'a>>,
     ),
 }
 
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(tag = "$type")]
 #[serde(bound(deserialize = "'de: 'a"))]
 pub enum EmitEventSubject<'a> {
     #[serde(rename = "com.atproto.admin.defs#repoRef")]
-    RepoRef(Box<crate::generated::com_atproto::admin::RepoRef<'a>>),
+    RepoRef(Box<crate::com_atproto::admin::RepoRef<'a>>),
     #[serde(rename = "com.atproto.repo.strongRef")]
-    StrongRef(Box<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>),
+    StrongRef(Box<crate::com_atproto::repo::strong_ref::StrongRef<'a>>),
 }
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct EmitEventOutput<'a> {
     #[serde(flatten)]
     #[serde(borrow)]
-    pub value: crate::generated::tools_ozone::moderation::ModEventView<'a>,
+    pub value: crate::tools_ozone::moderation::ModEventView<'a>,
 }
 
 #[jacquard_derive::open_union]
@@ -373,7 +405,7 @@ pub struct EmitEventOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
+    jacquard_derive::IntoStatic
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -419,8 +451,9 @@ impl jacquard_common::xrpc::XrpcResp for EmitEventResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for EmitEvent<'a> {
     const NSID: &'static str = "tools.ozone.moderation.emitEvent";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = EmitEventResponse;
 }
 
@@ -429,8 +462,9 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for EmitEvent<'a> {
 pub struct EmitEventRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for EmitEventRequest {
     const PATH: &'static str = "/xrpc/tools.ozone.moderation.emitEvent";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<'de> = EmitEvent<'de>;
     type Response = EmitEventResponse;
 }

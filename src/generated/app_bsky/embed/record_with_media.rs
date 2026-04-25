@@ -7,21 +7,27 @@
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct RecordWithMedia<'a> {
     #[serde(borrow)]
     pub media: RecordWithMediaMedia<'a>,
     #[serde(borrow)]
-    pub record: crate::generated::app_bsky::embed::record::Record<'a>,
+    pub record: crate::app_bsky::embed::record::Record<'a>,
 }
 
 pub mod record_with_media_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -66,7 +72,7 @@ pub struct RecordWithMediaBuilder<'a, S: record_with_media_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
         ::core::option::Option<RecordWithMediaMedia<'a>>,
-        ::core::option::Option<crate::generated::app_bsky::embed::record::Record<'a>>,
+        ::core::option::Option<crate::app_bsky::embed::record::Record<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
@@ -116,7 +122,7 @@ where
     /// Set the `record` field (required)
     pub fn record(
         mut self,
-        value: impl Into<crate::generated::app_bsky::embed::record::Record<'a>>,
+        value: impl Into<crate::app_bsky::embed::record::Record<'a>>,
     ) -> RecordWithMediaBuilder<'a, record_with_media_state::SetRecord<S>> {
         self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
         RecordWithMediaBuilder {
@@ -159,21 +165,28 @@ where
 
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(tag = "$type")]
 #[serde(bound(deserialize = "'de: 'a"))]
 pub enum RecordWithMediaMedia<'a> {
     #[serde(rename = "app.bsky.embed.images")]
-    Images(Box<crate::generated::app_bsky::embed::images::Images<'a>>),
+    Images(Box<crate::app_bsky::embed::images::Images<'a>>),
     #[serde(rename = "app.bsky.embed.video")]
-    Video(Box<crate::generated::app_bsky::embed::video::Video<'a>>),
+    Video(Box<crate::app_bsky::embed::video::Video<'a>>),
     #[serde(rename = "app.bsky.embed.external")]
-    External(Box<crate::generated::app_bsky::embed::external::ExternalRecord<'a>>),
+    External(Box<crate::app_bsky::embed::external::ExternalRecord<'a>>),
 }
 
-fn lexicon_doc_app_bsky_embed_recordWithMedia() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static>
-{
+fn lexicon_doc_app_bsky_embed_recordWithMedia() -> ::jacquard_lexicon::lexicon::LexiconDoc<
+    'static,
+> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("app.bsky.embed.recordWithMedia"),
@@ -183,101 +196,81 @@ fn lexicon_doc_app_bsky_embed_recordWithMedia() -> ::jacquard_lexicon::lexicon::
             let mut map = ::std::collections::BTreeMap::new();
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("main"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
-                        required: Some(vec![
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: None,
+                    required: Some(
+                        vec![
                             ::jacquard_common::smol_str::SmolStr::new_static("record"),
+                            ::jacquard_common::smol_str::SmolStr::new_static("media")
+                        ],
+                    ),
+                    nullable: None,
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::std::collections::BTreeMap::new();
+                        map.insert(
                             ::jacquard_common::smol_str::SmolStr::new_static("media"),
-                        ]),
-                        nullable: None,
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("media"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Union(
-                                    ::jacquard_lexicon::lexicon::LexRefUnion {
-                                        description: None,
-                                        refs: vec![
-                                            ::jacquard_common::CowStr::new_static(
-                                                "app.bsky.embed.images",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "app.bsky.embed.video",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "app.bsky.embed.external",
-                                            ),
-                                        ],
-                                        closed: None,
-                                    },
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Union(::jacquard_lexicon::lexicon::LexRefUnion {
+                                description: None,
+                                refs: vec![
+                                    ::jacquard_common::CowStr::new_static("app.bsky.embed.images"),
+                                    ::jacquard_common::CowStr::new_static("app.bsky.embed.video"),
+                                    ::jacquard_common::CowStr::new_static("app.bsky.embed.external")
+                                ],
+                                closed: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("record"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                description: None,
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "app.bsky.embed.record",
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("record"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        description: None,
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "app.bsky.embed.record",
-                                        ),
-                                    },
-                                ),
-                            );
-                            map
-                        },
+                            }),
+                        );
+                        map
                     },
-                ),
+                }),
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("view"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
-                        required: Some(vec![
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: None,
+                    required: Some(
+                        vec![
                             ::jacquard_common::smol_str::SmolStr::new_static("record"),
+                            ::jacquard_common::smol_str::SmolStr::new_static("media")
+                        ],
+                    ),
+                    nullable: None,
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::std::collections::BTreeMap::new();
+                        map.insert(
                             ::jacquard_common::smol_str::SmolStr::new_static("media"),
-                        ]),
-                        nullable: None,
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("media"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Union(
-                                    ::jacquard_lexicon::lexicon::LexRefUnion {
-                                        description: None,
-                                        refs: vec![
-                                            ::jacquard_common::CowStr::new_static(
-                                                "app.bsky.embed.images#view",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "app.bsky.embed.video#view",
-                                            ),
-                                            ::jacquard_common::CowStr::new_static(
-                                                "app.bsky.embed.external#view",
-                                            ),
-                                        ],
-                                        closed: None,
-                                    },
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Union(::jacquard_lexicon::lexicon::LexRefUnion {
+                                description: None,
+                                refs: vec![
+                                    ::jacquard_common::CowStr::new_static("app.bsky.embed.images#view"),
+                                    ::jacquard_common::CowStr::new_static("app.bsky.embed.video#view"),
+                                    ::jacquard_common::CowStr::new_static("app.bsky.embed.external#view")
+                                ],
+                                closed: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("record"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                description: None,
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "app.bsky.embed.record#view",
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("record"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        description: None,
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "app.bsky.embed.record#view",
-                                        ),
-                                    },
-                                ),
-                            );
-                            map
-                        },
+                            }),
+                        );
+                        map
                     },
-                ),
+                }),
             );
             map
         },
@@ -303,21 +296,27 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for RecordWithMedia<'a> {
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct View<'a> {
     #[serde(borrow)]
     pub media: ViewMedia<'a>,
     #[serde(borrow)]
-    pub record: crate::generated::app_bsky::embed::record::View<'a>,
+    pub record: crate::app_bsky::embed::record::View<'a>,
 }
 
 pub mod view_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -362,7 +361,7 @@ pub struct ViewBuilder<'a, S: view_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
         ::core::option::Option<ViewMedia<'a>>,
-        ::core::option::Option<crate::generated::app_bsky::embed::record::View<'a>>,
+        ::core::option::Option<crate::app_bsky::embed::record::View<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
@@ -412,7 +411,7 @@ where
     /// Set the `record` field (required)
     pub fn record(
         mut self,
-        value: impl Into<crate::generated::app_bsky::embed::record::View<'a>>,
+        value: impl Into<crate::app_bsky::embed::record::View<'a>>,
     ) -> ViewBuilder<'a, view_state::SetRecord<S>> {
         self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
         ViewBuilder {
@@ -455,17 +454,23 @@ where
 
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(tag = "$type")]
 #[serde(bound(deserialize = "'de: 'a"))]
 pub enum ViewMedia<'a> {
     #[serde(rename = "app.bsky.embed.images#view")]
-    ImagesView(Box<crate::generated::app_bsky::embed::images::View<'a>>),
+    ImagesView(Box<crate::app_bsky::embed::images::View<'a>>),
     #[serde(rename = "app.bsky.embed.video#view")]
-    VideoView(Box<crate::generated::app_bsky::embed::video::View<'a>>),
+    VideoView(Box<crate::app_bsky::embed::video::View<'a>>),
     #[serde(rename = "app.bsky.embed.external#view")]
-    ExternalView(Box<crate::generated::app_bsky::embed::external::View<'a>>),
+    ExternalView(Box<crate::app_bsky::embed::external::View<'a>>),
 }
 
 impl<'a> ::jacquard_lexicon::schema::LexiconSchema for View<'a> {

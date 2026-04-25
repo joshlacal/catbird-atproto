@@ -7,7 +7,13 @@
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct DeletePin<'a> {
@@ -21,45 +27,45 @@ pub struct DeletePin<'a> {
 
 pub mod delete_pin_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type PinUri;
         type Streamer;
+        type PinUri;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type PinUri = Unset;
         type Streamer = Unset;
-    }
-    ///State transition - sets the `pin_uri` field to Set
-    pub struct SetPinUri<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetPinUri<S> {}
-    impl<S: State> State for SetPinUri<S> {
-        type PinUri = Set<members::pin_uri>;
-        type Streamer = S::Streamer;
+        type PinUri = Unset;
     }
     ///State transition - sets the `streamer` field to Set
     pub struct SetStreamer<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetStreamer<S> {}
     impl<S: State> State for SetStreamer<S> {
-        type PinUri = S::PinUri;
         type Streamer = Set<members::streamer>;
+        type PinUri = S::PinUri;
+    }
+    ///State transition - sets the `pin_uri` field to Set
+    pub struct SetPinUri<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetPinUri<S> {}
+    impl<S: State> State for SetPinUri<S> {
+        type Streamer = S::Streamer;
+        type PinUri = Set<members::pin_uri>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `pin_uri` field
-        pub struct pin_uri(());
         ///Marker type for the `streamer` field
         pub struct streamer(());
+        ///Marker type for the `pin_uri` field
+        pub struct pin_uri(());
     }
 }
 
@@ -132,8 +138,8 @@ where
 impl<'a, S> DeletePinBuilder<'a, S>
 where
     S: delete_pin_state::State,
-    S::PinUri: delete_pin_state::IsSet,
     S::Streamer: delete_pin_state::IsSet,
+    S::PinUri: delete_pin_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> DeletePin<'a> {
@@ -168,7 +174,7 @@ where
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
 #[serde(rename_all = "camelCase")]
 pub struct DeletePinOutput<'a> {}
@@ -182,7 +188,7 @@ pub struct DeletePinOutput<'a> {}
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
+    jacquard_derive::IntoStatic
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -239,8 +245,9 @@ impl jacquard_common::xrpc::XrpcResp for DeletePinResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for DeletePin<'a> {
     const NSID: &'static str = "place.stream.moderation.deletePin";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = DeletePinResponse;
 }
 
@@ -249,8 +256,9 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for DeletePin<'a> {
 pub struct DeletePinRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for DeletePinRequest {
     const PATH: &'static str = "/xrpc/place.stream.moderation.deletePin";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<'de> = DeletePin<'de>;
     type Response = DeletePinResponse;
 }

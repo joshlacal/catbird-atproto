@@ -7,7 +7,13 @@
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ReportSpam<'a> {
@@ -25,45 +31,45 @@ pub struct ReportSpam<'a> {
 
 pub mod report_spam_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type ReportedDid;
         type ConvoId;
+        type ReportedDid;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type ReportedDid = Unset;
         type ConvoId = Unset;
-    }
-    ///State transition - sets the `reported_did` field to Set
-    pub struct SetReportedDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetReportedDid<S> {}
-    impl<S: State> State for SetReportedDid<S> {
-        type ReportedDid = Set<members::reported_did>;
-        type ConvoId = S::ConvoId;
+        type ReportedDid = Unset;
     }
     ///State transition - sets the `convo_id` field to Set
     pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetConvoId<S> {}
     impl<S: State> State for SetConvoId<S> {
-        type ReportedDid = S::ReportedDid;
         type ConvoId = Set<members::convo_id>;
+        type ReportedDid = S::ReportedDid;
+    }
+    ///State transition - sets the `reported_did` field to Set
+    pub struct SetReportedDid<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetReportedDid<S> {}
+    impl<S: State> State for SetReportedDid<S> {
+        type ConvoId = S::ConvoId;
+        type ReportedDid = Set<members::reported_did>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `reported_did` field
-        pub struct reported_did(());
         ///Marker type for the `convo_id` field
         pub struct convo_id(());
+        ///Marker type for the `reported_did` field
+        pub struct reported_did(());
     }
 }
 
@@ -117,7 +123,10 @@ where
 
 impl<'a, S: report_spam_state::State> ReportSpamBuilder<'a, S> {
     /// Set the `reason` field (optional)
-    pub fn reason(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
+    pub fn reason(
+        mut self,
+        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
+    ) -> Self {
         self.__unsafe_private_named.1 = value.into();
         self
     }
@@ -150,8 +159,8 @@ where
 impl<'a, S> ReportSpamBuilder<'a, S>
 where
     S: report_spam_state::State,
-    S::ReportedDid: report_spam_state::IsSet,
     S::ConvoId: report_spam_state::IsSet,
+    S::ReportedDid: report_spam_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> ReportSpam<'a> {
@@ -181,7 +190,13 @@ where
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ReportSpamOutput<'a> {
@@ -200,7 +215,7 @@ pub struct ReportSpamOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
+    jacquard_derive::IntoStatic
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -254,8 +269,9 @@ impl jacquard_common::xrpc::XrpcResp for ReportSpamResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for ReportSpam<'a> {
     const NSID: &'static str = "blue.catbird.mlsChat.reportSpam";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = ReportSpamResponse;
 }
 
@@ -264,8 +280,9 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for ReportSpam<'a> {
 pub struct ReportSpamRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for ReportSpamRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.reportSpam";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<'de> = ReportSpam<'de>;
     type Response = ReportSpamResponse;
 }

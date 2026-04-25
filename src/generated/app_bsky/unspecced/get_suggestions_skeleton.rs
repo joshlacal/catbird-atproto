@@ -6,7 +6,13 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetSuggestionsSkeleton<'a> {
@@ -26,9 +32,9 @@ pub struct GetSuggestionsSkeleton<'a> {
 
 pub mod get_suggestions_skeleton_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -57,7 +63,10 @@ pub struct GetSuggestionsSkeletonBuilder<'a, S: get_suggestions_skeleton_state::
 
 impl<'a> GetSuggestionsSkeleton<'a> {
     /// Create a new builder for this type
-    pub fn new() -> GetSuggestionsSkeletonBuilder<'a, get_suggestions_skeleton_state::Empty> {
+    pub fn new() -> GetSuggestionsSkeletonBuilder<
+        'a,
+        get_suggestions_skeleton_state::Empty,
+    > {
         GetSuggestionsSkeletonBuilder::new()
     }
 }
@@ -75,7 +84,10 @@ impl<'a> GetSuggestionsSkeletonBuilder<'a, get_suggestions_skeleton_state::Empty
 
 impl<'a, S: get_suggestions_skeleton_state::State> GetSuggestionsSkeletonBuilder<'a, S> {
     /// Set the `cursor` field (optional)
-    pub fn cursor(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
+    pub fn cursor(
+        mut self,
+        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
+    ) -> Self {
         self.__unsafe_private_named.0 = value.into();
         self
     }
@@ -128,7 +140,10 @@ impl<'a, S: get_suggestions_skeleton_state::State> GetSuggestionsSkeletonBuilder
         self
     }
     /// Set the `viewer` field to an Option value (optional)
-    pub fn maybe_viewer(mut self, value: Option<jacquard_common::types::string::Did<'a>>) -> Self {
+    pub fn maybe_viewer(
+        mut self,
+        value: Option<jacquard_common::types::string::Did<'a>>,
+    ) -> Self {
         self.__unsafe_private_named.3 = value;
         self
     }
@@ -151,12 +166,18 @@ where
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetSuggestionsSkeletonOutput<'a> {
     #[serde(borrow)]
-    pub actors: Vec<crate::generated::app_bsky::unspecced::SkeletonSearchActor<'a>>,
+    pub actors: Vec<crate::app_bsky::unspecced::SkeletonSearchActor<'a>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,

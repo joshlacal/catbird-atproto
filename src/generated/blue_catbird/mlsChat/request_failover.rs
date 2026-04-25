@@ -14,7 +14,7 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
 #[serde(rename_all = "camelCase")]
 pub struct RequestFailover<'a> {
@@ -25,7 +25,13 @@ pub struct RequestFailover<'a> {
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct RequestFailoverOutput<'a> {
@@ -51,7 +57,7 @@ pub struct RequestFailoverOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
+    jacquard_derive::IntoStatic
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -108,8 +114,9 @@ impl jacquard_common::xrpc::XrpcResp for RequestFailoverResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for RequestFailover<'a> {
     const NSID: &'static str = "blue.catbird.mlsChat.requestFailover";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = RequestFailoverResponse;
 }
 
@@ -118,8 +125,9 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for RequestFailover<'a> {
 pub struct RequestFailoverRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for RequestFailoverRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.requestFailover";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<'de> = RequestFailover<'de>;
     type Response = RequestFailoverResponse;
 }

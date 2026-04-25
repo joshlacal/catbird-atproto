@@ -8,7 +8,13 @@
 /// Record pinning a chat message for prominent display.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct PinnedRecord<'a> {
@@ -28,45 +34,45 @@ pub struct PinnedRecord<'a> {
 
 pub mod pinned_record_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type CreatedAt;
         type PinnedMessage;
+        type CreatedAt;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type CreatedAt = Unset;
         type PinnedMessage = Unset;
-    }
-    ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type CreatedAt = Set<members::created_at>;
-        type PinnedMessage = S::PinnedMessage;
+        type CreatedAt = Unset;
     }
     ///State transition - sets the `pinned_message` field to Set
     pub struct SetPinnedMessage<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetPinnedMessage<S> {}
     impl<S: State> State for SetPinnedMessage<S> {
-        type CreatedAt = S::CreatedAt;
         type PinnedMessage = Set<members::pinned_message>;
+        type CreatedAt = S::CreatedAt;
+    }
+    ///State transition - sets the `created_at` field to Set
+    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
+    impl<S: State> State for SetCreatedAt<S> {
+        type PinnedMessage = S::PinnedMessage;
+        type CreatedAt = Set<members::created_at>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `created_at` field
-        pub struct created_at(());
         ///Marker type for the `pinned_message` field
         pub struct pinned_message(());
+        ///Marker type for the `created_at` field
+        pub struct created_at(());
     }
 }
 
@@ -179,8 +185,8 @@ where
 impl<'a, S> PinnedRecordBuilder<'a, S>
 where
     S: pinned_record_state::State,
-    S::CreatedAt: pinned_record_state::IsSet,
     S::PinnedMessage: pinned_record_state::IsSet,
+    S::CreatedAt: pinned_record_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> PinnedRecord<'a> {
@@ -225,7 +231,13 @@ impl<'a> PinnedRecord<'a> {
 
 /// Typed wrapper for GetRecord response with this collection's record type.
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct PinnedRecordGetRecordOutput<'a> {
@@ -282,8 +294,9 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for PinnedRecord<'a> {
     }
 }
 
-fn lexicon_doc_place_stream_chat_pinnedRecord() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static>
-{
+fn lexicon_doc_place_stream_chat_pinnedRecord() -> ::jacquard_lexicon::lexicon::LexiconDoc<
+    'static,
+> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("place.stream.chat.pinnedRecord"),

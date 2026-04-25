@@ -8,37 +8,47 @@
 /// A declaration of the existence of labeler service.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Service<'a> {
     pub created_at: jacquard_common::types::string::Datetime,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub labels: std::option::Option<crate::generated::com_atproto::label::SelfLabels<'a>>,
+    pub labels: std::option::Option<crate::com_atproto::label::SelfLabels<'a>>,
     #[serde(borrow)]
-    pub policies: crate::generated::app_bsky::labeler::LabelerPolicies<'a>,
+    pub policies: crate::app_bsky::labeler::LabelerPolicies<'a>,
     /// The set of report reason 'codes' which are in-scope for this service to review and action. These usually align to policy categories. If not defined (distinct from empty array), all reason types are allowed.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub reason_types:
-        std::option::Option<Vec<crate::generated::com_atproto::moderation::ReasonType<'a>>>,
+    pub reason_types: std::option::Option<
+        Vec<crate::com_atproto::moderation::ReasonType<'a>>,
+    >,
     /// Set of record types (collection NSIDs) which can be reported to this service. If not defined (distinct from empty array), default is any record type.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub subject_collections: std::option::Option<Vec<jacquard_common::types::string::Nsid<'a>>>,
+    pub subject_collections: std::option::Option<
+        Vec<jacquard_common::types::string::Nsid<'a>>,
+    >,
     /// The set of subject types (account, record, etc) this service accepts reports on.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub subject_types:
-        std::option::Option<Vec<crate::generated::com_atproto::moderation::SubjectType<'a>>>,
+    pub subject_types: std::option::Option<
+        Vec<crate::com_atproto::moderation::SubjectType<'a>>,
+    >,
 }
 
 pub mod service_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -83,11 +93,11 @@ pub struct ServiceBuilder<'a, S: service_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
         ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<crate::generated::com_atproto::label::SelfLabels<'a>>,
-        ::core::option::Option<crate::generated::app_bsky::labeler::LabelerPolicies<'a>>,
-        ::core::option::Option<Vec<crate::generated::com_atproto::moderation::ReasonType<'a>>>,
+        ::core::option::Option<crate::com_atproto::label::SelfLabels<'a>>,
+        ::core::option::Option<crate::app_bsky::labeler::LabelerPolicies<'a>>,
+        ::core::option::Option<Vec<crate::com_atproto::moderation::ReasonType<'a>>>,
         ::core::option::Option<Vec<jacquard_common::types::string::Nsid<'a>>>,
-        ::core::option::Option<Vec<crate::generated::com_atproto::moderation::SubjectType<'a>>>,
+        ::core::option::Option<Vec<crate::com_atproto::moderation::SubjectType<'a>>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
@@ -133,7 +143,7 @@ impl<'a, S: service_state::State> ServiceBuilder<'a, S> {
     /// Set the `labels` field (optional)
     pub fn labels(
         mut self,
-        value: impl Into<Option<crate::generated::com_atproto::label::SelfLabels<'a>>>,
+        value: impl Into<Option<crate::com_atproto::label::SelfLabels<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.1 = value.into();
         self
@@ -141,7 +151,7 @@ impl<'a, S: service_state::State> ServiceBuilder<'a, S> {
     /// Set the `labels` field to an Option value (optional)
     pub fn maybe_labels(
         mut self,
-        value: Option<crate::generated::com_atproto::label::SelfLabels<'a>>,
+        value: Option<crate::com_atproto::label::SelfLabels<'a>>,
     ) -> Self {
         self.__unsafe_private_named.1 = value;
         self
@@ -156,7 +166,7 @@ where
     /// Set the `policies` field (required)
     pub fn policies(
         mut self,
-        value: impl Into<crate::generated::app_bsky::labeler::LabelerPolicies<'a>>,
+        value: impl Into<crate::app_bsky::labeler::LabelerPolicies<'a>>,
     ) -> ServiceBuilder<'a, service_state::SetPolicies<S>> {
         self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
         ServiceBuilder {
@@ -171,7 +181,7 @@ impl<'a, S: service_state::State> ServiceBuilder<'a, S> {
     /// Set the `reasonTypes` field (optional)
     pub fn reason_types(
         mut self,
-        value: impl Into<Option<Vec<crate::generated::com_atproto::moderation::ReasonType<'a>>>>,
+        value: impl Into<Option<Vec<crate::com_atproto::moderation::ReasonType<'a>>>>,
     ) -> Self {
         self.__unsafe_private_named.3 = value.into();
         self
@@ -179,7 +189,7 @@ impl<'a, S: service_state::State> ServiceBuilder<'a, S> {
     /// Set the `reasonTypes` field to an Option value (optional)
     pub fn maybe_reason_types(
         mut self,
-        value: Option<Vec<crate::generated::com_atproto::moderation::ReasonType<'a>>>,
+        value: Option<Vec<crate::com_atproto::moderation::ReasonType<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.3 = value;
         self
@@ -209,7 +219,7 @@ impl<'a, S: service_state::State> ServiceBuilder<'a, S> {
     /// Set the `subjectTypes` field (optional)
     pub fn subject_types(
         mut self,
-        value: impl Into<Option<Vec<crate::generated::com_atproto::moderation::SubjectType<'a>>>>,
+        value: impl Into<Option<Vec<crate::com_atproto::moderation::SubjectType<'a>>>>,
     ) -> Self {
         self.__unsafe_private_named.5 = value.into();
         self
@@ -217,7 +227,7 @@ impl<'a, S: service_state::State> ServiceBuilder<'a, S> {
     /// Set the `subjectTypes` field to an Option value (optional)
     pub fn maybe_subject_types(
         mut self,
-        value: Option<Vec<crate::generated::com_atproto::moderation::SubjectType<'a>>>,
+        value: Option<Vec<crate::com_atproto::moderation::SubjectType<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.5 = value;
         self
@@ -277,7 +287,13 @@ impl<'a> Service<'a> {
 
 /// Typed wrapper for GetRecord response with this collection's record type.
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ServiceGetRecordOutput<'a> {
@@ -334,7 +350,9 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Service<'a> {
     }
 }
 
-fn lexicon_doc_app_bsky_labeler_service() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_app_bsky_labeler_service() -> ::jacquard_lexicon::lexicon::LexiconDoc<
+    'static,
+> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("app.bsky.labeler.service"),

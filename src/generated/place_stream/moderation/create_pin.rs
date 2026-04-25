@@ -7,7 +7,13 @@
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct CreatePin<'a> {
@@ -24,45 +30,45 @@ pub struct CreatePin<'a> {
 
 pub mod create_pin_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type MessageUri;
         type Streamer;
+        type MessageUri;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type MessageUri = Unset;
         type Streamer = Unset;
-    }
-    ///State transition - sets the `message_uri` field to Set
-    pub struct SetMessageUri<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetMessageUri<S> {}
-    impl<S: State> State for SetMessageUri<S> {
-        type MessageUri = Set<members::message_uri>;
-        type Streamer = S::Streamer;
+        type MessageUri = Unset;
     }
     ///State transition - sets the `streamer` field to Set
     pub struct SetStreamer<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetStreamer<S> {}
     impl<S: State> State for SetStreamer<S> {
-        type MessageUri = S::MessageUri;
         type Streamer = Set<members::streamer>;
+        type MessageUri = S::MessageUri;
+    }
+    ///State transition - sets the `message_uri` field to Set
+    pub struct SetMessageUri<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetMessageUri<S> {}
+    impl<S: State> State for SetMessageUri<S> {
+        type Streamer = S::Streamer;
+        type MessageUri = Set<members::message_uri>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `message_uri` field
-        pub struct message_uri(());
         ///Marker type for the `streamer` field
         pub struct streamer(());
+        ///Marker type for the `message_uri` field
+        pub struct message_uri(());
     }
 }
 
@@ -155,8 +161,8 @@ where
 impl<'a, S> CreatePinBuilder<'a, S>
 where
     S: create_pin_state::State,
-    S::MessageUri: create_pin_state::IsSet,
     S::Streamer: create_pin_state::IsSet,
+    S::MessageUri: create_pin_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> CreatePin<'a> {
@@ -186,7 +192,13 @@ where
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct CreatePinOutput<'a> {
@@ -208,7 +220,7 @@ pub struct CreatePinOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
+    jacquard_derive::IntoStatic
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -265,8 +277,9 @@ impl jacquard_common::xrpc::XrpcResp for CreatePinResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for CreatePin<'a> {
     const NSID: &'static str = "place.stream.moderation.createPin";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = CreatePinResponse;
 }
 
@@ -275,8 +288,9 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for CreatePin<'a> {
 pub struct CreatePinRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for CreatePinRequest {
     const PATH: &'static str = "/xrpc/place.stream.moderation.createPin";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<'de> = CreatePin<'de>;
     type Response = CreatePinResponse;
 }

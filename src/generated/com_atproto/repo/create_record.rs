@@ -7,7 +7,13 @@
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct CreateRecord<'a> {
@@ -24,7 +30,9 @@ pub struct CreateRecord<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub rkey: std::option::Option<
-        jacquard_common::types::string::RecordKey<jacquard_common::types::string::Rkey<'a>>,
+        jacquard_common::types::string::RecordKey<
+            jacquard_common::types::string::Rkey<'a>,
+        >,
     >,
     /// Compare and swap with the previous commit by CID.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
@@ -37,59 +45,59 @@ pub struct CreateRecord<'a> {
 
 pub mod create_record_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Collection;
-        type Record;
         type Repo;
+        type Record;
+        type Collection;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Collection = Unset;
-        type Record = Unset;
         type Repo = Unset;
-    }
-    ///State transition - sets the `collection` field to Set
-    pub struct SetCollection<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCollection<S> {}
-    impl<S: State> State for SetCollection<S> {
-        type Collection = Set<members::collection>;
-        type Record = S::Record;
-        type Repo = S::Repo;
-    }
-    ///State transition - sets the `record` field to Set
-    pub struct SetRecord<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRecord<S> {}
-    impl<S: State> State for SetRecord<S> {
-        type Collection = S::Collection;
-        type Record = Set<members::record>;
-        type Repo = S::Repo;
+        type Record = Unset;
+        type Collection = Unset;
     }
     ///State transition - sets the `repo` field to Set
     pub struct SetRepo<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetRepo<S> {}
     impl<S: State> State for SetRepo<S> {
-        type Collection = S::Collection;
-        type Record = S::Record;
         type Repo = Set<members::repo>;
+        type Record = S::Record;
+        type Collection = S::Collection;
+    }
+    ///State transition - sets the `record` field to Set
+    pub struct SetRecord<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetRecord<S> {}
+    impl<S: State> State for SetRecord<S> {
+        type Repo = S::Repo;
+        type Record = Set<members::record>;
+        type Collection = S::Collection;
+    }
+    ///State transition - sets the `collection` field to Set
+    pub struct SetCollection<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCollection<S> {}
+    impl<S: State> State for SetCollection<S> {
+        type Repo = S::Repo;
+        type Record = S::Record;
+        type Collection = Set<members::collection>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `collection` field
-        pub struct collection(());
-        ///Marker type for the `record` field
-        pub struct record(());
         ///Marker type for the `repo` field
         pub struct repo(());
+        ///Marker type for the `record` field
+        pub struct record(());
+        ///Marker type for the `collection` field
+        pub struct collection(());
     }
 }
 
@@ -101,7 +109,9 @@ pub struct CreateRecordBuilder<'a, S: create_record_state::State> {
         ::core::option::Option<jacquard_common::types::value::Data<'a>>,
         ::core::option::Option<jacquard_common::types::ident::AtIdentifier<'a>>,
         ::core::option::Option<
-            jacquard_common::types::string::RecordKey<jacquard_common::types::string::Rkey<'a>>,
+            jacquard_common::types::string::RecordKey<
+                jacquard_common::types::string::Rkey<'a>,
+            >,
         >,
         ::core::option::Option<jacquard_common::types::string::Cid<'a>>,
         ::core::option::Option<bool>,
@@ -190,7 +200,9 @@ impl<'a, S: create_record_state::State> CreateRecordBuilder<'a, S> {
         mut self,
         value: impl Into<
             Option<
-                jacquard_common::types::string::RecordKey<jacquard_common::types::string::Rkey<'a>>,
+                jacquard_common::types::string::RecordKey<
+                    jacquard_common::types::string::Rkey<'a>,
+                >,
             >,
         >,
     ) -> Self {
@@ -201,7 +213,9 @@ impl<'a, S: create_record_state::State> CreateRecordBuilder<'a, S> {
     pub fn maybe_rkey(
         mut self,
         value: Option<
-            jacquard_common::types::string::RecordKey<jacquard_common::types::string::Rkey<'a>>,
+            jacquard_common::types::string::RecordKey<
+                jacquard_common::types::string::Rkey<'a>,
+            >,
         >,
     ) -> Self {
         self.__unsafe_private_named.3 = value;
@@ -244,9 +258,9 @@ impl<'a, S: create_record_state::State> CreateRecordBuilder<'a, S> {
 impl<'a, S> CreateRecordBuilder<'a, S>
 where
     S: create_record_state::State,
-    S::Collection: create_record_state::IsSet,
-    S::Record: create_record_state::IsSet,
     S::Repo: create_record_state::IsSet,
+    S::Record: create_record_state::IsSet,
+    S::Collection: create_record_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> CreateRecord<'a> {
@@ -282,7 +296,13 @@ where
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
 pub struct CreateRecordOutput<'a> {
@@ -290,7 +310,7 @@ pub struct CreateRecordOutput<'a> {
     pub cid: jacquard_common::types::string::Cid<'a>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub commit: std::option::Option<crate::generated::com_atproto::repo::CommitMeta<'a>>,
+    pub commit: std::option::Option<crate::com_atproto::repo::CommitMeta<'a>>,
     #[serde(borrow)]
     pub uri: jacquard_common::types::string::AtUri<'a>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
@@ -308,7 +328,7 @@ pub struct CreateRecordOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
+    jacquard_derive::IntoStatic
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -345,8 +365,9 @@ impl jacquard_common::xrpc::XrpcResp for CreateRecordResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for CreateRecord<'a> {
     const NSID: &'static str = "com.atproto.repo.createRecord";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = CreateRecordResponse;
 }
 
@@ -355,8 +376,9 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for CreateRecord<'a> {
 pub struct CreateRecordRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for CreateRecordRequest {
     const PATH: &'static str = "/xrpc/com.atproto.repo.createRecord";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<'de> = CreateRecord<'de>;
     type Response = CreateRecordResponse;
 }
