@@ -46,105 +46,105 @@ pub mod deliver_welcome_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
+        type SenderDsDid;
+        type ConvoId;
+        type InitialEpoch;
+        type WelcomeData;
         type KeyPackageHash;
         type RecipientDid;
-        type InitialEpoch;
-        type SenderDsDid;
-        type WelcomeData;
-        type ConvoId;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
+        type SenderDsDid = Unset;
+        type ConvoId = Unset;
+        type InitialEpoch = Unset;
+        type WelcomeData = Unset;
         type KeyPackageHash = Unset;
         type RecipientDid = Unset;
-        type InitialEpoch = Unset;
-        type SenderDsDid = Unset;
-        type WelcomeData = Unset;
-        type ConvoId = Unset;
-    }
-    ///State transition - sets the `key_package_hash` field to Set
-    pub struct SetKeyPackageHash<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetKeyPackageHash<S> {}
-    impl<S: State> State for SetKeyPackageHash<S> {
-        type KeyPackageHash = Set<members::key_package_hash>;
-        type RecipientDid = S::RecipientDid;
-        type InitialEpoch = S::InitialEpoch;
-        type SenderDsDid = S::SenderDsDid;
-        type WelcomeData = S::WelcomeData;
-        type ConvoId = S::ConvoId;
-    }
-    ///State transition - sets the `recipient_did` field to Set
-    pub struct SetRecipientDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRecipientDid<S> {}
-    impl<S: State> State for SetRecipientDid<S> {
-        type KeyPackageHash = S::KeyPackageHash;
-        type RecipientDid = Set<members::recipient_did>;
-        type InitialEpoch = S::InitialEpoch;
-        type SenderDsDid = S::SenderDsDid;
-        type WelcomeData = S::WelcomeData;
-        type ConvoId = S::ConvoId;
-    }
-    ///State transition - sets the `initial_epoch` field to Set
-    pub struct SetInitialEpoch<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetInitialEpoch<S> {}
-    impl<S: State> State for SetInitialEpoch<S> {
-        type KeyPackageHash = S::KeyPackageHash;
-        type RecipientDid = S::RecipientDid;
-        type InitialEpoch = Set<members::initial_epoch>;
-        type SenderDsDid = S::SenderDsDid;
-        type WelcomeData = S::WelcomeData;
-        type ConvoId = S::ConvoId;
     }
     ///State transition - sets the `sender_ds_did` field to Set
     pub struct SetSenderDsDid<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetSenderDsDid<S> {}
     impl<S: State> State for SetSenderDsDid<S> {
-        type KeyPackageHash = S::KeyPackageHash;
-        type RecipientDid = S::RecipientDid;
-        type InitialEpoch = S::InitialEpoch;
         type SenderDsDid = Set<members::sender_ds_did>;
-        type WelcomeData = S::WelcomeData;
         type ConvoId = S::ConvoId;
-    }
-    ///State transition - sets the `welcome_data` field to Set
-    pub struct SetWelcomeData<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetWelcomeData<S> {}
-    impl<S: State> State for SetWelcomeData<S> {
+        type InitialEpoch = S::InitialEpoch;
+        type WelcomeData = S::WelcomeData;
         type KeyPackageHash = S::KeyPackageHash;
         type RecipientDid = S::RecipientDid;
-        type InitialEpoch = S::InitialEpoch;
-        type SenderDsDid = S::SenderDsDid;
-        type WelcomeData = Set<members::welcome_data>;
-        type ConvoId = S::ConvoId;
     }
     ///State transition - sets the `convo_id` field to Set
     pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetConvoId<S> {}
     impl<S: State> State for SetConvoId<S> {
+        type SenderDsDid = S::SenderDsDid;
+        type ConvoId = Set<members::convo_id>;
+        type InitialEpoch = S::InitialEpoch;
+        type WelcomeData = S::WelcomeData;
         type KeyPackageHash = S::KeyPackageHash;
         type RecipientDid = S::RecipientDid;
-        type InitialEpoch = S::InitialEpoch;
+    }
+    ///State transition - sets the `initial_epoch` field to Set
+    pub struct SetInitialEpoch<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetInitialEpoch<S> {}
+    impl<S: State> State for SetInitialEpoch<S> {
         type SenderDsDid = S::SenderDsDid;
+        type ConvoId = S::ConvoId;
+        type InitialEpoch = Set<members::initial_epoch>;
         type WelcomeData = S::WelcomeData;
-        type ConvoId = Set<members::convo_id>;
+        type KeyPackageHash = S::KeyPackageHash;
+        type RecipientDid = S::RecipientDid;
+    }
+    ///State transition - sets the `welcome_data` field to Set
+    pub struct SetWelcomeData<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetWelcomeData<S> {}
+    impl<S: State> State for SetWelcomeData<S> {
+        type SenderDsDid = S::SenderDsDid;
+        type ConvoId = S::ConvoId;
+        type InitialEpoch = S::InitialEpoch;
+        type WelcomeData = Set<members::welcome_data>;
+        type KeyPackageHash = S::KeyPackageHash;
+        type RecipientDid = S::RecipientDid;
+    }
+    ///State transition - sets the `key_package_hash` field to Set
+    pub struct SetKeyPackageHash<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetKeyPackageHash<S> {}
+    impl<S: State> State for SetKeyPackageHash<S> {
+        type SenderDsDid = S::SenderDsDid;
+        type ConvoId = S::ConvoId;
+        type InitialEpoch = S::InitialEpoch;
+        type WelcomeData = S::WelcomeData;
+        type KeyPackageHash = Set<members::key_package_hash>;
+        type RecipientDid = S::RecipientDid;
+    }
+    ///State transition - sets the `recipient_did` field to Set
+    pub struct SetRecipientDid<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetRecipientDid<S> {}
+    impl<S: State> State for SetRecipientDid<S> {
+        type SenderDsDid = S::SenderDsDid;
+        type ConvoId = S::ConvoId;
+        type InitialEpoch = S::InitialEpoch;
+        type WelcomeData = S::WelcomeData;
+        type KeyPackageHash = S::KeyPackageHash;
+        type RecipientDid = Set<members::recipient_did>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
+        ///Marker type for the `sender_ds_did` field
+        pub struct sender_ds_did(());
+        ///Marker type for the `convo_id` field
+        pub struct convo_id(());
+        ///Marker type for the `initial_epoch` field
+        pub struct initial_epoch(());
+        ///Marker type for the `welcome_data` field
+        pub struct welcome_data(());
         ///Marker type for the `key_package_hash` field
         pub struct key_package_hash(());
         ///Marker type for the `recipient_did` field
         pub struct recipient_did(());
-        ///Marker type for the `initial_epoch` field
-        pub struct initial_epoch(());
-        ///Marker type for the `sender_ds_did` field
-        pub struct sender_ds_did(());
-        ///Marker type for the `welcome_data` field
-        pub struct welcome_data(());
-        ///Marker type for the `convo_id` field
-        pub struct convo_id(());
     }
 }
 
@@ -297,12 +297,12 @@ where
 impl<'a, S> DeliverWelcomeBuilder<'a, S>
 where
     S: deliver_welcome_state::State,
+    S::SenderDsDid: deliver_welcome_state::IsSet,
+    S::ConvoId: deliver_welcome_state::IsSet,
+    S::InitialEpoch: deliver_welcome_state::IsSet,
+    S::WelcomeData: deliver_welcome_state::IsSet,
     S::KeyPackageHash: deliver_welcome_state::IsSet,
     S::RecipientDid: deliver_welcome_state::IsSet,
-    S::InitialEpoch: deliver_welcome_state::IsSet,
-    S::SenderDsDid: deliver_welcome_state::IsSet,
-    S::WelcomeData: deliver_welcome_state::IsSet,
-    S::ConvoId: deliver_welcome_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> DeliverWelcome<'a> {

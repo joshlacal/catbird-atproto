@@ -35,49 +35,49 @@ pub mod gap_info_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type HasGaps;
         type TotalMessages;
+        type HasGaps;
         type MissingSeqs;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type HasGaps = Unset;
         type TotalMessages = Unset;
+        type HasGaps = Unset;
         type MissingSeqs = Unset;
-    }
-    ///State transition - sets the `has_gaps` field to Set
-    pub struct SetHasGaps<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetHasGaps<S> {}
-    impl<S: State> State for SetHasGaps<S> {
-        type HasGaps = Set<members::has_gaps>;
-        type TotalMessages = S::TotalMessages;
-        type MissingSeqs = S::MissingSeqs;
     }
     ///State transition - sets the `total_messages` field to Set
     pub struct SetTotalMessages<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetTotalMessages<S> {}
     impl<S: State> State for SetTotalMessages<S> {
-        type HasGaps = S::HasGaps;
         type TotalMessages = Set<members::total_messages>;
+        type HasGaps = S::HasGaps;
+        type MissingSeqs = S::MissingSeqs;
+    }
+    ///State transition - sets the `has_gaps` field to Set
+    pub struct SetHasGaps<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetHasGaps<S> {}
+    impl<S: State> State for SetHasGaps<S> {
+        type TotalMessages = S::TotalMessages;
+        type HasGaps = Set<members::has_gaps>;
         type MissingSeqs = S::MissingSeqs;
     }
     ///State transition - sets the `missing_seqs` field to Set
     pub struct SetMissingSeqs<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetMissingSeqs<S> {}
     impl<S: State> State for SetMissingSeqs<S> {
-        type HasGaps = S::HasGaps;
         type TotalMessages = S::TotalMessages;
+        type HasGaps = S::HasGaps;
         type MissingSeqs = Set<members::missing_seqs>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `has_gaps` field
-        pub struct has_gaps(());
         ///Marker type for the `total_messages` field
         pub struct total_messages(());
+        ///Marker type for the `has_gaps` field
+        pub struct has_gaps(());
         ///Marker type for the `missing_seqs` field
         pub struct missing_seqs(());
     }
@@ -172,8 +172,8 @@ where
 impl<'a, S> GapInfoBuilder<'a, S>
 where
     S: gap_info_state::State,
-    S::HasGaps: gap_info_state::IsSet,
     S::TotalMessages: gap_info_state::IsSet,
+    S::HasGaps: gap_info_state::IsSet,
     S::MissingSeqs: gap_info_state::IsSet,
 {
     /// Build the final struct
