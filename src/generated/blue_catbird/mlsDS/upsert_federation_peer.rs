@@ -46,7 +46,9 @@ pub struct UpsertFederationPeer<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct UpsertFederationPeerOutput<'a> {
     #[serde(borrow)]
-    pub peer: crate::blue_catbird::mlsDS::get_federation_peers::PeerRecord<'a>,
+    pub peer: crate::generated::blue_catbird::mlsDS::get_federation_peers::PeerRecord<
+        'a,
+    >,
     /// Whether the upsert succeeded
     pub updated: bool,
 }

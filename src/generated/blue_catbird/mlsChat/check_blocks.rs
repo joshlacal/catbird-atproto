@@ -37,51 +37,51 @@ pub mod block_relationship_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
+        type CreatedAt;
         type BlockerDid;
         type BlockedDid;
-        type CreatedAt;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
+        type CreatedAt = Unset;
         type BlockerDid = Unset;
         type BlockedDid = Unset;
-        type CreatedAt = Unset;
-    }
-    ///State transition - sets the `blocker_did` field to Set
-    pub struct SetBlockerDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetBlockerDid<S> {}
-    impl<S: State> State for SetBlockerDid<S> {
-        type BlockerDid = Set<members::blocker_did>;
-        type BlockedDid = S::BlockedDid;
-        type CreatedAt = S::CreatedAt;
-    }
-    ///State transition - sets the `blocked_did` field to Set
-    pub struct SetBlockedDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetBlockedDid<S> {}
-    impl<S: State> State for SetBlockedDid<S> {
-        type BlockerDid = S::BlockerDid;
-        type BlockedDid = Set<members::blocked_did>;
-        type CreatedAt = S::CreatedAt;
     }
     ///State transition - sets the `created_at` field to Set
     pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
     impl<S: State> State for SetCreatedAt<S> {
+        type CreatedAt = Set<members::created_at>;
         type BlockerDid = S::BlockerDid;
         type BlockedDid = S::BlockedDid;
-        type CreatedAt = Set<members::created_at>;
+    }
+    ///State transition - sets the `blocker_did` field to Set
+    pub struct SetBlockerDid<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetBlockerDid<S> {}
+    impl<S: State> State for SetBlockerDid<S> {
+        type CreatedAt = S::CreatedAt;
+        type BlockerDid = Set<members::blocker_did>;
+        type BlockedDid = S::BlockedDid;
+    }
+    ///State transition - sets the `blocked_did` field to Set
+    pub struct SetBlockedDid<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetBlockedDid<S> {}
+    impl<S: State> State for SetBlockedDid<S> {
+        type CreatedAt = S::CreatedAt;
+        type BlockerDid = S::BlockerDid;
+        type BlockedDid = Set<members::blocked_did>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
+        ///Marker type for the `created_at` field
+        pub struct created_at(());
         ///Marker type for the `blocker_did` field
         pub struct blocker_did(());
         ///Marker type for the `blocked_did` field
         pub struct blocked_did(());
-        ///Marker type for the `created_at` field
-        pub struct created_at(());
     }
 }
 
@@ -194,9 +194,9 @@ where
 impl<'a, S> BlockRelationshipBuilder<'a, S>
 where
     S: block_relationship_state::State,
+    S::CreatedAt: block_relationship_state::IsSet,
     S::BlockerDid: block_relationship_state::IsSet,
     S::BlockedDid: block_relationship_state::IsSet,
-    S::CreatedAt: block_relationship_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> BlockRelationship<'a> {
@@ -546,7 +546,9 @@ pub struct CheckBlocksOutput<'a> {
     pub blocked: bool,
     /// Every block edge found among the input DIDs.
     #[serde(borrow)]
-    pub blocks: Vec<crate::blue_catbird::mlsChat::check_blocks::BlockRelationship<'a>>,
+    pub blocks: Vec<
+        crate::generated::blue_catbird::mlsChat::check_blocks::BlockRelationship<'a>,
+    >,
     pub checked_at: jacquard_common::types::string::Datetime,
 }
 

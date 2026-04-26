@@ -72,7 +72,7 @@ pub struct OptInOutput<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub statuses: std::option::Option<
-        Vec<crate::blue_catbird::mlsChat::opt_in::OptInStatus<'a>>,
+        Vec<crate::generated::blue_catbird::mlsChat::opt_in::OptInStatus<'a>>,
     >,
     /// Whether the opt-in/opt-out operation succeeded
     #[serde(skip_serializing_if = "std::option::Option::is_none")]

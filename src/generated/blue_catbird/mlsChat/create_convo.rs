@@ -602,19 +602,23 @@ pub struct CreateConvo<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub invite: std::option::Option<
-        crate::blue_catbird::mlsChat::create_convo::InviteAction<'a>,
+        crate::generated::blue_catbird::mlsChat::create_convo::InviteAction<'a>,
     >,
     /// Array of {did, hash} objects mapping each initial member to their key package hash
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub key_package_hashes: std::option::Option<
-        Vec<crate::blue_catbird::mlsChat::create_convo::KeyPackageHashEntry<'a>>,
+        Vec<
+            crate::generated::blue_catbird::mlsChat::create_convo::KeyPackageHashEntry<
+                'a,
+            >,
+        >,
     >,
     /// Optional conversation metadata (name, description)
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub metadata: std::option::Option<
-        crate::blue_catbird::mlsChat::create_convo::MetadataInput<'a>,
+        crate::generated::blue_catbird::mlsChat::create_convo::MetadataInput<'a>,
     >,
     /// MLS Welcome message for ALL initial members
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
@@ -636,7 +640,7 @@ pub struct CreateConvo<'a> {
 pub struct CreateConvoOutput<'a> {
     /// The created conversation view
     #[serde(borrow)]
-    pub convo: crate::blue_catbird::mlsChat::ConvoView<'a>,
+    pub convo: crate::generated::blue_catbird::mlsChat::ConvoView<'a>,
     /// Generated invite code (only present if invite.action was 'create')
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
@@ -674,6 +678,9 @@ pub enum CreateConvoError<'a> {
     /// Cannot create conversation with users who have blocked each other
     #[serde(rename = "MutualBlockDetected")]
     MutualBlockDetected(std::option::Option<jacquard_common::CowStr<'a>>),
+    /// A conversation already exists at this groupId, created by a different DID. The caller lost a first-responder race; fall back to receiving the Welcome from the winner.
+    #[serde(rename = "ConvoAlreadyExists")]
+    ConvoAlreadyExists(std::option::Option<jacquard_common::CowStr<'a>>),
 }
 
 impl std::fmt::Display for CreateConvoError<'_> {
@@ -702,6 +709,13 @@ impl std::fmt::Display for CreateConvoError<'_> {
             }
             Self::MutualBlockDetected(msg) => {
                 write!(f, "MutualBlockDetected")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::ConvoAlreadyExists(msg) => {
+                write!(f, "ConvoAlreadyExists")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }

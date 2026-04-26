@@ -127,7 +127,9 @@ where
 pub struct GetFederationPeersOutput<'a> {
     /// List of peer records
     #[serde(borrow)]
-    pub peers: Vec<crate::blue_catbird::mlsDS::get_federation_peers::PeerRecord<'a>>,
+    pub peers: Vec<
+        crate::generated::blue_catbird::mlsDS::get_federation_peers::PeerRecord<'a>,
+    >,
 }
 
 /// Response type for
