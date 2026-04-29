@@ -38,50 +38,50 @@ pub mod entity_state {
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
         type Index;
-        type Value;
         type Type;
+        type Value;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
         type Index = Unset;
-        type Value = Unset;
         type Type = Unset;
+        type Value = Unset;
     }
     ///State transition - sets the `index` field to Set
     pub struct SetIndex<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetIndex<S> {}
     impl<S: State> State for SetIndex<S> {
         type Index = Set<members::index>;
+        type Type = S::Type;
         type Value = S::Value;
-        type Type = S::Type;
-    }
-    ///State transition - sets the `value` field to Set
-    pub struct SetValue<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetValue<S> {}
-    impl<S: State> State for SetValue<S> {
-        type Index = S::Index;
-        type Value = Set<members::value>;
-        type Type = S::Type;
     }
     ///State transition - sets the `type` field to Set
     pub struct SetType<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetType<S> {}
     impl<S: State> State for SetType<S> {
         type Index = S::Index;
-        type Value = S::Value;
         type Type = Set<members::r#type>;
+        type Value = S::Value;
+    }
+    ///State transition - sets the `value` field to Set
+    pub struct SetValue<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetValue<S> {}
+    impl<S: State> State for SetValue<S> {
+        type Index = S::Index;
+        type Type = S::Type;
+        type Value = Set<members::value>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
         ///Marker type for the `index` field
         pub struct index(());
-        ///Marker type for the `value` field
-        pub struct value(());
         ///Marker type for the `type` field
         pub struct r#type(());
+        ///Marker type for the `value` field
+        pub struct value(());
     }
 }
 
@@ -175,8 +175,8 @@ impl<'a, S> EntityBuilder<'a, S>
 where
     S: entity_state::State,
     S::Index: entity_state::IsSet,
-    S::Value: entity_state::IsSet,
     S::Type: entity_state::IsSet,
+    S::Value: entity_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> Entity<'a> {
@@ -1271,37 +1271,37 @@ pub mod text_slice_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Start;
         type End;
+        type Start;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Start = Unset;
         type End = Unset;
-    }
-    ///State transition - sets the `start` field to Set
-    pub struct SetStart<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetStart<S> {}
-    impl<S: State> State for SetStart<S> {
-        type Start = Set<members::start>;
-        type End = S::End;
+        type Start = Unset;
     }
     ///State transition - sets the `end` field to Set
     pub struct SetEnd<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetEnd<S> {}
     impl<S: State> State for SetEnd<S> {
-        type Start = S::Start;
         type End = Set<members::end>;
+        type Start = S::Start;
+    }
+    ///State transition - sets the `start` field to Set
+    pub struct SetStart<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetStart<S> {}
+    impl<S: State> State for SetStart<S> {
+        type End = S::End;
+        type Start = Set<members::start>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `start` field
-        pub struct start(());
         ///Marker type for the `end` field
         pub struct end(());
+        ///Marker type for the `start` field
+        pub struct start(());
     }
 }
 
@@ -1371,8 +1371,8 @@ where
 impl<'a, S> TextSliceBuilder<'a, S>
 where
     S: text_slice_state::State,
-    S::Start: text_slice_state::IsSet,
     S::End: text_slice_state::IsSet,
+    S::Start: text_slice_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> TextSlice<'a> {

@@ -36,37 +36,37 @@ pub mod key_package_hash_entry_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Hash;
         type Did;
+        type Hash;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Hash = Unset;
         type Did = Unset;
-    }
-    ///State transition - sets the `hash` field to Set
-    pub struct SetHash<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetHash<S> {}
-    impl<S: State> State for SetHash<S> {
-        type Hash = Set<members::hash>;
-        type Did = S::Did;
+        type Hash = Unset;
     }
     ///State transition - sets the `did` field to Set
     pub struct SetDid<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetDid<S> {}
     impl<S: State> State for SetDid<S> {
-        type Hash = S::Hash;
         type Did = Set<members::did>;
+        type Hash = S::Hash;
+    }
+    ///State transition - sets the `hash` field to Set
+    pub struct SetHash<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetHash<S> {}
+    impl<S: State> State for SetHash<S> {
+        type Did = S::Did;
+        type Hash = Set<members::hash>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `hash` field
-        pub struct hash(());
         ///Marker type for the `did` field
         pub struct did(());
+        ///Marker type for the `hash` field
+        pub struct hash(());
     }
 }
 
@@ -139,8 +139,8 @@ where
 impl<'a, S> KeyPackageHashEntryBuilder<'a, S>
 where
     S: key_package_hash_entry_state::State,
-    S::Hash: key_package_hash_entry_state::IsSet,
     S::Did: key_package_hash_entry_state::IsSet,
+    S::Hash: key_package_hash_entry_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> KeyPackageHashEntry<'a> {
@@ -462,11 +462,7 @@ pub struct BootstrapResetGroup<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub key_package_hashes: std::option::Option<
-        Vec<
-            crate::generated::blue_catbird::mlsChat::bootstrap_reset_group::KeyPackageHashEntry<
-                'a,
-            >,
-        >,
+        Vec<crate::blue_catbird::mlsChat::bootstrap_reset_group::KeyPackageHashEntry<'a>>,
     >,
     /// DIDs of the bootstrapped roster (typically read from getConvos pre-bootstrap). Sent for diagnostic/audit purposes; server uses the persisted members table (preserved across reset) as the authoritative roster.
     #[serde(borrow)]
@@ -493,85 +489,85 @@ pub mod bootstrap_reset_group_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Members;
-        type NewGroupId;
-        type OriginalConvoId;
         type CipherSuite;
+        type NewGroupId;
         type GroupInfo;
+        type OriginalConvoId;
+        type Members;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Members = Unset;
-        type NewGroupId = Unset;
-        type OriginalConvoId = Unset;
         type CipherSuite = Unset;
+        type NewGroupId = Unset;
         type GroupInfo = Unset;
-    }
-    ///State transition - sets the `members` field to Set
-    pub struct SetMembers<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetMembers<S> {}
-    impl<S: State> State for SetMembers<S> {
-        type Members = Set<members::members>;
-        type NewGroupId = S::NewGroupId;
-        type OriginalConvoId = S::OriginalConvoId;
-        type CipherSuite = S::CipherSuite;
-        type GroupInfo = S::GroupInfo;
-    }
-    ///State transition - sets the `new_group_id` field to Set
-    pub struct SetNewGroupId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetNewGroupId<S> {}
-    impl<S: State> State for SetNewGroupId<S> {
-        type Members = S::Members;
-        type NewGroupId = Set<members::new_group_id>;
-        type OriginalConvoId = S::OriginalConvoId;
-        type CipherSuite = S::CipherSuite;
-        type GroupInfo = S::GroupInfo;
-    }
-    ///State transition - sets the `original_convo_id` field to Set
-    pub struct SetOriginalConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetOriginalConvoId<S> {}
-    impl<S: State> State for SetOriginalConvoId<S> {
-        type Members = S::Members;
-        type NewGroupId = S::NewGroupId;
-        type OriginalConvoId = Set<members::original_convo_id>;
-        type CipherSuite = S::CipherSuite;
-        type GroupInfo = S::GroupInfo;
+        type OriginalConvoId = Unset;
+        type Members = Unset;
     }
     ///State transition - sets the `cipher_suite` field to Set
     pub struct SetCipherSuite<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCipherSuite<S> {}
     impl<S: State> State for SetCipherSuite<S> {
-        type Members = S::Members;
-        type NewGroupId = S::NewGroupId;
-        type OriginalConvoId = S::OriginalConvoId;
         type CipherSuite = Set<members::cipher_suite>;
+        type NewGroupId = S::NewGroupId;
         type GroupInfo = S::GroupInfo;
+        type OriginalConvoId = S::OriginalConvoId;
+        type Members = S::Members;
+    }
+    ///State transition - sets the `new_group_id` field to Set
+    pub struct SetNewGroupId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetNewGroupId<S> {}
+    impl<S: State> State for SetNewGroupId<S> {
+        type CipherSuite = S::CipherSuite;
+        type NewGroupId = Set<members::new_group_id>;
+        type GroupInfo = S::GroupInfo;
+        type OriginalConvoId = S::OriginalConvoId;
+        type Members = S::Members;
     }
     ///State transition - sets the `group_info` field to Set
     pub struct SetGroupInfo<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetGroupInfo<S> {}
     impl<S: State> State for SetGroupInfo<S> {
-        type Members = S::Members;
-        type NewGroupId = S::NewGroupId;
-        type OriginalConvoId = S::OriginalConvoId;
         type CipherSuite = S::CipherSuite;
+        type NewGroupId = S::NewGroupId;
         type GroupInfo = Set<members::group_info>;
+        type OriginalConvoId = S::OriginalConvoId;
+        type Members = S::Members;
+    }
+    ///State transition - sets the `original_convo_id` field to Set
+    pub struct SetOriginalConvoId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetOriginalConvoId<S> {}
+    impl<S: State> State for SetOriginalConvoId<S> {
+        type CipherSuite = S::CipherSuite;
+        type NewGroupId = S::NewGroupId;
+        type GroupInfo = S::GroupInfo;
+        type OriginalConvoId = Set<members::original_convo_id>;
+        type Members = S::Members;
+    }
+    ///State transition - sets the `members` field to Set
+    pub struct SetMembers<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetMembers<S> {}
+    impl<S: State> State for SetMembers<S> {
+        type CipherSuite = S::CipherSuite;
+        type NewGroupId = S::NewGroupId;
+        type GroupInfo = S::GroupInfo;
+        type OriginalConvoId = S::OriginalConvoId;
+        type Members = Set<members::members>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `members` field
-        pub struct members(());
-        ///Marker type for the `new_group_id` field
-        pub struct new_group_id(());
-        ///Marker type for the `original_convo_id` field
-        pub struct original_convo_id(());
         ///Marker type for the `cipher_suite` field
         pub struct cipher_suite(());
+        ///Marker type for the `new_group_id` field
+        pub struct new_group_id(());
         ///Marker type for the `group_info` field
         pub struct group_info(());
+        ///Marker type for the `original_convo_id` field
+        pub struct original_convo_id(());
+        ///Marker type for the `members` field
+        pub struct members(());
     }
 }
 
@@ -584,7 +580,7 @@ pub struct BootstrapResetGroupBuilder<'a, S: bootstrap_reset_group_state::State>
         ::core::option::Option<bytes::Bytes>,
         ::core::option::Option<
             Vec<
-                crate::generated::blue_catbird::mlsChat::bootstrap_reset_group::KeyPackageHashEntry<
+                crate::blue_catbird::mlsChat::bootstrap_reset_group::KeyPackageHashEntry<
                     'a,
                 >,
             >,
@@ -673,7 +669,7 @@ impl<'a, S: bootstrap_reset_group_state::State> BootstrapResetGroupBuilder<'a, S
         value: impl Into<
             Option<
                 Vec<
-                    crate::generated::blue_catbird::mlsChat::bootstrap_reset_group::KeyPackageHashEntry<
+                    crate::blue_catbird::mlsChat::bootstrap_reset_group::KeyPackageHashEntry<
                         'a,
                     >,
                 >,
@@ -688,7 +684,7 @@ impl<'a, S: bootstrap_reset_group_state::State> BootstrapResetGroupBuilder<'a, S
         mut self,
         value: Option<
             Vec<
-                crate::generated::blue_catbird::mlsChat::bootstrap_reset_group::KeyPackageHashEntry<
+                crate::blue_catbird::mlsChat::bootstrap_reset_group::KeyPackageHashEntry<
                     'a,
                 >,
             >,
@@ -775,11 +771,11 @@ impl<'a, S: bootstrap_reset_group_state::State> BootstrapResetGroupBuilder<'a, S
 impl<'a, S> BootstrapResetGroupBuilder<'a, S>
 where
     S: bootstrap_reset_group_state::State,
-    S::Members: bootstrap_reset_group_state::IsSet,
-    S::NewGroupId: bootstrap_reset_group_state::IsSet,
-    S::OriginalConvoId: bootstrap_reset_group_state::IsSet,
     S::CipherSuite: bootstrap_reset_group_state::IsSet,
+    S::NewGroupId: bootstrap_reset_group_state::IsSet,
     S::GroupInfo: bootstrap_reset_group_state::IsSet,
+    S::OriginalConvoId: bootstrap_reset_group_state::IsSet,
+    S::Members: bootstrap_reset_group_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> BootstrapResetGroup<'a> {
@@ -831,7 +827,10 @@ where
 pub struct BootstrapResetGroupOutput<'a> {
     /// The now-bootstrapped conversation view, including the preserved member roster
     #[serde(borrow)]
-    pub convo: crate::generated::blue_catbird::mlsChat::ConvoView<'a>,
+    pub convo: crate::blue_catbird::mlsChat::ConvoView<'a>,
+    /// Generation number of the now-active crypto_session (preserved across self-heal; freshly minted across activate). Clients seed pendingResetGeneration with this value on bootstrap success so subsequent SSE replay events carrying a stale `gen` are short-circuited before destructive recovery (e.g. deleteGroup) fires. Optional for backward compatibility — older clients that miss the field fall back to fetching it via getConversation/getGroupState.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    pub generation: std::option::Option<i64>,
 }
 
 #[jacquard_derive::open_union]

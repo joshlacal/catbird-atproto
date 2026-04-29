@@ -62,85 +62,85 @@ pub mod send_message_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type MsgId;
-        type Ciphertext;
         type Epoch;
-        type ConvoId;
+        type Ciphertext;
         type PaddedSize;
+        type MsgId;
+        type ConvoId;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type MsgId = Unset;
-        type Ciphertext = Unset;
         type Epoch = Unset;
-        type ConvoId = Unset;
+        type Ciphertext = Unset;
         type PaddedSize = Unset;
-    }
-    ///State transition - sets the `msg_id` field to Set
-    pub struct SetMsgId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetMsgId<S> {}
-    impl<S: State> State for SetMsgId<S> {
-        type MsgId = Set<members::msg_id>;
-        type Ciphertext = S::Ciphertext;
-        type Epoch = S::Epoch;
-        type ConvoId = S::ConvoId;
-        type PaddedSize = S::PaddedSize;
-    }
-    ///State transition - sets the `ciphertext` field to Set
-    pub struct SetCiphertext<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCiphertext<S> {}
-    impl<S: State> State for SetCiphertext<S> {
-        type MsgId = S::MsgId;
-        type Ciphertext = Set<members::ciphertext>;
-        type Epoch = S::Epoch;
-        type ConvoId = S::ConvoId;
-        type PaddedSize = S::PaddedSize;
+        type MsgId = Unset;
+        type ConvoId = Unset;
     }
     ///State transition - sets the `epoch` field to Set
     pub struct SetEpoch<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetEpoch<S> {}
     impl<S: State> State for SetEpoch<S> {
-        type MsgId = S::MsgId;
-        type Ciphertext = S::Ciphertext;
         type Epoch = Set<members::epoch>;
-        type ConvoId = S::ConvoId;
-        type PaddedSize = S::PaddedSize;
-    }
-    ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type MsgId = S::MsgId;
         type Ciphertext = S::Ciphertext;
-        type Epoch = S::Epoch;
-        type ConvoId = Set<members::convo_id>;
         type PaddedSize = S::PaddedSize;
+        type MsgId = S::MsgId;
+        type ConvoId = S::ConvoId;
+    }
+    ///State transition - sets the `ciphertext` field to Set
+    pub struct SetCiphertext<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCiphertext<S> {}
+    impl<S: State> State for SetCiphertext<S> {
+        type Epoch = S::Epoch;
+        type Ciphertext = Set<members::ciphertext>;
+        type PaddedSize = S::PaddedSize;
+        type MsgId = S::MsgId;
+        type ConvoId = S::ConvoId;
     }
     ///State transition - sets the `padded_size` field to Set
     pub struct SetPaddedSize<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetPaddedSize<S> {}
     impl<S: State> State for SetPaddedSize<S> {
-        type MsgId = S::MsgId;
-        type Ciphertext = S::Ciphertext;
         type Epoch = S::Epoch;
-        type ConvoId = S::ConvoId;
+        type Ciphertext = S::Ciphertext;
         type PaddedSize = Set<members::padded_size>;
+        type MsgId = S::MsgId;
+        type ConvoId = S::ConvoId;
+    }
+    ///State transition - sets the `msg_id` field to Set
+    pub struct SetMsgId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetMsgId<S> {}
+    impl<S: State> State for SetMsgId<S> {
+        type Epoch = S::Epoch;
+        type Ciphertext = S::Ciphertext;
+        type PaddedSize = S::PaddedSize;
+        type MsgId = Set<members::msg_id>;
+        type ConvoId = S::ConvoId;
+    }
+    ///State transition - sets the `convo_id` field to Set
+    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetConvoId<S> {}
+    impl<S: State> State for SetConvoId<S> {
+        type Epoch = S::Epoch;
+        type Ciphertext = S::Ciphertext;
+        type PaddedSize = S::PaddedSize;
+        type MsgId = S::MsgId;
+        type ConvoId = Set<members::convo_id>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `msg_id` field
-        pub struct msg_id(());
-        ///Marker type for the `ciphertext` field
-        pub struct ciphertext(());
         ///Marker type for the `epoch` field
         pub struct epoch(());
-        ///Marker type for the `convo_id` field
-        pub struct convo_id(());
+        ///Marker type for the `ciphertext` field
+        pub struct ciphertext(());
         ///Marker type for the `padded_size` field
         pub struct padded_size(());
+        ///Marker type for the `msg_id` field
+        pub struct msg_id(());
+        ///Marker type for the `convo_id` field
+        pub struct convo_id(());
     }
 }
 
@@ -372,11 +372,11 @@ impl<'a, S: send_message_state::State> SendMessageBuilder<'a, S> {
 impl<'a, S> SendMessageBuilder<'a, S>
 where
     S: send_message_state::State,
-    S::MsgId: send_message_state::IsSet,
-    S::Ciphertext: send_message_state::IsSet,
     S::Epoch: send_message_state::IsSet,
-    S::ConvoId: send_message_state::IsSet,
+    S::Ciphertext: send_message_state::IsSet,
     S::PaddedSize: send_message_state::IsSet,
+    S::MsgId: send_message_state::IsSet,
+    S::ConvoId: send_message_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> SendMessage<'a> {
