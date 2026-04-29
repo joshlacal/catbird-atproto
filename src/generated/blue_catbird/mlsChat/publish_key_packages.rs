@@ -34,37 +34,37 @@ pub mod batch_error_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Index;
         type Error;
+        type Index;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Index = Unset;
         type Error = Unset;
-    }
-    ///State transition - sets the `index` field to Set
-    pub struct SetIndex<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetIndex<S> {}
-    impl<S: State> State for SetIndex<S> {
-        type Index = Set<members::index>;
-        type Error = S::Error;
+        type Index = Unset;
     }
     ///State transition - sets the `error` field to Set
     pub struct SetError<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetError<S> {}
     impl<S: State> State for SetError<S> {
-        type Index = S::Index;
         type Error = Set<members::error>;
+        type Index = S::Index;
+    }
+    ///State transition - sets the `index` field to Set
+    pub struct SetIndex<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetIndex<S> {}
+    impl<S: State> State for SetIndex<S> {
+        type Error = S::Error;
+        type Index = Set<members::index>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `index` field
-        pub struct index(());
         ///Marker type for the `error` field
         pub struct error(());
+        ///Marker type for the `index` field
+        pub struct index(());
     }
 }
 
@@ -137,8 +137,8 @@ where
 impl<'a, S> BatchErrorBuilder<'a, S>
 where
     S: batch_error_state::State,
-    S::Index: batch_error_state::IsSet,
     S::Error: batch_error_state::IsSet,
+    S::Index: batch_error_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> BatchError<'a> {
@@ -378,13 +378,32 @@ fn lexicon_doc_blue_catbird_mlsChat_publishKeyPackages() -> ::jacquard_lexicon::
                                         ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                             description: Some(
                                                 ::jacquard_common::CowStr::new_static(
-                                                    "Action to perform: 'publish' to upload new key packages, 'sync' to reconcile local/server state",
+                                                    "Action to perform: 'publish' to upload new key packages, 'sync' to reconcile local/server state, 'stats' to fetch counts, or 'requestReplenish' to ask peers to refresh device keys",
                                                 ),
                                             ),
                                             format: None,
                                             default: None,
                                             min_length: None,
                                             max_length: None,
+                                            min_graphemes: None,
+                                            max_graphemes: None,
+                                            r#enum: None,
+                                            r#const: None,
+                                            known_values: None,
+                                        }),
+                                    );
+                                    map.insert(
+                                        ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
+                                        ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                            description: Some(
+                                                ::jacquard_common::CowStr::new_static(
+                                                    "Optional conversation context for peer replenish notifications",
+                                                ),
+                                            ),
+                                            format: None,
+                                            default: None,
+                                            min_length: None,
+                                            max_length: Some(255usize),
                                             min_graphemes: None,
                                             max_graphemes: None,
                                             r#enum: None,
@@ -459,6 +478,53 @@ fn lexicon_doc_blue_catbird_mlsChat_publishKeyPackages() -> ::jacquard_lexicon::
                                             max_length: Some(200usize),
                                         }),
                                     );
+                                    map.insert(
+                                        ::jacquard_common::smol_str::SmolStr::new_static("reason"),
+                                        ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                            description: Some(
+                                                ::jacquard_common::CowStr::new_static(
+                                                    "Optional reason included in replenish notifications",
+                                                ),
+                                            ),
+                                            format: None,
+                                            default: None,
+                                            min_length: None,
+                                            max_length: Some(120usize),
+                                            min_graphemes: None,
+                                            max_graphemes: None,
+                                            r#enum: None,
+                                            r#const: None,
+                                            known_values: None,
+                                        }),
+                                    );
+                                    map.insert(
+                                        ::jacquard_common::smol_str::SmolStr::new_static(
+                                            "targetDids",
+                                        ),
+                                        ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                            description: Some(
+                                                ::jacquard_common::CowStr::new_static(
+                                                    "Peer DIDs to notify for 'requestReplenish' action",
+                                                ),
+                                            ),
+                                            items: ::jacquard_lexicon::lexicon::LexArrayItem::String(::jacquard_lexicon::lexicon::LexString {
+                                                description: None,
+                                                format: Some(
+                                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                                ),
+                                                default: None,
+                                                min_length: None,
+                                                max_length: None,
+                                                min_graphemes: None,
+                                                max_graphemes: None,
+                                                r#enum: None,
+                                                r#const: None,
+                                                known_values: None,
+                                            }),
+                                            min_length: Some(1usize),
+                                            max_length: Some(100usize),
+                                        }),
+                                    );
                                     map
                                 },
                             }),
@@ -512,6 +578,75 @@ fn lexicon_doc_blue_catbird_mlsChat_publishKeyPackages() -> ::jacquard_lexicon::
                         map.insert(
                             ::jacquard_common::smol_str::SmolStr::new_static(
                                 "succeeded",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                description: None,
+                                default: None,
+                                minimum: Some(0i64),
+                                maximum: None,
+                                r#enum: None,
+                                r#const: None,
+                            }),
+                        );
+                        map
+                    },
+                }),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("replenishResult"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: None,
+                    required: Some(
+                        vec![
+                            ::jacquard_common::smol_str::SmolStr::new_static("requested"),
+                            ::jacquard_common::smol_str::SmolStr::new_static("targetCount"),
+                            ::jacquard_common::smol_str::SmolStr::new_static("deviceCount"),
+                            ::jacquard_common::smol_str::SmolStr::new_static("deliveredCount")
+                        ],
+                    ),
+                    nullable: None,
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::std::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "deliveredCount",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                description: None,
+                                default: None,
+                                minimum: Some(0i64),
+                                maximum: None,
+                                r#enum: None,
+                                r#const: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "deviceCount",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                description: None,
+                                default: None,
+                                minimum: Some(0i64),
+                                maximum: None,
+                                r#enum: None,
+                                r#const: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "requested",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
+                                description: None,
+                                default: None,
+                                r#const: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "targetCount",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
                                 description: None,
@@ -722,51 +857,51 @@ pub mod key_package_item_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
+        type CipherSuite;
         type Expires;
         type KeyPackage;
-        type CipherSuite;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
+        type CipherSuite = Unset;
         type Expires = Unset;
         type KeyPackage = Unset;
-        type CipherSuite = Unset;
-    }
-    ///State transition - sets the `expires` field to Set
-    pub struct SetExpires<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetExpires<S> {}
-    impl<S: State> State for SetExpires<S> {
-        type Expires = Set<members::expires>;
-        type KeyPackage = S::KeyPackage;
-        type CipherSuite = S::CipherSuite;
-    }
-    ///State transition - sets the `key_package` field to Set
-    pub struct SetKeyPackage<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetKeyPackage<S> {}
-    impl<S: State> State for SetKeyPackage<S> {
-        type Expires = S::Expires;
-        type KeyPackage = Set<members::key_package>;
-        type CipherSuite = S::CipherSuite;
     }
     ///State transition - sets the `cipher_suite` field to Set
     pub struct SetCipherSuite<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCipherSuite<S> {}
     impl<S: State> State for SetCipherSuite<S> {
+        type CipherSuite = Set<members::cipher_suite>;
         type Expires = S::Expires;
         type KeyPackage = S::KeyPackage;
-        type CipherSuite = Set<members::cipher_suite>;
+    }
+    ///State transition - sets the `expires` field to Set
+    pub struct SetExpires<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetExpires<S> {}
+    impl<S: State> State for SetExpires<S> {
+        type CipherSuite = S::CipherSuite;
+        type Expires = Set<members::expires>;
+        type KeyPackage = S::KeyPackage;
+    }
+    ///State transition - sets the `key_package` field to Set
+    pub struct SetKeyPackage<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetKeyPackage<S> {}
+    impl<S: State> State for SetKeyPackage<S> {
+        type CipherSuite = S::CipherSuite;
+        type Expires = S::Expires;
+        type KeyPackage = Set<members::key_package>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
+        ///Marker type for the `cipher_suite` field
+        pub struct cipher_suite(());
         ///Marker type for the `expires` field
         pub struct expires(());
         ///Marker type for the `key_package` field
         pub struct key_package(());
-        ///Marker type for the `cipher_suite` field
-        pub struct cipher_suite(());
     }
 }
 
@@ -859,9 +994,9 @@ where
 impl<'a, S> KeyPackageItemBuilder<'a, S>
 where
     S: key_package_item_state::State,
+    S::CipherSuite: key_package_item_state::IsSet,
     S::Expires: key_package_item_state::IsSet,
     S::KeyPackage: key_package_item_state::IsSet,
-    S::CipherSuite: key_package_item_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> KeyPackageItem<'a> {
@@ -1169,9 +1304,13 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for KeyPackageStats<'a> {
 )]
 #[serde(rename_all = "camelCase")]
 pub struct PublishKeyPackages<'a> {
-    /// Action to perform: 'publish' to upload new key packages, 'sync' to reconcile local/server state
+    /// Action to perform: 'publish' to upload new key packages, 'sync' to reconcile local/server state, 'stats' to fetch counts, or 'requestReplenish' to ask peers to refresh device keys
     #[serde(borrow)]
     pub action: jacquard_common::CowStr<'a>,
+    /// Optional conversation context for peer replenish notifications
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub convo_id: std::option::Option<jacquard_common::CowStr<'a>>,
     /// Device ID to scope the operation. Required for 'sync', recommended for 'publish'.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
@@ -1180,12 +1319,24 @@ pub struct PublishKeyPackages<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub key_packages: std::option::Option<
-        Vec<crate::blue_catbird::mlsChat::publish_key_packages::KeyPackageItem<'a>>,
+        Vec<
+            crate::blue_catbird::mlsChat::publish_key_packages::KeyPackageItem<
+                'a,
+            >,
+        >,
     >,
     /// SHA256 hex hashes of key packages that exist in local storage (required for 'sync' action)
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub local_hashes: std::option::Option<Vec<jacquard_common::CowStr<'a>>>,
+    /// Optional reason included in replenish notifications
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub reason: std::option::Option<jacquard_common::CowStr<'a>>,
+    /// Peer DIDs to notify for 'requestReplenish' action
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub target_dids: std::option::Option<Vec<jacquard_common::types::string::Did<'a>>>,
 }
 
 #[jacquard_derive::lexicon]
@@ -1206,9 +1357,19 @@ pub struct PublishKeyPackagesOutput<'a> {
     pub publish_result: std::option::Option<
         crate::blue_catbird::mlsChat::publish_key_packages::PublishResult<'a>,
     >,
+    /// Detailed replenish notification result (only present when action is 'requestReplenish')
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub replenish_result: std::option::Option<
+        crate::blue_catbird::mlsChat::publish_key_packages::ReplenishResult<
+            'a,
+        >,
+    >,
     /// Current key package statistics after the operation
     #[serde(borrow)]
-    pub stats: crate::blue_catbird::mlsChat::publish_key_packages::KeyPackageStats<'a>,
+    pub stats: crate::blue_catbird::mlsChat::publish_key_packages::KeyPackageStats<
+        'a,
+    >,
     /// Detailed sync results (only present when action is 'sync')
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
@@ -1232,7 +1393,7 @@ pub struct PublishKeyPackagesOutput<'a> {
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]
 pub enum PublishKeyPackagesError<'a> {
-    /// Action must be 'publish' or 'sync'
+    /// Action must be 'publish', 'publishBatch', 'sync', 'stats', or 'requestReplenish'
     #[serde(rename = "InvalidAction")]
     InvalidAction(std::option::Option<jacquard_common::CowStr<'a>>),
     /// keyPackages required for 'publish' action
@@ -1244,6 +1405,9 @@ pub enum PublishKeyPackagesError<'a> {
     /// deviceId required for 'sync' action
     #[serde(rename = "MissingDeviceId")]
     MissingDeviceId(std::option::Option<jacquard_common::CowStr<'a>>),
+    /// targetDids required for 'requestReplenish' action
+    #[serde(rename = "MissingTargetDids")]
+    MissingTargetDids(std::option::Option<jacquard_common::CowStr<'a>>),
     /// Batch size exceeds maximum of 100 key packages
     #[serde(rename = "BatchTooLarge")]
     BatchTooLarge(std::option::Option<jacquard_common::CowStr<'a>>),
@@ -1278,6 +1442,13 @@ impl std::fmt::Display for PublishKeyPackagesError<'_> {
             }
             Self::MissingDeviceId(msg) => {
                 write!(f, "MissingDeviceId")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::MissingTargetDids(msg) => {
+                write!(f, "MissingTargetDids")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }
@@ -1348,7 +1519,9 @@ pub struct PublishResult<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub errors: std::option::Option<
-        Vec<crate::blue_catbird::mlsChat::publish_key_packages::BatchError<'a>>,
+        Vec<
+            crate::blue_catbird::mlsChat::publish_key_packages::BatchError<'a>,
+        >,
     >,
     /// Number of key packages that failed to upload
     pub failed: i64,
@@ -1405,7 +1578,11 @@ pub struct PublishResultBuilder<'a, S: publish_result_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
         ::core::option::Option<
-            Vec<crate::blue_catbird::mlsChat::publish_key_packages::BatchError<'a>>,
+            Vec<
+                crate::blue_catbird::mlsChat::publish_key_packages::BatchError<
+                    'a,
+                >,
+            >,
         >,
         ::core::option::Option<i64>,
         ::core::option::Option<i64>,
@@ -1437,7 +1614,11 @@ impl<'a, S: publish_result_state::State> PublishResultBuilder<'a, S> {
         mut self,
         value: impl Into<
             Option<
-                Vec<crate::blue_catbird::mlsChat::publish_key_packages::BatchError<'a>>,
+                Vec<
+                    crate::blue_catbird::mlsChat::publish_key_packages::BatchError<
+                        'a,
+                    >,
+                >,
             >,
         >,
     ) -> Self {
@@ -1448,7 +1629,11 @@ impl<'a, S: publish_result_state::State> PublishResultBuilder<'a, S> {
     pub fn maybe_errors(
         mut self,
         value: Option<
-            Vec<crate::blue_catbird::mlsChat::publish_key_packages::BatchError<'a>>,
+            Vec<
+                crate::blue_catbird::mlsChat::publish_key_packages::BatchError<
+                    'a,
+                >,
+            >,
         >,
     ) -> Self {
         self.__unsafe_private_named.0 = value;
@@ -1578,6 +1763,297 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for PublishResult<'a> {
     jacquard_derive::IntoStatic
 )]
 #[serde(rename_all = "camelCase")]
+pub struct ReplenishResult<'a> {
+    /// Number of replenish notifications accepted by the push provider
+    pub delivered_count: i64,
+    /// Number of target devices with registered push tokens
+    pub device_count: i64,
+    /// Whether the replenish request was accepted
+    pub requested: bool,
+    /// Number of target DIDs requested
+    pub target_count: i64,
+}
+
+pub mod replenish_result_state {
+
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    #[allow(unused)]
+    use ::core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type DeviceCount;
+        type TargetCount;
+        type Requested;
+        type DeliveredCount;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type DeviceCount = Unset;
+        type TargetCount = Unset;
+        type Requested = Unset;
+        type DeliveredCount = Unset;
+    }
+    ///State transition - sets the `device_count` field to Set
+    pub struct SetDeviceCount<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetDeviceCount<S> {}
+    impl<S: State> State for SetDeviceCount<S> {
+        type DeviceCount = Set<members::device_count>;
+        type TargetCount = S::TargetCount;
+        type Requested = S::Requested;
+        type DeliveredCount = S::DeliveredCount;
+    }
+    ///State transition - sets the `target_count` field to Set
+    pub struct SetTargetCount<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetTargetCount<S> {}
+    impl<S: State> State for SetTargetCount<S> {
+        type DeviceCount = S::DeviceCount;
+        type TargetCount = Set<members::target_count>;
+        type Requested = S::Requested;
+        type DeliveredCount = S::DeliveredCount;
+    }
+    ///State transition - sets the `requested` field to Set
+    pub struct SetRequested<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetRequested<S> {}
+    impl<S: State> State for SetRequested<S> {
+        type DeviceCount = S::DeviceCount;
+        type TargetCount = S::TargetCount;
+        type Requested = Set<members::requested>;
+        type DeliveredCount = S::DeliveredCount;
+    }
+    ///State transition - sets the `delivered_count` field to Set
+    pub struct SetDeliveredCount<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetDeliveredCount<S> {}
+    impl<S: State> State for SetDeliveredCount<S> {
+        type DeviceCount = S::DeviceCount;
+        type TargetCount = S::TargetCount;
+        type Requested = S::Requested;
+        type DeliveredCount = Set<members::delivered_count>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `device_count` field
+        pub struct device_count(());
+        ///Marker type for the `target_count` field
+        pub struct target_count(());
+        ///Marker type for the `requested` field
+        pub struct requested(());
+        ///Marker type for the `delivered_count` field
+        pub struct delivered_count(());
+    }
+}
+
+/// Builder for constructing an instance of this type
+pub struct ReplenishResultBuilder<'a, S: replenish_result_state::State> {
+    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
+    __unsafe_private_named: (
+        ::core::option::Option<i64>,
+        ::core::option::Option<i64>,
+        ::core::option::Option<bool>,
+        ::core::option::Option<i64>,
+    ),
+    _phantom: ::core::marker::PhantomData<&'a ()>,
+}
+
+impl<'a> ReplenishResult<'a> {
+    /// Create a new builder for this type
+    pub fn new() -> ReplenishResultBuilder<'a, replenish_result_state::Empty> {
+        ReplenishResultBuilder::new()
+    }
+}
+
+impl<'a> ReplenishResultBuilder<'a, replenish_result_state::Empty> {
+    /// Create a new builder with all fields unset
+    pub fn new() -> Self {
+        ReplenishResultBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: (None, None, None, None),
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S> ReplenishResultBuilder<'a, S>
+where
+    S: replenish_result_state::State,
+    S::DeliveredCount: replenish_result_state::IsUnset,
+{
+    /// Set the `deliveredCount` field (required)
+    pub fn delivered_count(
+        mut self,
+        value: impl Into<i64>,
+    ) -> ReplenishResultBuilder<'a, replenish_result_state::SetDeliveredCount<S>> {
+        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        ReplenishResultBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: self.__unsafe_private_named,
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S> ReplenishResultBuilder<'a, S>
+where
+    S: replenish_result_state::State,
+    S::DeviceCount: replenish_result_state::IsUnset,
+{
+    /// Set the `deviceCount` field (required)
+    pub fn device_count(
+        mut self,
+        value: impl Into<i64>,
+    ) -> ReplenishResultBuilder<'a, replenish_result_state::SetDeviceCount<S>> {
+        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        ReplenishResultBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: self.__unsafe_private_named,
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S> ReplenishResultBuilder<'a, S>
+where
+    S: replenish_result_state::State,
+    S::Requested: replenish_result_state::IsUnset,
+{
+    /// Set the `requested` field (required)
+    pub fn requested(
+        mut self,
+        value: impl Into<bool>,
+    ) -> ReplenishResultBuilder<'a, replenish_result_state::SetRequested<S>> {
+        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        ReplenishResultBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: self.__unsafe_private_named,
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S> ReplenishResultBuilder<'a, S>
+where
+    S: replenish_result_state::State,
+    S::TargetCount: replenish_result_state::IsUnset,
+{
+    /// Set the `targetCount` field (required)
+    pub fn target_count(
+        mut self,
+        value: impl Into<i64>,
+    ) -> ReplenishResultBuilder<'a, replenish_result_state::SetTargetCount<S>> {
+        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        ReplenishResultBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: self.__unsafe_private_named,
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S> ReplenishResultBuilder<'a, S>
+where
+    S: replenish_result_state::State,
+    S::DeviceCount: replenish_result_state::IsSet,
+    S::TargetCount: replenish_result_state::IsSet,
+    S::Requested: replenish_result_state::IsSet,
+    S::DeliveredCount: replenish_result_state::IsSet,
+{
+    /// Build the final struct
+    pub fn build(self) -> ReplenishResult<'a> {
+        ReplenishResult {
+            delivered_count: self.__unsafe_private_named.0.unwrap(),
+            device_count: self.__unsafe_private_named.1.unwrap(),
+            requested: self.__unsafe_private_named.2.unwrap(),
+            target_count: self.__unsafe_private_named.3.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data
+    pub fn build_with_data(
+        self,
+        extra_data: std::collections::BTreeMap<
+            jacquard_common::smol_str::SmolStr,
+            jacquard_common::types::value::Data<'a>,
+        >,
+    ) -> ReplenishResult<'a> {
+        ReplenishResult {
+            delivered_count: self.__unsafe_private_named.0.unwrap(),
+            device_count: self.__unsafe_private_named.1.unwrap(),
+            requested: self.__unsafe_private_named.2.unwrap(),
+            target_count: self.__unsafe_private_named.3.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
+}
+
+impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ReplenishResult<'a> {
+    fn nsid() -> &'static str {
+        "blue.catbird.mlsChat.publishKeyPackages"
+    }
+    fn def_name() -> &'static str {
+        "replenishResult"
+    }
+    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_blue_catbird_mlsChat_publishKeyPackages()
+    }
+    fn validate(
+        &self,
+    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.delivered_count;
+            if *value < 0i64 {
+                return Err(::jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
+                        "delivered_count",
+                    ),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.device_count;
+            if *value < 0i64 {
+                return Err(::jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
+                        "device_count",
+                    ),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.target_count;
+            if *value < 0i64 {
+                return Err(::jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
+                        "target_count",
+                    ),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
+        Ok(())
+    }
+}
+
+#[jacquard_derive::lexicon]
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
+)]
+#[serde(rename_all = "camelCase")]
 pub struct SyncResult<'a> {
     /// Number of orphaned key packages successfully deleted
     pub deleted_count: i64,
@@ -1608,67 +2084,67 @@ pub mod sync_result_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type DeletedCount;
         type DeviceId;
-        type OrphanedCount;
         type ServerHashes;
+        type OrphanedCount;
+        type DeletedCount;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type DeletedCount = Unset;
         type DeviceId = Unset;
-        type OrphanedCount = Unset;
         type ServerHashes = Unset;
-    }
-    ///State transition - sets the `deleted_count` field to Set
-    pub struct SetDeletedCount<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDeletedCount<S> {}
-    impl<S: State> State for SetDeletedCount<S> {
-        type DeletedCount = Set<members::deleted_count>;
-        type DeviceId = S::DeviceId;
-        type OrphanedCount = S::OrphanedCount;
-        type ServerHashes = S::ServerHashes;
+        type OrphanedCount = Unset;
+        type DeletedCount = Unset;
     }
     ///State transition - sets the `device_id` field to Set
     pub struct SetDeviceId<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetDeviceId<S> {}
     impl<S: State> State for SetDeviceId<S> {
-        type DeletedCount = S::DeletedCount;
         type DeviceId = Set<members::device_id>;
+        type ServerHashes = S::ServerHashes;
         type OrphanedCount = S::OrphanedCount;
-        type ServerHashes = S::ServerHashes;
-    }
-    ///State transition - sets the `orphaned_count` field to Set
-    pub struct SetOrphanedCount<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetOrphanedCount<S> {}
-    impl<S: State> State for SetOrphanedCount<S> {
         type DeletedCount = S::DeletedCount;
-        type DeviceId = S::DeviceId;
-        type OrphanedCount = Set<members::orphaned_count>;
-        type ServerHashes = S::ServerHashes;
     }
     ///State transition - sets the `server_hashes` field to Set
     pub struct SetServerHashes<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetServerHashes<S> {}
     impl<S: State> State for SetServerHashes<S> {
-        type DeletedCount = S::DeletedCount;
         type DeviceId = S::DeviceId;
-        type OrphanedCount = S::OrphanedCount;
         type ServerHashes = Set<members::server_hashes>;
+        type OrphanedCount = S::OrphanedCount;
+        type DeletedCount = S::DeletedCount;
+    }
+    ///State transition - sets the `orphaned_count` field to Set
+    pub struct SetOrphanedCount<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetOrphanedCount<S> {}
+    impl<S: State> State for SetOrphanedCount<S> {
+        type DeviceId = S::DeviceId;
+        type ServerHashes = S::ServerHashes;
+        type OrphanedCount = Set<members::orphaned_count>;
+        type DeletedCount = S::DeletedCount;
+    }
+    ///State transition - sets the `deleted_count` field to Set
+    pub struct SetDeletedCount<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetDeletedCount<S> {}
+    impl<S: State> State for SetDeletedCount<S> {
+        type DeviceId = S::DeviceId;
+        type ServerHashes = S::ServerHashes;
+        type OrphanedCount = S::OrphanedCount;
+        type DeletedCount = Set<members::deleted_count>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `deleted_count` field
-        pub struct deleted_count(());
         ///Marker type for the `device_id` field
         pub struct device_id(());
-        ///Marker type for the `orphaned_count` field
-        pub struct orphaned_count(());
         ///Marker type for the `server_hashes` field
         pub struct server_hashes(());
+        ///Marker type for the `orphaned_count` field
+        pub struct orphaned_count(());
+        ///Marker type for the `deleted_count` field
+        pub struct deleted_count(());
     }
 }
 
@@ -1815,10 +2291,10 @@ where
 impl<'a, S> SyncResultBuilder<'a, S>
 where
     S: sync_result_state::State,
-    S::DeletedCount: sync_result_state::IsSet,
     S::DeviceId: sync_result_state::IsSet,
-    S::OrphanedCount: sync_result_state::IsSet,
     S::ServerHashes: sync_result_state::IsSet,
+    S::OrphanedCount: sync_result_state::IsSet,
+    S::DeletedCount: sync_result_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> SyncResult<'a> {

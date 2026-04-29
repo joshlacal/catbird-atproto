@@ -318,21 +318,27 @@ pub mod catbird {
 
             pub struct InputData {
                 pub action: String,
+                pub convo_id: Option<String>,
                 pub device_id: Option<String>,
                 pub key_packages: Option<Vec<KeyPackageItem>>,
                 pub local_hashes: Option<Vec<String>>,
+                pub reason: Option<String>,
+                pub target_dids: Option<Vec<crate::types::string::Did<'static>>>,
             }
 
             impl From<InputData> for Input {
                 fn from(value: InputData) -> Self {
                     Self {
                         action: value.action.into(),
+                        convo_id: value.convo_id.map(Into::into),
                         device_id: value.device_id.map(Into::into),
                         extra_data: Default::default(),
                         key_packages: value.key_packages,
                         local_hashes: value
                             .local_hashes
                             .map(|hashes| hashes.into_iter().map(Into::into).collect()),
+                        reason: value.reason.map(Into::into),
+                        target_dids: value.target_dids,
                     }
                 }
             }
