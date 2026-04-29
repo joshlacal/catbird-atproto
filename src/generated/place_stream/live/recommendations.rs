@@ -35,37 +35,37 @@ pub mod recommendations_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Streamers;
         type CreatedAt;
+        type Streamers;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Streamers = Unset;
         type CreatedAt = Unset;
-    }
-    ///State transition - sets the `streamers` field to Set
-    pub struct SetStreamers<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetStreamers<S> {}
-    impl<S: State> State for SetStreamers<S> {
-        type Streamers = Set<members::streamers>;
-        type CreatedAt = S::CreatedAt;
+        type Streamers = Unset;
     }
     ///State transition - sets the `created_at` field to Set
     pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
     impl<S: State> State for SetCreatedAt<S> {
-        type Streamers = S::Streamers;
         type CreatedAt = Set<members::created_at>;
+        type Streamers = S::Streamers;
+    }
+    ///State transition - sets the `streamers` field to Set
+    pub struct SetStreamers<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetStreamers<S> {}
+    impl<S: State> State for SetStreamers<S> {
+        type CreatedAt = S::CreatedAt;
+        type Streamers = Set<members::streamers>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `streamers` field
-        pub struct streamers(());
         ///Marker type for the `created_at` field
         pub struct created_at(());
+        ///Marker type for the `streamers` field
+        pub struct streamers(());
     }
 }
 
@@ -138,8 +138,8 @@ where
 impl<'a, S> RecommendationsBuilder<'a, S>
 where
     S: recommendations_state::State,
-    S::Streamers: recommendations_state::IsSet,
     S::CreatedAt: recommendations_state::IsSet,
+    S::Streamers: recommendations_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> Recommendations<'a> {

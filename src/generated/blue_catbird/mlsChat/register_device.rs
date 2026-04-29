@@ -37,51 +37,51 @@ pub mod key_package_item_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type KeyPackage;
         type Expires;
         type CipherSuite;
+        type KeyPackage;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type KeyPackage = Unset;
         type Expires = Unset;
         type CipherSuite = Unset;
-    }
-    ///State transition - sets the `key_package` field to Set
-    pub struct SetKeyPackage<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetKeyPackage<S> {}
-    impl<S: State> State for SetKeyPackage<S> {
-        type KeyPackage = Set<members::key_package>;
-        type Expires = S::Expires;
-        type CipherSuite = S::CipherSuite;
+        type KeyPackage = Unset;
     }
     ///State transition - sets the `expires` field to Set
     pub struct SetExpires<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetExpires<S> {}
     impl<S: State> State for SetExpires<S> {
-        type KeyPackage = S::KeyPackage;
         type Expires = Set<members::expires>;
         type CipherSuite = S::CipherSuite;
+        type KeyPackage = S::KeyPackage;
     }
     ///State transition - sets the `cipher_suite` field to Set
     pub struct SetCipherSuite<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCipherSuite<S> {}
     impl<S: State> State for SetCipherSuite<S> {
-        type KeyPackage = S::KeyPackage;
         type Expires = S::Expires;
         type CipherSuite = Set<members::cipher_suite>;
+        type KeyPackage = S::KeyPackage;
+    }
+    ///State transition - sets the `key_package` field to Set
+    pub struct SetKeyPackage<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetKeyPackage<S> {}
+    impl<S: State> State for SetKeyPackage<S> {
+        type Expires = S::Expires;
+        type CipherSuite = S::CipherSuite;
+        type KeyPackage = Set<members::key_package>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `key_package` field
-        pub struct key_package(());
         ///Marker type for the `expires` field
         pub struct expires(());
         ///Marker type for the `cipher_suite` field
         pub struct cipher_suite(());
+        ///Marker type for the `key_package` field
+        pub struct key_package(());
     }
 }
 
@@ -174,9 +174,9 @@ where
 impl<'a, S> KeyPackageItemBuilder<'a, S>
 where
     S: key_package_item_state::State,
-    S::KeyPackage: key_package_item_state::IsSet,
     S::Expires: key_package_item_state::IsSet,
     S::CipherSuite: key_package_item_state::IsSet,
+    S::KeyPackage: key_package_item_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> KeyPackageItem<'a> {
@@ -498,7 +498,7 @@ pub struct RegisterDevice<'a> {
     /// MLS key packages for this device (1-200 packages)
     #[serde(borrow)]
     pub key_packages: Vec<
-        crate::generated::blue_catbird::mlsChat::register_device::KeyPackageItem<'a>,
+        crate::blue_catbird::mlsChat::register_device::KeyPackageItem<'a>,
     >,
     /// Optional APNS/FCM push token for this device. If provided, registers the push token in the same atomic operation as device registration.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
@@ -574,11 +574,7 @@ pub struct RegisterDeviceBuilder<'a, S: register_device_state::State> {
         ::core::option::Option<jacquard_common::CowStr<'a>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
         ::core::option::Option<
-            Vec<
-                crate::generated::blue_catbird::mlsChat::register_device::KeyPackageItem<
-                    'a,
-                >,
-            >,
+            Vec<crate::blue_catbird::mlsChat::register_device::KeyPackageItem<'a>>,
         >,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
         ::core::option::Option<bytes::Bytes>,
@@ -651,11 +647,7 @@ where
     pub fn key_packages(
         mut self,
         value: impl Into<
-            Vec<
-                crate::generated::blue_catbird::mlsChat::register_device::KeyPackageItem<
-                    'a,
-                >,
-            >,
+            Vec<crate::blue_catbird::mlsChat::register_device::KeyPackageItem<'a>>,
         >,
     ) -> RegisterDeviceBuilder<'a, register_device_state::SetKeyPackages<S>> {
         self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
@@ -767,7 +759,7 @@ pub struct RegisterDeviceOutput<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub welcome_messages: std::option::Option<
-        Vec<crate::generated::blue_catbird::mlsChat::register_device::WelcomeMessage<'a>>,
+        Vec<crate::blue_catbird::mlsChat::register_device::WelcomeMessage<'a>>,
     >,
 }
 
@@ -901,37 +893,37 @@ pub mod welcome_message_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type ConvoId;
         type Welcome;
+        type ConvoId;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type ConvoId = Unset;
         type Welcome = Unset;
-    }
-    ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type ConvoId = Set<members::convo_id>;
-        type Welcome = S::Welcome;
+        type ConvoId = Unset;
     }
     ///State transition - sets the `welcome` field to Set
     pub struct SetWelcome<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetWelcome<S> {}
     impl<S: State> State for SetWelcome<S> {
-        type ConvoId = S::ConvoId;
         type Welcome = Set<members::welcome>;
+        type ConvoId = S::ConvoId;
+    }
+    ///State transition - sets the `convo_id` field to Set
+    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetConvoId<S> {}
+    impl<S: State> State for SetConvoId<S> {
+        type Welcome = S::Welcome;
+        type ConvoId = Set<members::convo_id>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `convo_id` field
-        pub struct convo_id(());
         ///Marker type for the `welcome` field
         pub struct welcome(());
+        ///Marker type for the `convo_id` field
+        pub struct convo_id(());
     }
 }
 
@@ -1004,8 +996,8 @@ where
 impl<'a, S> WelcomeMessageBuilder<'a, S>
 where
     S: welcome_message_state::State,
-    S::ConvoId: welcome_message_state::IsSet,
     S::Welcome: welcome_message_state::IsSet,
+    S::ConvoId: welcome_message_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> WelcomeMessage<'a> {

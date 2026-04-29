@@ -35,37 +35,37 @@ pub mod send_notification_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type From;
         type To;
+        type From;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type From = Unset;
         type To = Unset;
-    }
-    ///State transition - sets the `from` field to Set
-    pub struct SetFrom<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetFrom<S> {}
-    impl<S: State> State for SetFrom<S> {
-        type From = Set<members::from>;
-        type To = S::To;
+        type From = Unset;
     }
     ///State transition - sets the `to` field to Set
     pub struct SetTo<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetTo<S> {}
     impl<S: State> State for SetTo<S> {
-        type From = S::From;
         type To = Set<members::to>;
+        type From = S::From;
+    }
+    ///State transition - sets the `from` field to Set
+    pub struct SetFrom<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetFrom<S> {}
+    impl<S: State> State for SetFrom<S> {
+        type To = S::To;
+        type From = Set<members::from>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `from` field
-        pub struct from(());
         ///Marker type for the `to` field
         pub struct to(());
+        ///Marker type for the `from` field
+        pub struct from(());
     }
 }
 
@@ -138,8 +138,8 @@ where
 impl<'a, S> SendNotificationBuilder<'a, S>
 where
     S: send_notification_state::State,
-    S::From: send_notification_state::IsSet,
     S::To: send_notification_state::IsSet,
+    S::From: send_notification_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> SendNotification<'a> {
