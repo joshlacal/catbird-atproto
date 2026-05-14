@@ -167,6 +167,12 @@ pub struct GetMessagesOutput<'a> {
     pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(borrow)]
     pub messages: Vec<GetMessagesOutputMessagesItem<'a>>,
+    /// Set of all members who authored or reacted to the returned messages. Members referred to by system messages are also included.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub related_profiles: std::option::Option<
+        Vec<crate::chat_bsky::actor::ProfileViewBasic<'a>>,
+    >,
 }
 
 #[jacquard_derive::open_union]
@@ -186,6 +192,42 @@ pub enum GetMessagesOutputMessagesItem<'a> {
     MessageView(Box<crate::chat_bsky::convo::MessageView<'a>>),
     #[serde(rename = "chat.bsky.convo.defs#deletedMessageView")]
     DeletedMessageView(Box<crate::chat_bsky::convo::DeletedMessageView<'a>>),
+    #[serde(rename = "chat.bsky.convo.defs#systemMessageView")]
+    SystemMessageView(Box<crate::chat_bsky::convo::SystemMessageView<'a>>),
+}
+
+#[jacquard_derive::open_union]
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    thiserror::Error,
+    miette::Diagnostic,
+    jacquard_derive::IntoStatic
+)]
+#[serde(tag = "error", content = "message")]
+#[serde(bound(deserialize = "'de: 'a"))]
+pub enum GetMessagesError<'a> {
+    #[serde(rename = "InvalidConvo")]
+    InvalidConvo(std::option::Option<jacquard_common::CowStr<'a>>),
+}
+
+impl std::fmt::Display for GetMessagesError<'_> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::InvalidConvo(msg) => {
+                write!(f, "InvalidConvo")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+        }
+    }
 }
 
 /// Response type for
@@ -195,7 +237,7 @@ impl jacquard_common::xrpc::XrpcResp for GetMessagesResponse {
     const NSID: &'static str = "chat.bsky.convo.getMessages";
     const ENCODING: &'static str = "application/json";
     type Output<'de> = GetMessagesOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
+    type Err<'de> = GetMessagesError<'de>;
 }
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for GetMessages<'a> {

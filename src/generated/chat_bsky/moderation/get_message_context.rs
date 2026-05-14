@@ -201,6 +201,8 @@ pub enum GetMessageContextOutputMessagesItem<'a> {
     MessageView(Box<crate::chat_bsky::convo::MessageView<'a>>),
     #[serde(rename = "chat.bsky.convo.defs#deletedMessageView")]
     DeletedMessageView(Box<crate::chat_bsky::convo::DeletedMessageView<'a>>),
+    #[serde(rename = "chat.bsky.convo.defs#systemMessageView")]
+    SystemMessageView(Box<crate::chat_bsky::convo::SystemMessageView<'a>>),
 }
 
 /// Response type for

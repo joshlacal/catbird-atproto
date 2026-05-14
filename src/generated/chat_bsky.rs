@@ -5,4 +5,5 @@
 
 pub mod actor;
 pub mod convo;
+pub mod group;
 pub mod moderation;

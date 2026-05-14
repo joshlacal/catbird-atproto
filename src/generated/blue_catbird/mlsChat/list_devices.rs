@@ -7,13 +7,7 @@
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct DeviceInfo<'a> {
@@ -43,7 +37,7 @@ pub struct DeviceInfo<'a> {
 
 pub mod device_info_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
     use ::core::marker::PhantomData;
     mod sealed {
@@ -52,104 +46,104 @@ pub mod device_info_state {
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
         type RegisteredAt;
+        type DeviceId;
+        type KeyPackageCount;
         type DeviceName;
         type CredentialDid;
-        type DeviceId;
         type LastSeenAt;
-        type KeyPackageCount;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
         type RegisteredAt = Unset;
+        type DeviceId = Unset;
+        type KeyPackageCount = Unset;
         type DeviceName = Unset;
         type CredentialDid = Unset;
-        type DeviceId = Unset;
         type LastSeenAt = Unset;
-        type KeyPackageCount = Unset;
     }
     ///State transition - sets the `registered_at` field to Set
     pub struct SetRegisteredAt<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetRegisteredAt<S> {}
     impl<S: State> State for SetRegisteredAt<S> {
         type RegisteredAt = Set<members::registered_at>;
+        type DeviceId = S::DeviceId;
+        type KeyPackageCount = S::KeyPackageCount;
         type DeviceName = S::DeviceName;
         type CredentialDid = S::CredentialDid;
-        type DeviceId = S::DeviceId;
         type LastSeenAt = S::LastSeenAt;
-        type KeyPackageCount = S::KeyPackageCount;
-    }
-    ///State transition - sets the `device_name` field to Set
-    pub struct SetDeviceName<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDeviceName<S> {}
-    impl<S: State> State for SetDeviceName<S> {
-        type RegisteredAt = S::RegisteredAt;
-        type DeviceName = Set<members::device_name>;
-        type CredentialDid = S::CredentialDid;
-        type DeviceId = S::DeviceId;
-        type LastSeenAt = S::LastSeenAt;
-        type KeyPackageCount = S::KeyPackageCount;
-    }
-    ///State transition - sets the `credential_did` field to Set
-    pub struct SetCredentialDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCredentialDid<S> {}
-    impl<S: State> State for SetCredentialDid<S> {
-        type RegisteredAt = S::RegisteredAt;
-        type DeviceName = S::DeviceName;
-        type CredentialDid = Set<members::credential_did>;
-        type DeviceId = S::DeviceId;
-        type LastSeenAt = S::LastSeenAt;
-        type KeyPackageCount = S::KeyPackageCount;
     }
     ///State transition - sets the `device_id` field to Set
     pub struct SetDeviceId<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetDeviceId<S> {}
     impl<S: State> State for SetDeviceId<S> {
         type RegisteredAt = S::RegisteredAt;
-        type DeviceName = S::DeviceName;
-        type CredentialDid = S::CredentialDid;
         type DeviceId = Set<members::device_id>;
-        type LastSeenAt = S::LastSeenAt;
         type KeyPackageCount = S::KeyPackageCount;
-    }
-    ///State transition - sets the `last_seen_at` field to Set
-    pub struct SetLastSeenAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetLastSeenAt<S> {}
-    impl<S: State> State for SetLastSeenAt<S> {
-        type RegisteredAt = S::RegisteredAt;
         type DeviceName = S::DeviceName;
         type CredentialDid = S::CredentialDid;
-        type DeviceId = S::DeviceId;
-        type LastSeenAt = Set<members::last_seen_at>;
-        type KeyPackageCount = S::KeyPackageCount;
+        type LastSeenAt = S::LastSeenAt;
     }
     ///State transition - sets the `key_package_count` field to Set
     pub struct SetKeyPackageCount<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetKeyPackageCount<S> {}
     impl<S: State> State for SetKeyPackageCount<S> {
         type RegisteredAt = S::RegisteredAt;
+        type DeviceId = S::DeviceId;
+        type KeyPackageCount = Set<members::key_package_count>;
         type DeviceName = S::DeviceName;
         type CredentialDid = S::CredentialDid;
-        type DeviceId = S::DeviceId;
         type LastSeenAt = S::LastSeenAt;
-        type KeyPackageCount = Set<members::key_package_count>;
+    }
+    ///State transition - sets the `device_name` field to Set
+    pub struct SetDeviceName<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetDeviceName<S> {}
+    impl<S: State> State for SetDeviceName<S> {
+        type RegisteredAt = S::RegisteredAt;
+        type DeviceId = S::DeviceId;
+        type KeyPackageCount = S::KeyPackageCount;
+        type DeviceName = Set<members::device_name>;
+        type CredentialDid = S::CredentialDid;
+        type LastSeenAt = S::LastSeenAt;
+    }
+    ///State transition - sets the `credential_did` field to Set
+    pub struct SetCredentialDid<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCredentialDid<S> {}
+    impl<S: State> State for SetCredentialDid<S> {
+        type RegisteredAt = S::RegisteredAt;
+        type DeviceId = S::DeviceId;
+        type KeyPackageCount = S::KeyPackageCount;
+        type DeviceName = S::DeviceName;
+        type CredentialDid = Set<members::credential_did>;
+        type LastSeenAt = S::LastSeenAt;
+    }
+    ///State transition - sets the `last_seen_at` field to Set
+    pub struct SetLastSeenAt<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetLastSeenAt<S> {}
+    impl<S: State> State for SetLastSeenAt<S> {
+        type RegisteredAt = S::RegisteredAt;
+        type DeviceId = S::DeviceId;
+        type KeyPackageCount = S::KeyPackageCount;
+        type DeviceName = S::DeviceName;
+        type CredentialDid = S::CredentialDid;
+        type LastSeenAt = Set<members::last_seen_at>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
         ///Marker type for the `registered_at` field
         pub struct registered_at(());
+        ///Marker type for the `device_id` field
+        pub struct device_id(());
+        ///Marker type for the `key_package_count` field
+        pub struct key_package_count(());
         ///Marker type for the `device_name` field
         pub struct device_name(());
         ///Marker type for the `credential_did` field
         pub struct credential_did(());
-        ///Marker type for the `device_id` field
-        pub struct device_id(());
         ///Marker type for the `last_seen_at` field
         pub struct last_seen_at(());
-        ///Marker type for the `key_package_count` field
-        pub struct key_package_count(());
     }
 }
 
@@ -246,18 +240,12 @@ where
 
 impl<'a, S: device_info_state::State> DeviceInfoBuilder<'a, S> {
     /// Set the `deviceUUID` field (optional)
-    pub fn device_uuid(
-        mut self,
-        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
-    ) -> Self {
+    pub fn device_uuid(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
         self.__unsafe_private_named.3 = value.into();
         self
     }
     /// Set the `deviceUUID` field to an Option value (optional)
-    pub fn maybe_device_uuid(
-        mut self,
-        value: Option<jacquard_common::CowStr<'a>>,
-    ) -> Self {
+    pub fn maybe_device_uuid(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
         self.__unsafe_private_named.3 = value;
         self
     }
@@ -337,11 +325,11 @@ impl<'a, S> DeviceInfoBuilder<'a, S>
 where
     S: device_info_state::State,
     S::RegisteredAt: device_info_state::IsSet,
+    S::DeviceId: device_info_state::IsSet,
+    S::KeyPackageCount: device_info_state::IsSet,
     S::DeviceName: device_info_state::IsSet,
     S::CredentialDid: device_info_state::IsSet,
-    S::DeviceId: device_info_state::IsSet,
     S::LastSeenAt: device_info_state::IsSet,
-    S::KeyPackageCount: device_info_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> DeviceInfo<'a> {
@@ -379,9 +367,8 @@ where
     }
 }
 
-fn lexicon_doc_blue_catbird_mlsChat_listDevices() -> ::jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn lexicon_doc_blue_catbird_mlsChat_listDevices() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static>
+{
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("blue.catbird.mlsChat.listDevices"),
@@ -637,13 +624,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for DeviceInfo<'a> {
 }
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ListDevices<'a> {
@@ -654,7 +635,7 @@ pub struct ListDevices<'a> {
 
 pub mod list_devices_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
     use ::core::marker::PhantomData;
     mod sealed {
@@ -698,18 +679,12 @@ impl<'a> ListDevicesBuilder<'a, list_devices_state::Empty> {
 
 impl<'a, S: list_devices_state::State> ListDevicesBuilder<'a, S> {
     /// Set the `deviceId` field (optional)
-    pub fn device_id(
-        mut self,
-        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
-    ) -> Self {
+    pub fn device_id(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
         self.__unsafe_private_named.0 = value.into();
         self
     }
     /// Set the `deviceId` field to an Option value (optional)
-    pub fn maybe_device_id(
-        mut self,
-        value: Option<jacquard_common::CowStr<'a>>,
-    ) -> Self {
+    pub fn maybe_device_id(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
         self.__unsafe_private_named.0 = value;
         self
     }
@@ -729,13 +704,7 @@ where
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ListDevicesOutput<'a> {

@@ -33,37 +33,37 @@ pub mod batch_item_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Message;
         type ConvoId;
+        type Message;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Message = Unset;
         type ConvoId = Unset;
-    }
-    ///State transition - sets the `message` field to Set
-    pub struct SetMessage<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetMessage<S> {}
-    impl<S: State> State for SetMessage<S> {
-        type Message = Set<members::message>;
-        type ConvoId = S::ConvoId;
+        type Message = Unset;
     }
     ///State transition - sets the `convo_id` field to Set
     pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetConvoId<S> {}
     impl<S: State> State for SetConvoId<S> {
-        type Message = S::Message;
         type ConvoId = Set<members::convo_id>;
+        type Message = S::Message;
+    }
+    ///State transition - sets the `message` field to Set
+    pub struct SetMessage<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetMessage<S> {}
+    impl<S: State> State for SetMessage<S> {
+        type ConvoId = S::ConvoId;
+        type Message = Set<members::message>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `message` field
-        pub struct message(());
         ///Marker type for the `convo_id` field
         pub struct convo_id(());
+        ///Marker type for the `message` field
+        pub struct message(());
     }
 }
 
@@ -136,8 +136,8 @@ where
 impl<'a, S> BatchItemBuilder<'a, S>
 where
     S: batch_item_state::State,
-    S::Message: batch_item_state::IsSet,
     S::ConvoId: batch_item_state::IsSet,
+    S::Message: batch_item_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> BatchItem<'a> {
@@ -419,6 +419,49 @@ pub struct SendMessageBatchOutput<'a> {
     pub items: Vec<crate::chat_bsky::convo::MessageView<'a>>,
 }
 
+#[jacquard_derive::open_union]
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    thiserror::Error,
+    miette::Diagnostic,
+    jacquard_derive::IntoStatic
+)]
+#[serde(tag = "error", content = "message")]
+#[serde(bound(deserialize = "'de: 'a"))]
+pub enum SendMessageBatchError<'a> {
+    #[serde(rename = "ConvoLocked")]
+    ConvoLocked(std::option::Option<jacquard_common::CowStr<'a>>),
+    #[serde(rename = "InvalidConvo")]
+    InvalidConvo(std::option::Option<jacquard_common::CowStr<'a>>),
+}
+
+impl std::fmt::Display for SendMessageBatchError<'_> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::ConvoLocked(msg) => {
+                write!(f, "ConvoLocked")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::InvalidConvo(msg) => {
+                write!(f, "InvalidConvo")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+        }
+    }
+}
+
 /// Response type for
 ///chat.bsky.convo.sendMessageBatch
 pub struct SendMessageBatchResponse;
@@ -426,7 +469,7 @@ impl jacquard_common::xrpc::XrpcResp for SendMessageBatchResponse {
     const NSID: &'static str = "chat.bsky.convo.sendMessageBatch";
     const ENCODING: &'static str = "application/json";
     type Output<'de> = SendMessageBatchOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
+    type Err<'de> = SendMessageBatchError<'de>;
 }
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for SendMessageBatch<'a> {

@@ -41,6 +41,50 @@ pub struct LeaveConvoOutput<'a> {
     pub rev: jacquard_common::CowStr<'a>,
 }
 
+#[jacquard_derive::open_union]
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    thiserror::Error,
+    miette::Diagnostic,
+    jacquard_derive::IntoStatic
+)]
+#[serde(tag = "error", content = "message")]
+#[serde(bound(deserialize = "'de: 'a"))]
+pub enum LeaveConvoError<'a> {
+    #[serde(rename = "InvalidConvo")]
+    InvalidConvo(std::option::Option<jacquard_common::CowStr<'a>>),
+    /// The owner of a group conversation cannot leave before locking the group.
+    #[serde(rename = "OwnerCannotLeave")]
+    OwnerCannotLeave(std::option::Option<jacquard_common::CowStr<'a>>),
+}
+
+impl std::fmt::Display for LeaveConvoError<'_> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::InvalidConvo(msg) => {
+                write!(f, "InvalidConvo")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::OwnerCannotLeave(msg) => {
+                write!(f, "OwnerCannotLeave")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+        }
+    }
+}
+
 /// Response type for
 ///chat.bsky.convo.leaveConvo
 pub struct LeaveConvoResponse;
@@ -48,7 +92,7 @@ impl jacquard_common::xrpc::XrpcResp for LeaveConvoResponse {
     const NSID: &'static str = "chat.bsky.convo.leaveConvo";
     const ENCODING: &'static str = "application/json";
     type Output<'de> = LeaveConvoOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
+    type Err<'de> = LeaveConvoError<'de>;
 }
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for LeaveConvo<'a> {

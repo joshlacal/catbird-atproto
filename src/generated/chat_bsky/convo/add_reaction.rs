@@ -57,6 +57,11 @@ pub struct AddReactionOutput<'a> {
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]
 pub enum AddReactionError<'a> {
+    #[serde(rename = "InvalidConvo")]
+    InvalidConvo(std::option::Option<jacquard_common::CowStr<'a>>),
+    /// Indicates that reactions are not allowed on this message, e.g. because it is a system message.
+    #[serde(rename = "ReactionNotAllowed")]
+    ReactionNotAllowed(std::option::Option<jacquard_common::CowStr<'a>>),
     /// Indicates that the message has been deleted and reactions can no longer be added/removed.
     #[serde(rename = "ReactionMessageDeleted")]
     ReactionMessageDeleted(std::option::Option<jacquard_common::CowStr<'a>>),
@@ -71,6 +76,20 @@ pub enum AddReactionError<'a> {
 impl std::fmt::Display for AddReactionError<'_> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
+            Self::InvalidConvo(msg) => {
+                write!(f, "InvalidConvo")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::ReactionNotAllowed(msg) => {
+                write!(f, "ReactionNotAllowed")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
             Self::ReactionMessageDeleted(msg) => {
                 write!(f, "ReactionMessageDeleted")?;
                 if let Some(msg) = msg {

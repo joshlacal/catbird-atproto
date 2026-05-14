@@ -38,6 +38,40 @@ pub struct UnmuteConvoOutput<'a> {
     pub convo: crate::chat_bsky::convo::ConvoView<'a>,
 }
 
+#[jacquard_derive::open_union]
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    thiserror::Error,
+    miette::Diagnostic,
+    jacquard_derive::IntoStatic
+)]
+#[serde(tag = "error", content = "message")]
+#[serde(bound(deserialize = "'de: 'a"))]
+pub enum UnmuteConvoError<'a> {
+    #[serde(rename = "InvalidConvo")]
+    InvalidConvo(std::option::Option<jacquard_common::CowStr<'a>>),
+}
+
+impl std::fmt::Display for UnmuteConvoError<'_> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::InvalidConvo(msg) => {
+                write!(f, "InvalidConvo")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+        }
+    }
+}
+
 /// Response type for
 ///chat.bsky.convo.unmuteConvo
 pub struct UnmuteConvoResponse;
@@ -45,7 +79,7 @@ impl jacquard_common::xrpc::XrpcResp for UnmuteConvoResponse {
     const NSID: &'static str = "chat.bsky.convo.unmuteConvo";
     const ENCODING: &'static str = "application/json";
     type Output<'de> = UnmuteConvoOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
+    type Err<'de> = UnmuteConvoError<'de>;
 }
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for UnmuteConvo<'a> {

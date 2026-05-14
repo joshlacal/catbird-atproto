@@ -7,13 +7,7 @@
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct KeyPackageHashEntry<'a> {
@@ -27,7 +21,7 @@ pub struct KeyPackageHashEntry<'a> {
 
 pub mod key_package_hash_entry_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
     use ::core::marker::PhantomData;
     mod sealed {
@@ -35,37 +29,37 @@ pub mod key_package_hash_entry_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Did;
         type Hash;
+        type Did;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Did = Unset;
         type Hash = Unset;
-    }
-    ///State transition - sets the `did` field to Set
-    pub struct SetDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDid<S> {}
-    impl<S: State> State for SetDid<S> {
-        type Did = Set<members::did>;
-        type Hash = S::Hash;
+        type Did = Unset;
     }
     ///State transition - sets the `hash` field to Set
     pub struct SetHash<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetHash<S> {}
     impl<S: State> State for SetHash<S> {
-        type Did = S::Did;
         type Hash = Set<members::hash>;
+        type Did = S::Did;
+    }
+    ///State transition - sets the `did` field to Set
+    pub struct SetDid<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetDid<S> {}
+    impl<S: State> State for SetDid<S> {
+        type Hash = S::Hash;
+        type Did = Set<members::did>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `did` field
-        pub struct did(());
         ///Marker type for the `hash` field
         pub struct hash(());
+        ///Marker type for the `did` field
+        pub struct did(());
     }
 }
 
@@ -138,8 +132,8 @@ where
 impl<'a, S> KeyPackageHashEntryBuilder<'a, S>
 where
     S: key_package_hash_entry_state::State,
-    S::Did: key_package_hash_entry_state::IsSet,
     S::Hash: key_package_hash_entry_state::IsSet,
+    S::Did: key_package_hash_entry_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> KeyPackageHashEntry<'a> {
@@ -165,73 +159,72 @@ where
     }
 }
 
-fn lexicon_doc_blue_catbird_mlsChat_commitGroupChange() -> ::jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn lexicon_doc_blue_catbird_mlsChat_commitGroupChange(
+) -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
-        id: ::jacquard_common::CowStr::new_static(
-            "blue.catbird.mlsChat.commitGroupChange",
-        ),
+        id: ::jacquard_common::CowStr::new_static("blue.catbird.mlsChat.commitGroupChange"),
         revision: None,
         description: None,
         defs: {
             let mut map = ::std::collections::BTreeMap::new();
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("keyPackageHashEntry"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: None,
-                    required: Some(
-                        vec![
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        description: None,
+                        required: Some(vec![
                             ::jacquard_common::smol_str::SmolStr::new_static("did"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("hash")
-                        ],
-                    ),
-                    nullable: None,
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("did"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static("DID of the member"),
-                                ),
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
-                                ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map.insert(
                             ::jacquard_common::smol_str::SmolStr::new_static("hash"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "Hex-encoded SHA-256 hash of the key package used",
-                                    ),
+                        ]),
+                        nullable: None,
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::std::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("did"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "DID of the member",
+                                        )),
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                        ),
+                                        default: None,
+                                        min_length: None,
+                                        max_length: None,
+                                        min_graphemes: None,
+                                        max_graphemes: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                        known_values: None,
+                                    },
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("hash"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "Hex-encoded SHA-256 hash of the key package used",
+                                        )),
+                                        format: None,
+                                        default: None,
+                                        min_length: None,
+                                        max_length: None,
+                                        min_graphemes: None,
+                                        max_graphemes: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                        known_values: None,
+                                    },
+                                ),
+                            );
+                            map
+                        },
                     },
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("main"),
@@ -679,6 +672,100 @@ fn lexicon_doc_blue_catbird_mlsChat_commitGroupChange() -> ::jacquard_lexicon::l
                     },
                 }),
             );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("rateLimitedBody"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
+                            "Structured 429 response body for External-Commit rate-limit rejections. Wire shape locked with clients so retryAfterSeconds is parseable without scraping the message string. Sent for both per-conversation (30s) and per-(device, group) (60s) limits, distinguished by `scope`.",
+                        ),
+                    ),
+                    required: Some(
+                        vec![
+                            ::jacquard_common::smol_str::SmolStr::new_static("error"),
+                            ::jacquard_common::smol_str::SmolStr::new_static("message"),
+                            ::jacquard_common::smol_str::SmolStr::new_static("retryAfterSeconds"),
+                            ::jacquard_common::smol_str::SmolStr::new_static("scope")
+                        ],
+                    ),
+                    nullable: None,
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::std::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("error"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Always 'RateLimited'.",
+                                    ),
+                                ),
+                                format: None,
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("message"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Human-readable explanation.",
+                                    ),
+                                ),
+                                format: None,
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "retryAfterSeconds",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                description: None,
+                                default: None,
+                                minimum: Some(0i64),
+                                maximum: None,
+                                r#enum: None,
+                                r#const: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("scope"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "'convo' = per-conversation 30s limit. 'device-convo' = per-(device, group) 60s cooldown.",
+                                    ),
+                                ),
+                                format: None,
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map
+                    },
+                }),
+            );
             map
         },
     }
@@ -710,7 +797,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for KeyPackageHashEntry<'a> {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct CommitGroupChange<'a> {
@@ -766,13 +853,7 @@ pub struct CommitGroupChange<'a> {
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct CommitGroupChangeOutput<'a> {
@@ -812,7 +893,7 @@ pub struct CommitGroupChangeOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic
+    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -853,6 +934,15 @@ pub enum CommitGroupChangeError<'a> {
     /// Insufficient privileges for this operation
     #[serde(rename = "Unauthorized")]
     Unauthorized(std::option::Option<jacquard_common::CowStr<'a>>),
+    /// Layer 1 robustness gate: the calling device has zero published key packages and is therefore not eligible to issue an External Commit. The device must call publishKeyPackages and successfully publish at least one available, non-expired key package before retrying. Returned as HTTP 412 Precondition Failed.
+    #[serde(rename = "NoKeyPackagesPublished")]
+    NoKeyPackagesPublished(std::option::Option<jacquard_common::CowStr<'a>>),
+    /// Layer 1 robustness circuit breaker: the conversation has been temporarily frozen because the server detected an epoch-storm pattern (too many epoch advances within a short window). All epoch-advancing commits are rejected until the freeze auto-thaws. Returned as HTTP 423 Locked.
+    #[serde(rename = "GroupFrozen")]
+    GroupFrozen(std::option::Option<jacquard_common::CowStr<'a>>),
+    /// Rate limit exceeded. Two cases: (a) per-conversation 30s External-Commit limit (existing). (b) per-(device, group) 60s External-Commit cooldown (Layer 1 §1.2). Both return HTTP 429 with body shaped per #rateLimitedBody (retryAfterSeconds + scope discriminator).
+    #[serde(rename = "RateLimited")]
+    RateLimited(std::option::Option<jacquard_common::CowStr<'a>>),
 }
 
 impl std::fmt::Display for CommitGroupChangeError<'_> {
@@ -942,6 +1032,27 @@ impl std::fmt::Display for CommitGroupChangeError<'_> {
                 }
                 Ok(())
             }
+            Self::NoKeyPackagesPublished(msg) => {
+                write!(f, "NoKeyPackagesPublished")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::GroupFrozen(msg) => {
+                write!(f, "GroupFrozen")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::RateLimited(msg) => {
+                write!(f, "RateLimited")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
             Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
         }
     }
@@ -959,9 +1070,8 @@ impl jacquard_common::xrpc::XrpcResp for CommitGroupChangeResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for CommitGroupChange<'a> {
     const NSID: &'static str = "blue.catbird.mlsChat.commitGroupChange";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = CommitGroupChangeResponse;
 }
 
@@ -970,22 +1080,15 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for CommitGroupChange<'a> {
 pub struct CommitGroupChangeRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for CommitGroupChangeRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.commitGroupChange";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<'de> = CommitGroupChange<'de>;
     type Response = CommitGroupChangeResponse;
 }
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct PendingDeviceAddition<'a> {
@@ -1021,7 +1124,7 @@ pub struct PendingDeviceAddition<'a> {
 
 pub mod pending_device_addition_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
     use ::core::marker::PhantomData;
     mod sealed {
@@ -1029,113 +1132,117 @@ pub mod pending_device_addition_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
+        type DeviceId;
+        type Status;
         type CreatedAt;
         type Id;
         type ConvoId;
         type UserDid;
-        type DeviceId;
-        type Status;
         type DeviceCredentialDid;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
+        type DeviceId = Unset;
+        type Status = Unset;
         type CreatedAt = Unset;
         type Id = Unset;
         type ConvoId = Unset;
         type UserDid = Unset;
-        type DeviceId = Unset;
-        type Status = Unset;
         type DeviceCredentialDid = Unset;
-    }
-    ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type CreatedAt = Set<members::created_at>;
-        type Id = S::Id;
-        type ConvoId = S::ConvoId;
-        type UserDid = S::UserDid;
-        type DeviceId = S::DeviceId;
-        type Status = S::Status;
-        type DeviceCredentialDid = S::DeviceCredentialDid;
-    }
-    ///State transition - sets the `id` field to Set
-    pub struct SetId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetId<S> {}
-    impl<S: State> State for SetId<S> {
-        type CreatedAt = S::CreatedAt;
-        type Id = Set<members::id>;
-        type ConvoId = S::ConvoId;
-        type UserDid = S::UserDid;
-        type DeviceId = S::DeviceId;
-        type Status = S::Status;
-        type DeviceCredentialDid = S::DeviceCredentialDid;
-    }
-    ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type CreatedAt = S::CreatedAt;
-        type Id = S::Id;
-        type ConvoId = Set<members::convo_id>;
-        type UserDid = S::UserDid;
-        type DeviceId = S::DeviceId;
-        type Status = S::Status;
-        type DeviceCredentialDid = S::DeviceCredentialDid;
-    }
-    ///State transition - sets the `user_did` field to Set
-    pub struct SetUserDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUserDid<S> {}
-    impl<S: State> State for SetUserDid<S> {
-        type CreatedAt = S::CreatedAt;
-        type Id = S::Id;
-        type ConvoId = S::ConvoId;
-        type UserDid = Set<members::user_did>;
-        type DeviceId = S::DeviceId;
-        type Status = S::Status;
-        type DeviceCredentialDid = S::DeviceCredentialDid;
     }
     ///State transition - sets the `device_id` field to Set
     pub struct SetDeviceId<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetDeviceId<S> {}
     impl<S: State> State for SetDeviceId<S> {
+        type DeviceId = Set<members::device_id>;
+        type Status = S::Status;
         type CreatedAt = S::CreatedAt;
         type Id = S::Id;
         type ConvoId = S::ConvoId;
         type UserDid = S::UserDid;
-        type DeviceId = Set<members::device_id>;
-        type Status = S::Status;
         type DeviceCredentialDid = S::DeviceCredentialDid;
     }
     ///State transition - sets the `status` field to Set
     pub struct SetStatus<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetStatus<S> {}
     impl<S: State> State for SetStatus<S> {
+        type DeviceId = S::DeviceId;
+        type Status = Set<members::status>;
         type CreatedAt = S::CreatedAt;
         type Id = S::Id;
         type ConvoId = S::ConvoId;
         type UserDid = S::UserDid;
+        type DeviceCredentialDid = S::DeviceCredentialDid;
+    }
+    ///State transition - sets the `created_at` field to Set
+    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
+    impl<S: State> State for SetCreatedAt<S> {
         type DeviceId = S::DeviceId;
-        type Status = Set<members::status>;
+        type Status = S::Status;
+        type CreatedAt = Set<members::created_at>;
+        type Id = S::Id;
+        type ConvoId = S::ConvoId;
+        type UserDid = S::UserDid;
+        type DeviceCredentialDid = S::DeviceCredentialDid;
+    }
+    ///State transition - sets the `id` field to Set
+    pub struct SetId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetId<S> {}
+    impl<S: State> State for SetId<S> {
+        type DeviceId = S::DeviceId;
+        type Status = S::Status;
+        type CreatedAt = S::CreatedAt;
+        type Id = Set<members::id>;
+        type ConvoId = S::ConvoId;
+        type UserDid = S::UserDid;
+        type DeviceCredentialDid = S::DeviceCredentialDid;
+    }
+    ///State transition - sets the `convo_id` field to Set
+    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetConvoId<S> {}
+    impl<S: State> State for SetConvoId<S> {
+        type DeviceId = S::DeviceId;
+        type Status = S::Status;
+        type CreatedAt = S::CreatedAt;
+        type Id = S::Id;
+        type ConvoId = Set<members::convo_id>;
+        type UserDid = S::UserDid;
+        type DeviceCredentialDid = S::DeviceCredentialDid;
+    }
+    ///State transition - sets the `user_did` field to Set
+    pub struct SetUserDid<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetUserDid<S> {}
+    impl<S: State> State for SetUserDid<S> {
+        type DeviceId = S::DeviceId;
+        type Status = S::Status;
+        type CreatedAt = S::CreatedAt;
+        type Id = S::Id;
+        type ConvoId = S::ConvoId;
+        type UserDid = Set<members::user_did>;
         type DeviceCredentialDid = S::DeviceCredentialDid;
     }
     ///State transition - sets the `device_credential_did` field to Set
     pub struct SetDeviceCredentialDid<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetDeviceCredentialDid<S> {}
     impl<S: State> State for SetDeviceCredentialDid<S> {
+        type DeviceId = S::DeviceId;
+        type Status = S::Status;
         type CreatedAt = S::CreatedAt;
         type Id = S::Id;
         type ConvoId = S::ConvoId;
         type UserDid = S::UserDid;
-        type DeviceId = S::DeviceId;
-        type Status = S::Status;
         type DeviceCredentialDid = Set<members::device_credential_did>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
+        ///Marker type for the `device_id` field
+        pub struct device_id(());
+        ///Marker type for the `status` field
+        pub struct status(());
         ///Marker type for the `created_at` field
         pub struct created_at(());
         ///Marker type for the `id` field
@@ -1144,10 +1251,6 @@ pub mod pending_device_addition_state {
         pub struct convo_id(());
         ///Marker type for the `user_did` field
         pub struct user_did(());
-        ///Marker type for the `device_id` field
-        pub struct device_id(());
-        ///Marker type for the `status` field
-        pub struct status(());
         ///Marker type for the `device_credential_did` field
         pub struct device_credential_did(());
     }
@@ -1172,10 +1275,7 @@ pub struct PendingDeviceAdditionBuilder<'a, S: pending_device_addition_state::St
 
 impl<'a> PendingDeviceAddition<'a> {
     /// Create a new builder for this type
-    pub fn new() -> PendingDeviceAdditionBuilder<
-        'a,
-        pending_device_addition_state::Empty,
-    > {
+    pub fn new() -> PendingDeviceAdditionBuilder<'a, pending_device_addition_state::Empty> {
         PendingDeviceAdditionBuilder::new()
     }
 }
@@ -1185,17 +1285,7 @@ impl<'a> PendingDeviceAdditionBuilder<'a, pending_device_addition_state::Empty> 
     pub fn new() -> Self {
         PendingDeviceAdditionBuilder {
             _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-            ),
+            __unsafe_private_named: (None, None, None, None, None, None, None, None, None),
             _phantom: ::core::marker::PhantomData,
         }
     }
@@ -1248,10 +1338,7 @@ where
     pub fn created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> PendingDeviceAdditionBuilder<
-        'a,
-        pending_device_addition_state::SetCreatedAt<S>,
-    > {
+    ) -> PendingDeviceAdditionBuilder<'a, pending_device_addition_state::SetCreatedAt<S>> {
         self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
         PendingDeviceAdditionBuilder {
             _phantom_state: ::core::marker::PhantomData,
@@ -1270,10 +1357,8 @@ where
     pub fn device_credential_did(
         mut self,
         value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> PendingDeviceAdditionBuilder<
-        'a,
-        pending_device_addition_state::SetDeviceCredentialDid<S>,
-    > {
+    ) -> PendingDeviceAdditionBuilder<'a, pending_device_addition_state::SetDeviceCredentialDid<S>>
+    {
         self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
         PendingDeviceAdditionBuilder {
             _phantom_state: ::core::marker::PhantomData,
@@ -1292,10 +1377,7 @@ where
     pub fn device_id(
         mut self,
         value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> PendingDeviceAdditionBuilder<
-        'a,
-        pending_device_addition_state::SetDeviceId<S>,
-    > {
+    ) -> PendingDeviceAdditionBuilder<'a, pending_device_addition_state::SetDeviceId<S>> {
         self.__unsafe_private_named.4 = ::core::option::Option::Some(value.into());
         PendingDeviceAdditionBuilder {
             _phantom_state: ::core::marker::PhantomData,
@@ -1307,18 +1389,12 @@ where
 
 impl<'a, S: pending_device_addition_state::State> PendingDeviceAdditionBuilder<'a, S> {
     /// Set the `deviceName` field (optional)
-    pub fn device_name(
-        mut self,
-        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
-    ) -> Self {
+    pub fn device_name(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
         self.__unsafe_private_named.5 = value.into();
         self
     }
     /// Set the `deviceName` field to an Option value (optional)
-    pub fn maybe_device_name(
-        mut self,
-        value: Option<jacquard_common::CowStr<'a>>,
-    ) -> Self {
+    pub fn maybe_device_name(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
         self.__unsafe_private_named.5 = value;
         self
     }
@@ -1384,12 +1460,12 @@ where
 impl<'a, S> PendingDeviceAdditionBuilder<'a, S>
 where
     S: pending_device_addition_state::State,
+    S::DeviceId: pending_device_addition_state::IsSet,
+    S::Status: pending_device_addition_state::IsSet,
     S::CreatedAt: pending_device_addition_state::IsSet,
     S::Id: pending_device_addition_state::IsSet,
     S::ConvoId: pending_device_addition_state::IsSet,
     S::UserDid: pending_device_addition_state::IsSet,
-    S::DeviceId: pending_device_addition_state::IsSet,
-    S::Status: pending_device_addition_state::IsSet,
     S::DeviceCredentialDid: pending_device_addition_state::IsSet,
 {
     /// Build the final struct
@@ -1443,6 +1519,271 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for PendingDeviceAddition<'a>
     fn validate(
         &self,
     ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+/// Structured 429 response body for External-Commit rate-limit rejections. Wire shape locked with clients so retryAfterSeconds is parseable without scraping the message string. Sent for both per-conversation (30s) and per-(device, group) (60s) limits, distinguished by `scope`.
+#[jacquard_derive::lexicon]
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(rename_all = "camelCase")]
+pub struct RateLimitedBody<'a> {
+    /// Always 'RateLimited'.
+    #[serde(borrow)]
+    pub error: jacquard_common::CowStr<'a>,
+    /// Human-readable explanation.
+    #[serde(borrow)]
+    pub message: jacquard_common::CowStr<'a>,
+    /// Seconds the client should wait before retrying. Mirrors the HTTP Retry-After header.
+    pub retry_after_seconds: i64,
+    /// 'convo' = per-conversation 30s limit. 'device-convo' = per-(device, group) 60s cooldown.
+    #[serde(borrow)]
+    pub scope: jacquard_common::CowStr<'a>,
+}
+
+pub mod rate_limited_body_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use ::core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type Scope;
+        type RetryAfterSeconds;
+        type Error;
+        type Message;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type Scope = Unset;
+        type RetryAfterSeconds = Unset;
+        type Error = Unset;
+        type Message = Unset;
+    }
+    ///State transition - sets the `scope` field to Set
+    pub struct SetScope<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetScope<S> {}
+    impl<S: State> State for SetScope<S> {
+        type Scope = Set<members::scope>;
+        type RetryAfterSeconds = S::RetryAfterSeconds;
+        type Error = S::Error;
+        type Message = S::Message;
+    }
+    ///State transition - sets the `retry_after_seconds` field to Set
+    pub struct SetRetryAfterSeconds<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetRetryAfterSeconds<S> {}
+    impl<S: State> State for SetRetryAfterSeconds<S> {
+        type Scope = S::Scope;
+        type RetryAfterSeconds = Set<members::retry_after_seconds>;
+        type Error = S::Error;
+        type Message = S::Message;
+    }
+    ///State transition - sets the `error` field to Set
+    pub struct SetError<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetError<S> {}
+    impl<S: State> State for SetError<S> {
+        type Scope = S::Scope;
+        type RetryAfterSeconds = S::RetryAfterSeconds;
+        type Error = Set<members::error>;
+        type Message = S::Message;
+    }
+    ///State transition - sets the `message` field to Set
+    pub struct SetMessage<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetMessage<S> {}
+    impl<S: State> State for SetMessage<S> {
+        type Scope = S::Scope;
+        type RetryAfterSeconds = S::RetryAfterSeconds;
+        type Error = S::Error;
+        type Message = Set<members::message>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `scope` field
+        pub struct scope(());
+        ///Marker type for the `retry_after_seconds` field
+        pub struct retry_after_seconds(());
+        ///Marker type for the `error` field
+        pub struct error(());
+        ///Marker type for the `message` field
+        pub struct message(());
+    }
+}
+
+/// Builder for constructing an instance of this type
+pub struct RateLimitedBodyBuilder<'a, S: rate_limited_body_state::State> {
+    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
+    __unsafe_private_named: (
+        ::core::option::Option<jacquard_common::CowStr<'a>>,
+        ::core::option::Option<jacquard_common::CowStr<'a>>,
+        ::core::option::Option<i64>,
+        ::core::option::Option<jacquard_common::CowStr<'a>>,
+    ),
+    _phantom: ::core::marker::PhantomData<&'a ()>,
+}
+
+impl<'a> RateLimitedBody<'a> {
+    /// Create a new builder for this type
+    pub fn new() -> RateLimitedBodyBuilder<'a, rate_limited_body_state::Empty> {
+        RateLimitedBodyBuilder::new()
+    }
+}
+
+impl<'a> RateLimitedBodyBuilder<'a, rate_limited_body_state::Empty> {
+    /// Create a new builder with all fields unset
+    pub fn new() -> Self {
+        RateLimitedBodyBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: (None, None, None, None),
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S> RateLimitedBodyBuilder<'a, S>
+where
+    S: rate_limited_body_state::State,
+    S::Error: rate_limited_body_state::IsUnset,
+{
+    /// Set the `error` field (required)
+    pub fn error(
+        mut self,
+        value: impl Into<jacquard_common::CowStr<'a>>,
+    ) -> RateLimitedBodyBuilder<'a, rate_limited_body_state::SetError<S>> {
+        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        RateLimitedBodyBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: self.__unsafe_private_named,
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S> RateLimitedBodyBuilder<'a, S>
+where
+    S: rate_limited_body_state::State,
+    S::Message: rate_limited_body_state::IsUnset,
+{
+    /// Set the `message` field (required)
+    pub fn message(
+        mut self,
+        value: impl Into<jacquard_common::CowStr<'a>>,
+    ) -> RateLimitedBodyBuilder<'a, rate_limited_body_state::SetMessage<S>> {
+        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        RateLimitedBodyBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: self.__unsafe_private_named,
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S> RateLimitedBodyBuilder<'a, S>
+where
+    S: rate_limited_body_state::State,
+    S::RetryAfterSeconds: rate_limited_body_state::IsUnset,
+{
+    /// Set the `retryAfterSeconds` field (required)
+    pub fn retry_after_seconds(
+        mut self,
+        value: impl Into<i64>,
+    ) -> RateLimitedBodyBuilder<'a, rate_limited_body_state::SetRetryAfterSeconds<S>> {
+        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        RateLimitedBodyBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: self.__unsafe_private_named,
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S> RateLimitedBodyBuilder<'a, S>
+where
+    S: rate_limited_body_state::State,
+    S::Scope: rate_limited_body_state::IsUnset,
+{
+    /// Set the `scope` field (required)
+    pub fn scope(
+        mut self,
+        value: impl Into<jacquard_common::CowStr<'a>>,
+    ) -> RateLimitedBodyBuilder<'a, rate_limited_body_state::SetScope<S>> {
+        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        RateLimitedBodyBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: self.__unsafe_private_named,
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S> RateLimitedBodyBuilder<'a, S>
+where
+    S: rate_limited_body_state::State,
+    S::Scope: rate_limited_body_state::IsSet,
+    S::RetryAfterSeconds: rate_limited_body_state::IsSet,
+    S::Error: rate_limited_body_state::IsSet,
+    S::Message: rate_limited_body_state::IsSet,
+{
+    /// Build the final struct
+    pub fn build(self) -> RateLimitedBody<'a> {
+        RateLimitedBody {
+            error: self.__unsafe_private_named.0.unwrap(),
+            message: self.__unsafe_private_named.1.unwrap(),
+            retry_after_seconds: self.__unsafe_private_named.2.unwrap(),
+            scope: self.__unsafe_private_named.3.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data
+    pub fn build_with_data(
+        self,
+        extra_data: std::collections::BTreeMap<
+            jacquard_common::smol_str::SmolStr,
+            jacquard_common::types::value::Data<'a>,
+        >,
+    ) -> RateLimitedBody<'a> {
+        RateLimitedBody {
+            error: self.__unsafe_private_named.0.unwrap(),
+            message: self.__unsafe_private_named.1.unwrap(),
+            retry_after_seconds: self.__unsafe_private_named.2.unwrap(),
+            scope: self.__unsafe_private_named.3.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
+}
+
+impl<'a> ::jacquard_lexicon::schema::LexiconSchema for RateLimitedBody<'a> {
+    fn nsid() -> &'static str {
+        "blue.catbird.mlsChat.commitGroupChange"
+    }
+    fn def_name() -> &'static str {
+        "rateLimitedBody"
+    }
+    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_blue_catbird_mlsChat_commitGroupChange()
+    }
+    fn validate(
+        &self,
+    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.retry_after_seconds;
+            if *value < 0i64 {
+                return Err(::jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
+                        "retry_after_seconds",
+                    ),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
         Ok(())
     }
 }

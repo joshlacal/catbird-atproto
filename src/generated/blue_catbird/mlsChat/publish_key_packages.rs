@@ -7,13 +7,7 @@
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct BatchError<'a> {
@@ -26,7 +20,7 @@ pub struct BatchError<'a> {
 
 pub mod batch_error_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
     use ::core::marker::PhantomData;
     mod sealed {
@@ -164,192 +158,191 @@ where
     }
 }
 
-fn lexicon_doc_blue_catbird_mlsChat_publishKeyPackages() -> ::jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn lexicon_doc_blue_catbird_mlsChat_publishKeyPackages(
+) -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
-        id: ::jacquard_common::CowStr::new_static(
-            "blue.catbird.mlsChat.publishKeyPackages",
-        ),
+        id: ::jacquard_common::CowStr::new_static("blue.catbird.mlsChat.publishKeyPackages"),
         revision: None,
         description: None,
         defs: {
             let mut map = ::std::collections::BTreeMap::new();
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("batchError"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: None,
-                    required: Some(
-                        vec![
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        description: None,
+                        required: Some(vec![
                             ::jacquard_common::smol_str::SmolStr::new_static("index"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("error")
-                        ],
-                    ),
-                    nullable: None,
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
-                        map.insert(
                             ::jacquard_common::smol_str::SmolStr::new_static("error"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "Human-readable error message",
-                                    ),
+                        ]),
+                        nullable: None,
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::std::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("error"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "Human-readable error message",
+                                        )),
+                                        format: None,
+                                        default: None,
+                                        min_length: None,
+                                        max_length: None,
+                                        min_graphemes: None,
+                                        max_graphemes: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                        known_values: None,
+                                    },
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("index"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                description: None,
-                                default: None,
-                                minimum: Some(0i64),
-                                maximum: None,
-                                r#enum: None,
-                                r#const: None,
-                            }),
-                        );
-                        map
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("index"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        description: None,
+                                        default: None,
+                                        minimum: Some(0i64),
+                                        maximum: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                    },
+                                ),
+                            );
+                            map
+                        },
                     },
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("keyPackageItem"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: None,
-                    required: Some(
-                        vec![
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        description: None,
+                        required: Some(vec![
                             ::jacquard_common::smol_str::SmolStr::new_static("keyPackage"),
                             ::jacquard_common::smol_str::SmolStr::new_static("cipherSuite"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("expires")
-                        ],
-                    ),
-                    nullable: None,
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
-                                "cipherSuite",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "Cipher suite of the key package",
-                                    ),
-                                ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map.insert(
                             ::jacquard_common::smol_str::SmolStr::new_static("expires"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "Expiration timestamp (required, max 90 days from now)",
-                                    ),
+                        ]),
+                        nullable: None,
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::std::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("cipherSuite"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "Cipher suite of the key package",
+                                        )),
+                                        format: None,
+                                        default: None,
+                                        min_length: None,
+                                        max_length: None,
+                                        min_graphemes: None,
+                                        max_graphemes: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                        known_values: None,
+                                    },
                                 ),
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("expires"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "Expiration timestamp (required, max 90 days from now)",
+                                        )),
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                        ),
+                                        default: None,
+                                        min_length: None,
+                                        max_length: None,
+                                        min_graphemes: None,
+                                        max_graphemes: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                        known_values: None,
+                                    },
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
-                                "keyPackage",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
-                                description: None,
-                                max_length: None,
-                                min_length: None,
-                            }),
-                        );
-                        map
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("keyPackage"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        description: None,
+                                        max_length: None,
+                                        min_length: None,
+                                    },
+                                ),
+                            );
+                            map
+                        },
                     },
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("keyPackageStats"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: None,
-                    required: Some(
-                        vec![
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        description: None,
+                        required: Some(vec![
                             ::jacquard_common::smol_str::SmolStr::new_static("published"),
                             ::jacquard_common::smol_str::SmolStr::new_static("available"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("expired")
-                        ],
-                    ),
-                    nullable: None,
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
-                                "available",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                description: None,
-                                default: None,
-                                minimum: Some(0i64),
-                                maximum: None,
-                                r#enum: None,
-                                r#const: None,
-                            }),
-                        );
-                        map.insert(
                             ::jacquard_common::smol_str::SmolStr::new_static("expired"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                description: None,
-                                default: None,
-                                minimum: Some(0i64),
-                                maximum: None,
-                                r#enum: None,
-                                r#const: None,
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
-                                "published",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                description: None,
-                                default: None,
-                                minimum: Some(0i64),
-                                maximum: None,
-                                r#enum: None,
-                                r#const: None,
-                            }),
-                        );
-                        map
+                        ]),
+                        nullable: None,
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::std::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("available"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        description: None,
+                                        default: None,
+                                        minimum: Some(0i64),
+                                        maximum: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("expired"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        description: None,
+                                        default: None,
+                                        minimum: Some(0i64),
+                                        maximum: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("published"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        description: None,
+                                        default: None,
+                                        minimum: Some(0i64),
+                                        maximum: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                    },
+                                ),
+                            );
+                            map
+                        },
                     },
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("main"),
@@ -536,130 +529,136 @@ fn lexicon_doc_blue_catbird_mlsChat_publishKeyPackages() -> ::jacquard_lexicon::
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("publishResult"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: None,
-                    required: Some(
-                        vec![
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        description: None,
+                        required: Some(vec![
                             ::jacquard_common::smol_str::SmolStr::new_static("succeeded"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("failed")
-                        ],
-                    ),
-                    nullable: None,
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("errors"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "Detailed error information for failed uploads",
-                                    ),
-                                ),
-                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                    description: None,
-                                    r#ref: ::jacquard_common::CowStr::new_static("#batchError"),
-                                }),
-                                min_length: None,
-                                max_length: None,
-                            }),
-                        );
-                        map.insert(
                             ::jacquard_common::smol_str::SmolStr::new_static("failed"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                description: None,
-                                default: None,
-                                minimum: Some(0i64),
-                                maximum: None,
-                                r#enum: None,
-                                r#const: None,
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
-                                "succeeded",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                description: None,
-                                default: None,
-                                minimum: Some(0i64),
-                                maximum: None,
-                                r#enum: None,
-                                r#const: None,
-                            }),
-                        );
-                        map
+                        ]),
+                        nullable: None,
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::std::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("errors"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Array(
+                                    ::jacquard_lexicon::lexicon::LexArray {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "Detailed error information for failed uploads",
+                                        )),
+                                        items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(
+                                            ::jacquard_lexicon::lexicon::LexRef {
+                                                description: None,
+                                                r#ref: ::jacquard_common::CowStr::new_static(
+                                                    "#batchError",
+                                                ),
+                                            },
+                                        ),
+                                        min_length: None,
+                                        max_length: None,
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("failed"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        description: None,
+                                        default: None,
+                                        minimum: Some(0i64),
+                                        maximum: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("succeeded"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        description: None,
+                                        default: None,
+                                        minimum: Some(0i64),
+                                        maximum: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                    },
+                                ),
+                            );
+                            map
+                        },
                     },
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("replenishResult"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: None,
-                    required: Some(
-                        vec![
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        description: None,
+                        required: Some(vec![
                             ::jacquard_common::smol_str::SmolStr::new_static("requested"),
                             ::jacquard_common::smol_str::SmolStr::new_static("targetCount"),
                             ::jacquard_common::smol_str::SmolStr::new_static("deviceCount"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("deliveredCount")
-                        ],
-                    ),
-                    nullable: None,
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
-                                "deliveredCount",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                description: None,
-                                default: None,
-                                minimum: Some(0i64),
-                                maximum: None,
-                                r#enum: None,
-                                r#const: None,
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
-                                "deviceCount",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                description: None,
-                                default: None,
-                                minimum: Some(0i64),
-                                maximum: None,
-                                r#enum: None,
-                                r#const: None,
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
-                                "requested",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
-                                description: None,
-                                default: None,
-                                r#const: None,
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
-                                "targetCount",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                description: None,
-                                default: None,
-                                minimum: Some(0i64),
-                                maximum: None,
-                                r#enum: None,
-                                r#const: None,
-                            }),
-                        );
-                        map
+                            ::jacquard_common::smol_str::SmolStr::new_static("deliveredCount"),
+                        ]),
+                        nullable: None,
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::std::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("deliveredCount"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        description: None,
+                                        default: None,
+                                        minimum: Some(0i64),
+                                        maximum: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("deviceCount"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        description: None,
+                                        default: None,
+                                        minimum: Some(0i64),
+                                        maximum: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("requested"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(
+                                    ::jacquard_lexicon::lexicon::LexBoolean {
+                                        description: None,
+                                        default: None,
+                                        r#const: None,
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("targetCount"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        description: None,
+                                        default: None,
+                                        minimum: Some(0i64),
+                                        maximum: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                    },
+                                ),
+                            );
+                            map
+                        },
                     },
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("syncResult"),
@@ -813,9 +812,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for BatchError<'a> {
             let value = &self.index;
             if *value < 0i64 {
                 return Err(::jacquard_lexicon::validation::ConstraintError::Minimum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
-                        "index",
-                    ),
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("index"),
                     min: 0i64,
                     actual: *value,
                 });
@@ -827,13 +824,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for BatchError<'a> {
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct KeyPackageItem<'a> {
@@ -849,7 +840,7 @@ pub struct KeyPackageItem<'a> {
 
 pub mod key_package_item_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
     use ::core::marker::PhantomData;
     mod sealed {
@@ -857,51 +848,51 @@ pub mod key_package_item_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
+        type KeyPackage;
         type CipherSuite;
         type Expires;
-        type KeyPackage;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
+        type KeyPackage = Unset;
         type CipherSuite = Unset;
         type Expires = Unset;
-        type KeyPackage = Unset;
-    }
-    ///State transition - sets the `cipher_suite` field to Set
-    pub struct SetCipherSuite<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCipherSuite<S> {}
-    impl<S: State> State for SetCipherSuite<S> {
-        type CipherSuite = Set<members::cipher_suite>;
-        type Expires = S::Expires;
-        type KeyPackage = S::KeyPackage;
-    }
-    ///State transition - sets the `expires` field to Set
-    pub struct SetExpires<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetExpires<S> {}
-    impl<S: State> State for SetExpires<S> {
-        type CipherSuite = S::CipherSuite;
-        type Expires = Set<members::expires>;
-        type KeyPackage = S::KeyPackage;
     }
     ///State transition - sets the `key_package` field to Set
     pub struct SetKeyPackage<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetKeyPackage<S> {}
     impl<S: State> State for SetKeyPackage<S> {
+        type KeyPackage = Set<members::key_package>;
         type CipherSuite = S::CipherSuite;
         type Expires = S::Expires;
-        type KeyPackage = Set<members::key_package>;
+    }
+    ///State transition - sets the `cipher_suite` field to Set
+    pub struct SetCipherSuite<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCipherSuite<S> {}
+    impl<S: State> State for SetCipherSuite<S> {
+        type KeyPackage = S::KeyPackage;
+        type CipherSuite = Set<members::cipher_suite>;
+        type Expires = S::Expires;
+    }
+    ///State transition - sets the `expires` field to Set
+    pub struct SetExpires<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetExpires<S> {}
+    impl<S: State> State for SetExpires<S> {
+        type KeyPackage = S::KeyPackage;
+        type CipherSuite = S::CipherSuite;
+        type Expires = Set<members::expires>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
+        ///Marker type for the `key_package` field
+        pub struct key_package(());
         ///Marker type for the `cipher_suite` field
         pub struct cipher_suite(());
         ///Marker type for the `expires` field
         pub struct expires(());
-        ///Marker type for the `key_package` field
-        pub struct key_package(());
     }
 }
 
@@ -994,9 +985,9 @@ where
 impl<'a, S> KeyPackageItemBuilder<'a, S>
 where
     S: key_package_item_state::State,
+    S::KeyPackage: key_package_item_state::IsSet,
     S::CipherSuite: key_package_item_state::IsSet,
     S::Expires: key_package_item_state::IsSet,
-    S::KeyPackage: key_package_item_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> KeyPackageItem<'a> {
@@ -1043,13 +1034,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for KeyPackageItem<'a> {
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct KeyPackageStats<'a> {
@@ -1063,7 +1048,7 @@ pub struct KeyPackageStats<'a> {
 
 pub mod key_package_stats_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
     use ::core::marker::PhantomData;
     mod sealed {
@@ -1071,51 +1056,51 @@ pub mod key_package_stats_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Expired;
         type Available;
         type Published;
+        type Expired;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Expired = Unset;
         type Available = Unset;
         type Published = Unset;
-    }
-    ///State transition - sets the `expired` field to Set
-    pub struct SetExpired<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetExpired<S> {}
-    impl<S: State> State for SetExpired<S> {
-        type Expired = Set<members::expired>;
-        type Available = S::Available;
-        type Published = S::Published;
+        type Expired = Unset;
     }
     ///State transition - sets the `available` field to Set
     pub struct SetAvailable<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetAvailable<S> {}
     impl<S: State> State for SetAvailable<S> {
-        type Expired = S::Expired;
         type Available = Set<members::available>;
         type Published = S::Published;
+        type Expired = S::Expired;
     }
     ///State transition - sets the `published` field to Set
     pub struct SetPublished<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetPublished<S> {}
     impl<S: State> State for SetPublished<S> {
-        type Expired = S::Expired;
         type Available = S::Available;
         type Published = Set<members::published>;
+        type Expired = S::Expired;
+    }
+    ///State transition - sets the `expired` field to Set
+    pub struct SetExpired<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetExpired<S> {}
+    impl<S: State> State for SetExpired<S> {
+        type Available = S::Available;
+        type Published = S::Published;
+        type Expired = Set<members::expired>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `expired` field
-        pub struct expired(());
         ///Marker type for the `available` field
         pub struct available(());
         ///Marker type for the `published` field
         pub struct published(());
+        ///Marker type for the `expired` field
+        pub struct expired(());
     }
 }
 
@@ -1208,9 +1193,9 @@ where
 impl<'a, S> KeyPackageStatsBuilder<'a, S>
 where
     S: key_package_stats_state::State,
-    S::Expired: key_package_stats_state::IsSet,
     S::Available: key_package_stats_state::IsSet,
     S::Published: key_package_stats_state::IsSet,
+    S::Expired: key_package_stats_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> KeyPackageStats<'a> {
@@ -1255,9 +1240,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for KeyPackageStats<'a> {
             let value = &self.available;
             if *value < 0i64 {
                 return Err(::jacquard_lexicon::validation::ConstraintError::Minimum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
-                        "available",
-                    ),
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("available"),
                     min: 0i64,
                     actual: *value,
                 });
@@ -1267,9 +1250,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for KeyPackageStats<'a> {
             let value = &self.expired;
             if *value < 0i64 {
                 return Err(::jacquard_lexicon::validation::ConstraintError::Minimum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
-                        "expired",
-                    ),
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("expired"),
                     min: 0i64,
                     actual: *value,
                 });
@@ -1279,9 +1260,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for KeyPackageStats<'a> {
             let value = &self.published;
             if *value < 0i64 {
                 return Err(::jacquard_lexicon::validation::ConstraintError::Minimum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
-                        "published",
-                    ),
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("published"),
                     min: 0i64,
                     actual: *value,
                 });
@@ -1300,7 +1279,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for KeyPackageStats<'a> {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct PublishKeyPackages<'a> {
@@ -1319,11 +1298,7 @@ pub struct PublishKeyPackages<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub key_packages: std::option::Option<
-        Vec<
-            crate::blue_catbird::mlsChat::publish_key_packages::KeyPackageItem<
-                'a,
-            >,
-        >,
+        Vec<crate::blue_catbird::mlsChat::publish_key_packages::KeyPackageItem<'a>>,
     >,
     /// SHA256 hex hashes of key packages that exist in local storage (required for 'sync' action)
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
@@ -1341,41 +1316,29 @@ pub struct PublishKeyPackages<'a> {
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct PublishKeyPackagesOutput<'a> {
     /// Detailed publish results (only present when action is 'publish')
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub publish_result: std::option::Option<
-        crate::blue_catbird::mlsChat::publish_key_packages::PublishResult<'a>,
-    >,
+    pub publish_result:
+        std::option::Option<crate::blue_catbird::mlsChat::publish_key_packages::PublishResult<'a>>,
     /// Detailed replenish notification result (only present when action is 'requestReplenish')
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub replenish_result: std::option::Option<
-        crate::blue_catbird::mlsChat::publish_key_packages::ReplenishResult<
-            'a,
-        >,
+        crate::blue_catbird::mlsChat::publish_key_packages::ReplenishResult<'a>,
     >,
     /// Current key package statistics after the operation
     #[serde(borrow)]
-    pub stats: crate::blue_catbird::mlsChat::publish_key_packages::KeyPackageStats<
-        'a,
-    >,
+    pub stats: crate::blue_catbird::mlsChat::publish_key_packages::KeyPackageStats<'a>,
     /// Detailed sync results (only present when action is 'sync')
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub sync_result: std::option::Option<
-        crate::blue_catbird::mlsChat::publish_key_packages::SyncResult<'a>,
-    >,
+    pub sync_result:
+        std::option::Option<crate::blue_catbird::mlsChat::publish_key_packages::SyncResult<'a>>,
 }
 
 #[jacquard_derive::open_union]
@@ -1388,7 +1351,7 @@ pub struct PublishKeyPackagesOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic
+    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -1485,9 +1448,8 @@ impl jacquard_common::xrpc::XrpcResp for PublishKeyPackagesResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for PublishKeyPackages<'a> {
     const NSID: &'static str = "blue.catbird.mlsChat.publishKeyPackages";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = PublishKeyPackagesResponse;
 }
 
@@ -1496,22 +1458,15 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for PublishKeyPackages<'a> {
 pub struct PublishKeyPackagesRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for PublishKeyPackagesRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.publishKeyPackages";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<'de> = PublishKeyPackages<'de>;
     type Response = PublishKeyPackagesResponse;
 }
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct PublishResult<'a> {
@@ -1519,9 +1474,7 @@ pub struct PublishResult<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub errors: std::option::Option<
-        Vec<
-            crate::blue_catbird::mlsChat::publish_key_packages::BatchError<'a>,
-        >,
+        Vec<crate::blue_catbird::mlsChat::publish_key_packages::BatchError<'a>>,
     >,
     /// Number of key packages that failed to upload
     pub failed: i64,
@@ -1531,7 +1484,7 @@ pub struct PublishResult<'a> {
 
 pub mod publish_result_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
     use ::core::marker::PhantomData;
     mod sealed {
@@ -1578,11 +1531,7 @@ pub struct PublishResultBuilder<'a, S: publish_result_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
         ::core::option::Option<
-            Vec<
-                crate::blue_catbird::mlsChat::publish_key_packages::BatchError<
-                    'a,
-                >,
-            >,
+            Vec<crate::blue_catbird::mlsChat::publish_key_packages::BatchError<'a>>,
         >,
         ::core::option::Option<i64>,
         ::core::option::Option<i64>,
@@ -1613,13 +1562,7 @@ impl<'a, S: publish_result_state::State> PublishResultBuilder<'a, S> {
     pub fn errors(
         mut self,
         value: impl Into<
-            Option<
-                Vec<
-                    crate::blue_catbird::mlsChat::publish_key_packages::BatchError<
-                        'a,
-                    >,
-                >,
-            >,
+            Option<Vec<crate::blue_catbird::mlsChat::publish_key_packages::BatchError<'a>>>,
         >,
     ) -> Self {
         self.__unsafe_private_named.0 = value.into();
@@ -1628,13 +1571,7 @@ impl<'a, S: publish_result_state::State> PublishResultBuilder<'a, S> {
     /// Set the `errors` field to an Option value (optional)
     pub fn maybe_errors(
         mut self,
-        value: Option<
-            Vec<
-                crate::blue_catbird::mlsChat::publish_key_packages::BatchError<
-                    'a,
-                >,
-            >,
-        >,
+        value: Option<Vec<crate::blue_catbird::mlsChat::publish_key_packages::BatchError<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.0 = value;
         self
@@ -1728,9 +1665,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for PublishResult<'a> {
             let value = &self.failed;
             if *value < 0i64 {
                 return Err(::jacquard_lexicon::validation::ConstraintError::Minimum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
-                        "failed",
-                    ),
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("failed"),
                     min: 0i64,
                     actual: *value,
                 });
@@ -1740,9 +1675,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for PublishResult<'a> {
             let value = &self.succeeded;
             if *value < 0i64 {
                 return Err(::jacquard_lexicon::validation::ConstraintError::Minimum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
-                        "succeeded",
-                    ),
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("succeeded"),
                     min: 0i64,
                     actual: *value,
                 });
@@ -1754,13 +1687,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for PublishResult<'a> {
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ReplenishResult<'a> {
@@ -1776,7 +1703,7 @@ pub struct ReplenishResult<'a> {
 
 pub mod replenish_result_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
     use ::core::marker::PhantomData;
     mod sealed {
@@ -1784,67 +1711,67 @@ pub mod replenish_result_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
+        type DeliveredCount;
         type DeviceCount;
         type TargetCount;
         type Requested;
-        type DeliveredCount;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
+        type DeliveredCount = Unset;
         type DeviceCount = Unset;
         type TargetCount = Unset;
         type Requested = Unset;
-        type DeliveredCount = Unset;
-    }
-    ///State transition - sets the `device_count` field to Set
-    pub struct SetDeviceCount<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDeviceCount<S> {}
-    impl<S: State> State for SetDeviceCount<S> {
-        type DeviceCount = Set<members::device_count>;
-        type TargetCount = S::TargetCount;
-        type Requested = S::Requested;
-        type DeliveredCount = S::DeliveredCount;
-    }
-    ///State transition - sets the `target_count` field to Set
-    pub struct SetTargetCount<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetTargetCount<S> {}
-    impl<S: State> State for SetTargetCount<S> {
-        type DeviceCount = S::DeviceCount;
-        type TargetCount = Set<members::target_count>;
-        type Requested = S::Requested;
-        type DeliveredCount = S::DeliveredCount;
-    }
-    ///State transition - sets the `requested` field to Set
-    pub struct SetRequested<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRequested<S> {}
-    impl<S: State> State for SetRequested<S> {
-        type DeviceCount = S::DeviceCount;
-        type TargetCount = S::TargetCount;
-        type Requested = Set<members::requested>;
-        type DeliveredCount = S::DeliveredCount;
     }
     ///State transition - sets the `delivered_count` field to Set
     pub struct SetDeliveredCount<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetDeliveredCount<S> {}
     impl<S: State> State for SetDeliveredCount<S> {
+        type DeliveredCount = Set<members::delivered_count>;
         type DeviceCount = S::DeviceCount;
         type TargetCount = S::TargetCount;
         type Requested = S::Requested;
-        type DeliveredCount = Set<members::delivered_count>;
+    }
+    ///State transition - sets the `device_count` field to Set
+    pub struct SetDeviceCount<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetDeviceCount<S> {}
+    impl<S: State> State for SetDeviceCount<S> {
+        type DeliveredCount = S::DeliveredCount;
+        type DeviceCount = Set<members::device_count>;
+        type TargetCount = S::TargetCount;
+        type Requested = S::Requested;
+    }
+    ///State transition - sets the `target_count` field to Set
+    pub struct SetTargetCount<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetTargetCount<S> {}
+    impl<S: State> State for SetTargetCount<S> {
+        type DeliveredCount = S::DeliveredCount;
+        type DeviceCount = S::DeviceCount;
+        type TargetCount = Set<members::target_count>;
+        type Requested = S::Requested;
+    }
+    ///State transition - sets the `requested` field to Set
+    pub struct SetRequested<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetRequested<S> {}
+    impl<S: State> State for SetRequested<S> {
+        type DeliveredCount = S::DeliveredCount;
+        type DeviceCount = S::DeviceCount;
+        type TargetCount = S::TargetCount;
+        type Requested = Set<members::requested>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
+        ///Marker type for the `delivered_count` field
+        pub struct delivered_count(());
         ///Marker type for the `device_count` field
         pub struct device_count(());
         ///Marker type for the `target_count` field
         pub struct target_count(());
         ///Marker type for the `requested` field
         pub struct requested(());
-        ///Marker type for the `delivered_count` field
-        pub struct delivered_count(());
     }
 }
 
@@ -1957,10 +1884,10 @@ where
 impl<'a, S> ReplenishResultBuilder<'a, S>
 where
     S: replenish_result_state::State,
+    S::DeliveredCount: replenish_result_state::IsSet,
     S::DeviceCount: replenish_result_state::IsSet,
     S::TargetCount: replenish_result_state::IsSet,
     S::Requested: replenish_result_state::IsSet,
-    S::DeliveredCount: replenish_result_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> ReplenishResult<'a> {
@@ -2045,13 +1972,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ReplenishResult<'a> {
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct SyncResult<'a> {
@@ -2076,7 +1997,7 @@ pub struct SyncResult<'a> {
 
 pub mod sync_result_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
     use ::core::marker::PhantomData;
     mod sealed {
@@ -2084,65 +2005,65 @@ pub mod sync_result_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type DeviceId;
-        type ServerHashes;
         type OrphanedCount;
+        type ServerHashes;
+        type DeviceId;
         type DeletedCount;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type DeviceId = Unset;
-        type ServerHashes = Unset;
         type OrphanedCount = Unset;
+        type ServerHashes = Unset;
+        type DeviceId = Unset;
         type DeletedCount = Unset;
     }
-    ///State transition - sets the `device_id` field to Set
-    pub struct SetDeviceId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDeviceId<S> {}
-    impl<S: State> State for SetDeviceId<S> {
-        type DeviceId = Set<members::device_id>;
+    ///State transition - sets the `orphaned_count` field to Set
+    pub struct SetOrphanedCount<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetOrphanedCount<S> {}
+    impl<S: State> State for SetOrphanedCount<S> {
+        type OrphanedCount = Set<members::orphaned_count>;
         type ServerHashes = S::ServerHashes;
-        type OrphanedCount = S::OrphanedCount;
+        type DeviceId = S::DeviceId;
         type DeletedCount = S::DeletedCount;
     }
     ///State transition - sets the `server_hashes` field to Set
     pub struct SetServerHashes<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetServerHashes<S> {}
     impl<S: State> State for SetServerHashes<S> {
-        type DeviceId = S::DeviceId;
-        type ServerHashes = Set<members::server_hashes>;
         type OrphanedCount = S::OrphanedCount;
+        type ServerHashes = Set<members::server_hashes>;
+        type DeviceId = S::DeviceId;
         type DeletedCount = S::DeletedCount;
     }
-    ///State transition - sets the `orphaned_count` field to Set
-    pub struct SetOrphanedCount<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetOrphanedCount<S> {}
-    impl<S: State> State for SetOrphanedCount<S> {
-        type DeviceId = S::DeviceId;
+    ///State transition - sets the `device_id` field to Set
+    pub struct SetDeviceId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetDeviceId<S> {}
+    impl<S: State> State for SetDeviceId<S> {
+        type OrphanedCount = S::OrphanedCount;
         type ServerHashes = S::ServerHashes;
-        type OrphanedCount = Set<members::orphaned_count>;
+        type DeviceId = Set<members::device_id>;
         type DeletedCount = S::DeletedCount;
     }
     ///State transition - sets the `deleted_count` field to Set
     pub struct SetDeletedCount<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetDeletedCount<S> {}
     impl<S: State> State for SetDeletedCount<S> {
-        type DeviceId = S::DeviceId;
-        type ServerHashes = S::ServerHashes;
         type OrphanedCount = S::OrphanedCount;
+        type ServerHashes = S::ServerHashes;
+        type DeviceId = S::DeviceId;
         type DeletedCount = Set<members::deleted_count>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `device_id` field
-        pub struct device_id(());
-        ///Marker type for the `server_hashes` field
-        pub struct server_hashes(());
         ///Marker type for the `orphaned_count` field
         pub struct orphaned_count(());
+        ///Marker type for the `server_hashes` field
+        pub struct server_hashes(());
+        ///Marker type for the `device_id` field
+        pub struct device_id(());
         ///Marker type for the `deleted_count` field
         pub struct deleted_count(());
     }
@@ -2291,9 +2212,9 @@ where
 impl<'a, S> SyncResultBuilder<'a, S>
 where
     S: sync_result_state::State,
-    S::DeviceId: sync_result_state::IsSet,
-    S::ServerHashes: sync_result_state::IsSet,
     S::OrphanedCount: sync_result_state::IsSet,
+    S::ServerHashes: sync_result_state::IsSet,
+    S::DeviceId: sync_result_state::IsSet,
     S::DeletedCount: sync_result_state::IsSet,
 {
     /// Build the final struct

@@ -127,6 +127,76 @@ pub struct GetConvoForMembersOutput<'a> {
     pub convo: crate::chat_bsky::convo::ConvoView<'a>,
 }
 
+#[jacquard_derive::open_union]
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    thiserror::Error,
+    miette::Diagnostic,
+    jacquard_derive::IntoStatic
+)]
+#[serde(tag = "error", content = "message")]
+#[serde(bound(deserialize = "'de: 'a"))]
+pub enum GetConvoForMembersError<'a> {
+    #[serde(rename = "AccountSuspended")]
+    AccountSuspended(std::option::Option<jacquard_common::CowStr<'a>>),
+    #[serde(rename = "BlockedActor")]
+    BlockedActor(std::option::Option<jacquard_common::CowStr<'a>>),
+    #[serde(rename = "MessagesDisabled")]
+    MessagesDisabled(std::option::Option<jacquard_common::CowStr<'a>>),
+    #[serde(rename = "NotFollowedBySender")]
+    NotFollowedBySender(std::option::Option<jacquard_common::CowStr<'a>>),
+    #[serde(rename = "RecipientNotFound")]
+    RecipientNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
+}
+
+impl std::fmt::Display for GetConvoForMembersError<'_> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::AccountSuspended(msg) => {
+                write!(f, "AccountSuspended")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::BlockedActor(msg) => {
+                write!(f, "BlockedActor")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::MessagesDisabled(msg) => {
+                write!(f, "MessagesDisabled")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::NotFollowedBySender(msg) => {
+                write!(f, "NotFollowedBySender")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::RecipientNotFound(msg) => {
+                write!(f, "RecipientNotFound")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+        }
+    }
+}
+
 /// Response type for
 ///chat.bsky.convo.getConvoForMembers
 pub struct GetConvoForMembersResponse;
@@ -134,7 +204,7 @@ impl jacquard_common::xrpc::XrpcResp for GetConvoForMembersResponse {
     const NSID: &'static str = "chat.bsky.convo.getConvoForMembers";
     const ENCODING: &'static str = "application/json";
     type Output<'de> = GetConvoForMembersOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
+    type Err<'de> = GetConvoForMembersError<'de>;
 }
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for GetConvoForMembers<'a> {

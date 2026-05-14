@@ -19,6 +19,9 @@ pub struct ListConvos<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub kind: std::option::Option<jacquard_common::CowStr<'a>>,
     ///(default: 50, min: 1, max: 100)
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     pub limit: std::option::Option<i64>,
@@ -54,6 +57,7 @@ pub struct ListConvosBuilder<'a, S: list_convos_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
         ::core::option::Option<jacquard_common::CowStr<'a>>,
+        ::core::option::Option<jacquard_common::CowStr<'a>>,
         ::core::option::Option<i64>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
@@ -73,7 +77,7 @@ impl<'a> ListConvosBuilder<'a, list_convos_state::Empty> {
     pub fn new() -> Self {
         ListConvosBuilder {
             _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None),
+            __unsafe_private_named: (None, None, None, None, None),
             _phantom: ::core::marker::PhantomData,
         }
     }
@@ -96,14 +100,30 @@ impl<'a, S: list_convos_state::State> ListConvosBuilder<'a, S> {
 }
 
 impl<'a, S: list_convos_state::State> ListConvosBuilder<'a, S> {
+    /// Set the `kind` field (optional)
+    pub fn kind(
+        mut self,
+        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
+    ) -> Self {
+        self.__unsafe_private_named.1 = value.into();
+        self
+    }
+    /// Set the `kind` field to an Option value (optional)
+    pub fn maybe_kind(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
+        self.__unsafe_private_named.1 = value;
+        self
+    }
+}
+
+impl<'a, S: list_convos_state::State> ListConvosBuilder<'a, S> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self.__unsafe_private_named.2 = value.into();
         self
     }
     /// Set the `limit` field to an Option value (optional)
     pub fn maybe_limit(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.1 = value;
+        self.__unsafe_private_named.2 = value;
         self
     }
 }
@@ -114,7 +134,7 @@ impl<'a, S: list_convos_state::State> ListConvosBuilder<'a, S> {
         mut self,
         value: impl Into<Option<jacquard_common::CowStr<'a>>>,
     ) -> Self {
-        self.__unsafe_private_named.2 = value.into();
+        self.__unsafe_private_named.3 = value.into();
         self
     }
     /// Set the `readState` field to an Option value (optional)
@@ -122,7 +142,7 @@ impl<'a, S: list_convos_state::State> ListConvosBuilder<'a, S> {
         mut self,
         value: Option<jacquard_common::CowStr<'a>>,
     ) -> Self {
-        self.__unsafe_private_named.2 = value;
+        self.__unsafe_private_named.3 = value;
         self
     }
 }
@@ -133,12 +153,12 @@ impl<'a, S: list_convos_state::State> ListConvosBuilder<'a, S> {
         mut self,
         value: impl Into<Option<jacquard_common::CowStr<'a>>>,
     ) -> Self {
-        self.__unsafe_private_named.3 = value.into();
+        self.__unsafe_private_named.4 = value.into();
         self
     }
     /// Set the `status` field to an Option value (optional)
     pub fn maybe_status(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.3 = value;
+        self.__unsafe_private_named.4 = value;
         self
     }
 }
@@ -151,9 +171,10 @@ where
     pub fn build(self) -> ListConvos<'a> {
         ListConvos {
             cursor: self.__unsafe_private_named.0,
-            limit: self.__unsafe_private_named.1,
-            read_state: self.__unsafe_private_named.2,
-            status: self.__unsafe_private_named.3,
+            kind: self.__unsafe_private_named.1,
+            limit: self.__unsafe_private_named.2,
+            read_state: self.__unsafe_private_named.3,
+            status: self.__unsafe_private_named.4,
         }
     }
 }

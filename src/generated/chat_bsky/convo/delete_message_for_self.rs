@@ -41,6 +41,50 @@ pub struct DeleteMessageForSelfOutput<'a> {
     pub value: crate::chat_bsky::convo::DeletedMessageView<'a>,
 }
 
+#[jacquard_derive::open_union]
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    thiserror::Error,
+    miette::Diagnostic,
+    jacquard_derive::IntoStatic
+)]
+#[serde(tag = "error", content = "message")]
+#[serde(bound(deserialize = "'de: 'a"))]
+pub enum DeleteMessageForSelfError<'a> {
+    #[serde(rename = "InvalidConvo")]
+    InvalidConvo(std::option::Option<jacquard_common::CowStr<'a>>),
+    /// Indicates that this message cannot be deleted, e.g. because it is a system message.
+    #[serde(rename = "MessageDeleteNotAllowed")]
+    MessageDeleteNotAllowed(std::option::Option<jacquard_common::CowStr<'a>>),
+}
+
+impl std::fmt::Display for DeleteMessageForSelfError<'_> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::InvalidConvo(msg) => {
+                write!(f, "InvalidConvo")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::MessageDeleteNotAllowed(msg) => {
+                write!(f, "MessageDeleteNotAllowed")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+        }
+    }
+}
+
 /// Response type for
 ///chat.bsky.convo.deleteMessageForSelf
 pub struct DeleteMessageForSelfResponse;
@@ -48,7 +92,7 @@ impl jacquard_common::xrpc::XrpcResp for DeleteMessageForSelfResponse {
     const NSID: &'static str = "chat.bsky.convo.deleteMessageForSelf";
     const ENCODING: &'static str = "application/json";
     type Output<'de> = DeleteMessageForSelfOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
+    type Err<'de> = DeleteMessageForSelfError<'de>;
 }
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for DeleteMessageForSelf<'a> {

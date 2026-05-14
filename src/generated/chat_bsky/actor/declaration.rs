@@ -18,6 +18,10 @@
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Declaration<'a> {
+    /// [NOTE: This is under active development and should be considered unstable while this note is here]. Declaration about group chat invitation preferences for the record owner.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub allow_group_invites: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(borrow)]
     pub allow_incoming: jacquard_common::CowStr<'a>,
 }
@@ -57,7 +61,10 @@ pub mod declaration_state {
 /// Builder for constructing an instance of this type
 pub struct DeclarationBuilder<'a, S: declaration_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<jacquard_common::CowStr<'a>>,),
+    __unsafe_private_named: (
+        ::core::option::Option<jacquard_common::CowStr<'a>>,
+        ::core::option::Option<jacquard_common::CowStr<'a>>,
+    ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
 
@@ -73,9 +80,28 @@ impl<'a> DeclarationBuilder<'a, declaration_state::Empty> {
     pub fn new() -> Self {
         DeclarationBuilder {
             _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
+            __unsafe_private_named: (None, None),
             _phantom: ::core::marker::PhantomData,
         }
+    }
+}
+
+impl<'a, S: declaration_state::State> DeclarationBuilder<'a, S> {
+    /// Set the `allowGroupInvites` field (optional)
+    pub fn allow_group_invites(
+        mut self,
+        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
+    ) -> Self {
+        self.__unsafe_private_named.0 = value.into();
+        self
+    }
+    /// Set the `allowGroupInvites` field to an Option value (optional)
+    pub fn maybe_allow_group_invites(
+        mut self,
+        value: Option<jacquard_common::CowStr<'a>>,
+    ) -> Self {
+        self.__unsafe_private_named.0 = value;
+        self
     }
 }
 
@@ -89,7 +115,7 @@ where
         mut self,
         value: impl Into<jacquard_common::CowStr<'a>>,
     ) -> DeclarationBuilder<'a, declaration_state::SetAllowIncoming<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
         DeclarationBuilder {
             _phantom_state: ::core::marker::PhantomData,
             __unsafe_private_named: self.__unsafe_private_named,
@@ -106,7 +132,8 @@ where
     /// Build the final struct
     pub fn build(self) -> Declaration<'a> {
         Declaration {
-            allow_incoming: self.__unsafe_private_named.0.unwrap(),
+            allow_group_invites: self.__unsafe_private_named.0,
+            allow_incoming: self.__unsafe_private_named.1.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -119,7 +146,8 @@ where
         >,
     ) -> Declaration<'a> {
         Declaration {
-            allow_incoming: self.__unsafe_private_named.0.unwrap(),
+            allow_group_invites: self.__unsafe_private_named.0,
+            allow_incoming: self.__unsafe_private_named.1.unwrap(),
             extra_data: Some(extra_data),
         }
     }
@@ -233,6 +261,27 @@ fn lexicon_doc_chat_bsky_actor_declaration() -> ::jacquard_lexicon::lexicon::Lex
                         properties: {
                             #[allow(unused_mut)]
                             let mut map = ::std::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                    "allowGroupInvites",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                    description: Some(
+                                        ::jacquard_common::CowStr::new_static(
+                                            "[NOTE: This is under active development and should be considered unstable while this note is here]. Declaration about group chat invitation preferences for the record owner.",
+                                        ),
+                                    ),
+                                    format: None,
+                                    default: None,
+                                    min_length: None,
+                                    max_length: None,
+                                    min_graphemes: None,
+                                    max_graphemes: None,
+                                    r#enum: None,
+                                    r#const: None,
+                                    known_values: None,
+                                }),
+                            );
                             map.insert(
                                 ::jacquard_common::smol_str::SmolStr::new_static(
                                     "allowIncoming",

@@ -125,6 +125,40 @@ pub struct GetConvoOutput<'a> {
     pub convo: crate::chat_bsky::convo::ConvoView<'a>,
 }
 
+#[jacquard_derive::open_union]
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    thiserror::Error,
+    miette::Diagnostic,
+    jacquard_derive::IntoStatic
+)]
+#[serde(tag = "error", content = "message")]
+#[serde(bound(deserialize = "'de: 'a"))]
+pub enum GetConvoError<'a> {
+    #[serde(rename = "InvalidConvo")]
+    InvalidConvo(std::option::Option<jacquard_common::CowStr<'a>>),
+}
+
+impl std::fmt::Display for GetConvoError<'_> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::InvalidConvo(msg) => {
+                write!(f, "InvalidConvo")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+        }
+    }
+}
+
 /// Response type for
 ///chat.bsky.convo.getConvo
 pub struct GetConvoResponse;
@@ -132,7 +166,7 @@ impl jacquard_common::xrpc::XrpcResp for GetConvoResponse {
     const NSID: &'static str = "chat.bsky.convo.getConvo";
     const ENCODING: &'static str = "application/json";
     type Output<'de> = GetConvoOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
+    type Err<'de> = GetConvoError<'de>;
 }
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for GetConvo<'a> {

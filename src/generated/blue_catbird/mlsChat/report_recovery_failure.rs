@@ -14,7 +14,7 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ReportRecoveryFailure<'a> {
@@ -37,13 +37,7 @@ pub struct ReportRecoveryFailure<'a> {
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ReportRecoveryFailureOutput<'a> {
@@ -78,7 +72,7 @@ pub struct ReportRecoveryFailureOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic
+    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -125,9 +119,8 @@ impl jacquard_common::xrpc::XrpcResp for ReportRecoveryFailureResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for ReportRecoveryFailure<'a> {
     const NSID: &'static str = "blue.catbird.mlsChat.reportRecoveryFailure";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = ReportRecoveryFailureResponse;
 }
 
@@ -136,9 +129,8 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for ReportRecoveryFailure<'a> {
 pub struct ReportRecoveryFailureRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for ReportRecoveryFailureRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.reportRecoveryFailure";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<'de> = ReportRecoveryFailure<'de>;
     type Response = ReportRecoveryFailureResponse;
 }

@@ -5,4 +5,7 @@
 
 pub mod get_actor_metadata;
 pub mod get_message_context;
+
+#[cfg(feature = "streaming")]
+pub mod subscribe_mod_events;
 pub mod update_actor_access;

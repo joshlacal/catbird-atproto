@@ -6,53 +6,47 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetGroupMetadataBlob<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub blob_locator: std::option::Option<jacquard_common::CowStr<'a>>,
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub group_id: jacquard_common::CowStr<'a>,
+    pub convo_id: std::option::Option<jacquard_common::CowStr<'a>>,
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub group_id: std::option::Option<jacquard_common::CowStr<'a>>,
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub kind: std::option::Option<jacquard_common::CowStr<'a>>,
+    ///(min: 1)
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    pub metadata_version: std::option::Option<i64>,
+    ///(min: 0)
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    pub reset_generation: std::option::Option<i64>,
 }
 
 pub mod get_group_metadata_blob_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
     use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
     /// State trait tracking which required fields have been set
-    pub trait State: sealed::Sealed {
-        type GroupId;
-    }
+    pub trait State: sealed::Sealed {}
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
-    impl State for Empty {
-        type GroupId = Unset;
-    }
-    ///State transition - sets the `group_id` field to Set
-    pub struct SetGroupId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetGroupId<S> {}
-    impl<S: State> State for SetGroupId<S> {
-        type GroupId = Set<members::group_id>;
-    }
+    impl State for Empty {}
     /// Marker types for field names
     #[allow(non_camel_case_types)]
-    pub mod members {
-        ///Marker type for the `group_id` field
-        pub struct group_id(());
-    }
+    pub mod members {}
 }
 
 /// Builder for constructing an instance of this type
@@ -61,16 +55,17 @@ pub struct GetGroupMetadataBlobBuilder<'a, S: get_group_metadata_blob_state::Sta
     __unsafe_private_named: (
         ::core::option::Option<jacquard_common::CowStr<'a>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
+        ::core::option::Option<jacquard_common::CowStr<'a>>,
+        ::core::option::Option<jacquard_common::CowStr<'a>>,
+        ::core::option::Option<i64>,
+        ::core::option::Option<i64>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
 
 impl<'a> GetGroupMetadataBlob<'a> {
     /// Create a new builder for this type
-    pub fn new() -> GetGroupMetadataBlobBuilder<
-        'a,
-        get_group_metadata_blob_state::Empty,
-    > {
+    pub fn new() -> GetGroupMetadataBlobBuilder<'a, get_group_metadata_blob_state::Empty> {
         GetGroupMetadataBlobBuilder::new()
     }
 }
@@ -80,7 +75,7 @@ impl<'a> GetGroupMetadataBlobBuilder<'a, get_group_metadata_blob_state::Empty> {
     pub fn new() -> Self {
         GetGroupMetadataBlobBuilder {
             _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
+            __unsafe_private_named: (None, None, None, None, None, None),
             _phantom: ::core::marker::PhantomData,
         }
     }
@@ -88,64 +83,101 @@ impl<'a> GetGroupMetadataBlobBuilder<'a, get_group_metadata_blob_state::Empty> {
 
 impl<'a, S: get_group_metadata_blob_state::State> GetGroupMetadataBlobBuilder<'a, S> {
     /// Set the `blobLocator` field (optional)
-    pub fn blob_locator(
-        mut self,
-        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
-    ) -> Self {
+    pub fn blob_locator(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
         self.__unsafe_private_named.0 = value.into();
         self
     }
     /// Set the `blobLocator` field to an Option value (optional)
-    pub fn maybe_blob_locator(
-        mut self,
-        value: Option<jacquard_common::CowStr<'a>>,
-    ) -> Self {
+    pub fn maybe_blob_locator(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
         self.__unsafe_private_named.0 = value;
         self
     }
 }
 
-impl<'a, S> GetGroupMetadataBlobBuilder<'a, S>
-where
-    S: get_group_metadata_blob_state::State,
-    S::GroupId: get_group_metadata_blob_state::IsUnset,
-{
-    /// Set the `groupId` field (required)
-    pub fn group_id(
-        mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> GetGroupMetadataBlobBuilder<'a, get_group_metadata_blob_state::SetGroupId<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
-        GetGroupMetadataBlobBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
+impl<'a, S: get_group_metadata_blob_state::State> GetGroupMetadataBlobBuilder<'a, S> {
+    /// Set the `convoId` field (optional)
+    pub fn convo_id(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
+        self.__unsafe_private_named.1 = value.into();
+        self
+    }
+    /// Set the `convoId` field to an Option value (optional)
+    pub fn maybe_convo_id(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
+        self.__unsafe_private_named.1 = value;
+        self
+    }
+}
+
+impl<'a, S: get_group_metadata_blob_state::State> GetGroupMetadataBlobBuilder<'a, S> {
+    /// Set the `groupId` field (optional)
+    pub fn group_id(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
+        self.__unsafe_private_named.2 = value.into();
+        self
+    }
+    /// Set the `groupId` field to an Option value (optional)
+    pub fn maybe_group_id(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
+        self.__unsafe_private_named.2 = value;
+        self
+    }
+}
+
+impl<'a, S: get_group_metadata_blob_state::State> GetGroupMetadataBlobBuilder<'a, S> {
+    /// Set the `kind` field (optional)
+    pub fn kind(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
+        self.__unsafe_private_named.3 = value.into();
+        self
+    }
+    /// Set the `kind` field to an Option value (optional)
+    pub fn maybe_kind(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
+        self.__unsafe_private_named.3 = value;
+        self
+    }
+}
+
+impl<'a, S: get_group_metadata_blob_state::State> GetGroupMetadataBlobBuilder<'a, S> {
+    /// Set the `metadataVersion` field (optional)
+    pub fn metadata_version(mut self, value: impl Into<Option<i64>>) -> Self {
+        self.__unsafe_private_named.4 = value.into();
+        self
+    }
+    /// Set the `metadataVersion` field to an Option value (optional)
+    pub fn maybe_metadata_version(mut self, value: Option<i64>) -> Self {
+        self.__unsafe_private_named.4 = value;
+        self
+    }
+}
+
+impl<'a, S: get_group_metadata_blob_state::State> GetGroupMetadataBlobBuilder<'a, S> {
+    /// Set the `resetGeneration` field (optional)
+    pub fn reset_generation(mut self, value: impl Into<Option<i64>>) -> Self {
+        self.__unsafe_private_named.5 = value.into();
+        self
+    }
+    /// Set the `resetGeneration` field to an Option value (optional)
+    pub fn maybe_reset_generation(mut self, value: Option<i64>) -> Self {
+        self.__unsafe_private_named.5 = value;
+        self
     }
 }
 
 impl<'a, S> GetGroupMetadataBlobBuilder<'a, S>
 where
     S: get_group_metadata_blob_state::State,
-    S::GroupId: get_group_metadata_blob_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> GetGroupMetadataBlob<'a> {
         GetGroupMetadataBlob {
             blob_locator: self.__unsafe_private_named.0,
-            group_id: self.__unsafe_private_named.1.unwrap(),
+            convo_id: self.__unsafe_private_named.1,
+            group_id: self.__unsafe_private_named.2,
+            kind: self.__unsafe_private_named.3,
+            metadata_version: self.__unsafe_private_named.4,
+            reset_generation: self.__unsafe_private_named.5,
         }
     }
 }
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetGroupMetadataBlobOutput {
@@ -162,7 +194,7 @@ pub struct GetGroupMetadataBlobOutput {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic
+    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]

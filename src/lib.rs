@@ -20,8 +20,6 @@ pub mod catbird {
 
     pub mod mls_chat {
         pub mod defs {
-            pub type ConvoMetadata = crate::blue_catbird::mlsChat::ConvoMetadata<'static>;
-            pub type ConvoMetadataData = ConvoMetadata;
             pub type ConvoView = crate::blue_catbird::mlsChat::ConvoView<'static>;
             pub type ConvoViewData = ConvoView;
             pub type MemberView = crate::blue_catbird::mlsChat::MemberView<'static>;
@@ -79,31 +77,13 @@ pub mod catbird {
             pub type KeyPackageHashEntry =
                 crate::blue_catbird::mlsChat::create_convo::KeyPackageHashEntry<'static>;
             pub type KeyPackageHashEntryData = KeyPackageHashEntry;
-            pub type MetadataInput =
-                crate::blue_catbird::mlsChat::create_convo::MetadataInput<'static>;
             pub type Output =
                 crate::blue_catbird::mlsChat::create_convo::CreateConvoOutput<'static>;
-
-            pub struct MetadataInputData {
-                pub description: Option<String>,
-                pub name: Option<String>,
-            }
-
-            impl From<MetadataInputData> for MetadataInput {
-                fn from(value: MetadataInputData) -> Self {
-                    Self {
-                        description: value.description.map(Into::into),
-                        extra_data: Default::default(),
-                        name: value.name.map(Into::into),
-                    }
-                }
-            }
 
             pub struct InputData {
                 pub group_id: String,
                 pub cipher_suite: String,
                 pub initial_members: Option<Vec<crate::types::string::Did<'static>>>,
-                pub metadata: Option<MetadataInput>,
                 pub welcome_message: Option<String>,
                 pub current_epoch: Option<i64>,
                 pub key_package_hashes: Option<Vec<KeyPackageHashEntry>>,
@@ -119,7 +99,6 @@ pub mod catbird {
                         initial_members: value.initial_members,
                         invite: None,
                         key_package_hashes: value.key_package_hashes,
-                        metadata: value.metadata,
                         welcome_message: value.welcome_message.map(Into::into),
                     }
                 }
@@ -405,8 +384,7 @@ pub mod catbird {
         pub mod remove_device {
             pub const NSID: &str = "blue.catbird.mlsChat.removeDevice";
 
-            pub type Input =
-                crate::blue_catbird::mlsChat::remove_device::RemoveDevice<'static>;
+            pub type Input = crate::blue_catbird::mlsChat::remove_device::RemoveDevice<'static>;
             pub type Output =
                 crate::blue_catbird::mlsChat::remove_device::RemoveDeviceOutput<'static>;
 
@@ -601,7 +579,11 @@ pub mod catbird {
                 fn from(value: InputData) -> Self {
                     Self {
                         blob_locator: value.blob_locator.map(Into::into),
-                        group_id: value.group_id.into(),
+                        convo_id: None,
+                        group_id: Some(value.group_id.into()),
+                        kind: None,
+                        metadata_version: None,
+                        reset_generation: None,
                     }
                 }
             }
@@ -646,7 +628,11 @@ pub mod catbird {
                 fn from(value: ParamsData) -> Self {
                     Self {
                         blob_locator: value.blob_locator.into(),
+                        convo_id: None,
                         group_id: value.group_id.into(),
+                        kind: None,
+                        metadata_version: None,
+                        reset_generation: None,
                     }
                 }
             }

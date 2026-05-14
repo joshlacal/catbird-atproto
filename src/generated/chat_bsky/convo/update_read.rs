@@ -41,6 +41,40 @@ pub struct UpdateReadOutput<'a> {
     pub convo: crate::chat_bsky::convo::ConvoView<'a>,
 }
 
+#[jacquard_derive::open_union]
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    thiserror::Error,
+    miette::Diagnostic,
+    jacquard_derive::IntoStatic
+)]
+#[serde(tag = "error", content = "message")]
+#[serde(bound(deserialize = "'de: 'a"))]
+pub enum UpdateReadError<'a> {
+    #[serde(rename = "InvalidConvo")]
+    InvalidConvo(std::option::Option<jacquard_common::CowStr<'a>>),
+}
+
+impl std::fmt::Display for UpdateReadError<'_> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::InvalidConvo(msg) => {
+                write!(f, "InvalidConvo")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+        }
+    }
+}
+
 /// Response type for
 ///chat.bsky.convo.updateRead
 pub struct UpdateReadResponse;
@@ -48,7 +82,7 @@ impl jacquard_common::xrpc::XrpcResp for UpdateReadResponse {
     const NSID: &'static str = "chat.bsky.convo.updateRead";
     const ENCODING: &'static str = "application/json";
     type Output<'de> = UpdateReadOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
+    type Err<'de> = UpdateReadError<'de>;
 }
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for UpdateRead<'a> {
