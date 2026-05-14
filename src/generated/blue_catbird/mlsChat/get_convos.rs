@@ -29,7 +29,7 @@ pub mod get_convos_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -149,7 +149,7 @@ where
 pub struct GetConvosOutput<'a> {
     /// List of conversations (empty if countOnly is true)
     #[serde(borrow)]
-    pub conversations: Vec<crate::blue_catbird::mlsChat::ConvoView<'a>>,
+    pub conversations: Vec<crate::generated::blue_catbird::mlsChat::ConvoView<'a>>,
     /// Pagination cursor for next page
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]

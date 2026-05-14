@@ -20,7 +20,7 @@ pub mod device_key_package_count_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -646,57 +646,57 @@ pub mod key_package_history_item_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
+        type Action;
         type CreatedAt;
         type Id;
-        type Action;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
+        type Action = Unset;
         type CreatedAt = Unset;
         type Id = Unset;
-        type Action = Unset;
-    }
-    ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type CreatedAt = Set<members::created_at>;
-        type Id = S::Id;
-        type Action = S::Action;
-    }
-    ///State transition - sets the `id` field to Set
-    pub struct SetId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetId<S> {}
-    impl<S: State> State for SetId<S> {
-        type CreatedAt = S::CreatedAt;
-        type Id = Set<members::id>;
-        type Action = S::Action;
     }
     ///State transition - sets the `action` field to Set
     pub struct SetAction<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetAction<S> {}
     impl<S: State> State for SetAction<S> {
+        type Action = Set<members::action>;
         type CreatedAt = S::CreatedAt;
         type Id = S::Id;
-        type Action = Set<members::action>;
+    }
+    ///State transition - sets the `created_at` field to Set
+    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
+    impl<S: State> State for SetCreatedAt<S> {
+        type Action = S::Action;
+        type CreatedAt = Set<members::created_at>;
+        type Id = S::Id;
+    }
+    ///State transition - sets the `id` field to Set
+    pub struct SetId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetId<S> {}
+    impl<S: State> State for SetId<S> {
+        type Action = S::Action;
+        type CreatedAt = S::CreatedAt;
+        type Id = Set<members::id>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
+        ///Marker type for the `action` field
+        pub struct action(());
         ///Marker type for the `created_at` field
         pub struct created_at(());
         ///Marker type for the `id` field
         pub struct id(());
-        ///Marker type for the `action` field
-        pub struct action(());
     }
 }
 
@@ -809,9 +809,9 @@ where
 impl<'a, S> KeyPackageHistoryItemBuilder<'a, S>
 where
     S: key_package_history_item_state::State,
+    S::Action: key_package_history_item_state::IsSet,
     S::CreatedAt: key_package_history_item_state::IsSet,
     S::Id: key_package_history_item_state::IsSet,
-    S::Action: key_package_history_item_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> KeyPackageHistoryItem<'a> {
@@ -867,7 +867,11 @@ pub struct KeyPackageStats<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub by_device: std::option::Option<
-        Vec<crate::blue_catbird::mlsChat::get_key_package_status::DeviceKeyPackageCount<'a>>,
+        Vec<
+            crate::generated::blue_catbird::mlsChat::get_key_package_status::DeviceKeyPackageCount<
+                'a,
+            >,
+        >,
     >,
     pub total_available: i64,
     pub total_consumed: i64,
@@ -877,7 +881,7 @@ pub mod key_package_stats_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -922,7 +926,11 @@ pub struct KeyPackageStatsBuilder<'a, S: key_package_stats_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
         ::core::option::Option<
-            Vec<crate::blue_catbird::mlsChat::get_key_package_status::DeviceKeyPackageCount<'a>>,
+            Vec<
+                crate::generated::blue_catbird::mlsChat::get_key_package_status::DeviceKeyPackageCount<
+                    'a,
+                >,
+            >,
         >,
         ::core::option::Option<i64>,
         ::core::option::Option<i64>,
@@ -955,7 +963,9 @@ impl<'a, S: key_package_stats_state::State> KeyPackageStatsBuilder<'a, S> {
         value: impl Into<
             Option<
                 Vec<
-                    crate::blue_catbird::mlsChat::get_key_package_status::DeviceKeyPackageCount<'a>,
+                    crate::generated::blue_catbird::mlsChat::get_key_package_status::DeviceKeyPackageCount<
+                        'a,
+                    >,
                 >,
             >,
         >,
@@ -967,7 +977,11 @@ impl<'a, S: key_package_stats_state::State> KeyPackageStatsBuilder<'a, S> {
     pub fn maybe_by_device(
         mut self,
         value: Option<
-            Vec<crate::blue_catbird::mlsChat::get_key_package_status::DeviceKeyPackageCount<'a>>,
+            Vec<
+                crate::generated::blue_catbird::mlsChat::get_key_package_status::DeviceKeyPackageCount<
+                    'a,
+                >,
+            >,
         >,
     ) -> Self {
         self.__unsafe_private_named.0 = value;
@@ -1108,91 +1122,91 @@ pub mod key_package_status_item_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type CipherSuite;
-        type CreatedAt;
         type Id;
-        type DeviceId;
+        type CreatedAt;
+        type CipherSuite;
         type Consumed;
+        type DeviceId;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type CipherSuite = Unset;
-        type CreatedAt = Unset;
         type Id = Unset;
-        type DeviceId = Unset;
+        type CreatedAt = Unset;
+        type CipherSuite = Unset;
         type Consumed = Unset;
-    }
-    ///State transition - sets the `cipher_suite` field to Set
-    pub struct SetCipherSuite<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCipherSuite<S> {}
-    impl<S: State> State for SetCipherSuite<S> {
-        type CipherSuite = Set<members::cipher_suite>;
-        type CreatedAt = S::CreatedAt;
-        type Id = S::Id;
-        type DeviceId = S::DeviceId;
-        type Consumed = S::Consumed;
-    }
-    ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type CipherSuite = S::CipherSuite;
-        type CreatedAt = Set<members::created_at>;
-        type Id = S::Id;
-        type DeviceId = S::DeviceId;
-        type Consumed = S::Consumed;
+        type DeviceId = Unset;
     }
     ///State transition - sets the `id` field to Set
     pub struct SetId<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetId<S> {}
     impl<S: State> State for SetId<S> {
-        type CipherSuite = S::CipherSuite;
-        type CreatedAt = S::CreatedAt;
         type Id = Set<members::id>;
-        type DeviceId = S::DeviceId;
-        type Consumed = S::Consumed;
-    }
-    ///State transition - sets the `device_id` field to Set
-    pub struct SetDeviceId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDeviceId<S> {}
-    impl<S: State> State for SetDeviceId<S> {
-        type CipherSuite = S::CipherSuite;
         type CreatedAt = S::CreatedAt;
-        type Id = S::Id;
-        type DeviceId = Set<members::device_id>;
+        type CipherSuite = S::CipherSuite;
         type Consumed = S::Consumed;
+        type DeviceId = S::DeviceId;
+    }
+    ///State transition - sets the `created_at` field to Set
+    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
+    impl<S: State> State for SetCreatedAt<S> {
+        type Id = S::Id;
+        type CreatedAt = Set<members::created_at>;
+        type CipherSuite = S::CipherSuite;
+        type Consumed = S::Consumed;
+        type DeviceId = S::DeviceId;
+    }
+    ///State transition - sets the `cipher_suite` field to Set
+    pub struct SetCipherSuite<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCipherSuite<S> {}
+    impl<S: State> State for SetCipherSuite<S> {
+        type Id = S::Id;
+        type CreatedAt = S::CreatedAt;
+        type CipherSuite = Set<members::cipher_suite>;
+        type Consumed = S::Consumed;
+        type DeviceId = S::DeviceId;
     }
     ///State transition - sets the `consumed` field to Set
     pub struct SetConsumed<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetConsumed<S> {}
     impl<S: State> State for SetConsumed<S> {
-        type CipherSuite = S::CipherSuite;
-        type CreatedAt = S::CreatedAt;
         type Id = S::Id;
-        type DeviceId = S::DeviceId;
+        type CreatedAt = S::CreatedAt;
+        type CipherSuite = S::CipherSuite;
         type Consumed = Set<members::consumed>;
+        type DeviceId = S::DeviceId;
+    }
+    ///State transition - sets the `device_id` field to Set
+    pub struct SetDeviceId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetDeviceId<S> {}
+    impl<S: State> State for SetDeviceId<S> {
+        type Id = S::Id;
+        type CreatedAt = S::CreatedAt;
+        type CipherSuite = S::CipherSuite;
+        type Consumed = S::Consumed;
+        type DeviceId = Set<members::device_id>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `cipher_suite` field
-        pub struct cipher_suite(());
-        ///Marker type for the `created_at` field
-        pub struct created_at(());
         ///Marker type for the `id` field
         pub struct id(());
-        ///Marker type for the `device_id` field
-        pub struct device_id(());
+        ///Marker type for the `created_at` field
+        pub struct created_at(());
+        ///Marker type for the `cipher_suite` field
+        pub struct cipher_suite(());
         ///Marker type for the `consumed` field
         pub struct consumed(());
+        ///Marker type for the `device_id` field
+        pub struct device_id(());
     }
 }
 
@@ -1345,11 +1359,11 @@ where
 impl<'a, S> KeyPackageStatusItemBuilder<'a, S>
 where
     S: key_package_status_item_state::State,
-    S::CipherSuite: key_package_status_item_state::IsSet,
-    S::CreatedAt: key_package_status_item_state::IsSet,
     S::Id: key_package_status_item_state::IsSet,
-    S::DeviceId: key_package_status_item_state::IsSet,
+    S::CreatedAt: key_package_status_item_state::IsSet,
+    S::CipherSuite: key_package_status_item_state::IsSet,
     S::Consumed: key_package_status_item_state::IsSet,
+    S::DeviceId: key_package_status_item_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> KeyPackageStatusItem<'a> {
@@ -1427,7 +1441,7 @@ pub mod get_key_package_status_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -1576,17 +1590,25 @@ pub struct GetKeyPackageStatusOutput<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub history: std::option::Option<
-        Vec<crate::blue_catbird::mlsChat::get_key_package_status::KeyPackageHistoryItem<'a>>,
+        Vec<
+            crate::generated::blue_catbird::mlsChat::get_key_package_status::KeyPackageHistoryItem<
+                'a,
+            >,
+        >,
     >,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub stats: std::option::Option<
-        crate::blue_catbird::mlsChat::get_key_package_status::KeyPackageStats<'a>,
+        crate::generated::blue_catbird::mlsChat::get_key_package_status::KeyPackageStats<'a>,
     >,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub status: std::option::Option<
-        Vec<crate::blue_catbird::mlsChat::get_key_package_status::KeyPackageStatusItem<'a>>,
+        Vec<
+            crate::generated::blue_catbird::mlsChat::get_key_package_status::KeyPackageStatusItem<
+                'a,
+            >,
+        >,
     >,
 }
 

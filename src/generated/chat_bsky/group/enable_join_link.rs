@@ -14,7 +14,7 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct EnableJoinLink<'a> {
@@ -24,13 +24,7 @@ pub struct EnableJoinLink<'a> {
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct EnableJoinLinkOutput<'a> {
@@ -48,7 +42,7 @@ pub struct EnableJoinLinkOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic
+    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -111,9 +105,8 @@ impl jacquard_common::xrpc::XrpcResp for EnableJoinLinkResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for EnableJoinLink<'a> {
     const NSID: &'static str = "chat.bsky.group.enableJoinLink";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = EnableJoinLinkResponse;
 }
 
@@ -122,9 +115,8 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for EnableJoinLink<'a> {
 pub struct EnableJoinLinkRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for EnableJoinLinkRequest {
     const PATH: &'static str = "/xrpc/chat.bsky.group.enableJoinLink";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<'de> = EnableJoinLink<'de>;
     type Response = EnableJoinLinkResponse;
 }

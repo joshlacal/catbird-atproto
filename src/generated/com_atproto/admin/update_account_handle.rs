@@ -7,13 +7,7 @@
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateAccountHandle<'a> {
@@ -25,9 +19,9 @@ pub struct UpdateAccountHandle<'a> {
 
 pub mod update_account_handle_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -175,9 +169,8 @@ impl jacquard_common::xrpc::XrpcResp for UpdateAccountHandleResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for UpdateAccountHandle<'a> {
     const NSID: &'static str = "com.atproto.admin.updateAccountHandle";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = UpdateAccountHandleResponse;
 }
 
@@ -186,9 +179,8 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for UpdateAccountHandle<'a> {
 pub struct UpdateAccountHandleRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for UpdateAccountHandleRequest {
     const PATH: &'static str = "/xrpc/com.atproto.admin.updateAccountHandle";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<'de> = UpdateAccountHandle<'de>;
     type Response = UpdateAccountHandleResponse;
 }

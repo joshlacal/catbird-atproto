@@ -14,7 +14,7 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct LockConvo<'a> {
@@ -24,13 +24,7 @@ pub struct LockConvo<'a> {
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct LockConvoOutput<'a> {
@@ -48,7 +42,7 @@ pub struct LockConvoOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic
+    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -102,9 +96,8 @@ impl jacquard_common::xrpc::XrpcResp for LockConvoResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for LockConvo<'a> {
     const NSID: &'static str = "chat.bsky.convo.lockConvo";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = LockConvoResponse;
 }
 
@@ -113,9 +106,8 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for LockConvo<'a> {
 pub struct LockConvoRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for LockConvoRequest {
     const PATH: &'static str = "/xrpc/chat.bsky.convo.lockConvo";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<'de> = LockConvo<'de>;
     type Response = LockConvoResponse;
 }

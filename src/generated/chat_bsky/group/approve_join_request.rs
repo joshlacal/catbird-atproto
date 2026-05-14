@@ -7,13 +7,7 @@
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ApproveJoinRequest<'a> {
@@ -25,9 +19,9 @@ pub struct ApproveJoinRequest<'a> {
 
 pub mod approve_join_request_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -165,13 +159,7 @@ where
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ApproveJoinRequestOutput<'a> {
@@ -189,7 +177,7 @@ pub struct ApproveJoinRequestOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic
+    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -243,9 +231,8 @@ impl jacquard_common::xrpc::XrpcResp for ApproveJoinRequestResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for ApproveJoinRequest<'a> {
     const NSID: &'static str = "chat.bsky.group.approveJoinRequest";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = ApproveJoinRequestResponse;
 }
 
@@ -254,9 +241,8 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for ApproveJoinRequest<'a> {
 pub struct ApproveJoinRequestRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for ApproveJoinRequestRequest {
     const PATH: &'static str = "/xrpc/chat.bsky.group.approveJoinRequest";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<'de> = ApproveJoinRequest<'de>;
     type Response = ApproveJoinRequestResponse;
 }

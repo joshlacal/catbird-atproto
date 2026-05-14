@@ -23,7 +23,7 @@ pub mod gap_info_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -317,6 +317,19 @@ fn lexicon_doc_blue_catbird_mlsChat_getMessages() -> ::jacquard_lexicon::lexicon
                                     }),
                                 );
                                 map.insert(
+                                    ::jacquard_common::smol_str::SmolStr::new_static(
+                                        "joinEpoch",
+                                    ),
+                                    ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                        description: None,
+                                        default: None,
+                                        minimum: None,
+                                        maximum: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                    }),
+                                );
+                                map.insert(
                                     ::jacquard_common::smol_str::SmolStr::new_static("limit"),
                                     ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
                                         description: None,
@@ -422,6 +435,9 @@ pub struct GetMessages<'a> {
     ///(min: 0)
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     pub from_epoch: std::option::Option<i64>,
+    ///(min: 0)
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    pub join_epoch: std::option::Option<i64>,
     ///(default: 50, min: 1, max: 100)
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     pub limit: std::option::Option<i64>,
@@ -441,7 +457,7 @@ pub mod get_messages_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -478,6 +494,7 @@ pub struct GetMessagesBuilder<'a, S: get_messages_state::State> {
         ::core::option::Option<i64>,
         ::core::option::Option<i64>,
         ::core::option::Option<i64>,
+        ::core::option::Option<i64>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
@@ -495,7 +512,7 @@ impl<'a> GetMessagesBuilder<'a, get_messages_state::Empty> {
     pub fn new() -> Self {
         GetMessagesBuilder {
             _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None, None),
+            __unsafe_private_named: (None, None, None, None, None, None, None),
             _phantom: ::core::marker::PhantomData,
         }
     }
@@ -534,14 +551,27 @@ impl<'a, S: get_messages_state::State> GetMessagesBuilder<'a, S> {
 }
 
 impl<'a, S: get_messages_state::State> GetMessagesBuilder<'a, S> {
+    /// Set the `joinEpoch` field (optional)
+    pub fn join_epoch(mut self, value: impl Into<Option<i64>>) -> Self {
+        self.__unsafe_private_named.2 = value.into();
+        self
+    }
+    /// Set the `joinEpoch` field to an Option value (optional)
+    pub fn maybe_join_epoch(mut self, value: Option<i64>) -> Self {
+        self.__unsafe_private_named.2 = value;
+        self
+    }
+}
+
+impl<'a, S: get_messages_state::State> GetMessagesBuilder<'a, S> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.2 = value.into();
+        self.__unsafe_private_named.3 = value.into();
         self
     }
     /// Set the `limit` field to an Option value (optional)
     pub fn maybe_limit(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.2 = value;
+        self.__unsafe_private_named.3 = value;
         self
     }
 }
@@ -549,12 +579,12 @@ impl<'a, S: get_messages_state::State> GetMessagesBuilder<'a, S> {
 impl<'a, S: get_messages_state::State> GetMessagesBuilder<'a, S> {
     /// Set the `sinceSeq` field (optional)
     pub fn since_seq(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.3 = value.into();
+        self.__unsafe_private_named.4 = value.into();
         self
     }
     /// Set the `sinceSeq` field to an Option value (optional)
     pub fn maybe_since_seq(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.3 = value;
+        self.__unsafe_private_named.4 = value;
         self
     }
 }
@@ -562,12 +592,12 @@ impl<'a, S: get_messages_state::State> GetMessagesBuilder<'a, S> {
 impl<'a, S: get_messages_state::State> GetMessagesBuilder<'a, S> {
     /// Set the `toEpoch` field (optional)
     pub fn to_epoch(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.4 = value.into();
+        self.__unsafe_private_named.5 = value.into();
         self
     }
     /// Set the `toEpoch` field to an Option value (optional)
     pub fn maybe_to_epoch(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.4 = value;
+        self.__unsafe_private_named.5 = value;
         self
     }
 }
@@ -575,12 +605,12 @@ impl<'a, S: get_messages_state::State> GetMessagesBuilder<'a, S> {
 impl<'a, S: get_messages_state::State> GetMessagesBuilder<'a, S> {
     /// Set the `type` field (optional)
     pub fn r#type(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.5 = value.into();
+        self.__unsafe_private_named.6 = value.into();
         self
     }
     /// Set the `type` field to an Option value (optional)
     pub fn maybe_type(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.5 = value;
+        self.__unsafe_private_named.6 = value;
         self
     }
 }
@@ -595,10 +625,11 @@ where
         GetMessages {
             convo_id: self.__unsafe_private_named.0.unwrap(),
             from_epoch: self.__unsafe_private_named.1,
-            limit: self.__unsafe_private_named.2,
-            since_seq: self.__unsafe_private_named.3,
-            to_epoch: self.__unsafe_private_named.4,
-            r#type: self.__unsafe_private_named.5,
+            join_epoch: self.__unsafe_private_named.2,
+            limit: self.__unsafe_private_named.3,
+            since_seq: self.__unsafe_private_named.4,
+            to_epoch: self.__unsafe_private_named.5,
+            r#type: self.__unsafe_private_named.6,
         }
     }
 }
@@ -612,13 +643,17 @@ pub struct GetMessagesOutput<'a> {
     /// Gap detection metadata for missing messages
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub gap_info: std::option::Option<crate::blue_catbird::mlsChat::get_messages::GapInfo<'a>>,
+    pub gap_info:
+        std::option::Option<crate::generated::blue_catbird::mlsChat::get_messages::GapInfo<'a>>,
     /// Sequence number of the last message in this response. Use as sinceSeq for next page.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     pub last_seq: std::option::Option<i64>,
     /// Messages in stable conversation timeline order (seq ASC)
     #[serde(borrow)]
-    pub messages: Vec<crate::blue_catbird::mlsChat::MessageView<'a>>,
+    pub messages: Vec<crate::generated::blue_catbird::mlsChat::MessageView<'a>>,
+    /// Count of pre-join messages suppressed from this response.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    pub suppressed_before_join: std::option::Option<i64>,
 }
 
 #[jacquard_derive::open_union]

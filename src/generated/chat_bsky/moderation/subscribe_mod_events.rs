@@ -7,13 +7,7 @@
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct EventConvoFirstMessage<'a> {
@@ -35,9 +29,9 @@ pub struct EventConvoFirstMessage<'a> {
 
 pub mod event_convo_first_message_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -141,10 +135,7 @@ pub struct EventConvoFirstMessageBuilder<'a, S: event_convo_first_message_state:
 
 impl<'a> EventConvoFirstMessage<'a> {
     /// Create a new builder for this type
-    pub fn new() -> EventConvoFirstMessageBuilder<
-        'a,
-        event_convo_first_message_state::Empty,
-    > {
+    pub fn new() -> EventConvoFirstMessageBuilder<'a, event_convo_first_message_state::Empty> {
         EventConvoFirstMessageBuilder::new()
     }
 }
@@ -169,10 +160,7 @@ where
     pub fn convo_id(
         mut self,
         value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> EventConvoFirstMessageBuilder<
-        'a,
-        event_convo_first_message_state::SetConvoId<S>,
-    > {
+    ) -> EventConvoFirstMessageBuilder<'a, event_convo_first_message_state::SetConvoId<S>> {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         EventConvoFirstMessageBuilder {
             _phantom_state: ::core::marker::PhantomData,
@@ -191,10 +179,7 @@ where
     pub fn created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> EventConvoFirstMessageBuilder<
-        'a,
-        event_convo_first_message_state::SetCreatedAt<S>,
-    > {
+    ) -> EventConvoFirstMessageBuilder<'a, event_convo_first_message_state::SetCreatedAt<S>> {
         self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
         EventConvoFirstMessageBuilder {
             _phantom_state: ::core::marker::PhantomData,
@@ -204,23 +189,14 @@ where
     }
 }
 
-impl<
-    'a,
-    S: event_convo_first_message_state::State,
-> EventConvoFirstMessageBuilder<'a, S> {
+impl<'a, S: event_convo_first_message_state::State> EventConvoFirstMessageBuilder<'a, S> {
     /// Set the `messageId` field (optional)
-    pub fn message_id(
-        mut self,
-        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
-    ) -> Self {
+    pub fn message_id(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
         self.__unsafe_private_named.2 = value.into();
         self
     }
     /// Set the `messageId` field to an Option value (optional)
-    pub fn maybe_message_id(
-        mut self,
-        value: Option<jacquard_common::CowStr<'a>>,
-    ) -> Self {
+    pub fn maybe_message_id(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
         self.__unsafe_private_named.2 = value;
         self
     }
@@ -235,10 +211,7 @@ where
     pub fn recipients(
         mut self,
         value: impl Into<Vec<jacquard_common::types::string::Did<'a>>>,
-    ) -> EventConvoFirstMessageBuilder<
-        'a,
-        event_convo_first_message_state::SetRecipients<S>,
-    > {
+    ) -> EventConvoFirstMessageBuilder<'a, event_convo_first_message_state::SetRecipients<S>> {
         self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
         EventConvoFirstMessageBuilder {
             _phantom_state: ::core::marker::PhantomData,
@@ -327,14 +300,11 @@ where
     }
 }
 
-fn lexicon_doc_chat_bsky_moderation_subscribeModEvents() -> ::jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
+) -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
-        id: ::jacquard_common::CowStr::new_static(
-            "chat.bsky.moderation.subscribeModEvents",
-        ),
+        id: ::jacquard_common::CowStr::new_static("chat.bsky.moderation.subscribeModEvents"),
         revision: None,
         description: None,
         defs: {
@@ -539,13 +509,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for EventConvoFirstMessage<'a
 }
 
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct SubscribeModEvents<'a> {
@@ -556,9 +520,9 @@ pub struct SubscribeModEvents<'a> {
 
 pub mod subscribe_mod_events_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -600,10 +564,7 @@ impl<'a> SubscribeModEventsBuilder<'a, subscribe_mod_events_state::Empty> {
 
 impl<'a, S: subscribe_mod_events_state::State> SubscribeModEventsBuilder<'a, S> {
     /// Set the `cursor` field (optional)
-    pub fn cursor(
-        mut self,
-        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
-    ) -> Self {
+    pub fn cursor(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
         self.__unsafe_private_named.0 = value.into();
         self
     }
@@ -628,24 +589,14 @@ where
 
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "$type")]
 #[serde(bound(deserialize = "'de: 'a"))]
 pub enum SubscribeModEventsMessage<'a> {
     #[serde(rename = "#eventConvoFirstMessage")]
     EventConvoFirstMessage(
-        Box<
-            crate::chat_bsky::moderation::subscribe_mod_events::EventConvoFirstMessage<
-                'a,
-            >,
-        >,
+        Box<crate::chat_bsky::moderation::subscribe_mod_events::EventConvoFirstMessage<'a>>,
     ),
 }
 
@@ -654,19 +605,15 @@ impl<'a> SubscribeModEventsMessage<'a> {
     pub fn decode_framed<'de: 'a>(
         bytes: &'de [u8],
     ) -> Result<SubscribeModEventsMessage<'a>, jacquard_common::error::DecodeError> {
-        let (header, body) = jacquard_common::xrpc::subscription::parse_event_header(
-            bytes,
-        )?;
+        let (header, body) = jacquard_common::xrpc::subscription::parse_event_header(bytes)?;
         match header.t.as_str() {
             "#eventConvoFirstMessage" => {
                 let variant = serde_ipld_dagcbor::from_slice(body)?;
                 Ok(Self::EventConvoFirstMessage(Box::new(variant)))
             }
-            unknown => {
-                Err(
-                    jacquard_common::error::DecodeError::UnknownEventType(unknown.into()),
-                )
-            }
+            unknown => Err(jacquard_common::error::DecodeError::UnknownEventType(
+                unknown.into(),
+            )),
         }
     }
 }
@@ -681,7 +628,7 @@ impl<'a> SubscribeModEventsMessage<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic
+    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -720,21 +667,24 @@ impl std::fmt::Display for SubscribeModEventsError<'_> {
 pub struct SubscribeModEventsStream;
 impl jacquard_common::xrpc::SubscriptionResp for SubscribeModEventsStream {
     const NSID: &'static str = "chat.bsky.moderation.subscribeModEvents";
-    const ENCODING: jacquard_common::xrpc::MessageEncoding = jacquard_common::xrpc::MessageEncoding::Json;
+    const ENCODING: jacquard_common::xrpc::MessageEncoding =
+        jacquard_common::xrpc::MessageEncoding::Json;
     type Message<'de> = SubscribeModEventsMessage<'de>;
     type Error<'de> = SubscribeModEventsError<'de>;
 }
 
 impl<'a> jacquard_common::xrpc::XrpcSubscription for SubscribeModEvents<'a> {
     const NSID: &'static str = "chat.bsky.moderation.subscribeModEvents";
-    const ENCODING: jacquard_common::xrpc::MessageEncoding = jacquard_common::xrpc::MessageEncoding::Json;
+    const ENCODING: jacquard_common::xrpc::MessageEncoding =
+        jacquard_common::xrpc::MessageEncoding::Json;
     type Stream = SubscribeModEventsStream;
 }
 
 pub struct SubscribeModEventsEndpoint;
 impl jacquard_common::xrpc::SubscriptionEndpoint for SubscribeModEventsEndpoint {
     const PATH: &'static str = "/xrpc/chat.bsky.moderation.subscribeModEvents";
-    const ENCODING: jacquard_common::xrpc::MessageEncoding = jacquard_common::xrpc::MessageEncoding::Json;
+    const ENCODING: jacquard_common::xrpc::MessageEncoding =
+        jacquard_common::xrpc::MessageEncoding::Json;
     type Params<'de> = SubscribeModEvents<'de>;
     type Stream = SubscribeModEventsStream;
 }

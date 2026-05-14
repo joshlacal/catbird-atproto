@@ -7,13 +7,7 @@
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct UnregisterPush<'a> {
@@ -29,9 +23,9 @@ pub struct UnregisterPush<'a> {
 
 pub mod unregister_push_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -255,9 +249,8 @@ impl jacquard_common::xrpc::XrpcResp for UnregisterPushResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for UnregisterPush<'a> {
     const NSID: &'static str = "app.bsky.notification.unregisterPush";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = UnregisterPushResponse;
 }
 
@@ -266,9 +259,8 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for UnregisterPush<'a> {
 pub struct UnregisterPushRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for UnregisterPushRequest {
     const PATH: &'static str = "/xrpc/app.bsky.notification.unregisterPush";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<'de> = UnregisterPush<'de>;
     type Response = UnregisterPushResponse;
 }
