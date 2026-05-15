@@ -448,68 +448,6 @@ fn lexicon_doc_blue_catbird_mlsChat_commitGroupChange(
                                         }),
                                     );
                                     map.insert(
-                                        ::jacquard_common::smol_str::SmolStr::new_static(
-                                            "replacedKeyPackageHash",
-                                        ),
-                                        ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                            description: Some(
-                                                ::jacquard_common::CowStr::new_static(
-                                                    "Hex-encoded SHA-256 of the dead KP being replaced (action=reissueAddMember).",
-                                                ),
-                                            ),
-                                            format: None,
-                                            default: None,
-                                            min_length: None,
-                                            max_length: None,
-                                            min_graphemes: None,
-                                            max_graphemes: None,
-                                            r#enum: None,
-                                            r#const: None,
-                                            known_values: None,
-                                        }),
-                                    );
-                                    map.insert(
-                                        ::jacquard_common::smol_str::SmolStr::new_static(
-                                            "replacementCommit",
-                                        ),
-                                        ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
-                                            description: None,
-                                            max_length: None,
-                                            min_length: None,
-                                        }),
-                                    );
-                                    map.insert(
-                                        ::jacquard_common::smol_str::SmolStr::new_static(
-                                            "replacementKeyPackageHash",
-                                        ),
-                                        ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                            description: Some(
-                                                ::jacquard_common::CowStr::new_static(
-                                                    "Hex-encoded SHA-256 of the fresh KP used in the replacement (action=reissueAddMember).",
-                                                ),
-                                            ),
-                                            format: None,
-                                            default: None,
-                                            min_length: None,
-                                            max_length: None,
-                                            min_graphemes: None,
-                                            max_graphemes: None,
-                                            r#enum: None,
-                                            r#const: None,
-                                            known_values: None,
-                                        }),
-                                    );
-                                    map.insert(
-                                        ::jacquard_common::smol_str::SmolStr::new_static(
-                                            "replacementWelcome",
-                                        ),
-                                        ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
-                                            description: None,
-                                            max_length: None,
-                                            min_length: None,
-                                        }),
-                                    );
-                                    map.insert(
                                         ::jacquard_common::smol_str::SmolStr::new_static("welcome"),
                                         ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
                                             description: None,
@@ -907,22 +845,6 @@ pub struct CommitGroupChange<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub pending_addition_id: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// Hex-encoded SHA-256 of the dead KP being replaced (action=reissueAddMember).
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub replaced_key_package_hash: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// Replacement MLS Commit broadcast to all other members (action=reissueAddMember). MUST be at the same epoch as the original commit being replaced.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(default, with = "jacquard_common::opt_serde_bytes_helper")]
-    pub replacement_commit: std::option::Option<bytes::Bytes>,
-    /// Hex-encoded SHA-256 of the fresh KP used in the replacement (action=reissueAddMember).
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub replacement_key_package_hash: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// Replacement MLS Welcome message for the recipient (action=reissueAddMember).
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(default, with = "jacquard_common::opt_serde_bytes_helper")]
-    pub replacement_welcome: std::option::Option<bytes::Bytes>,
     /// MLS Welcome message (used by addMembers, completePendingDeviceAddition)
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(default, with = "jacquard_common::opt_serde_bytes_helper")]
