@@ -33,6 +33,7 @@ pub mod put_group_metadata_blob;
 pub mod reconcile_key_packages;
 pub mod register_device;
 pub mod reissue_welcome;
+pub mod reissue_welcome_respond;
 pub mod remove_device;
 pub mod report_recovery_failure;
 pub mod report_spam;
