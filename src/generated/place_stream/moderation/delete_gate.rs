@@ -7,13 +7,7 @@
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct DeleteGate<'a> {
@@ -27,9 +21,9 @@ pub struct DeleteGate<'a> {
 
 pub mod delete_gate_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -174,7 +168,7 @@ where
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct DeleteGateOutput<'a> {}
@@ -188,7 +182,7 @@ pub struct DeleteGateOutput<'a> {}
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic
+    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -245,9 +239,8 @@ impl jacquard_common::xrpc::XrpcResp for DeleteGateResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for DeleteGate<'a> {
     const NSID: &'static str = "place.stream.moderation.deleteGate";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = DeleteGateResponse;
 }
 
@@ -256,9 +249,8 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for DeleteGate<'a> {
 pub struct DeleteGateRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for DeleteGateRequest {
     const PATH: &'static str = "/xrpc/place.stream.moderation.deleteGate";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<'de> = DeleteGate<'de>;
     type Response = DeleteGateResponse;
 }

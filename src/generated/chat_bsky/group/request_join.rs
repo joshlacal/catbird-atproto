@@ -14,7 +14,7 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct RequestJoin<'a> {
@@ -31,7 +31,7 @@ pub struct RequestJoin<'a> {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct RequestJoinOutput<'a> {
@@ -53,7 +53,7 @@ pub struct RequestJoinOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic
+    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -134,9 +134,8 @@ impl jacquard_common::xrpc::XrpcResp for RequestJoinResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for RequestJoin<'a> {
     const NSID: &'static str = "chat.bsky.group.requestJoin";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = RequestJoinResponse;
 }
 
@@ -145,9 +144,8 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for RequestJoin<'a> {
 pub struct RequestJoinRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for RequestJoinRequest {
     const PATH: &'static str = "/xrpc/chat.bsky.group.requestJoin";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<'de> = RequestJoin<'de>;
     type Response = RequestJoinResponse;
 }

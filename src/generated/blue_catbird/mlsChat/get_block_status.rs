@@ -25,7 +25,7 @@ pub mod block_relationship_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -469,7 +469,7 @@ pub mod conversation_block_status_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -697,10 +697,12 @@ pub struct GetBlockStatus<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct GetBlockStatusOutput<'a> {
     #[serde(borrow)]
-    pub blocks: Vec<crate::blue_catbird::mlsChat::get_block_status::BlockRelationship<'a>>,
+    pub blocks:
+        Vec<crate::generated::blue_catbird::mlsChat::get_block_status::BlockRelationship<'a>>,
     pub checked_at: jacquard_common::types::string::Datetime,
     #[serde(borrow)]
-    pub status: crate::blue_catbird::mlsChat::get_block_status::ConversationBlockStatus<'a>,
+    pub status:
+        crate::generated::blue_catbird::mlsChat::get_block_status::ConversationBlockStatus<'a>,
 }
 
 #[jacquard_derive::open_union]

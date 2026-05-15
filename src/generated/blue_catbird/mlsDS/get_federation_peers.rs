@@ -22,7 +22,7 @@ pub mod get_federation_peers_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -112,7 +112,7 @@ where
 pub struct GetFederationPeersOutput<'a> {
     /// List of peer records
     #[serde(borrow)]
-    pub peers: Vec<crate::blue_catbird::mlsDS::get_federation_peers::PeerRecord<'a>>,
+    pub peers: Vec<crate::generated::blue_catbird::mlsDS::get_federation_peers::PeerRecord<'a>>,
 }
 
 /// Response type for

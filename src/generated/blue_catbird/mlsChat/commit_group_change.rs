@@ -23,7 +23,7 @@ pub mod key_package_hash_entry_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -448,6 +448,68 @@ fn lexicon_doc_blue_catbird_mlsChat_commitGroupChange(
                                         }),
                                     );
                                     map.insert(
+                                        ::jacquard_common::smol_str::SmolStr::new_static(
+                                            "replacedKeyPackageHash",
+                                        ),
+                                        ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                            description: Some(
+                                                ::jacquard_common::CowStr::new_static(
+                                                    "Hex-encoded SHA-256 of the dead KP being replaced (action=reissueAddMember).",
+                                                ),
+                                            ),
+                                            format: None,
+                                            default: None,
+                                            min_length: None,
+                                            max_length: None,
+                                            min_graphemes: None,
+                                            max_graphemes: None,
+                                            r#enum: None,
+                                            r#const: None,
+                                            known_values: None,
+                                        }),
+                                    );
+                                    map.insert(
+                                        ::jacquard_common::smol_str::SmolStr::new_static(
+                                            "replacementCommit",
+                                        ),
+                                        ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                            description: None,
+                                            max_length: None,
+                                            min_length: None,
+                                        }),
+                                    );
+                                    map.insert(
+                                        ::jacquard_common::smol_str::SmolStr::new_static(
+                                            "replacementKeyPackageHash",
+                                        ),
+                                        ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                            description: Some(
+                                                ::jacquard_common::CowStr::new_static(
+                                                    "Hex-encoded SHA-256 of the fresh KP used in the replacement (action=reissueAddMember).",
+                                                ),
+                                            ),
+                                            format: None,
+                                            default: None,
+                                            min_length: None,
+                                            max_length: None,
+                                            min_graphemes: None,
+                                            max_graphemes: None,
+                                            r#enum: None,
+                                            r#const: None,
+                                            known_values: None,
+                                        }),
+                                    );
+                                    map.insert(
+                                        ::jacquard_common::smol_str::SmolStr::new_static(
+                                            "replacementWelcome",
+                                        ),
+                                        ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                            description: None,
+                                            max_length: None,
+                                            min_length: None,
+                                        }),
+                                    );
+                                    map.insert(
                                         ::jacquard_common::smol_str::SmolStr::new_static("welcome"),
                                         ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
                                             description: None,
@@ -835,7 +897,7 @@ pub struct CommitGroupChange<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub key_package_hashes: std::option::Option<
-        Vec<crate::blue_catbird::mlsChat::commit_group_change::KeyPackageHashEntry<'a>>,
+        Vec<crate::generated::blue_catbird::mlsChat::commit_group_change::KeyPackageHashEntry<'a>>,
     >,
     /// DIDs of members to add (required for 'addMembers')
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
@@ -845,6 +907,22 @@ pub struct CommitGroupChange<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub pending_addition_id: std::option::Option<jacquard_common::CowStr<'a>>,
+    /// Hex-encoded SHA-256 of the dead KP being replaced (action=reissueAddMember).
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub replaced_key_package_hash: std::option::Option<jacquard_common::CowStr<'a>>,
+    /// Replacement MLS Commit broadcast to all other members (action=reissueAddMember). MUST be at the same epoch as the original commit being replaced.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(default, with = "jacquard_common::opt_serde_bytes_helper")]
+    pub replacement_commit: std::option::Option<bytes::Bytes>,
+    /// Hex-encoded SHA-256 of the fresh KP used in the replacement (action=reissueAddMember).
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub replacement_key_package_hash: std::option::Option<jacquard_common::CowStr<'a>>,
+    /// Replacement MLS Welcome message for the recipient (action=reissueAddMember).
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(default, with = "jacquard_common::opt_serde_bytes_helper")]
+    pub replacement_welcome: std::option::Option<bytes::Bytes>,
     /// MLS Welcome message (used by addMembers, completePendingDeviceAddition)
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(default, with = "jacquard_common::opt_serde_bytes_helper")]
@@ -861,7 +939,7 @@ pub struct CommitGroupChangeOutput<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub claimed_addition: std::option::Option<
-        crate::blue_catbird::mlsChat::commit_group_change::PendingDeviceAddition<'a>,
+        crate::generated::blue_catbird::mlsChat::commit_group_change::PendingDeviceAddition<'a>,
     >,
     /// confirmation tag of the new canonical tree state.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
@@ -874,7 +952,9 @@ pub struct CommitGroupChangeOutput<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub pending_additions: std::option::Option<
-        Vec<crate::blue_catbird::mlsChat::commit_group_change::PendingDeviceAddition<'a>>,
+        Vec<
+            crate::generated::blue_catbird::mlsChat::commit_group_change::PendingDeviceAddition<'a>,
+        >,
     >,
     /// Timestamp of rejoin (for processExternalCommit, rejoin)
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
@@ -1126,133 +1206,133 @@ pub mod pending_device_addition_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
+        type ConvoId;
+        type Id;
         type DeviceId;
         type Status;
-        type CreatedAt;
-        type Id;
-        type ConvoId;
-        type UserDid;
         type DeviceCredentialDid;
+        type UserDid;
+        type CreatedAt;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
+        type ConvoId = Unset;
+        type Id = Unset;
         type DeviceId = Unset;
         type Status = Unset;
-        type CreatedAt = Unset;
-        type Id = Unset;
-        type ConvoId = Unset;
-        type UserDid = Unset;
         type DeviceCredentialDid = Unset;
-    }
-    ///State transition - sets the `device_id` field to Set
-    pub struct SetDeviceId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDeviceId<S> {}
-    impl<S: State> State for SetDeviceId<S> {
-        type DeviceId = Set<members::device_id>;
-        type Status = S::Status;
-        type CreatedAt = S::CreatedAt;
-        type Id = S::Id;
-        type ConvoId = S::ConvoId;
-        type UserDid = S::UserDid;
-        type DeviceCredentialDid = S::DeviceCredentialDid;
-    }
-    ///State transition - sets the `status` field to Set
-    pub struct SetStatus<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetStatus<S> {}
-    impl<S: State> State for SetStatus<S> {
-        type DeviceId = S::DeviceId;
-        type Status = Set<members::status>;
-        type CreatedAt = S::CreatedAt;
-        type Id = S::Id;
-        type ConvoId = S::ConvoId;
-        type UserDid = S::UserDid;
-        type DeviceCredentialDid = S::DeviceCredentialDid;
-    }
-    ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type DeviceId = S::DeviceId;
-        type Status = S::Status;
-        type CreatedAt = Set<members::created_at>;
-        type Id = S::Id;
-        type ConvoId = S::ConvoId;
-        type UserDid = S::UserDid;
-        type DeviceCredentialDid = S::DeviceCredentialDid;
-    }
-    ///State transition - sets the `id` field to Set
-    pub struct SetId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetId<S> {}
-    impl<S: State> State for SetId<S> {
-        type DeviceId = S::DeviceId;
-        type Status = S::Status;
-        type CreatedAt = S::CreatedAt;
-        type Id = Set<members::id>;
-        type ConvoId = S::ConvoId;
-        type UserDid = S::UserDid;
-        type DeviceCredentialDid = S::DeviceCredentialDid;
+        type UserDid = Unset;
+        type CreatedAt = Unset;
     }
     ///State transition - sets the `convo_id` field to Set
     pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetConvoId<S> {}
     impl<S: State> State for SetConvoId<S> {
-        type DeviceId = S::DeviceId;
-        type Status = S::Status;
-        type CreatedAt = S::CreatedAt;
-        type Id = S::Id;
         type ConvoId = Set<members::convo_id>;
-        type UserDid = S::UserDid;
-        type DeviceCredentialDid = S::DeviceCredentialDid;
-    }
-    ///State transition - sets the `user_did` field to Set
-    pub struct SetUserDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUserDid<S> {}
-    impl<S: State> State for SetUserDid<S> {
+        type Id = S::Id;
         type DeviceId = S::DeviceId;
         type Status = S::Status;
-        type CreatedAt = S::CreatedAt;
-        type Id = S::Id;
-        type ConvoId = S::ConvoId;
-        type UserDid = Set<members::user_did>;
         type DeviceCredentialDid = S::DeviceCredentialDid;
+        type UserDid = S::UserDid;
+        type CreatedAt = S::CreatedAt;
+    }
+    ///State transition - sets the `id` field to Set
+    pub struct SetId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetId<S> {}
+    impl<S: State> State for SetId<S> {
+        type ConvoId = S::ConvoId;
+        type Id = Set<members::id>;
+        type DeviceId = S::DeviceId;
+        type Status = S::Status;
+        type DeviceCredentialDid = S::DeviceCredentialDid;
+        type UserDid = S::UserDid;
+        type CreatedAt = S::CreatedAt;
+    }
+    ///State transition - sets the `device_id` field to Set
+    pub struct SetDeviceId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetDeviceId<S> {}
+    impl<S: State> State for SetDeviceId<S> {
+        type ConvoId = S::ConvoId;
+        type Id = S::Id;
+        type DeviceId = Set<members::device_id>;
+        type Status = S::Status;
+        type DeviceCredentialDid = S::DeviceCredentialDid;
+        type UserDid = S::UserDid;
+        type CreatedAt = S::CreatedAt;
+    }
+    ///State transition - sets the `status` field to Set
+    pub struct SetStatus<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetStatus<S> {}
+    impl<S: State> State for SetStatus<S> {
+        type ConvoId = S::ConvoId;
+        type Id = S::Id;
+        type DeviceId = S::DeviceId;
+        type Status = Set<members::status>;
+        type DeviceCredentialDid = S::DeviceCredentialDid;
+        type UserDid = S::UserDid;
+        type CreatedAt = S::CreatedAt;
     }
     ///State transition - sets the `device_credential_did` field to Set
     pub struct SetDeviceCredentialDid<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetDeviceCredentialDid<S> {}
     impl<S: State> State for SetDeviceCredentialDid<S> {
+        type ConvoId = S::ConvoId;
+        type Id = S::Id;
         type DeviceId = S::DeviceId;
         type Status = S::Status;
-        type CreatedAt = S::CreatedAt;
-        type Id = S::Id;
-        type ConvoId = S::ConvoId;
-        type UserDid = S::UserDid;
         type DeviceCredentialDid = Set<members::device_credential_did>;
+        type UserDid = S::UserDid;
+        type CreatedAt = S::CreatedAt;
+    }
+    ///State transition - sets the `user_did` field to Set
+    pub struct SetUserDid<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetUserDid<S> {}
+    impl<S: State> State for SetUserDid<S> {
+        type ConvoId = S::ConvoId;
+        type Id = S::Id;
+        type DeviceId = S::DeviceId;
+        type Status = S::Status;
+        type DeviceCredentialDid = S::DeviceCredentialDid;
+        type UserDid = Set<members::user_did>;
+        type CreatedAt = S::CreatedAt;
+    }
+    ///State transition - sets the `created_at` field to Set
+    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
+    impl<S: State> State for SetCreatedAt<S> {
+        type ConvoId = S::ConvoId;
+        type Id = S::Id;
+        type DeviceId = S::DeviceId;
+        type Status = S::Status;
+        type DeviceCredentialDid = S::DeviceCredentialDid;
+        type UserDid = S::UserDid;
+        type CreatedAt = Set<members::created_at>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
+        ///Marker type for the `convo_id` field
+        pub struct convo_id(());
+        ///Marker type for the `id` field
+        pub struct id(());
         ///Marker type for the `device_id` field
         pub struct device_id(());
         ///Marker type for the `status` field
         pub struct status(());
-        ///Marker type for the `created_at` field
-        pub struct created_at(());
-        ///Marker type for the `id` field
-        pub struct id(());
-        ///Marker type for the `convo_id` field
-        pub struct convo_id(());
-        ///Marker type for the `user_did` field
-        pub struct user_did(());
         ///Marker type for the `device_credential_did` field
         pub struct device_credential_did(());
+        ///Marker type for the `user_did` field
+        pub struct user_did(());
+        ///Marker type for the `created_at` field
+        pub struct created_at(());
     }
 }
 
@@ -1460,13 +1540,13 @@ where
 impl<'a, S> PendingDeviceAdditionBuilder<'a, S>
 where
     S: pending_device_addition_state::State,
+    S::ConvoId: pending_device_addition_state::IsSet,
+    S::Id: pending_device_addition_state::IsSet,
     S::DeviceId: pending_device_addition_state::IsSet,
     S::Status: pending_device_addition_state::IsSet,
-    S::CreatedAt: pending_device_addition_state::IsSet,
-    S::Id: pending_device_addition_state::IsSet,
-    S::ConvoId: pending_device_addition_state::IsSet,
-    S::UserDid: pending_device_addition_state::IsSet,
     S::DeviceCredentialDid: pending_device_addition_state::IsSet,
+    S::UserDid: pending_device_addition_state::IsSet,
+    S::CreatedAt: pending_device_addition_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> PendingDeviceAddition<'a> {
@@ -1547,73 +1627,73 @@ pub mod rate_limited_body_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Scope;
-        type RetryAfterSeconds;
         type Error;
+        type RetryAfterSeconds;
         type Message;
+        type Scope;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Scope = Unset;
-        type RetryAfterSeconds = Unset;
         type Error = Unset;
+        type RetryAfterSeconds = Unset;
         type Message = Unset;
-    }
-    ///State transition - sets the `scope` field to Set
-    pub struct SetScope<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetScope<S> {}
-    impl<S: State> State for SetScope<S> {
-        type Scope = Set<members::scope>;
-        type RetryAfterSeconds = S::RetryAfterSeconds;
-        type Error = S::Error;
-        type Message = S::Message;
-    }
-    ///State transition - sets the `retry_after_seconds` field to Set
-    pub struct SetRetryAfterSeconds<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRetryAfterSeconds<S> {}
-    impl<S: State> State for SetRetryAfterSeconds<S> {
-        type Scope = S::Scope;
-        type RetryAfterSeconds = Set<members::retry_after_seconds>;
-        type Error = S::Error;
-        type Message = S::Message;
+        type Scope = Unset;
     }
     ///State transition - sets the `error` field to Set
     pub struct SetError<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetError<S> {}
     impl<S: State> State for SetError<S> {
-        type Scope = S::Scope;
-        type RetryAfterSeconds = S::RetryAfterSeconds;
         type Error = Set<members::error>;
+        type RetryAfterSeconds = S::RetryAfterSeconds;
         type Message = S::Message;
+        type Scope = S::Scope;
+    }
+    ///State transition - sets the `retry_after_seconds` field to Set
+    pub struct SetRetryAfterSeconds<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetRetryAfterSeconds<S> {}
+    impl<S: State> State for SetRetryAfterSeconds<S> {
+        type Error = S::Error;
+        type RetryAfterSeconds = Set<members::retry_after_seconds>;
+        type Message = S::Message;
+        type Scope = S::Scope;
     }
     ///State transition - sets the `message` field to Set
     pub struct SetMessage<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetMessage<S> {}
     impl<S: State> State for SetMessage<S> {
-        type Scope = S::Scope;
-        type RetryAfterSeconds = S::RetryAfterSeconds;
         type Error = S::Error;
+        type RetryAfterSeconds = S::RetryAfterSeconds;
         type Message = Set<members::message>;
+        type Scope = S::Scope;
+    }
+    ///State transition - sets the `scope` field to Set
+    pub struct SetScope<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetScope<S> {}
+    impl<S: State> State for SetScope<S> {
+        type Error = S::Error;
+        type RetryAfterSeconds = S::RetryAfterSeconds;
+        type Message = S::Message;
+        type Scope = Set<members::scope>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `scope` field
-        pub struct scope(());
-        ///Marker type for the `retry_after_seconds` field
-        pub struct retry_after_seconds(());
         ///Marker type for the `error` field
         pub struct error(());
+        ///Marker type for the `retry_after_seconds` field
+        pub struct retry_after_seconds(());
         ///Marker type for the `message` field
         pub struct message(());
+        ///Marker type for the `scope` field
+        pub struct scope(());
     }
 }
 
@@ -1726,10 +1806,10 @@ where
 impl<'a, S> RateLimitedBodyBuilder<'a, S>
 where
     S: rate_limited_body_state::State,
-    S::Scope: rate_limited_body_state::IsSet,
-    S::RetryAfterSeconds: rate_limited_body_state::IsSet,
     S::Error: rate_limited_body_state::IsSet,
+    S::RetryAfterSeconds: rate_limited_body_state::IsSet,
     S::Message: rate_limited_body_state::IsSet,
+    S::Scope: rate_limited_body_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> RateLimitedBody<'a> {

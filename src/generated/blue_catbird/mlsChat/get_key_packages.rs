@@ -21,7 +21,7 @@ pub mod get_key_packages_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -131,7 +131,7 @@ where
 pub struct GetKeyPackagesOutput<'a> {
     /// Available key packages for the requested DIDs
     #[serde(borrow)]
-    pub key_packages: Vec<crate::blue_catbird::mlsChat::KeyPackageRef<'a>>,
+    pub key_packages: Vec<crate::generated::blue_catbird::mlsChat::KeyPackageRef<'a>>,
     /// DIDs for which no key packages were found
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]

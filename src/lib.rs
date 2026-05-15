@@ -182,6 +182,13 @@ pub mod catbird {
                         member_dids: value.member_dids,
                         pending_addition_id: value.pending_addition_id.map(Into::into),
                         welcome: value.welcome.map(Into::into),
+                        // Phase A: reissueAddMember fields exist in the generated
+                        // type but are not yet wired through the InputData facade.
+                        // Phase C/E will surface these to the caller.
+                        replaced_key_package_hash: None,
+                        replacement_commit: None,
+                        replacement_key_package_hash: None,
+                        replacement_welcome: None,
                     }
                 }
             }

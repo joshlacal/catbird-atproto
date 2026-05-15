@@ -7,13 +7,7 @@
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct RejectJoinRequest<'a> {
@@ -25,9 +19,9 @@ pub struct RejectJoinRequest<'a> {
 
 pub mod reject_join_request_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -172,7 +166,7 @@ where
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct RejectJoinRequestOutput<'a> {}
@@ -186,7 +180,7 @@ pub struct RejectJoinRequestOutput<'a> {}
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic
+    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -231,9 +225,8 @@ impl jacquard_common::xrpc::XrpcResp for RejectJoinRequestResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for RejectJoinRequest<'a> {
     const NSID: &'static str = "chat.bsky.group.rejectJoinRequest";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = RejectJoinRequestResponse;
 }
 
@@ -242,9 +235,8 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for RejectJoinRequest<'a> {
 pub struct RejectJoinRequestRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for RejectJoinRequestRequest {
     const PATH: &'static str = "/xrpc/chat.bsky.group.rejectJoinRequest";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<'de> = RejectJoinRequest<'de>;
     type Response = RejectJoinRequestResponse;
 }

@@ -262,13 +262,7 @@ impl jacquard_common::IntoStatic for ConvoStatus<'_> {
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ConvoView<'a> {
@@ -283,9 +277,7 @@ pub struct ConvoView<'a> {
     pub last_message: std::option::Option<ConvoViewLastMessage<'a>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub last_reaction: std::option::Option<
-        crate::chat_bsky::convo::MessageAndReactionView<'a>,
-    >,
+    pub last_reaction: std::option::Option<crate::chat_bsky::convo::MessageAndReactionView<'a>>,
     /// Members of this conversation. For direct convos, it will be an immutable list of the 2 members. For group convos, it will a list of important members (the first few members, the viewer, the member who invited the viewer, the member who sent the last message, the member who sent the last reaction), but will not contain the full list of members. Use chat.bsky.convo.getConvoMembers to list all members.
     #[serde(borrow)]
     pub members: Vec<crate::chat_bsky::actor::ProfileViewBasic<'a>>,
@@ -301,9 +293,9 @@ pub struct ConvoView<'a> {
 
 pub mod convo_view_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -420,17 +412,7 @@ impl<'a> ConvoViewBuilder<'a, convo_view_state::Empty> {
     pub fn new() -> Self {
         ConvoViewBuilder {
             _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-            ),
+            __unsafe_private_named: (None, None, None, None, None, None, None, None, None),
             _phantom: ::core::marker::PhantomData,
         }
     }
@@ -470,18 +452,12 @@ impl<'a, S: convo_view_state::State> ConvoViewBuilder<'a, S> {
 
 impl<'a, S: convo_view_state::State> ConvoViewBuilder<'a, S> {
     /// Set the `lastMessage` field (optional)
-    pub fn last_message(
-        mut self,
-        value: impl Into<Option<ConvoViewLastMessage<'a>>>,
-    ) -> Self {
+    pub fn last_message(mut self, value: impl Into<Option<ConvoViewLastMessage<'a>>>) -> Self {
         self.__unsafe_private_named.2 = value.into();
         self
     }
     /// Set the `lastMessage` field to an Option value (optional)
-    pub fn maybe_last_message(
-        mut self,
-        value: Option<ConvoViewLastMessage<'a>>,
-    ) -> Self {
+    pub fn maybe_last_message(mut self, value: Option<ConvoViewLastMessage<'a>>) -> Self {
         self.__unsafe_private_named.2 = value;
         self
     }
@@ -573,10 +549,7 @@ impl<'a, S: convo_view_state::State> ConvoViewBuilder<'a, S> {
         self
     }
     /// Set the `status` field to an Option value (optional)
-    pub fn maybe_status(
-        mut self,
-        value: Option<crate::chat_bsky::convo::ConvoStatus<'a>>,
-    ) -> Self {
+    pub fn maybe_status(mut self, value: Option<crate::chat_bsky::convo::ConvoStatus<'a>>) -> Self {
         self.__unsafe_private_named.7 = value;
         self
     }
@@ -650,13 +623,7 @@ where
 
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "$type")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -669,13 +636,7 @@ pub enum ConvoViewKind<'a> {
 
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "$type")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -688,9 +649,7 @@ pub enum ConvoViewLastMessage<'a> {
     SystemMessageView(Box<crate::chat_bsky::convo::SystemMessageView<'a>>),
 }
 
-fn lexicon_doc_chat_bsky_convo_defs() -> ::jacquard_lexicon::lexicon::LexiconDoc<
-    'static,
-> {
+fn lexicon_doc_chat_bsky_convo_defs() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("chat.bsky.convo.defs"),
@@ -700,48 +659,54 @@ fn lexicon_doc_chat_bsky_convo_defs() -> ::jacquard_lexicon::lexicon::LexiconDoc
             let mut map = ::std::collections::BTreeMap::new();
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("convoKind"),
-                ::jacquard_lexicon::lexicon::LexUserType::String(::jacquard_lexicon::lexicon::LexString {
-                    description: None,
-                    format: None,
-                    default: None,
-                    min_length: None,
-                    max_length: None,
-                    min_graphemes: None,
-                    max_graphemes: None,
-                    r#enum: None,
-                    r#const: None,
-                    known_values: None,
-                }),
+                ::jacquard_lexicon::lexicon::LexUserType::String(
+                    ::jacquard_lexicon::lexicon::LexString {
+                        description: None,
+                        format: None,
+                        default: None,
+                        min_length: None,
+                        max_length: None,
+                        min_graphemes: None,
+                        max_graphemes: None,
+                        r#enum: None,
+                        r#const: None,
+                        known_values: None,
+                    },
+                ),
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("convoLockStatus"),
-                ::jacquard_lexicon::lexicon::LexUserType::String(::jacquard_lexicon::lexicon::LexString {
-                    description: None,
-                    format: None,
-                    default: None,
-                    min_length: None,
-                    max_length: None,
-                    min_graphemes: None,
-                    max_graphemes: None,
-                    r#enum: None,
-                    r#const: None,
-                    known_values: None,
-                }),
+                ::jacquard_lexicon::lexicon::LexUserType::String(
+                    ::jacquard_lexicon::lexicon::LexString {
+                        description: None,
+                        format: None,
+                        default: None,
+                        min_length: None,
+                        max_length: None,
+                        min_graphemes: None,
+                        max_graphemes: None,
+                        r#enum: None,
+                        r#const: None,
+                        known_values: None,
+                    },
+                ),
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("convoStatus"),
-                ::jacquard_lexicon::lexicon::LexUserType::String(::jacquard_lexicon::lexicon::LexString {
-                    description: None,
-                    format: None,
-                    default: None,
-                    min_length: None,
-                    max_length: None,
-                    min_graphemes: None,
-                    max_graphemes: None,
-                    r#enum: None,
-                    r#const: None,
-                    known_values: None,
-                }),
+                ::jacquard_lexicon::lexicon::LexUserType::String(
+                    ::jacquard_lexicon::lexicon::LexString {
+                        description: None,
+                        format: None,
+                        default: None,
+                        min_length: None,
+                        max_length: None,
+                        min_graphemes: None,
+                        max_graphemes: None,
+                        r#enum: None,
+                        r#const: None,
+                        known_values: None,
+                    },
+                ),
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("convoView"),
@@ -883,79 +848,87 @@ fn lexicon_doc_chat_bsky_convo_defs() -> ::jacquard_lexicon::lexicon::LexiconDoc
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("deletedMessageView"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: None,
-                    required: Some(
-                        vec![
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        description: None,
+                        required: Some(vec![
                             ::jacquard_common::smol_str::SmolStr::new_static("id"),
                             ::jacquard_common::smol_str::SmolStr::new_static("rev"),
                             ::jacquard_common::smol_str::SmolStr::new_static("sender"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("sentAt")
-                        ],
-                    ),
-                    nullable: None,
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("id"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("rev"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("sender"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                description: None,
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#messageViewSender",
-                                ),
-                            }),
-                        );
-                        map.insert(
                             ::jacquard_common::smol_str::SmolStr::new_static("sentAt"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                        ]),
+                        nullable: None,
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::std::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("id"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: None,
+                                        format: None,
+                                        default: None,
+                                        min_length: None,
+                                        max_length: None,
+                                        min_graphemes: None,
+                                        max_graphemes: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                        known_values: None,
+                                    },
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("rev"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: None,
+                                        format: None,
+                                        default: None,
+                                        min_length: None,
+                                        max_length: None,
+                                        min_graphemes: None,
+                                        max_graphemes: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                        known_values: None,
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("sender"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        description: None,
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "#messageViewSender",
+                                        ),
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("sentAt"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: None,
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                        ),
+                                        default: None,
+                                        min_length: None,
+                                        max_length: None,
+                                        min_graphemes: None,
+                                        max_graphemes: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                        known_values: None,
+                                    },
+                                ),
+                            );
+                            map
+                        },
                     },
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("directConvo"),
@@ -1938,55 +1911,57 @@ fn lexicon_doc_chat_bsky_convo_defs() -> ::jacquard_lexicon::lexicon::LexiconDoc
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("logLeaveConvo"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: Some(
-                        ::jacquard_common::CowStr::new_static(
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        description: Some(::jacquard_common::CowStr::new_static(
                             "Event indicating the viewer left a convo. Can be direct or group.",
-                        ),
-                    ),
-                    required: Some(
-                        vec![
+                        )),
+                        required: Some(vec![
                             ::jacquard_common::smol_str::SmolStr::new_static("rev"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoId")
-                        ],
-                    ),
-                    nullable: None,
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
-                        map.insert(
                             ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("rev"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map
+                        ]),
+                        nullable: None,
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::std::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: None,
+                                        format: None,
+                                        default: None,
+                                        min_length: None,
+                                        max_length: None,
+                                        min_graphemes: None,
+                                        max_graphemes: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                        known_values: None,
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("rev"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: None,
+                                        format: None,
+                                        default: None,
+                                        min_length: None,
+                                        max_length: None,
+                                        min_graphemes: None,
+                                        max_graphemes: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                        known_values: None,
+                                    },
+                                ),
+                            );
+                            map
+                        },
                     },
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("logLockConvo"),
@@ -2324,55 +2299,57 @@ fn lexicon_doc_chat_bsky_convo_defs() -> ::jacquard_lexicon::lexicon::LexiconDoc
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("logMuteConvo"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: Some(
-                        ::jacquard_common::CowStr::new_static(
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        description: Some(::jacquard_common::CowStr::new_static(
                             "Event indicating the viewer muted a convo. Can be direct or group.",
-                        ),
-                    ),
-                    required: Some(
-                        vec![
+                        )),
+                        required: Some(vec![
                             ::jacquard_common::smol_str::SmolStr::new_static("rev"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoId")
-                        ],
-                    ),
-                    nullable: None,
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
-                        map.insert(
                             ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("rev"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map
+                        ]),
+                        nullable: None,
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::std::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: None,
+                                        format: None,
+                                        default: None,
+                                        min_length: None,
+                                        max_length: None,
+                                        min_graphemes: None,
+                                        max_graphemes: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                        known_values: None,
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("rev"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: None,
+                                        format: None,
+                                        default: None,
+                                        min_length: None,
+                                        max_length: None,
+                                        min_graphemes: None,
+                                        max_graphemes: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                        known_values: None,
+                                    },
+                                ),
+                            );
+                            map
+                        },
                     },
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static(
@@ -2882,217 +2859,235 @@ fn lexicon_doc_chat_bsky_convo_defs() -> ::jacquard_lexicon::lexicon::LexiconDoc
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("logUnmuteConvo"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: Some(
-                        ::jacquard_common::CowStr::new_static(
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        description: Some(::jacquard_common::CowStr::new_static(
                             "Event indicating the viewer unmuted a convo. Can be direct or group.",
-                        ),
-                    ),
-                    required: Some(
-                        vec![
+                        )),
+                        required: Some(vec![
                             ::jacquard_common::smol_str::SmolStr::new_static("rev"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoId")
-                        ],
-                    ),
-                    nullable: None,
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
-                        map.insert(
                             ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("rev"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map
+                        ]),
+                        nullable: None,
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::std::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: None,
+                                        format: None,
+                                        default: None,
+                                        min_length: None,
+                                        max_length: None,
+                                        min_graphemes: None,
+                                        max_graphemes: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                        known_values: None,
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("rev"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: None,
+                                        format: None,
+                                        default: None,
+                                        min_length: None,
+                                        max_length: None,
+                                        min_graphemes: None,
+                                        max_graphemes: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                        known_values: None,
+                                    },
+                                ),
+                            );
+                            map
+                        },
                     },
-                }),
+                ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static(
-                    "messageAndReactionView",
-                ),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: None,
-                    required: Some(
-                        vec![
+                ::jacquard_common::smol_str::SmolStr::new_static("messageAndReactionView"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        description: None,
+                        required: Some(vec![
                             ::jacquard_common::smol_str::SmolStr::new_static("message"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("reaction")
-                        ],
-                    ),
-                    nullable: None,
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("message"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                description: None,
-                                r#ref: ::jacquard_common::CowStr::new_static("#messageView"),
-                            }),
-                        );
-                        map.insert(
                             ::jacquard_common::smol_str::SmolStr::new_static("reaction"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                description: None,
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#reactionView",
+                        ]),
+                        nullable: None,
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::std::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("message"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        description: None,
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "#messageView",
+                                        ),
+                                    },
                                 ),
-                            }),
-                        );
-                        map
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("reaction"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        description: None,
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "#reactionView",
+                                        ),
+                                    },
+                                ),
+                            );
+                            map
+                        },
                     },
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("messageInput"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: None,
-                    required: Some(
-                        vec![::jacquard_common::smol_str::SmolStr::new_static("text")],
-                    ),
-                    nullable: None,
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("embed"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Union(::jacquard_lexicon::lexicon::LexRefUnion {
-                                description: None,
-                                refs: vec![
-                                    ::jacquard_common::CowStr::new_static("app.bsky.embed.record")
-                                ],
-                                closed: None,
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("facets"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "Annotations of text (mentions, URLs, hashtags, etc)",
-                                    ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        description: None,
+                        required: Some(vec![::jacquard_common::smol_str::SmolStr::new_static(
+                            "text",
+                        )]),
+                        nullable: None,
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::std::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("embed"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Union(
+                                    ::jacquard_lexicon::lexicon::LexRefUnion {
+                                        description: None,
+                                        refs: vec![::jacquard_common::CowStr::new_static(
+                                            "app.bsky.embed.record",
+                                        )],
+                                        closed: None,
+                                    },
                                 ),
-                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                    description: None,
-                                    r#ref: ::jacquard_common::CowStr::new_static(
-                                        "app.bsky.richtext.facet",
-                                    ),
-                                }),
-                                min_length: None,
-                                max_length: None,
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("text"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: Some(10000usize),
-                                min_graphemes: None,
-                                max_graphemes: Some(1000usize),
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("facets"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Array(
+                                    ::jacquard_lexicon::lexicon::LexArray {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "Annotations of text (mentions, URLs, hashtags, etc)",
+                                        )),
+                                        items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(
+                                            ::jacquard_lexicon::lexicon::LexRef {
+                                                description: None,
+                                                r#ref: ::jacquard_common::CowStr::new_static(
+                                                    "app.bsky.richtext.facet",
+                                                ),
+                                            },
+                                        ),
+                                        min_length: None,
+                                        max_length: None,
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("text"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: None,
+                                        format: None,
+                                        default: None,
+                                        min_length: None,
+                                        max_length: Some(10000usize),
+                                        min_graphemes: None,
+                                        max_graphemes: Some(1000usize),
+                                        r#enum: None,
+                                        r#const: None,
+                                        known_values: None,
+                                    },
+                                ),
+                            );
+                            map
+                        },
                     },
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("messageRef"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: None,
-                    required: Some(
-                        vec![
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        description: None,
+                        required: Some(vec![
                             ::jacquard_common::smol_str::SmolStr::new_static("did"),
                             ::jacquard_common::smol_str::SmolStr::new_static("messageId"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoId")
-                        ],
-                    ),
-                    nullable: None,
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
-                        map.insert(
                             ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("did"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                        ]),
+                        nullable: None,
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::std::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: None,
+                                        format: None,
+                                        default: None,
+                                        min_length: None,
+                                        max_length: None,
+                                        min_graphemes: None,
+                                        max_graphemes: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                        known_values: None,
+                                    },
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
-                                "messageId",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("did"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: None,
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                        ),
+                                        default: None,
+                                        min_length: None,
+                                        max_length: None,
+                                        min_graphemes: None,
+                                        max_graphemes: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                        known_values: None,
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("messageId"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: None,
+                                        format: None,
+                                        default: None,
+                                        min_length: None,
+                                        max_length: None,
+                                        min_graphemes: None,
+                                        max_graphemes: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                        known_values: None,
+                                    },
+                                ),
+                            );
+                            map
+                        },
                     },
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("messageView"),
@@ -3236,129 +3231,141 @@ fn lexicon_doc_chat_bsky_convo_defs() -> ::jacquard_lexicon::lexicon::LexiconDoc
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("messageViewSender"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: None,
-                    required: Some(
-                        vec![::jacquard_common::smol_str::SmolStr::new_static("did")],
-                    ),
-                    nullable: None,
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("did"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        description: None,
+                        required: Some(vec![::jacquard_common::smol_str::SmolStr::new_static(
+                            "did",
+                        )]),
+                        nullable: None,
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::std::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("did"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: None,
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                        ),
+                                        default: None,
+                                        min_length: None,
+                                        max_length: None,
+                                        min_graphemes: None,
+                                        max_graphemes: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                        known_values: None,
+                                    },
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map
+                            );
+                            map
+                        },
                     },
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("reactionView"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: None,
-                    required: Some(
-                        vec![
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        description: None,
+                        required: Some(vec![
                             ::jacquard_common::smol_str::SmolStr::new_static("value"),
                             ::jacquard_common::smol_str::SmolStr::new_static("sender"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("createdAt")
-                        ],
-                    ),
-                    nullable: None,
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
-                                "createdAt",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                            ::jacquard_common::smol_str::SmolStr::new_static("createdAt"),
+                        ]),
+                        nullable: None,
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::std::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("createdAt"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: None,
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                        ),
+                                        default: None,
+                                        min_length: None,
+                                        max_length: None,
+                                        min_graphemes: None,
+                                        max_graphemes: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                        known_values: None,
+                                    },
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("sender"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                description: None,
-                                r#ref: ::jacquard_common::CowStr::new_static(
-                                    "#reactionViewSender",
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("sender"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        description: None,
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "#reactionViewSender",
+                                        ),
+                                    },
                                 ),
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("value"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("value"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: None,
+                                        format: None,
+                                        default: None,
+                                        min_length: None,
+                                        max_length: None,
+                                        min_graphemes: None,
+                                        max_graphemes: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                        known_values: None,
+                                    },
+                                ),
+                            );
+                            map
+                        },
                     },
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("reactionViewSender"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: None,
-                    required: Some(
-                        vec![::jacquard_common::smol_str::SmolStr::new_static("did")],
-                    ),
-                    nullable: None,
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("did"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        description: None,
+                        required: Some(vec![::jacquard_common::smol_str::SmolStr::new_static(
+                            "did",
+                        )]),
+                        nullable: None,
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::std::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("did"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: None,
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                        ),
+                                        default: None,
+                                        min_length: None,
+                                        max_length: None,
+                                        min_graphemes: None,
+                                        max_graphemes: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                        known_values: None,
+                                    },
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map
+                            );
+                            map
+                        },
                     },
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static(
@@ -3771,38 +3778,40 @@ fn lexicon_doc_chat_bsky_convo_defs() -> ::jacquard_lexicon::lexicon::LexiconDoc
                 }),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static(
-                    "systemMessageReferredUser",
-                ),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: None,
-                    required: Some(
-                        vec![::jacquard_common::smol_str::SmolStr::new_static("did")],
-                    ),
-                    nullable: None,
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("did"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                ::jacquard_common::smol_str::SmolStr::new_static("systemMessageReferredUser"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        description: None,
+                        required: Some(vec![::jacquard_common::smol_str::SmolStr::new_static(
+                            "did",
+                        )]),
+                        nullable: None,
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::std::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("did"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: None,
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                        ),
+                                        default: None,
+                                        min_length: None,
+                                        max_length: None,
+                                        min_graphemes: None,
+                                        max_graphemes: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                        known_values: None,
+                                    },
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map
+                            );
+                            map
+                        },
                     },
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("systemMessageView"),
@@ -3920,13 +3929,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ConvoView<'a> {
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct DeletedMessageView<'a> {
@@ -3941,9 +3944,9 @@ pub struct DeletedMessageView<'a> {
 
 pub mod deleted_message_view_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -4182,7 +4185,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for DeletedMessageView<'a> {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct DirectConvo<'a> {}
@@ -4206,13 +4209,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for DirectConvo<'a> {
 /// [NOTE: This is under active development and should be considered unstable while this note is here].
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GroupConvo<'a> {
@@ -4232,9 +4229,9 @@ pub struct GroupConvo<'a> {
 
 pub mod group_convo_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -4486,9 +4483,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for GroupConvo<'a> {
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) > 1280usize {
                 return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
-                        "name",
-                    ),
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("name"),
                     max: 1280usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -4497,19 +4492,19 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for GroupConvo<'a> {
         {
             let value = &self.name;
             {
-                let count = ::unicode_segmentation::UnicodeSegmentation::graphemes(
-                        value.as_ref(),
-                        true,
-                    )
-                    .count();
+                let count =
+                    ::unicode_segmentation::UnicodeSegmentation::graphemes(value.as_ref(), true)
+                        .count();
                 if count > 128usize {
-                    return Err(::jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
-                        path: ::jacquard_lexicon::validation::ValidationPath::from_field(
-                            "name",
-                        ),
-                        max: 128usize,
-                        actual: count,
-                    });
+                    return Err(
+                        ::jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
+                            path: ::jacquard_lexicon::validation::ValidationPath::from_field(
+                                "name",
+                            ),
+                            max: 128usize,
+                            actual: count,
+                        },
+                    );
                 }
             }
         }
@@ -4527,7 +4522,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for GroupConvo<'a> {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct LogAcceptConvo<'a> {
@@ -4557,13 +4552,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for LogAcceptConvo<'a> {
 /// [NOTE: This is under active development and should be considered unstable while this note is here]. Event indicating a member was added to a group convo. The member who was added gets a logBeginConvo (to create the convo) but also a logAddMember (to show the system message as the first message the user sees).
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct LogAddMember<'a> {
@@ -4581,9 +4570,9 @@ pub struct LogAddMember<'a> {
 
 pub mod log_add_member_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -4815,13 +4804,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for LogAddMember<'a> {
 /// Event indicating a reaction was added to a message.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct LogAddReaction<'a> {
@@ -4834,18 +4817,16 @@ pub struct LogAddReaction<'a> {
     /// Profiles referred in the message and reaction views. This isn't required for compatibility, because it was added later, but should generally be present.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub related_profiles: std::option::Option<
-        Vec<crate::chat_bsky::actor::ProfileViewBasic<'a>>,
-    >,
+    pub related_profiles: std::option::Option<Vec<crate::chat_bsky::actor::ProfileViewBasic<'a>>>,
     #[serde(borrow)]
     pub rev: jacquard_common::CowStr<'a>,
 }
 
 pub mod log_add_reaction_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -5081,13 +5062,7 @@ where
 
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "$type")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -5118,13 +5093,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for LogAddReaction<'a> {
 /// [NOTE: This is under active development and should be considered unstable while this note is here]. Event indicating a join request was approved by the viewer. Only the owner gets this. The approved member gets a logBeginConvo.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct LogApproveJoinRequest<'a> {
@@ -5139,9 +5108,9 @@ pub struct LogApproveJoinRequest<'a> {
 
 pub mod log_approve_join_request_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -5208,10 +5177,7 @@ pub struct LogApproveJoinRequestBuilder<'a, S: log_approve_join_request_state::S
 
 impl<'a> LogApproveJoinRequest<'a> {
     /// Create a new builder for this type
-    pub fn new() -> LogApproveJoinRequestBuilder<
-        'a,
-        log_approve_join_request_state::Empty,
-    > {
+    pub fn new() -> LogApproveJoinRequestBuilder<'a, log_approve_join_request_state::Empty> {
         LogApproveJoinRequestBuilder::new()
     }
 }
@@ -5236,10 +5202,7 @@ where
     pub fn convo_id(
         mut self,
         value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> LogApproveJoinRequestBuilder<
-        'a,
-        log_approve_join_request_state::SetConvoId<S>,
-    > {
+    ) -> LogApproveJoinRequestBuilder<'a, log_approve_join_request_state::SetConvoId<S>> {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         LogApproveJoinRequestBuilder {
             _phantom_state: ::core::marker::PhantomData,
@@ -5347,7 +5310,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for LogApproveJoinRequest<'a>
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct LogBeginConvo<'a> {
@@ -5377,13 +5340,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for LogBeginConvo<'a> {
 /// [NOTE: This is under active development and should be considered unstable while this note is here]. Event indicating a join link was created for a group convo.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct LogCreateJoinLink<'a> {
@@ -5398,9 +5355,9 @@ pub struct LogCreateJoinLink<'a> {
 
 pub mod log_create_join_link_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -5593,13 +5550,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for LogCreateJoinLink<'a> {
 /// Event indicating a user-originated message was created. Is not emitted for system messages.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct LogCreateMessage<'a> {
@@ -5610,18 +5561,16 @@ pub struct LogCreateMessage<'a> {
     /// Profiles referred to in the message view. This isn't required for compatibility, because it was added later, but should generally be present.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub related_profiles: std::option::Option<
-        Vec<crate::chat_bsky::actor::ProfileViewBasic<'a>>,
-    >,
+    pub related_profiles: std::option::Option<Vec<crate::chat_bsky::actor::ProfileViewBasic<'a>>>,
     #[serde(borrow)]
     pub rev: jacquard_common::CowStr<'a>,
 }
 
 pub mod log_create_message_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -5818,13 +5767,7 @@ where
 
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "$type")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -5855,13 +5798,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for LogCreateMessage<'a> {
 /// Event indicating a user-originated message was deleted. Is not emitted for system messages.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct LogDeleteMessage<'a> {
@@ -5875,9 +5812,9 @@ pub struct LogDeleteMessage<'a> {
 
 pub mod log_delete_message_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -6052,13 +5989,7 @@ where
 
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "$type")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -6089,13 +6020,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for LogDeleteMessage<'a> {
 /// [NOTE: This is under active development and should be considered unstable while this note is here]. Event indicating a join link was disabled for a group convo.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct LogDisableJoinLink<'a> {
@@ -6110,9 +6035,9 @@ pub struct LogDisableJoinLink<'a> {
 
 pub mod log_disable_join_link_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -6305,13 +6230,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for LogDisableJoinLink<'a> {
 /// [NOTE: This is under active development and should be considered unstable while this note is here]. Event indicating info about group convo was edited.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct LogEditGroup<'a> {
@@ -6326,9 +6245,9 @@ pub struct LogEditGroup<'a> {
 
 pub mod log_edit_group_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -6521,13 +6440,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for LogEditGroup<'a> {
 /// [NOTE: This is under active development and should be considered unstable while this note is here]. Event indicating a settings about a join link for a group convo were edited.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct LogEditJoinLink<'a> {
@@ -6542,9 +6455,9 @@ pub struct LogEditJoinLink<'a> {
 
 pub mod log_edit_join_link_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -6737,13 +6650,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for LogEditJoinLink<'a> {
 /// [NOTE: This is under active development and should be considered unstable while this note is here]. Event indicating a join link was enabled for a group convo.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct LogEnableJoinLink<'a> {
@@ -6758,9 +6665,9 @@ pub struct LogEnableJoinLink<'a> {
 
 pub mod log_enable_join_link_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -6953,13 +6860,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for LogEnableJoinLink<'a> {
 /// [NOTE: This is under active development and should be considered unstable while this note is here]. Event indicating a join request was made to a group the viewer owns. Only the owner gets this.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct LogIncomingJoinRequest<'a> {
@@ -6974,9 +6875,9 @@ pub struct LogIncomingJoinRequest<'a> {
 
 pub mod log_incoming_join_request_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -7043,10 +6944,7 @@ pub struct LogIncomingJoinRequestBuilder<'a, S: log_incoming_join_request_state:
 
 impl<'a> LogIncomingJoinRequest<'a> {
     /// Create a new builder for this type
-    pub fn new() -> LogIncomingJoinRequestBuilder<
-        'a,
-        log_incoming_join_request_state::Empty,
-    > {
+    pub fn new() -> LogIncomingJoinRequestBuilder<'a, log_incoming_join_request_state::Empty> {
         LogIncomingJoinRequestBuilder::new()
     }
 }
@@ -7071,10 +6969,7 @@ where
     pub fn convo_id(
         mut self,
         value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> LogIncomingJoinRequestBuilder<
-        'a,
-        log_incoming_join_request_state::SetConvoId<S>,
-    > {
+    ) -> LogIncomingJoinRequestBuilder<'a, log_incoming_join_request_state::SetConvoId<S>> {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         LogIncomingJoinRequestBuilder {
             _phantom_state: ::core::marker::PhantomData,
@@ -7093,10 +6988,7 @@ where
     pub fn member(
         mut self,
         value: impl Into<crate::chat_bsky::actor::ProfileViewBasic<'a>>,
-    ) -> LogIncomingJoinRequestBuilder<
-        'a,
-        log_incoming_join_request_state::SetMember<S>,
-    > {
+    ) -> LogIncomingJoinRequestBuilder<'a, log_incoming_join_request_state::SetMember<S>> {
         self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
         LogIncomingJoinRequestBuilder {
             _phantom_state: ::core::marker::PhantomData,
@@ -7185,7 +7077,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for LogIncomingJoinRequest<'a
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct LogLeaveConvo<'a> {
@@ -7215,13 +7107,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for LogLeaveConvo<'a> {
 /// [NOTE: This is under active development and should be considered unstable while this note is here]. Event indicating a group convo was locked.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct LogLockConvo<'a> {
@@ -7239,9 +7125,9 @@ pub struct LogLockConvo<'a> {
 
 pub mod log_lock_convo_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -7473,13 +7359,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for LogLockConvo<'a> {
 /// [NOTE: This is under active development and should be considered unstable while this note is here]. Event indicating a group convo was locked permanently.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct LogLockConvoPermanently<'a> {
@@ -7497,9 +7377,9 @@ pub struct LogLockConvoPermanently<'a> {
 
 pub mod log_lock_convo_permanently_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -7570,10 +7450,7 @@ pub mod log_lock_convo_permanently_state {
 }
 
 /// Builder for constructing an instance of this type
-pub struct LogLockConvoPermanentlyBuilder<
-    'a,
-    S: log_lock_convo_permanently_state::State,
-> {
+pub struct LogLockConvoPermanentlyBuilder<'a, S: log_lock_convo_permanently_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
         ::core::option::Option<jacquard_common::CowStr<'a>>,
@@ -7586,10 +7463,7 @@ pub struct LogLockConvoPermanentlyBuilder<
 
 impl<'a> LogLockConvoPermanently<'a> {
     /// Create a new builder for this type
-    pub fn new() -> LogLockConvoPermanentlyBuilder<
-        'a,
-        log_lock_convo_permanently_state::Empty,
-    > {
+    pub fn new() -> LogLockConvoPermanentlyBuilder<'a, log_lock_convo_permanently_state::Empty> {
         LogLockConvoPermanentlyBuilder::new()
     }
 }
@@ -7614,10 +7488,7 @@ where
     pub fn convo_id(
         mut self,
         value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> LogLockConvoPermanentlyBuilder<
-        'a,
-        log_lock_convo_permanently_state::SetConvoId<S>,
-    > {
+    ) -> LogLockConvoPermanentlyBuilder<'a, log_lock_convo_permanently_state::SetConvoId<S>> {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         LogLockConvoPermanentlyBuilder {
             _phantom_state: ::core::marker::PhantomData,
@@ -7636,10 +7507,7 @@ where
     pub fn message(
         mut self,
         value: impl Into<crate::chat_bsky::convo::SystemMessageView<'a>>,
-    ) -> LogLockConvoPermanentlyBuilder<
-        'a,
-        log_lock_convo_permanently_state::SetMessage<S>,
-    > {
+    ) -> LogLockConvoPermanentlyBuilder<'a, log_lock_convo_permanently_state::SetMessage<S>> {
         self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
         LogLockConvoPermanentlyBuilder {
             _phantom_state: ::core::marker::PhantomData,
@@ -7658,10 +7526,8 @@ where
     pub fn related_profiles(
         mut self,
         value: impl Into<Vec<crate::chat_bsky::actor::ProfileViewBasic<'a>>>,
-    ) -> LogLockConvoPermanentlyBuilder<
-        'a,
-        log_lock_convo_permanently_state::SetRelatedProfiles<S>,
-    > {
+    ) -> LogLockConvoPermanentlyBuilder<'a, log_lock_convo_permanently_state::SetRelatedProfiles<S>>
+    {
         self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
         LogLockConvoPermanentlyBuilder {
             _phantom_state: ::core::marker::PhantomData,
@@ -7680,10 +7546,7 @@ where
     pub fn rev(
         mut self,
         value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> LogLockConvoPermanentlyBuilder<
-        'a,
-        log_lock_convo_permanently_state::SetRev<S>,
-    > {
+    ) -> LogLockConvoPermanentlyBuilder<'a, log_lock_convo_permanently_state::SetRev<S>> {
         self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
         LogLockConvoPermanentlyBuilder {
             _phantom_state: ::core::marker::PhantomData,
@@ -7749,13 +7612,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for LogLockConvoPermanently<'
 /// [NOTE: This is under active development and should be considered unstable while this note is here]. Event indicating a member joined a group convo via join link. The member who was added gets a logBeginConvo (to create the convo) but also a logMemberJoin (to show the system message as the first message the user sees).
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct LogMemberJoin<'a> {
@@ -7773,9 +7630,9 @@ pub struct LogMemberJoin<'a> {
 
 pub mod log_member_join_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -8007,13 +7864,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for LogMemberJoin<'a> {
 /// [NOTE: This is under active development and should be considered unstable while this note is here]. Event indicating a member voluntarily left a group convo. The member who was removed gets a logLeaveConvo (to leave the convo) but not a logMemberLeave (because they already left, so can't see the system message).
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct LogMemberLeave<'a> {
@@ -8031,9 +7882,9 @@ pub struct LogMemberLeave<'a> {
 
 pub mod log_member_leave_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -8272,7 +8123,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for LogMemberLeave<'a> {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct LogMuteConvo<'a> {
@@ -8309,7 +8160,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for LogMuteConvo<'a> {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct LogOutgoingJoinRequest<'a> {
@@ -8339,13 +8190,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for LogOutgoingJoinRequest<'a
 /// [NOTE: This is under active development and should be considered unstable while this note is here]. Event indicating a convo was read up to a certain message.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct LogReadConvo<'a> {
@@ -8359,9 +8204,9 @@ pub struct LogReadConvo<'a> {
 
 pub mod log_read_convo_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -8536,13 +8381,7 @@ where
 
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "$type")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -8575,13 +8414,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for LogReadConvo<'a> {
 /// DEPRECATED: use logReadConvo instead. Event indicating a convo was read up to a certain message.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct LogReadMessage<'a> {
@@ -8595,9 +8428,9 @@ pub struct LogReadMessage<'a> {
 
 pub mod log_read_message_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -8772,13 +8605,7 @@ where
 
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "$type")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -8811,13 +8638,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for LogReadMessage<'a> {
 /// [NOTE: This is under active development and should be considered unstable while this note is here]. Event indicating a join request was rejected by the viewer. Only the owner gets this.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct LogRejectJoinRequest<'a> {
@@ -8832,9 +8653,9 @@ pub struct LogRejectJoinRequest<'a> {
 
 pub mod log_reject_join_request_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -8901,10 +8722,7 @@ pub struct LogRejectJoinRequestBuilder<'a, S: log_reject_join_request_state::Sta
 
 impl<'a> LogRejectJoinRequest<'a> {
     /// Create a new builder for this type
-    pub fn new() -> LogRejectJoinRequestBuilder<
-        'a,
-        log_reject_join_request_state::Empty,
-    > {
+    pub fn new() -> LogRejectJoinRequestBuilder<'a, log_reject_join_request_state::Empty> {
         LogRejectJoinRequestBuilder::new()
     }
 }
@@ -9030,13 +8848,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for LogRejectJoinRequest<'a> 
 /// [NOTE: This is under active development and should be considered unstable while this note is here]. Event indicating a member was removed from a group convo. The member who was removed gets a logLeaveConvo (to leave the convo) but not a logRemoveMember (because they already left, so can't see the system message).
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct LogRemoveMember<'a> {
@@ -9054,9 +8866,9 @@ pub struct LogRemoveMember<'a> {
 
 pub mod log_remove_member_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -9288,13 +9100,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for LogRemoveMember<'a> {
 /// Event indicating a reaction was removed from a message.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct LogRemoveReaction<'a> {
@@ -9307,18 +9113,16 @@ pub struct LogRemoveReaction<'a> {
     /// Profiles referred in the message and reaction views. This isn't required for compatibility, because it was added later, but should generally be present.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub related_profiles: std::option::Option<
-        Vec<crate::chat_bsky::actor::ProfileViewBasic<'a>>,
-    >,
+    pub related_profiles: std::option::Option<Vec<crate::chat_bsky::actor::ProfileViewBasic<'a>>>,
     #[serde(borrow)]
     pub rev: jacquard_common::CowStr<'a>,
 }
 
 pub mod log_remove_reaction_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -9554,13 +9358,7 @@ where
 
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "$type")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -9591,13 +9389,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for LogRemoveReaction<'a> {
 /// [NOTE: This is under active development and should be considered unstable while this note is here]. Event indicating a group convo was unlocked.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct LogUnlockConvo<'a> {
@@ -9615,9 +9407,9 @@ pub struct LogUnlockConvo<'a> {
 
 pub mod log_unlock_convo_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -9856,7 +9648,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for LogUnlockConvo<'a> {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct LogUnmuteConvo<'a> {
@@ -9885,13 +9677,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for LogUnmuteConvo<'a> {
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct MessageAndReactionView<'a> {
@@ -9903,9 +9689,9 @@ pub struct MessageAndReactionView<'a> {
 
 pub mod message_and_reaction_view_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -9957,10 +9743,7 @@ pub struct MessageAndReactionViewBuilder<'a, S: message_and_reaction_view_state:
 
 impl<'a> MessageAndReactionView<'a> {
     /// Create a new builder for this type
-    pub fn new() -> MessageAndReactionViewBuilder<
-        'a,
-        message_and_reaction_view_state::Empty,
-    > {
+    pub fn new() -> MessageAndReactionViewBuilder<'a, message_and_reaction_view_state::Empty> {
         MessageAndReactionViewBuilder::new()
     }
 }
@@ -9985,10 +9768,7 @@ where
     pub fn message(
         mut self,
         value: impl Into<crate::chat_bsky::convo::MessageView<'a>>,
-    ) -> MessageAndReactionViewBuilder<
-        'a,
-        message_and_reaction_view_state::SetMessage<S>,
-    > {
+    ) -> MessageAndReactionViewBuilder<'a, message_and_reaction_view_state::SetMessage<S>> {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         MessageAndReactionViewBuilder {
             _phantom_state: ::core::marker::PhantomData,
@@ -10007,10 +9787,7 @@ where
     pub fn reaction(
         mut self,
         value: impl Into<crate::chat_bsky::convo::ReactionView<'a>>,
-    ) -> MessageAndReactionViewBuilder<
-        'a,
-        message_and_reaction_view_state::SetReaction<S>,
-    > {
+    ) -> MessageAndReactionViewBuilder<'a, message_and_reaction_view_state::SetReaction<S>> {
         self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
         MessageAndReactionViewBuilder {
             _phantom_state: ::core::marker::PhantomData,
@@ -10076,7 +9853,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for MessageAndReactionView<'a
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct MessageInput<'a> {
@@ -10109,9 +9886,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for MessageInput<'a> {
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) > 10000usize {
                 return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
-                        "text",
-                    ),
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("text"),
                     max: 10000usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -10120,19 +9895,19 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for MessageInput<'a> {
         {
             let value = &self.text;
             {
-                let count = ::unicode_segmentation::UnicodeSegmentation::graphemes(
-                        value.as_ref(),
-                        true,
-                    )
-                    .count();
+                let count =
+                    ::unicode_segmentation::UnicodeSegmentation::graphemes(value.as_ref(), true)
+                        .count();
                 if count > 1000usize {
-                    return Err(::jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
-                        path: ::jacquard_lexicon::validation::ValidationPath::from_field(
-                            "text",
-                        ),
-                        max: 1000usize,
-                        actual: count,
-                    });
+                    return Err(
+                        ::jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
+                            path: ::jacquard_lexicon::validation::ValidationPath::from_field(
+                                "text",
+                            ),
+                            max: 1000usize,
+                            actual: count,
+                        },
+                    );
                 }
             }
         }
@@ -10142,13 +9917,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for MessageInput<'a> {
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct MessageRef<'a> {
@@ -10162,9 +9931,9 @@ pub struct MessageRef<'a> {
 
 pub mod message_ref_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -10356,13 +10125,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for MessageRef<'a> {
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct MessageView<'a> {
@@ -10390,9 +10153,9 @@ pub struct MessageView<'a> {
 
 pub mod message_view_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -10524,10 +10287,7 @@ impl<'a, S: message_view_state::State> MessageViewBuilder<'a, S> {
         self
     }
     /// Set the `embed` field to an Option value (optional)
-    pub fn maybe_embed(
-        mut self,
-        value: Option<crate::app_bsky::embed::record::View<'a>>,
-    ) -> Self {
+    pub fn maybe_embed(mut self, value: Option<crate::app_bsky::embed::record::View<'a>>) -> Self {
         self.__unsafe_private_named.0 = value;
         self
     }
@@ -10729,9 +10489,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for MessageView<'a> {
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) > 10000usize {
                 return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
-                        "text",
-                    ),
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("text"),
                     max: 10000usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -10740,19 +10498,19 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for MessageView<'a> {
         {
             let value = &self.text;
             {
-                let count = ::unicode_segmentation::UnicodeSegmentation::graphemes(
-                        value.as_ref(),
-                        true,
-                    )
-                    .count();
+                let count =
+                    ::unicode_segmentation::UnicodeSegmentation::graphemes(value.as_ref(), true)
+                        .count();
                 if count > 1000usize {
-                    return Err(::jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
-                        path: ::jacquard_lexicon::validation::ValidationPath::from_field(
-                            "text",
-                        ),
-                        max: 1000usize,
-                        actual: count,
-                    });
+                    return Err(
+                        ::jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
+                            path: ::jacquard_lexicon::validation::ValidationPath::from_field(
+                                "text",
+                            ),
+                            max: 1000usize,
+                            actual: count,
+                        },
+                    );
                 }
             }
         }
@@ -10762,13 +10520,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for MessageView<'a> {
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct MessageViewSender<'a> {
@@ -10778,9 +10530,9 @@ pub struct MessageViewSender<'a> {
 
 pub mod message_view_sender_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -10811,9 +10563,7 @@ pub mod message_view_sender_state {
 /// Builder for constructing an instance of this type
 pub struct MessageViewSenderBuilder<'a, S: message_view_sender_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-    ),
+    __unsafe_private_named: (::core::option::Option<jacquard_common::types::string::Did<'a>>,),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
 
@@ -10900,13 +10650,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for MessageViewSender<'a> {
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ReactionView<'a> {
@@ -10919,9 +10663,9 @@ pub struct ReactionView<'a> {
 
 pub mod reaction_view_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -11113,13 +10857,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ReactionView<'a> {
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ReactionViewSender<'a> {
@@ -11129,9 +10867,9 @@ pub struct ReactionViewSender<'a> {
 
 pub mod reaction_view_sender_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -11162,9 +10900,7 @@ pub mod reaction_view_sender_state {
 /// Builder for constructing an instance of this type
 pub struct ReactionViewSenderBuilder<'a, S: reaction_view_sender_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-    ),
+    __unsafe_private_named: (::core::option::Option<jacquard_common::types::string::Did<'a>>,),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
 
@@ -11252,13 +10988,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ReactionViewSender<'a> {
 /// [NOTE: This is under active development and should be considered unstable while this note is here]. System message indicating a user was added to the group convo.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct SystemMessageDataAddMember<'a> {
@@ -11274,9 +11004,9 @@ pub struct SystemMessageDataAddMember<'a> {
 
 pub mod system_message_data_add_member_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -11331,10 +11061,7 @@ pub mod system_message_data_add_member_state {
 }
 
 /// Builder for constructing an instance of this type
-pub struct SystemMessageDataAddMemberBuilder<
-    'a,
-    S: system_message_data_add_member_state::State,
-> {
+pub struct SystemMessageDataAddMemberBuilder<'a, S: system_message_data_add_member_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
         ::core::option::Option<crate::chat_bsky::convo::SystemMessageReferredUser<'a>>,
@@ -11346,17 +11073,13 @@ pub struct SystemMessageDataAddMemberBuilder<
 
 impl<'a> SystemMessageDataAddMember<'a> {
     /// Create a new builder for this type
-    pub fn new() -> SystemMessageDataAddMemberBuilder<
-        'a,
-        system_message_data_add_member_state::Empty,
-    > {
+    pub fn new(
+    ) -> SystemMessageDataAddMemberBuilder<'a, system_message_data_add_member_state::Empty> {
         SystemMessageDataAddMemberBuilder::new()
     }
 }
 
-impl<
-    'a,
-> SystemMessageDataAddMemberBuilder<'a, system_message_data_add_member_state::Empty> {
+impl<'a> SystemMessageDataAddMemberBuilder<'a, system_message_data_add_member_state::Empty> {
     /// Create a new builder with all fields unset
     pub fn new() -> Self {
         SystemMessageDataAddMemberBuilder {
@@ -11376,10 +11099,8 @@ where
     pub fn added_by(
         mut self,
         value: impl Into<crate::chat_bsky::convo::SystemMessageReferredUser<'a>>,
-    ) -> SystemMessageDataAddMemberBuilder<
-        'a,
-        system_message_data_add_member_state::SetAddedBy<S>,
-    > {
+    ) -> SystemMessageDataAddMemberBuilder<'a, system_message_data_add_member_state::SetAddedBy<S>>
+    {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         SystemMessageDataAddMemberBuilder {
             _phantom_state: ::core::marker::PhantomData,
@@ -11398,10 +11119,8 @@ where
     pub fn member(
         mut self,
         value: impl Into<crate::chat_bsky::convo::SystemMessageReferredUser<'a>>,
-    ) -> SystemMessageDataAddMemberBuilder<
-        'a,
-        system_message_data_add_member_state::SetMember<S>,
-    > {
+    ) -> SystemMessageDataAddMemberBuilder<'a, system_message_data_add_member_state::SetMember<S>>
+    {
         self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
         SystemMessageDataAddMemberBuilder {
             _phantom_state: ::core::marker::PhantomData,
@@ -11420,10 +11139,8 @@ where
     pub fn role(
         mut self,
         value: impl Into<crate::chat_bsky::actor::MemberRole<'a>>,
-    ) -> SystemMessageDataAddMemberBuilder<
-        'a,
-        system_message_data_add_member_state::SetRole<S>,
-    > {
+    ) -> SystemMessageDataAddMemberBuilder<'a, system_message_data_add_member_state::SetRole<S>>
+    {
         self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
         SystemMessageDataAddMemberBuilder {
             _phantom_state: ::core::marker::PhantomData,
@@ -11493,12 +11210,11 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for SystemMessageDataAddMembe
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct SystemMessageDataCreateJoinLink<'a> {}
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema
-for SystemMessageDataCreateJoinLink<'a> {
+impl<'a> ::jacquard_lexicon::schema::LexiconSchema for SystemMessageDataCreateJoinLink<'a> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -11525,12 +11241,11 @@ for SystemMessageDataCreateJoinLink<'a> {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct SystemMessageDataDisableJoinLink<'a> {}
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema
-for SystemMessageDataDisableJoinLink<'a> {
+impl<'a> ::jacquard_lexicon::schema::LexiconSchema for SystemMessageDataDisableJoinLink<'a> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -11557,7 +11272,7 @@ for SystemMessageDataDisableJoinLink<'a> {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct SystemMessageDataEditGroup<'a> {
@@ -11598,12 +11313,11 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for SystemMessageDataEditGrou
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct SystemMessageDataEditJoinLink<'a> {}
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema
-for SystemMessageDataEditJoinLink<'a> {
+impl<'a> ::jacquard_lexicon::schema::LexiconSchema for SystemMessageDataEditJoinLink<'a> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -11630,12 +11344,11 @@ for SystemMessageDataEditJoinLink<'a> {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct SystemMessageDataEnableJoinLink<'a> {}
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema
-for SystemMessageDataEnableJoinLink<'a> {
+impl<'a> ::jacquard_lexicon::schema::LexiconSchema for SystemMessageDataEnableJoinLink<'a> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -11655,13 +11368,7 @@ for SystemMessageDataEnableJoinLink<'a> {
 /// [NOTE: This is under active development and should be considered unstable while this note is here]. System message indicating the group convo was locked.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct SystemMessageDataLockConvo<'a> {
@@ -11672,9 +11379,9 @@ pub struct SystemMessageDataLockConvo<'a> {
 
 pub mod system_message_data_lock_convo_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -11703,30 +11410,22 @@ pub mod system_message_data_lock_convo_state {
 }
 
 /// Builder for constructing an instance of this type
-pub struct SystemMessageDataLockConvoBuilder<
-    'a,
-    S: system_message_data_lock_convo_state::State,
-> {
+pub struct SystemMessageDataLockConvoBuilder<'a, S: system_message_data_lock_convo_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<crate::chat_bsky::convo::SystemMessageReferredUser<'a>>,
-    ),
+    __unsafe_private_named:
+        (::core::option::Option<crate::chat_bsky::convo::SystemMessageReferredUser<'a>>,),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
 
 impl<'a> SystemMessageDataLockConvo<'a> {
     /// Create a new builder for this type
-    pub fn new() -> SystemMessageDataLockConvoBuilder<
-        'a,
-        system_message_data_lock_convo_state::Empty,
-    > {
+    pub fn new(
+    ) -> SystemMessageDataLockConvoBuilder<'a, system_message_data_lock_convo_state::Empty> {
         SystemMessageDataLockConvoBuilder::new()
     }
 }
 
-impl<
-    'a,
-> SystemMessageDataLockConvoBuilder<'a, system_message_data_lock_convo_state::Empty> {
+impl<'a> SystemMessageDataLockConvoBuilder<'a, system_message_data_lock_convo_state::Empty> {
     /// Create a new builder with all fields unset
     pub fn new() -> Self {
         SystemMessageDataLockConvoBuilder {
@@ -11746,10 +11445,8 @@ where
     pub fn locked_by(
         mut self,
         value: impl Into<crate::chat_bsky::convo::SystemMessageReferredUser<'a>>,
-    ) -> SystemMessageDataLockConvoBuilder<
-        'a,
-        system_message_data_lock_convo_state::SetLockedBy<S>,
-    > {
+    ) -> SystemMessageDataLockConvoBuilder<'a, system_message_data_lock_convo_state::SetLockedBy<S>>
+    {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         SystemMessageDataLockConvoBuilder {
             _phantom_state: ::core::marker::PhantomData,
@@ -11806,13 +11503,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for SystemMessageDataLockConv
 /// [NOTE: This is under active development and should be considered unstable while this note is here]. System message indicating the group convo was locked permanently.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct SystemMessageDataLockConvoPermanently<'a> {
@@ -11823,9 +11514,9 @@ pub struct SystemMessageDataLockConvoPermanently<'a> {
 
 pub mod system_message_data_lock_convo_permanently_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -11859,9 +11550,8 @@ pub struct SystemMessageDataLockConvoPermanentlyBuilder<
     S: system_message_data_lock_convo_permanently_state::State,
 > {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<crate::chat_bsky::convo::SystemMessageReferredUser<'a>>,
-    ),
+    __unsafe_private_named:
+        (::core::option::Option<crate::chat_bsky::convo::SystemMessageReferredUser<'a>>,),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
 
@@ -11875,12 +11565,12 @@ impl<'a> SystemMessageDataLockConvoPermanently<'a> {
     }
 }
 
-impl<
-    'a,
-> SystemMessageDataLockConvoPermanentlyBuilder<
-    'a,
-    system_message_data_lock_convo_permanently_state::Empty,
-> {
+impl<'a>
+    SystemMessageDataLockConvoPermanentlyBuilder<
+        'a,
+        system_message_data_lock_convo_permanently_state::Empty,
+    >
+{
     /// Create a new builder with all fields unset
     pub fn new() -> Self {
         SystemMessageDataLockConvoPermanentlyBuilder {
@@ -11940,8 +11630,7 @@ where
     }
 }
 
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema
-for SystemMessageDataLockConvoPermanently<'a> {
+impl<'a> ::jacquard_lexicon::schema::LexiconSchema for SystemMessageDataLockConvoPermanently<'a> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -11961,22 +11650,14 @@ for SystemMessageDataLockConvoPermanently<'a> {
 /// [NOTE: This is under active development and should be considered unstable while this note is here]. System message indicating a user joined the group convo via join link.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct SystemMessageDataMemberJoin<'a> {
     /// If join link was configured to require approval, this will be set to who approved the request. Undefined if approval was not required.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub approved_by: std::option::Option<
-        crate::chat_bsky::convo::SystemMessageReferredUser<'a>,
-    >,
+    pub approved_by: std::option::Option<crate::chat_bsky::convo::SystemMessageReferredUser<'a>>,
     /// Current view of the member who joined.
     #[serde(borrow)]
     pub member: crate::chat_bsky::convo::SystemMessageReferredUser<'a>,
@@ -11987,9 +11668,9 @@ pub struct SystemMessageDataMemberJoin<'a> {
 
 pub mod system_message_data_member_join_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -12030,10 +11711,7 @@ pub mod system_message_data_member_join_state {
 }
 
 /// Builder for constructing an instance of this type
-pub struct SystemMessageDataMemberJoinBuilder<
-    'a,
-    S: system_message_data_member_join_state::State,
-> {
+pub struct SystemMessageDataMemberJoinBuilder<'a, S: system_message_data_member_join_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
         ::core::option::Option<crate::chat_bsky::convo::SystemMessageReferredUser<'a>>,
@@ -12045,17 +11723,13 @@ pub struct SystemMessageDataMemberJoinBuilder<
 
 impl<'a> SystemMessageDataMemberJoin<'a> {
     /// Create a new builder for this type
-    pub fn new() -> SystemMessageDataMemberJoinBuilder<
-        'a,
-        system_message_data_member_join_state::Empty,
-    > {
+    pub fn new(
+    ) -> SystemMessageDataMemberJoinBuilder<'a, system_message_data_member_join_state::Empty> {
         SystemMessageDataMemberJoinBuilder::new()
     }
 }
 
-impl<
-    'a,
-> SystemMessageDataMemberJoinBuilder<'a, system_message_data_member_join_state::Empty> {
+impl<'a> SystemMessageDataMemberJoinBuilder<'a, system_message_data_member_join_state::Empty> {
     /// Create a new builder with all fields unset
     pub fn new() -> Self {
         SystemMessageDataMemberJoinBuilder {
@@ -12066,10 +11740,9 @@ impl<
     }
 }
 
-impl<
-    'a,
-    S: system_message_data_member_join_state::State,
-> SystemMessageDataMemberJoinBuilder<'a, S> {
+impl<'a, S: system_message_data_member_join_state::State>
+    SystemMessageDataMemberJoinBuilder<'a, S>
+{
     /// Set the `approvedBy` field (optional)
     pub fn approved_by(
         mut self,
@@ -12097,10 +11770,8 @@ where
     pub fn member(
         mut self,
         value: impl Into<crate::chat_bsky::convo::SystemMessageReferredUser<'a>>,
-    ) -> SystemMessageDataMemberJoinBuilder<
-        'a,
-        system_message_data_member_join_state::SetMember<S>,
-    > {
+    ) -> SystemMessageDataMemberJoinBuilder<'a, system_message_data_member_join_state::SetMember<S>>
+    {
         self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
         SystemMessageDataMemberJoinBuilder {
             _phantom_state: ::core::marker::PhantomData,
@@ -12119,10 +11790,8 @@ where
     pub fn role(
         mut self,
         value: impl Into<crate::chat_bsky::actor::MemberRole<'a>>,
-    ) -> SystemMessageDataMemberJoinBuilder<
-        'a,
-        system_message_data_member_join_state::SetRole<S>,
-    > {
+    ) -> SystemMessageDataMemberJoinBuilder<'a, system_message_data_member_join_state::SetRole<S>>
+    {
         self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
         SystemMessageDataMemberJoinBuilder {
             _phantom_state: ::core::marker::PhantomData,
@@ -12184,13 +11853,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for SystemMessageDataMemberJo
 /// [NOTE: This is under active development and should be considered unstable while this note is here]. System message indicating a user voluntarily left the group convo.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct SystemMessageDataMemberLeave<'a> {
@@ -12201,9 +11864,9 @@ pub struct SystemMessageDataMemberLeave<'a> {
 
 pub mod system_message_data_member_leave_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -12232,33 +11895,24 @@ pub mod system_message_data_member_leave_state {
 }
 
 /// Builder for constructing an instance of this type
-pub struct SystemMessageDataMemberLeaveBuilder<
-    'a,
-    S: system_message_data_member_leave_state::State,
-> {
+pub struct SystemMessageDataMemberLeaveBuilder<'a, S: system_message_data_member_leave_state::State>
+{
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<crate::chat_bsky::convo::SystemMessageReferredUser<'a>>,
-    ),
+    __unsafe_private_named:
+        (::core::option::Option<crate::chat_bsky::convo::SystemMessageReferredUser<'a>>,),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
 
 impl<'a> SystemMessageDataMemberLeave<'a> {
     /// Create a new builder for this type
-    pub fn new() -> SystemMessageDataMemberLeaveBuilder<
-        'a,
-        system_message_data_member_leave_state::Empty,
-    > {
+    pub fn new(
+    ) -> SystemMessageDataMemberLeaveBuilder<'a, system_message_data_member_leave_state::Empty>
+    {
         SystemMessageDataMemberLeaveBuilder::new()
     }
 }
 
-impl<
-    'a,
-> SystemMessageDataMemberLeaveBuilder<
-    'a,
-    system_message_data_member_leave_state::Empty,
-> {
+impl<'a> SystemMessageDataMemberLeaveBuilder<'a, system_message_data_member_leave_state::Empty> {
     /// Create a new builder with all fields unset
     pub fn new() -> Self {
         SystemMessageDataMemberLeaveBuilder {
@@ -12278,10 +11932,8 @@ where
     pub fn member(
         mut self,
         value: impl Into<crate::chat_bsky::convo::SystemMessageReferredUser<'a>>,
-    ) -> SystemMessageDataMemberLeaveBuilder<
-        'a,
-        system_message_data_member_leave_state::SetMember<S>,
-    > {
+    ) -> SystemMessageDataMemberLeaveBuilder<'a, system_message_data_member_leave_state::SetMember<S>>
+    {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         SystemMessageDataMemberLeaveBuilder {
             _phantom_state: ::core::marker::PhantomData,
@@ -12338,13 +11990,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for SystemMessageDataMemberLe
 /// [NOTE: This is under active development and should be considered unstable while this note is here]. System message indicating a user was removed from the group convo.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct SystemMessageDataRemoveMember<'a> {
@@ -12357,9 +12003,9 @@ pub struct SystemMessageDataRemoveMember<'a> {
 
 pub mod system_message_data_remove_member_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -12414,20 +12060,14 @@ pub struct SystemMessageDataRemoveMemberBuilder<
 
 impl<'a> SystemMessageDataRemoveMember<'a> {
     /// Create a new builder for this type
-    pub fn new() -> SystemMessageDataRemoveMemberBuilder<
-        'a,
-        system_message_data_remove_member_state::Empty,
-    > {
+    pub fn new(
+    ) -> SystemMessageDataRemoveMemberBuilder<'a, system_message_data_remove_member_state::Empty>
+    {
         SystemMessageDataRemoveMemberBuilder::new()
     }
 }
 
-impl<
-    'a,
-> SystemMessageDataRemoveMemberBuilder<
-    'a,
-    system_message_data_remove_member_state::Empty,
-> {
+impl<'a> SystemMessageDataRemoveMemberBuilder<'a, system_message_data_remove_member_state::Empty> {
     /// Create a new builder with all fields unset
     pub fn new() -> Self {
         SystemMessageDataRemoveMemberBuilder {
@@ -12512,8 +12152,7 @@ where
     }
 }
 
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema
-for SystemMessageDataRemoveMember<'a> {
+impl<'a> ::jacquard_lexicon::schema::LexiconSchema for SystemMessageDataRemoveMember<'a> {
     fn nsid() -> &'static str {
         "chat.bsky.convo.defs"
     }
@@ -12533,13 +12172,7 @@ for SystemMessageDataRemoveMember<'a> {
 /// [NOTE: This is under active development and should be considered unstable while this note is here]. System message indicating the group convo was unlocked.
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct SystemMessageDataUnlockConvo<'a> {
@@ -12550,9 +12183,9 @@ pub struct SystemMessageDataUnlockConvo<'a> {
 
 pub mod system_message_data_unlock_convo_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -12581,33 +12214,24 @@ pub mod system_message_data_unlock_convo_state {
 }
 
 /// Builder for constructing an instance of this type
-pub struct SystemMessageDataUnlockConvoBuilder<
-    'a,
-    S: system_message_data_unlock_convo_state::State,
-> {
+pub struct SystemMessageDataUnlockConvoBuilder<'a, S: system_message_data_unlock_convo_state::State>
+{
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<crate::chat_bsky::convo::SystemMessageReferredUser<'a>>,
-    ),
+    __unsafe_private_named:
+        (::core::option::Option<crate::chat_bsky::convo::SystemMessageReferredUser<'a>>,),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
 
 impl<'a> SystemMessageDataUnlockConvo<'a> {
     /// Create a new builder for this type
-    pub fn new() -> SystemMessageDataUnlockConvoBuilder<
-        'a,
-        system_message_data_unlock_convo_state::Empty,
-    > {
+    pub fn new(
+    ) -> SystemMessageDataUnlockConvoBuilder<'a, system_message_data_unlock_convo_state::Empty>
+    {
         SystemMessageDataUnlockConvoBuilder::new()
     }
 }
 
-impl<
-    'a,
-> SystemMessageDataUnlockConvoBuilder<
-    'a,
-    system_message_data_unlock_convo_state::Empty,
-> {
+impl<'a> SystemMessageDataUnlockConvoBuilder<'a, system_message_data_unlock_convo_state::Empty> {
     /// Create a new builder with all fields unset
     pub fn new() -> Self {
         SystemMessageDataUnlockConvoBuilder {
@@ -12686,13 +12310,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for SystemMessageDataUnlockCo
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct SystemMessageReferredUser<'a> {
@@ -12702,9 +12320,9 @@ pub struct SystemMessageReferredUser<'a> {
 
 pub mod system_message_referred_user_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -12733,30 +12351,21 @@ pub mod system_message_referred_user_state {
 }
 
 /// Builder for constructing an instance of this type
-pub struct SystemMessageReferredUserBuilder<
-    'a,
-    S: system_message_referred_user_state::State,
-> {
+pub struct SystemMessageReferredUserBuilder<'a, S: system_message_referred_user_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-    ),
+    __unsafe_private_named: (::core::option::Option<jacquard_common::types::string::Did<'a>>,),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
 
 impl<'a> SystemMessageReferredUser<'a> {
     /// Create a new builder for this type
-    pub fn new() -> SystemMessageReferredUserBuilder<
-        'a,
-        system_message_referred_user_state::Empty,
-    > {
+    pub fn new() -> SystemMessageReferredUserBuilder<'a, system_message_referred_user_state::Empty>
+    {
         SystemMessageReferredUserBuilder::new()
     }
 }
 
-impl<
-    'a,
-> SystemMessageReferredUserBuilder<'a, system_message_referred_user_state::Empty> {
+impl<'a> SystemMessageReferredUserBuilder<'a, system_message_referred_user_state::Empty> {
     /// Create a new builder with all fields unset
     pub fn new() -> Self {
         SystemMessageReferredUserBuilder {
@@ -12776,10 +12385,7 @@ where
     pub fn did(
         mut self,
         value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> SystemMessageReferredUserBuilder<
-        'a,
-        system_message_referred_user_state::SetDid<S>,
-    > {
+    ) -> SystemMessageReferredUserBuilder<'a, system_message_referred_user_state::SetDid<S>> {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         SystemMessageReferredUserBuilder {
             _phantom_state: ::core::marker::PhantomData,
@@ -12836,13 +12442,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for SystemMessageReferredUser
 /// [NOTE: This is under active development and should be considered unstable while this note is here].
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct SystemMessageView<'a> {
@@ -12857,9 +12457,9 @@ pub struct SystemMessageView<'a> {
 
 pub mod system_message_view_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -13073,57 +12673,35 @@ where
 
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "$type")]
 #[serde(bound(deserialize = "'de: 'a"))]
 pub enum SystemMessageViewData<'a> {
     #[serde(rename = "chat.bsky.convo.defs#systemMessageDataAddMember")]
-    SystemMessageDataAddMember(
-        Box<crate::chat_bsky::convo::SystemMessageDataAddMember<'a>>,
-    ),
+    SystemMessageDataAddMember(Box<crate::chat_bsky::convo::SystemMessageDataAddMember<'a>>),
     #[serde(rename = "chat.bsky.convo.defs#systemMessageDataRemoveMember")]
-    SystemMessageDataRemoveMember(
-        Box<crate::chat_bsky::convo::SystemMessageDataRemoveMember<'a>>,
-    ),
+    SystemMessageDataRemoveMember(Box<crate::chat_bsky::convo::SystemMessageDataRemoveMember<'a>>),
     #[serde(rename = "chat.bsky.convo.defs#systemMessageDataMemberJoin")]
-    SystemMessageDataMemberJoin(
-        Box<crate::chat_bsky::convo::SystemMessageDataMemberJoin<'a>>,
-    ),
+    SystemMessageDataMemberJoin(Box<crate::chat_bsky::convo::SystemMessageDataMemberJoin<'a>>),
     #[serde(rename = "chat.bsky.convo.defs#systemMessageDataMemberLeave")]
-    SystemMessageDataMemberLeave(
-        Box<crate::chat_bsky::convo::SystemMessageDataMemberLeave<'a>>,
-    ),
+    SystemMessageDataMemberLeave(Box<crate::chat_bsky::convo::SystemMessageDataMemberLeave<'a>>),
     #[serde(rename = "chat.bsky.convo.defs#systemMessageDataLockConvo")]
-    SystemMessageDataLockConvo(
-        Box<crate::chat_bsky::convo::SystemMessageDataLockConvo<'a>>,
-    ),
+    SystemMessageDataLockConvo(Box<crate::chat_bsky::convo::SystemMessageDataLockConvo<'a>>),
     #[serde(rename = "chat.bsky.convo.defs#systemMessageDataUnlockConvo")]
-    SystemMessageDataUnlockConvo(
-        Box<crate::chat_bsky::convo::SystemMessageDataUnlockConvo<'a>>,
-    ),
+    SystemMessageDataUnlockConvo(Box<crate::chat_bsky::convo::SystemMessageDataUnlockConvo<'a>>),
     #[serde(rename = "chat.bsky.convo.defs#systemMessageDataLockConvoPermanently")]
     SystemMessageDataLockConvoPermanently(
         Box<crate::chat_bsky::convo::SystemMessageDataLockConvoPermanently<'a>>,
     ),
     #[serde(rename = "chat.bsky.convo.defs#systemMessageDataEditGroup")]
-    SystemMessageDataEditGroup(
-        Box<crate::chat_bsky::convo::SystemMessageDataEditGroup<'a>>,
-    ),
+    SystemMessageDataEditGroup(Box<crate::chat_bsky::convo::SystemMessageDataEditGroup<'a>>),
     #[serde(rename = "chat.bsky.convo.defs#systemMessageDataCreateJoinLink")]
     SystemMessageDataCreateJoinLink(
         Box<crate::chat_bsky::convo::SystemMessageDataCreateJoinLink<'a>>,
     ),
     #[serde(rename = "chat.bsky.convo.defs#systemMessageDataEditJoinLink")]
-    SystemMessageDataEditJoinLink(
-        Box<crate::chat_bsky::convo::SystemMessageDataEditJoinLink<'a>>,
-    ),
+    SystemMessageDataEditJoinLink(Box<crate::chat_bsky::convo::SystemMessageDataEditJoinLink<'a>>),
     #[serde(rename = "chat.bsky.convo.defs#systemMessageDataEnableJoinLink")]
     SystemMessageDataEnableJoinLink(
         Box<crate::chat_bsky::convo::SystemMessageDataEnableJoinLink<'a>>,

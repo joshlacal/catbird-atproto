@@ -7,13 +7,7 @@
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct CreateRecord<'a> {
@@ -30,9 +24,7 @@ pub struct CreateRecord<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub rkey: std::option::Option<
-        jacquard_common::types::string::RecordKey<
-            jacquard_common::types::string::Rkey<'a>,
-        >,
+        jacquard_common::types::string::RecordKey<jacquard_common::types::string::Rkey<'a>>,
     >,
     /// Compare and swap with the previous commit by CID.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
@@ -45,9 +37,9 @@ pub struct CreateRecord<'a> {
 
 pub mod create_record_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -109,9 +101,7 @@ pub struct CreateRecordBuilder<'a, S: create_record_state::State> {
         ::core::option::Option<jacquard_common::types::value::Data<'a>>,
         ::core::option::Option<jacquard_common::types::ident::AtIdentifier<'a>>,
         ::core::option::Option<
-            jacquard_common::types::string::RecordKey<
-                jacquard_common::types::string::Rkey<'a>,
-            >,
+            jacquard_common::types::string::RecordKey<jacquard_common::types::string::Rkey<'a>>,
         >,
         ::core::option::Option<jacquard_common::types::string::Cid<'a>>,
         ::core::option::Option<bool>,
@@ -200,9 +190,7 @@ impl<'a, S: create_record_state::State> CreateRecordBuilder<'a, S> {
         mut self,
         value: impl Into<
             Option<
-                jacquard_common::types::string::RecordKey<
-                    jacquard_common::types::string::Rkey<'a>,
-                >,
+                jacquard_common::types::string::RecordKey<jacquard_common::types::string::Rkey<'a>>,
             >,
         >,
     ) -> Self {
@@ -213,9 +201,7 @@ impl<'a, S: create_record_state::State> CreateRecordBuilder<'a, S> {
     pub fn maybe_rkey(
         mut self,
         value: Option<
-            jacquard_common::types::string::RecordKey<
-                jacquard_common::types::string::Rkey<'a>,
-            >,
+            jacquard_common::types::string::RecordKey<jacquard_common::types::string::Rkey<'a>>,
         >,
     ) -> Self {
         self.__unsafe_private_named.3 = value;
@@ -296,13 +282,7 @@ where
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct CreateRecordOutput<'a> {
@@ -328,7 +308,7 @@ pub struct CreateRecordOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic
+    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -365,9 +345,8 @@ impl jacquard_common::xrpc::XrpcResp for CreateRecordResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for CreateRecord<'a> {
     const NSID: &'static str = "com.atproto.repo.createRecord";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = CreateRecordResponse;
 }
 
@@ -376,9 +355,8 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for CreateRecord<'a> {
 pub struct CreateRecordRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for CreateRecordRequest {
     const PATH: &'static str = "/xrpc/com.atproto.repo.createRecord";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<'de> = CreateRecord<'de>;
     type Response = CreateRecordResponse;
 }

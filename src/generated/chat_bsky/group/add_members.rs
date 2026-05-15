@@ -7,13 +7,7 @@
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct AddMembers<'a> {
@@ -25,9 +19,9 @@ pub struct AddMembers<'a> {
 
 pub mod add_members_state {
 
-    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -165,21 +159,13 @@ where
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct AddMembersOutput<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub added_members: std::option::Option<
-        Vec<crate::chat_bsky::actor::ProfileViewBasic<'a>>,
-    >,
+    pub added_members: std::option::Option<Vec<crate::chat_bsky::actor::ProfileViewBasic<'a>>>,
     #[serde(borrow)]
     pub convo: crate::chat_bsky::convo::ConvoView<'a>,
 }
@@ -194,7 +180,7 @@ pub struct AddMembersOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic
+    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -302,9 +288,8 @@ impl jacquard_common::xrpc::XrpcResp for AddMembersResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for AddMembers<'a> {
     const NSID: &'static str = "chat.bsky.group.addMembers";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = AddMembersResponse;
 }
 
@@ -313,9 +298,8 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for AddMembers<'a> {
 pub struct AddMembersRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for AddMembersRequest {
     const PATH: &'static str = "/xrpc/chat.bsky.group.addMembers";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<'de> = AddMembers<'de>;
     type Response = AddMembersResponse;
 }

@@ -14,7 +14,7 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct AcceptConvo<'a> {
@@ -31,7 +31,7 @@ pub struct AcceptConvo<'a> {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default
+    Default,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct AcceptConvoOutput<'a> {
@@ -51,7 +51,7 @@ pub struct AcceptConvoOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic
+    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
 #[serde(bound(deserialize = "'de: 'a"))]
@@ -87,9 +87,8 @@ impl jacquard_common::xrpc::XrpcResp for AcceptConvoResponse {
 
 impl<'a> jacquard_common::xrpc::XrpcRequest for AcceptConvo<'a> {
     const NSID: &'static str = "chat.bsky.convo.acceptConvo";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = AcceptConvoResponse;
 }
 
@@ -98,9 +97,8 @@ impl<'a> jacquard_common::xrpc::XrpcRequest for AcceptConvo<'a> {
 pub struct AcceptConvoRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for AcceptConvoRequest {
     const PATH: &'static str = "/xrpc/chat.bsky.convo.acceptConvo";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
-        "application/json",
-    );
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<'de> = AcceptConvo<'de>;
     type Response = AcceptConvoResponse;
 }
