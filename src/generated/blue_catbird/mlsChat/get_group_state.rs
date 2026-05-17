@@ -12,10 +12,16 @@
 pub struct GetGroupState<'a> {
     #[serde(borrow)]
     pub convo_id: jacquard_common::CowStr<'a>,
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub device_id: std::option::Option<jacquard_common::CowStr<'a>>,
     ///(default: "groupInfo,epoch")
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub include: std::option::Option<jacquard_common::CowStr<'a>>,
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub key_package_hashes: std::option::Option<Vec<jacquard_common::CowStr<'a>>>,
 }
 
 pub mod get_group_state_state {
@@ -56,6 +62,8 @@ pub struct GetGroupStateBuilder<'a, S: get_group_state_state::State> {
     __unsafe_private_named: (
         ::core::option::Option<jacquard_common::CowStr<'a>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
+        ::core::option::Option<jacquard_common::CowStr<'a>>,
+        ::core::option::Option<Vec<jacquard_common::CowStr<'a>>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
@@ -72,7 +80,7 @@ impl<'a> GetGroupStateBuilder<'a, get_group_state_state::Empty> {
     pub fn new() -> Self {
         GetGroupStateBuilder {
             _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
+            __unsafe_private_named: (None, None, None, None),
             _phantom: ::core::marker::PhantomData,
         }
     }
@@ -98,14 +106,40 @@ where
 }
 
 impl<'a, S: get_group_state_state::State> GetGroupStateBuilder<'a, S> {
+    /// Set the `deviceId` field (optional)
+    pub fn device_id(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
+        self.__unsafe_private_named.1 = value.into();
+        self
+    }
+    /// Set the `deviceId` field to an Option value (optional)
+    pub fn maybe_device_id(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
+        self.__unsafe_private_named.1 = value;
+        self
+    }
     /// Set the `include` field (optional)
     pub fn include(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self.__unsafe_private_named.2 = value.into();
         self
     }
     /// Set the `include` field to an Option value (optional)
     pub fn maybe_include(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.1 = value;
+        self.__unsafe_private_named.2 = value;
+        self
+    }
+    /// Set the `keyPackageHashes` field (optional)
+    pub fn key_package_hashes(
+        mut self,
+        value: impl Into<Option<Vec<jacquard_common::CowStr<'a>>>>,
+    ) -> Self {
+        self.__unsafe_private_named.3 = value.into();
+        self
+    }
+    /// Set the `keyPackageHashes` field to an Option value (optional)
+    pub fn maybe_key_package_hashes(
+        mut self,
+        value: Option<Vec<jacquard_common::CowStr<'a>>>,
+    ) -> Self {
+        self.__unsafe_private_named.3 = value;
         self
     }
 }
@@ -119,7 +153,9 @@ where
     pub fn build(self) -> GetGroupState<'a> {
         GetGroupState {
             convo_id: self.__unsafe_private_named.0.unwrap(),
-            include: self.__unsafe_private_named.1,
+            device_id: self.__unsafe_private_named.1,
+            include: self.__unsafe_private_named.2,
+            key_package_hashes: self.__unsafe_private_named.3,
         }
     }
 }

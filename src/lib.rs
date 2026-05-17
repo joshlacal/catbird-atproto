@@ -237,13 +237,19 @@ pub mod catbird {
             pub struct InputData {
                 pub convo_id: String,
                 pub include: Option<String>,
+                pub key_package_hashes: Option<Vec<String>>,
+                pub device_id: Option<String>,
             }
 
             impl From<InputData> for Input {
                 fn from(value: InputData) -> Self {
                     Self {
                         convo_id: value.convo_id.into(),
+                        device_id: value.device_id.map(Into::into),
                         include: value.include.map(Into::into),
+                        key_package_hashes: value
+                            .key_package_hashes
+                            .map(|hashes| hashes.into_iter().map(Into::into).collect()),
                     }
                 }
             }
