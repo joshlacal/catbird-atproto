@@ -151,7 +151,7 @@ pub struct GetConvoMembersOutput<'a> {
     #[serde(borrow)]
     pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(borrow)]
-    pub members: Vec<crate::chat_bsky::actor::ProfileViewBasic<'a>>,
+    pub members: Vec<crate::generated::chat_bsky::actor::ProfileViewBasic<'a>>,
 }
 
 #[jacquard_derive::open_union]

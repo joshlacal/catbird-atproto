@@ -3,6 +3,7 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[cfg(feature = "blue_catbird")]
-pub mod blue_catbird;
 pub mod builder_types;
+
+#[cfg(feature = "chat_bsky")]
+pub mod chat_bsky;

@@ -38,7 +38,7 @@ pub struct RequestJoinOutput<'a> {
     /// The group convo joined. This is only present in the case of status=joined
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub convo: std::option::Option<crate::chat_bsky::convo::ConvoView<'a>>,
+    pub convo: std::option::Option<crate::generated::chat_bsky::convo::ConvoView<'a>>,
     #[serde(borrow)]
     pub status: jacquard_common::CowStr<'a>,
 }

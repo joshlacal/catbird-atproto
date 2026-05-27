@@ -29,7 +29,7 @@ pub struct UnmuteConvo<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct UnmuteConvoOutput<'a> {
     #[serde(borrow)]
-    pub convo: crate::chat_bsky::convo::ConvoView<'a>,
+    pub convo: crate::generated::chat_bsky::convo::ConvoView<'a>,
 }
 
 #[jacquard_derive::open_union]

@@ -14,7 +14,7 @@ pub struct SendMessage<'a> {
     #[serde(borrow)]
     pub convo_id: jacquard_common::CowStr<'a>,
     #[serde(borrow)]
-    pub message: crate::chat_bsky::convo::MessageInput<'a>,
+    pub message: crate::generated::chat_bsky::convo::MessageInput<'a>,
 }
 
 pub mod send_message_state {
@@ -27,37 +27,37 @@ pub mod send_message_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type ConvoId;
         type Message;
+        type ConvoId;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type ConvoId = Unset;
         type Message = Unset;
-    }
-    ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type ConvoId = Set<members::convo_id>;
-        type Message = S::Message;
+        type ConvoId = Unset;
     }
     ///State transition - sets the `message` field to Set
     pub struct SetMessage<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetMessage<S> {}
     impl<S: State> State for SetMessage<S> {
-        type ConvoId = S::ConvoId;
         type Message = Set<members::message>;
+        type ConvoId = S::ConvoId;
+    }
+    ///State transition - sets the `convo_id` field to Set
+    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetConvoId<S> {}
+    impl<S: State> State for SetConvoId<S> {
+        type Message = S::Message;
+        type ConvoId = Set<members::convo_id>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `convo_id` field
-        pub struct convo_id(());
         ///Marker type for the `message` field
         pub struct message(());
+        ///Marker type for the `convo_id` field
+        pub struct convo_id(());
     }
 }
 
@@ -66,7 +66,7 @@ pub struct SendMessageBuilder<'a, S: send_message_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
         ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<crate::chat_bsky::convo::MessageInput<'a>>,
+        ::core::option::Option<crate::generated::chat_bsky::convo::MessageInput<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
@@ -116,7 +116,7 @@ where
     /// Set the `message` field (required)
     pub fn message(
         mut self,
-        value: impl Into<crate::chat_bsky::convo::MessageInput<'a>>,
+        value: impl Into<crate::generated::chat_bsky::convo::MessageInput<'a>>,
     ) -> SendMessageBuilder<'a, send_message_state::SetMessage<S>> {
         self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
         SendMessageBuilder {
@@ -130,8 +130,8 @@ where
 impl<'a, S> SendMessageBuilder<'a, S>
 where
     S: send_message_state::State,
-    S::ConvoId: send_message_state::IsSet,
     S::Message: send_message_state::IsSet,
+    S::ConvoId: send_message_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> SendMessage<'a> {
@@ -165,7 +165,7 @@ where
 pub struct SendMessageOutput<'a> {
     #[serde(flatten)]
     #[serde(borrow)]
-    pub value: crate::chat_bsky::convo::MessageView<'a>,
+    pub value: crate::generated::chat_bsky::convo::MessageView<'a>,
 }
 
 #[jacquard_derive::open_union]

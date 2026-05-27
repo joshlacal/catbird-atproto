@@ -33,7 +33,7 @@ pub struct AddReaction<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct AddReactionOutput<'a> {
     #[serde(borrow)]
-    pub message: crate::chat_bsky::convo::MessageView<'a>,
+    pub message: crate::generated::chat_bsky::convo::MessageView<'a>,
 }
 
 #[jacquard_derive::open_union]

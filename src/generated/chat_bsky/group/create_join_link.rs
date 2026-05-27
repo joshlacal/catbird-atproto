@@ -14,7 +14,7 @@ pub struct CreateJoinLink<'a> {
     #[serde(borrow)]
     pub convo_id: jacquard_common::CowStr<'a>,
     #[serde(borrow)]
-    pub join_rule: crate::chat_bsky::group::JoinRule<'a>,
+    pub join_rule: crate::generated::chat_bsky::group::JoinRule<'a>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     pub require_approval: std::option::Option<bool>,
 }
@@ -29,37 +29,37 @@ pub mod create_join_link_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type JoinRule;
         type ConvoId;
+        type JoinRule;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type JoinRule = Unset;
         type ConvoId = Unset;
-    }
-    ///State transition - sets the `join_rule` field to Set
-    pub struct SetJoinRule<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetJoinRule<S> {}
-    impl<S: State> State for SetJoinRule<S> {
-        type JoinRule = Set<members::join_rule>;
-        type ConvoId = S::ConvoId;
+        type JoinRule = Unset;
     }
     ///State transition - sets the `convo_id` field to Set
     pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetConvoId<S> {}
     impl<S: State> State for SetConvoId<S> {
-        type JoinRule = S::JoinRule;
         type ConvoId = Set<members::convo_id>;
+        type JoinRule = S::JoinRule;
+    }
+    ///State transition - sets the `join_rule` field to Set
+    pub struct SetJoinRule<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetJoinRule<S> {}
+    impl<S: State> State for SetJoinRule<S> {
+        type ConvoId = S::ConvoId;
+        type JoinRule = Set<members::join_rule>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `join_rule` field
-        pub struct join_rule(());
         ///Marker type for the `convo_id` field
         pub struct convo_id(());
+        ///Marker type for the `join_rule` field
+        pub struct join_rule(());
     }
 }
 
@@ -68,7 +68,7 @@ pub struct CreateJoinLinkBuilder<'a, S: create_join_link_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
         ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<crate::chat_bsky::group::JoinRule<'a>>,
+        ::core::option::Option<crate::generated::chat_bsky::group::JoinRule<'a>>,
         ::core::option::Option<bool>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
@@ -119,7 +119,7 @@ where
     /// Set the `joinRule` field (required)
     pub fn join_rule(
         mut self,
-        value: impl Into<crate::chat_bsky::group::JoinRule<'a>>,
+        value: impl Into<crate::generated::chat_bsky::group::JoinRule<'a>>,
     ) -> CreateJoinLinkBuilder<'a, create_join_link_state::SetJoinRule<S>> {
         self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
         CreateJoinLinkBuilder {
@@ -146,8 +146,8 @@ impl<'a, S: create_join_link_state::State> CreateJoinLinkBuilder<'a, S> {
 impl<'a, S> CreateJoinLinkBuilder<'a, S>
 where
     S: create_join_link_state::State,
-    S::JoinRule: create_join_link_state::IsSet,
     S::ConvoId: create_join_link_state::IsSet,
+    S::JoinRule: create_join_link_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> CreateJoinLink<'a> {
@@ -182,7 +182,7 @@ where
 #[serde(rename_all = "camelCase")]
 pub struct CreateJoinLinkOutput<'a> {
     #[serde(borrow)]
-    pub join_link: crate::chat_bsky::group::JoinLinkView<'a>,
+    pub join_link: crate::generated::chat_bsky::group::JoinLinkView<'a>,
 }
 
 #[jacquard_derive::open_union]

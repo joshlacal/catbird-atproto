@@ -14,7 +14,7 @@ pub struct BatchItem<'a> {
     #[serde(borrow)]
     pub convo_id: jacquard_common::CowStr<'a>,
     #[serde(borrow)]
-    pub message: crate::chat_bsky::convo::MessageInput<'a>,
+    pub message: crate::generated::chat_bsky::convo::MessageInput<'a>,
 }
 
 pub mod batch_item_state {
@@ -27,37 +27,37 @@ pub mod batch_item_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type ConvoId;
         type Message;
+        type ConvoId;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type ConvoId = Unset;
         type Message = Unset;
-    }
-    ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type ConvoId = Set<members::convo_id>;
-        type Message = S::Message;
+        type ConvoId = Unset;
     }
     ///State transition - sets the `message` field to Set
     pub struct SetMessage<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetMessage<S> {}
     impl<S: State> State for SetMessage<S> {
-        type ConvoId = S::ConvoId;
         type Message = Set<members::message>;
+        type ConvoId = S::ConvoId;
+    }
+    ///State transition - sets the `convo_id` field to Set
+    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetConvoId<S> {}
+    impl<S: State> State for SetConvoId<S> {
+        type Message = S::Message;
+        type ConvoId = Set<members::convo_id>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `convo_id` field
-        pub struct convo_id(());
         ///Marker type for the `message` field
         pub struct message(());
+        ///Marker type for the `convo_id` field
+        pub struct convo_id(());
     }
 }
 
@@ -66,7 +66,7 @@ pub struct BatchItemBuilder<'a, S: batch_item_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
         ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<crate::chat_bsky::convo::MessageInput<'a>>,
+        ::core::option::Option<crate::generated::chat_bsky::convo::MessageInput<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
@@ -116,7 +116,7 @@ where
     /// Set the `message` field (required)
     pub fn message(
         mut self,
-        value: impl Into<crate::chat_bsky::convo::MessageInput<'a>>,
+        value: impl Into<crate::generated::chat_bsky::convo::MessageInput<'a>>,
     ) -> BatchItemBuilder<'a, batch_item_state::SetMessage<S>> {
         self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
         BatchItemBuilder {
@@ -130,8 +130,8 @@ where
 impl<'a, S> BatchItemBuilder<'a, S>
 where
     S: batch_item_state::State,
-    S::ConvoId: batch_item_state::IsSet,
     S::Message: batch_item_state::IsSet,
+    S::ConvoId: batch_item_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> BatchItem<'a> {
@@ -284,7 +284,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for BatchItem<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct SendMessageBatch<'a> {
     #[serde(borrow)]
-    pub items: Vec<crate::chat_bsky::convo::send_message_batch::BatchItem<'a>>,
+    pub items: Vec<crate::generated::chat_bsky::convo::send_message_batch::BatchItem<'a>>,
 }
 
 pub mod send_message_batch_state {
@@ -322,8 +322,11 @@ pub mod send_message_batch_state {
 /// Builder for constructing an instance of this type
 pub struct SendMessageBatchBuilder<'a, S: send_message_batch_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named:
-        (::core::option::Option<Vec<crate::chat_bsky::convo::send_message_batch::BatchItem<'a>>>,),
+    __unsafe_private_named: (
+        ::core::option::Option<
+            Vec<crate::generated::chat_bsky::convo::send_message_batch::BatchItem<'a>>,
+        >,
+    ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
 
@@ -353,7 +356,7 @@ where
     /// Set the `items` field (required)
     pub fn items(
         mut self,
-        value: impl Into<Vec<crate::chat_bsky::convo::send_message_batch::BatchItem<'a>>>,
+        value: impl Into<Vec<crate::generated::chat_bsky::convo::send_message_batch::BatchItem<'a>>>,
     ) -> SendMessageBatchBuilder<'a, send_message_batch_state::SetItems<S>> {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         SendMessageBatchBuilder {
@@ -398,7 +401,7 @@ where
 #[serde(rename_all = "camelCase")]
 pub struct SendMessageBatchOutput<'a> {
     #[serde(borrow)]
-    pub items: Vec<crate::chat_bsky::convo::MessageView<'a>>,
+    pub items: Vec<crate::generated::chat_bsky::convo::MessageView<'a>>,
 }
 
 #[jacquard_derive::open_union]

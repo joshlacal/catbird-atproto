@@ -21,6 +21,9 @@ pub struct ListConvos<'a> {
     pub limit: std::option::Option<i64>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
+    pub lock_status: std::option::Option<jacquard_common::CowStr<'a>>,
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
     pub read_state: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
@@ -55,6 +58,7 @@ pub struct ListConvosBuilder<'a, S: list_convos_state::State> {
         ::core::option::Option<i64>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
+        ::core::option::Option<jacquard_common::CowStr<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
@@ -71,7 +75,7 @@ impl<'a> ListConvosBuilder<'a, list_convos_state::Empty> {
     pub fn new() -> Self {
         ListConvosBuilder {
             _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None),
+            __unsafe_private_named: (None, None, None, None, None, None),
             _phantom: ::core::marker::PhantomData,
         }
     }
@@ -117,14 +121,27 @@ impl<'a, S: list_convos_state::State> ListConvosBuilder<'a, S> {
 }
 
 impl<'a, S: list_convos_state::State> ListConvosBuilder<'a, S> {
+    /// Set the `lockStatus` field (optional)
+    pub fn lock_status(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
+        self.__unsafe_private_named.3 = value.into();
+        self
+    }
+    /// Set the `lockStatus` field to an Option value (optional)
+    pub fn maybe_lock_status(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
+        self.__unsafe_private_named.3 = value;
+        self
+    }
+}
+
+impl<'a, S: list_convos_state::State> ListConvosBuilder<'a, S> {
     /// Set the `readState` field (optional)
     pub fn read_state(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.3 = value.into();
+        self.__unsafe_private_named.4 = value.into();
         self
     }
     /// Set the `readState` field to an Option value (optional)
     pub fn maybe_read_state(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.3 = value;
+        self.__unsafe_private_named.4 = value;
         self
     }
 }
@@ -132,12 +149,12 @@ impl<'a, S: list_convos_state::State> ListConvosBuilder<'a, S> {
 impl<'a, S: list_convos_state::State> ListConvosBuilder<'a, S> {
     /// Set the `status` field (optional)
     pub fn status(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.4 = value.into();
+        self.__unsafe_private_named.5 = value.into();
         self
     }
     /// Set the `status` field to an Option value (optional)
     pub fn maybe_status(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.4 = value;
+        self.__unsafe_private_named.5 = value;
         self
     }
 }
@@ -152,8 +169,9 @@ where
             cursor: self.__unsafe_private_named.0,
             kind: self.__unsafe_private_named.1,
             limit: self.__unsafe_private_named.2,
-            read_state: self.__unsafe_private_named.3,
-            status: self.__unsafe_private_named.4,
+            lock_status: self.__unsafe_private_named.3,
+            read_state: self.__unsafe_private_named.4,
+            status: self.__unsafe_private_named.5,
         }
     }
 }
@@ -165,7 +183,7 @@ where
 #[serde(rename_all = "camelCase")]
 pub struct ListConvosOutput<'a> {
     #[serde(borrow)]
-    pub convos: Vec<crate::chat_bsky::convo::ConvoView<'a>>,
+    pub convos: Vec<crate::generated::chat_bsky::convo::ConvoView<'a>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,

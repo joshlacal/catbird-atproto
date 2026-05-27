@@ -151,7 +151,7 @@ pub struct ListJoinRequestsOutput<'a> {
     #[serde(borrow)]
     pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(borrow)]
-    pub requests: Vec<crate::chat_bsky::group::JoinRequestView<'a>>,
+    pub requests: Vec<crate::generated::chat_bsky::group::JoinRequestView<'a>>,
 }
 
 #[jacquard_derive::open_union]

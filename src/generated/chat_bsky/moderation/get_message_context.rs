@@ -177,11 +177,11 @@ pub struct GetMessageContextOutput<'a> {
 #[serde(bound(deserialize = "'de: 'a"))]
 pub enum GetMessageContextOutputMessagesItem<'a> {
     #[serde(rename = "chat.bsky.convo.defs#messageView")]
-    MessageView(Box<crate::chat_bsky::convo::MessageView<'a>>),
+    MessageView(Box<crate::generated::chat_bsky::convo::MessageView<'a>>),
     #[serde(rename = "chat.bsky.convo.defs#deletedMessageView")]
-    DeletedMessageView(Box<crate::chat_bsky::convo::DeletedMessageView<'a>>),
+    DeletedMessageView(Box<crate::generated::chat_bsky::convo::DeletedMessageView<'a>>),
     #[serde(rename = "chat.bsky.convo.defs#systemMessageView")]
-    SystemMessageView(Box<crate::chat_bsky::convo::SystemMessageView<'a>>),
+    SystemMessageView(Box<crate::generated::chat_bsky::convo::SystemMessageView<'a>>),
 }
 
 /// Response type for

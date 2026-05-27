@@ -37,83 +37,83 @@ pub mod event_convo_first_message_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Rev;
-        type Recipients;
-        type CreatedAt;
         type ConvoId;
+        type CreatedAt;
+        type Recipients;
+        type Rev;
         type User;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Rev = Unset;
-        type Recipients = Unset;
-        type CreatedAt = Unset;
         type ConvoId = Unset;
+        type CreatedAt = Unset;
+        type Recipients = Unset;
+        type Rev = Unset;
         type User = Unset;
     }
-    ///State transition - sets the `rev` field to Set
-    pub struct SetRev<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRev<S> {}
-    impl<S: State> State for SetRev<S> {
-        type Rev = Set<members::rev>;
+    ///State transition - sets the `convo_id` field to Set
+    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetConvoId<S> {}
+    impl<S: State> State for SetConvoId<S> {
+        type ConvoId = Set<members::convo_id>;
+        type CreatedAt = S::CreatedAt;
         type Recipients = S::Recipients;
-        type CreatedAt = S::CreatedAt;
-        type ConvoId = S::ConvoId;
-        type User = S::User;
-    }
-    ///State transition - sets the `recipients` field to Set
-    pub struct SetRecipients<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRecipients<S> {}
-    impl<S: State> State for SetRecipients<S> {
         type Rev = S::Rev;
-        type Recipients = Set<members::recipients>;
-        type CreatedAt = S::CreatedAt;
-        type ConvoId = S::ConvoId;
         type User = S::User;
     }
     ///State transition - sets the `created_at` field to Set
     pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
     impl<S: State> State for SetCreatedAt<S> {
-        type Rev = S::Rev;
-        type Recipients = S::Recipients;
-        type CreatedAt = Set<members::created_at>;
         type ConvoId = S::ConvoId;
+        type CreatedAt = Set<members::created_at>;
+        type Recipients = S::Recipients;
+        type Rev = S::Rev;
         type User = S::User;
     }
-    ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type Rev = S::Rev;
-        type Recipients = S::Recipients;
+    ///State transition - sets the `recipients` field to Set
+    pub struct SetRecipients<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetRecipients<S> {}
+    impl<S: State> State for SetRecipients<S> {
+        type ConvoId = S::ConvoId;
         type CreatedAt = S::CreatedAt;
-        type ConvoId = Set<members::convo_id>;
+        type Recipients = Set<members::recipients>;
+        type Rev = S::Rev;
+        type User = S::User;
+    }
+    ///State transition - sets the `rev` field to Set
+    pub struct SetRev<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetRev<S> {}
+    impl<S: State> State for SetRev<S> {
+        type ConvoId = S::ConvoId;
+        type CreatedAt = S::CreatedAt;
+        type Recipients = S::Recipients;
+        type Rev = Set<members::rev>;
         type User = S::User;
     }
     ///State transition - sets the `user` field to Set
     pub struct SetUser<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetUser<S> {}
     impl<S: State> State for SetUser<S> {
-        type Rev = S::Rev;
-        type Recipients = S::Recipients;
-        type CreatedAt = S::CreatedAt;
         type ConvoId = S::ConvoId;
+        type CreatedAt = S::CreatedAt;
+        type Recipients = S::Recipients;
+        type Rev = S::Rev;
         type User = Set<members::user>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `rev` field
-        pub struct rev(());
-        ///Marker type for the `recipients` field
-        pub struct recipients(());
-        ///Marker type for the `created_at` field
-        pub struct created_at(());
         ///Marker type for the `convo_id` field
         pub struct convo_id(());
+        ///Marker type for the `created_at` field
+        pub struct created_at(());
+        ///Marker type for the `recipients` field
+        pub struct recipients(());
+        ///Marker type for the `rev` field
+        pub struct rev(());
         ///Marker type for the `user` field
         pub struct user(());
     }
@@ -262,10 +262,10 @@ where
 impl<'a, S> EventConvoFirstMessageBuilder<'a, S>
 where
     S: event_convo_first_message_state::State,
-    S::Rev: event_convo_first_message_state::IsSet,
-    S::Recipients: event_convo_first_message_state::IsSet,
-    S::CreatedAt: event_convo_first_message_state::IsSet,
     S::ConvoId: event_convo_first_message_state::IsSet,
+    S::CreatedAt: event_convo_first_message_state::IsSet,
+    S::Recipients: event_convo_first_message_state::IsSet,
+    S::Rev: event_convo_first_message_state::IsSet,
     S::User: event_convo_first_message_state::IsSet,
 {
     /// Build the final struct
@@ -596,7 +596,11 @@ where
 pub enum SubscribeModEventsMessage<'a> {
     #[serde(rename = "#eventConvoFirstMessage")]
     EventConvoFirstMessage(
-        Box<crate::chat_bsky::moderation::subscribe_mod_events::EventConvoFirstMessage<'a>>,
+        Box<
+            crate::generated::chat_bsky::moderation::subscribe_mod_events::EventConvoFirstMessage<
+                'a,
+            >,
+        >,
     ),
 }
 

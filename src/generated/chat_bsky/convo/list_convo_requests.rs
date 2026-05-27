@@ -125,9 +125,9 @@ pub struct ListConvoRequestsOutput<'a> {
 #[serde(bound(deserialize = "'de: 'a"))]
 pub enum ListConvoRequestsOutputRequestsItem<'a> {
     #[serde(rename = "chat.bsky.convo.defs#convoView")]
-    ConvoView(Box<crate::chat_bsky::convo::ConvoView<'a>>),
+    ConvoView(Box<crate::generated::chat_bsky::convo::ConvoView<'a>>),
     #[serde(rename = "chat.bsky.group.defs#joinRequestView")]
-    JoinRequestView(Box<crate::chat_bsky::group::JoinRequestView<'a>>),
+    JoinRequestView(Box<crate::generated::chat_bsky::group::JoinRequestView<'a>>),
 }
 
 /// Response type for

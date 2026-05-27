@@ -27,37 +27,37 @@ pub mod add_members_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type ConvoId;
         type Members;
+        type ConvoId;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type ConvoId = Unset;
         type Members = Unset;
-    }
-    ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type ConvoId = Set<members::convo_id>;
-        type Members = S::Members;
+        type ConvoId = Unset;
     }
     ///State transition - sets the `members` field to Set
     pub struct SetMembers<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetMembers<S> {}
     impl<S: State> State for SetMembers<S> {
-        type ConvoId = S::ConvoId;
         type Members = Set<members::members>;
+        type ConvoId = S::ConvoId;
+    }
+    ///State transition - sets the `convo_id` field to Set
+    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetConvoId<S> {}
+    impl<S: State> State for SetConvoId<S> {
+        type Members = S::Members;
+        type ConvoId = Set<members::convo_id>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `convo_id` field
-        pub struct convo_id(());
         ///Marker type for the `members` field
         pub struct members(());
+        ///Marker type for the `convo_id` field
+        pub struct convo_id(());
     }
 }
 
@@ -130,8 +130,8 @@ where
 impl<'a, S> AddMembersBuilder<'a, S>
 where
     S: add_members_state::State,
-    S::ConvoId: add_members_state::IsSet,
     S::Members: add_members_state::IsSet,
+    S::ConvoId: add_members_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> AddMembers<'a> {
@@ -165,9 +165,10 @@ where
 pub struct AddMembersOutput<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub added_members: std::option::Option<Vec<crate::chat_bsky::actor::ProfileViewBasic<'a>>>,
+    pub added_members:
+        std::option::Option<Vec<crate::generated::chat_bsky::actor::ProfileViewBasic<'a>>>,
     #[serde(borrow)]
-    pub convo: crate::chat_bsky::convo::ConvoView<'a>,
+    pub convo: crate::generated::chat_bsky::convo::ConvoView<'a>,
 }
 
 #[jacquard_derive::open_union]

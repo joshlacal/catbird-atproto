@@ -155,7 +155,8 @@ pub struct GetMessagesOutput<'a> {
     /// Set of all members who authored or reacted to the returned messages. Members referred to by system messages are also included.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub related_profiles: std::option::Option<Vec<crate::chat_bsky::actor::ProfileViewBasic<'a>>>,
+    pub related_profiles:
+        std::option::Option<Vec<crate::generated::chat_bsky::actor::ProfileViewBasic<'a>>>,
 }
 
 #[jacquard_derive::open_union]
@@ -166,11 +167,11 @@ pub struct GetMessagesOutput<'a> {
 #[serde(bound(deserialize = "'de: 'a"))]
 pub enum GetMessagesOutputMessagesItem<'a> {
     #[serde(rename = "chat.bsky.convo.defs#messageView")]
-    MessageView(Box<crate::chat_bsky::convo::MessageView<'a>>),
+    MessageView(Box<crate::generated::chat_bsky::convo::MessageView<'a>>),
     #[serde(rename = "chat.bsky.convo.defs#deletedMessageView")]
-    DeletedMessageView(Box<crate::chat_bsky::convo::DeletedMessageView<'a>>),
+    DeletedMessageView(Box<crate::generated::chat_bsky::convo::DeletedMessageView<'a>>),
     #[serde(rename = "chat.bsky.convo.defs#systemMessageView")]
-    SystemMessageView(Box<crate::chat_bsky::convo::SystemMessageView<'a>>),
+    SystemMessageView(Box<crate::generated::chat_bsky::convo::SystemMessageView<'a>>),
 }
 
 #[jacquard_derive::open_union]

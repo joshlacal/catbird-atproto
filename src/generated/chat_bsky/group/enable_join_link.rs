@@ -29,7 +29,7 @@ pub struct EnableJoinLink<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct EnableJoinLinkOutput<'a> {
     #[serde(borrow)]
-    pub join_link: crate::chat_bsky::group::JoinLinkView<'a>,
+    pub join_link: crate::generated::chat_bsky::group::JoinLinkView<'a>,
 }
 
 #[jacquard_derive::open_union]
