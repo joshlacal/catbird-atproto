@@ -169,7 +169,7 @@ pub struct GetListsOutput<'a> {
     #[serde(borrow)]
     pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(borrow)]
-    pub lists: Vec<crate::app_bsky::graph::ListView<'a>>,
+    pub lists: Vec<crate::generated::app_bsky::graph::ListView<'a>>,
 }
 
 /// Response type for

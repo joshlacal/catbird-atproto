@@ -51,6 +51,8 @@ pub enum UnlockConvoError<'a> {
     InvalidConvo(std::option::Option<jacquard_common::CowStr<'a>>),
     #[serde(rename = "InsufficientRole")]
     InsufficientRole(std::option::Option<jacquard_common::CowStr<'a>>),
+    #[serde(rename = "ConvoLockedByModeration")]
+    ConvoLockedByModeration(std::option::Option<jacquard_common::CowStr<'a>>),
 }
 
 impl std::fmt::Display for UnlockConvoError<'_> {
@@ -65,6 +67,13 @@ impl std::fmt::Display for UnlockConvoError<'_> {
             }
             Self::InsufficientRole(msg) => {
                 write!(f, "InsufficientRole")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::ConvoLockedByModeration(msg) => {
+                write!(f, "ConvoLockedByModeration")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }

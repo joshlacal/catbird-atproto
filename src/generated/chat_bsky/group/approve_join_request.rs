@@ -27,37 +27,37 @@ pub mod approve_join_request_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Member;
         type ConvoId;
+        type Member;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Member = Unset;
         type ConvoId = Unset;
-    }
-    ///State transition - sets the `member` field to Set
-    pub struct SetMember<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetMember<S> {}
-    impl<S: State> State for SetMember<S> {
-        type Member = Set<members::member>;
-        type ConvoId = S::ConvoId;
+        type Member = Unset;
     }
     ///State transition - sets the `convo_id` field to Set
     pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetConvoId<S> {}
     impl<S: State> State for SetConvoId<S> {
-        type Member = S::Member;
         type ConvoId = Set<members::convo_id>;
+        type Member = S::Member;
+    }
+    ///State transition - sets the `member` field to Set
+    pub struct SetMember<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetMember<S> {}
+    impl<S: State> State for SetMember<S> {
+        type ConvoId = S::ConvoId;
+        type Member = Set<members::member>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `member` field
-        pub struct member(());
         ///Marker type for the `convo_id` field
         pub struct convo_id(());
+        ///Marker type for the `member` field
+        pub struct member(());
     }
 }
 
@@ -130,8 +130,8 @@ where
 impl<'a, S> ApproveJoinRequestBuilder<'a, S>
 where
     S: approve_join_request_state::State,
-    S::Member: approve_join_request_state::IsSet,
     S::ConvoId: approve_join_request_state::IsSet,
+    S::Member: approve_join_request_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> ApproveJoinRequest<'a> {

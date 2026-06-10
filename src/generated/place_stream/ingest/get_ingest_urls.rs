@@ -17,7 +17,7 @@ pub struct GetIngestUrls;
 #[serde(rename_all = "camelCase")]
 pub struct GetIngestUrlsOutput<'a> {
     #[serde(borrow)]
-    pub ingests: Vec<crate::place_stream::ingest::Ingest<'a>>,
+    pub ingests: Vec<crate::generated::place_stream::ingest::Ingest<'a>>,
 }
 
 #[jacquard_derive::open_union]

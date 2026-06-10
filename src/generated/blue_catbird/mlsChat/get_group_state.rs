@@ -116,6 +116,9 @@ impl<'a, S: get_group_state_state::State> GetGroupStateBuilder<'a, S> {
         self.__unsafe_private_named.1 = value;
         self
     }
+}
+
+impl<'a, S: get_group_state_state::State> GetGroupStateBuilder<'a, S> {
     /// Set the `include` field (optional)
     pub fn include(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
         self.__unsafe_private_named.2 = value.into();
@@ -126,6 +129,9 @@ impl<'a, S: get_group_state_state::State> GetGroupStateBuilder<'a, S> {
         self.__unsafe_private_named.2 = value;
         self
     }
+}
+
+impl<'a, S: get_group_state_state::State> GetGroupStateBuilder<'a, S> {
     /// Set the `keyPackageHashes` field (optional)
     pub fn key_package_hashes(
         mut self,

@@ -139,12 +139,12 @@ where
 pub struct GetSubjectStatusOutput<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub deactivated: std::option::Option<crate::com_atproto::admin::StatusAttr<'a>>,
+    pub deactivated: std::option::Option<crate::generated::com_atproto::admin::StatusAttr<'a>>,
     #[serde(borrow)]
     pub subject: GetSubjectStatusOutputSubject<'a>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub takedown: std::option::Option<crate::com_atproto::admin::StatusAttr<'a>>,
+    pub takedown: std::option::Option<crate::generated::com_atproto::admin::StatusAttr<'a>>,
 }
 
 #[jacquard_derive::open_union]
@@ -155,11 +155,11 @@ pub struct GetSubjectStatusOutput<'a> {
 #[serde(bound(deserialize = "'de: 'a"))]
 pub enum GetSubjectStatusOutputSubject<'a> {
     #[serde(rename = "com.atproto.admin.defs#repoRef")]
-    RepoRef(Box<crate::com_atproto::admin::RepoRef<'a>>),
+    RepoRef(Box<crate::generated::com_atproto::admin::RepoRef<'a>>),
     #[serde(rename = "com.atproto.repo.strongRef")]
-    StrongRef(Box<crate::com_atproto::repo::strong_ref::StrongRef<'a>>),
+    StrongRef(Box<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>),
     #[serde(rename = "com.atproto.admin.defs#repoBlobRef")]
-    RepoBlobRef(Box<crate::com_atproto::admin::RepoBlobRef<'a>>),
+    RepoBlobRef(Box<crate::generated::com_atproto::admin::RepoBlobRef<'a>>),
 }
 
 /// Response type for

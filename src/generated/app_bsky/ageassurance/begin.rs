@@ -41,7 +41,7 @@ pub struct Begin<'a> {
 pub struct BeginOutput<'a> {
     #[serde(flatten)]
     #[serde(borrow)]
-    pub value: crate::app_bsky::ageassurance::State<'a>,
+    pub value: crate::generated::app_bsky::ageassurance::State<'a>,
 }
 
 #[jacquard_derive::open_union]

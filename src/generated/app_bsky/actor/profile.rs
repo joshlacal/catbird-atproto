@@ -32,14 +32,15 @@ pub struct Profile<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub joined_via_starter_pack:
-        std::option::Option<crate::com_atproto::repo::strong_ref::StrongRef<'a>>,
+        std::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,
     /// Self-label values, specific to the Bluesky application, on the overall account.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub labels: std::option::Option<crate::com_atproto::label::SelfLabels<'a>>,
+    pub labels: std::option::Option<crate::generated::com_atproto::label::SelfLabels<'a>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub pinned_post: std::option::Option<crate::com_atproto::repo::strong_ref::StrongRef<'a>>,
+    pub pinned_post:
+        std::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,
     /// Free-form pronouns text.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
@@ -77,9 +78,9 @@ pub struct ProfileBuilder<'a, S: profile_state::State> {
         ::core::option::Option<jacquard_common::types::string::Datetime>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<crate::com_atproto::repo::strong_ref::StrongRef<'a>>,
-        ::core::option::Option<crate::com_atproto::label::SelfLabels<'a>>,
-        ::core::option::Option<crate::com_atproto::repo::strong_ref::StrongRef<'a>>,
+        ::core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,
+        ::core::option::Option<crate::generated::com_atproto::label::SelfLabels<'a>>,
+        ::core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
         ::core::option::Option<jacquard_common::types::string::Uri<'a>>,
     ),
@@ -191,7 +192,7 @@ impl<'a, S: profile_state::State> ProfileBuilder<'a, S> {
     /// Set the `joinedViaStarterPack` field (optional)
     pub fn joined_via_starter_pack(
         mut self,
-        value: impl Into<Option<crate::com_atproto::repo::strong_ref::StrongRef<'a>>>,
+        value: impl Into<Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.5 = value.into();
         self
@@ -199,7 +200,7 @@ impl<'a, S: profile_state::State> ProfileBuilder<'a, S> {
     /// Set the `joinedViaStarterPack` field to an Option value (optional)
     pub fn maybe_joined_via_starter_pack(
         mut self,
-        value: Option<crate::com_atproto::repo::strong_ref::StrongRef<'a>>,
+        value: Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,
     ) -> Self {
         self.__unsafe_private_named.5 = value;
         self
@@ -210,7 +211,7 @@ impl<'a, S: profile_state::State> ProfileBuilder<'a, S> {
     /// Set the `labels` field (optional)
     pub fn labels(
         mut self,
-        value: impl Into<Option<crate::com_atproto::label::SelfLabels<'a>>>,
+        value: impl Into<Option<crate::generated::com_atproto::label::SelfLabels<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.6 = value.into();
         self
@@ -218,7 +219,7 @@ impl<'a, S: profile_state::State> ProfileBuilder<'a, S> {
     /// Set the `labels` field to an Option value (optional)
     pub fn maybe_labels(
         mut self,
-        value: Option<crate::com_atproto::label::SelfLabels<'a>>,
+        value: Option<crate::generated::com_atproto::label::SelfLabels<'a>>,
     ) -> Self {
         self.__unsafe_private_named.6 = value;
         self
@@ -229,7 +230,7 @@ impl<'a, S: profile_state::State> ProfileBuilder<'a, S> {
     /// Set the `pinnedPost` field (optional)
     pub fn pinned_post(
         mut self,
-        value: impl Into<Option<crate::com_atproto::repo::strong_ref::StrongRef<'a>>>,
+        value: impl Into<Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.7 = value.into();
         self
@@ -237,7 +238,7 @@ impl<'a, S: profile_state::State> ProfileBuilder<'a, S> {
     /// Set the `pinnedPost` field to an Option value (optional)
     pub fn maybe_pinned_post(
         mut self,
-        value: Option<crate::com_atproto::repo::strong_ref::StrongRef<'a>>,
+        value: Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,
     ) -> Self {
         self.__unsafe_private_named.7 = value;
         self

@@ -150,9 +150,9 @@ pub struct GetRelationshipsOutput<'a> {
 #[serde(bound(deserialize = "'de: 'a"))]
 pub enum GetRelationshipsOutputRelationshipsItem<'a> {
     #[serde(rename = "app.bsky.graph.defs#relationship")]
-    Relationship(Box<crate::app_bsky::graph::Relationship<'a>>),
+    Relationship(Box<crate::generated::app_bsky::graph::Relationship<'a>>),
     #[serde(rename = "app.bsky.graph.defs#notFoundActor")]
-    NotFoundActor(Box<crate::app_bsky::graph::NotFoundActor<'a>>),
+    NotFoundActor(Box<crate::generated::app_bsky::graph::NotFoundActor<'a>>),
 }
 
 #[jacquard_derive::open_union]

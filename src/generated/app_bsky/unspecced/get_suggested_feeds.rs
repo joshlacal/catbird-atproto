@@ -89,7 +89,7 @@ where
 #[serde(rename_all = "camelCase")]
 pub struct GetSuggestedFeedsOutput<'a> {
     #[serde(borrow)]
-    pub feeds: Vec<crate::app_bsky::feed::GeneratorView<'a>>,
+    pub feeds: Vec<crate::generated::app_bsky::feed::GeneratorView<'a>>,
 }
 
 /// Response type for

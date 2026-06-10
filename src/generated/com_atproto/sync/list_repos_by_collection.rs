@@ -151,7 +151,7 @@ pub struct ListReposByCollectionOutput<'a> {
     #[serde(borrow)]
     pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(borrow)]
-    pub repos: Vec<crate::com_atproto::sync::list_repos_by_collection::Repo<'a>>,
+    pub repos: Vec<crate::generated::com_atproto::sync::list_repos_by_collection::Repo<'a>>,
 }
 
 /// Response type for

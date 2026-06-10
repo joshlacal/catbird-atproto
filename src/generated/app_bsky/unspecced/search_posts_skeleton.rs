@@ -357,7 +357,7 @@ pub struct SearchPostsSkeletonOutput<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     pub hits_total: std::option::Option<i64>,
     #[serde(borrow)]
-    pub posts: Vec<crate::app_bsky::unspecced::SkeletonSearchPost<'a>>,
+    pub posts: Vec<crate::generated::app_bsky::unspecced::SkeletonSearchPost<'a>>,
 }
 
 #[jacquard_derive::open_union]

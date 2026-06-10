@@ -32,51 +32,51 @@ pub mod invalidate_key_package_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type KeyPackageHash;
         type Reason;
         type DeviceDid;
+        type KeyPackageHash;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type KeyPackageHash = Unset;
         type Reason = Unset;
         type DeviceDid = Unset;
-    }
-    ///State transition - sets the `key_package_hash` field to Set
-    pub struct SetKeyPackageHash<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetKeyPackageHash<S> {}
-    impl<S: State> State for SetKeyPackageHash<S> {
-        type KeyPackageHash = Set<members::key_package_hash>;
-        type Reason = S::Reason;
-        type DeviceDid = S::DeviceDid;
+        type KeyPackageHash = Unset;
     }
     ///State transition - sets the `reason` field to Set
     pub struct SetReason<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetReason<S> {}
     impl<S: State> State for SetReason<S> {
-        type KeyPackageHash = S::KeyPackageHash;
         type Reason = Set<members::reason>;
         type DeviceDid = S::DeviceDid;
+        type KeyPackageHash = S::KeyPackageHash;
     }
     ///State transition - sets the `device_did` field to Set
     pub struct SetDeviceDid<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetDeviceDid<S> {}
     impl<S: State> State for SetDeviceDid<S> {
-        type KeyPackageHash = S::KeyPackageHash;
         type Reason = S::Reason;
         type DeviceDid = Set<members::device_did>;
+        type KeyPackageHash = S::KeyPackageHash;
+    }
+    ///State transition - sets the `key_package_hash` field to Set
+    pub struct SetKeyPackageHash<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetKeyPackageHash<S> {}
+    impl<S: State> State for SetKeyPackageHash<S> {
+        type Reason = S::Reason;
+        type DeviceDid = S::DeviceDid;
+        type KeyPackageHash = Set<members::key_package_hash>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `key_package_hash` field
-        pub struct key_package_hash(());
         ///Marker type for the `reason` field
         pub struct reason(());
         ///Marker type for the `device_did` field
         pub struct device_did(());
+        ///Marker type for the `key_package_hash` field
+        pub struct key_package_hash(());
     }
 }
 
@@ -169,9 +169,9 @@ where
 impl<'a, S> InvalidateKeyPackageBuilder<'a, S>
 where
     S: invalidate_key_package_state::State,
-    S::KeyPackageHash: invalidate_key_package_state::IsSet,
     S::Reason: invalidate_key_package_state::IsSet,
     S::DeviceDid: invalidate_key_package_state::IsSet,
+    S::KeyPackageHash: invalidate_key_package_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> InvalidateKeyPackage<'a> {

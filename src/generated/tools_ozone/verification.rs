@@ -71,9 +71,9 @@ pub mod verification_view_state {
         type Handle;
         type DisplayName;
         type Subject;
-        type CreatedAt;
-        type Uri;
         type Issuer;
+        type Uri;
+        type CreatedAt;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
@@ -82,9 +82,9 @@ pub mod verification_view_state {
         type Handle = Unset;
         type DisplayName = Unset;
         type Subject = Unset;
-        type CreatedAt = Unset;
-        type Uri = Unset;
         type Issuer = Unset;
+        type Uri = Unset;
+        type CreatedAt = Unset;
     }
     ///State transition - sets the `handle` field to Set
     pub struct SetHandle<S: State = Empty>(PhantomData<fn() -> S>);
@@ -93,9 +93,9 @@ pub mod verification_view_state {
         type Handle = Set<members::handle>;
         type DisplayName = S::DisplayName;
         type Subject = S::Subject;
-        type CreatedAt = S::CreatedAt;
-        type Uri = S::Uri;
         type Issuer = S::Issuer;
+        type Uri = S::Uri;
+        type CreatedAt = S::CreatedAt;
     }
     ///State transition - sets the `display_name` field to Set
     pub struct SetDisplayName<S: State = Empty>(PhantomData<fn() -> S>);
@@ -104,9 +104,9 @@ pub mod verification_view_state {
         type Handle = S::Handle;
         type DisplayName = Set<members::display_name>;
         type Subject = S::Subject;
-        type CreatedAt = S::CreatedAt;
-        type Uri = S::Uri;
         type Issuer = S::Issuer;
+        type Uri = S::Uri;
+        type CreatedAt = S::CreatedAt;
     }
     ///State transition - sets the `subject` field to Set
     pub struct SetSubject<S: State = Empty>(PhantomData<fn() -> S>);
@@ -115,31 +115,9 @@ pub mod verification_view_state {
         type Handle = S::Handle;
         type DisplayName = S::DisplayName;
         type Subject = Set<members::subject>;
-        type CreatedAt = S::CreatedAt;
+        type Issuer = S::Issuer;
         type Uri = S::Uri;
-        type Issuer = S::Issuer;
-    }
-    ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type Handle = S::Handle;
-        type DisplayName = S::DisplayName;
-        type Subject = S::Subject;
-        type CreatedAt = Set<members::created_at>;
-        type Uri = S::Uri;
-        type Issuer = S::Issuer;
-    }
-    ///State transition - sets the `uri` field to Set
-    pub struct SetUri<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUri<S> {}
-    impl<S: State> State for SetUri<S> {
-        type Handle = S::Handle;
-        type DisplayName = S::DisplayName;
-        type Subject = S::Subject;
         type CreatedAt = S::CreatedAt;
-        type Uri = Set<members::uri>;
-        type Issuer = S::Issuer;
     }
     ///State transition - sets the `issuer` field to Set
     pub struct SetIssuer<S: State = Empty>(PhantomData<fn() -> S>);
@@ -148,9 +126,31 @@ pub mod verification_view_state {
         type Handle = S::Handle;
         type DisplayName = S::DisplayName;
         type Subject = S::Subject;
-        type CreatedAt = S::CreatedAt;
-        type Uri = S::Uri;
         type Issuer = Set<members::issuer>;
+        type Uri = S::Uri;
+        type CreatedAt = S::CreatedAt;
+    }
+    ///State transition - sets the `uri` field to Set
+    pub struct SetUri<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetUri<S> {}
+    impl<S: State> State for SetUri<S> {
+        type Handle = S::Handle;
+        type DisplayName = S::DisplayName;
+        type Subject = S::Subject;
+        type Issuer = S::Issuer;
+        type Uri = Set<members::uri>;
+        type CreatedAt = S::CreatedAt;
+    }
+    ///State transition - sets the `created_at` field to Set
+    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
+    impl<S: State> State for SetCreatedAt<S> {
+        type Handle = S::Handle;
+        type DisplayName = S::DisplayName;
+        type Subject = S::Subject;
+        type Issuer = S::Issuer;
+        type Uri = S::Uri;
+        type CreatedAt = Set<members::created_at>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
@@ -161,12 +161,12 @@ pub mod verification_view_state {
         pub struct display_name(());
         ///Marker type for the `subject` field
         pub struct subject(());
-        ///Marker type for the `created_at` field
-        pub struct created_at(());
-        ///Marker type for the `uri` field
-        pub struct uri(());
         ///Marker type for the `issuer` field
         pub struct issuer(());
+        ///Marker type for the `uri` field
+        pub struct uri(());
+        ///Marker type for the `created_at` field
+        pub struct created_at(());
     }
 }
 
@@ -449,9 +449,9 @@ where
     S::Handle: verification_view_state::IsSet,
     S::DisplayName: verification_view_state::IsSet,
     S::Subject: verification_view_state::IsSet,
-    S::CreatedAt: verification_view_state::IsSet,
-    S::Uri: verification_view_state::IsSet,
     S::Issuer: verification_view_state::IsSet,
+    S::Uri: verification_view_state::IsSet,
+    S::CreatedAt: verification_view_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> VerificationView<'a> {
@@ -507,9 +507,9 @@ where
 #[serde(bound(deserialize = "'de: 'a"))]
 pub enum VerificationViewIssuerRepo<'a> {
     #[serde(rename = "tools.ozone.moderation.defs#repoViewDetail")]
-    RepoViewDetail(Box<crate::tools_ozone::moderation::RepoViewDetail<'a>>),
+    RepoViewDetail(Box<crate::generated::tools_ozone::moderation::RepoViewDetail<'a>>),
     #[serde(rename = "tools.ozone.moderation.defs#repoViewNotFound")]
-    RepoViewNotFound(Box<crate::tools_ozone::moderation::RepoViewNotFound<'a>>),
+    RepoViewNotFound(Box<crate::generated::tools_ozone::moderation::RepoViewNotFound<'a>>),
 }
 
 #[jacquard_derive::open_union]
@@ -520,9 +520,9 @@ pub enum VerificationViewIssuerRepo<'a> {
 #[serde(bound(deserialize = "'de: 'a"))]
 pub enum VerificationViewSubjectRepo<'a> {
     #[serde(rename = "tools.ozone.moderation.defs#repoViewDetail")]
-    RepoViewDetail(Box<crate::tools_ozone::moderation::RepoViewDetail<'a>>),
+    RepoViewDetail(Box<crate::generated::tools_ozone::moderation::RepoViewDetail<'a>>),
     #[serde(rename = "tools.ozone.moderation.defs#repoViewNotFound")]
-    RepoViewNotFound(Box<crate::tools_ozone::moderation::RepoViewNotFound<'a>>),
+    RepoViewNotFound(Box<crate::generated::tools_ozone::moderation::RepoViewNotFound<'a>>),
 }
 
 fn lexicon_doc_tools_ozone_verification_defs() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {

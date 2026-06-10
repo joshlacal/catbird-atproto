@@ -186,12 +186,16 @@ pub enum CreateGroupError<'a> {
     AccountSuspended(std::option::Option<jacquard_common::CowStr<'a>>),
     #[serde(rename = "BlockedActor")]
     BlockedActor(std::option::Option<jacquard_common::CowStr<'a>>),
-    #[serde(rename = "GroupInvitesDisabled")]
-    GroupInvitesDisabled(std::option::Option<jacquard_common::CowStr<'a>>),
+    #[serde(rename = "BlockedSubject")]
+    BlockedSubject(std::option::Option<jacquard_common::CowStr<'a>>),
+    #[serde(rename = "NewAccountCannotCreateGroup")]
+    NewAccountCannotCreateGroup(std::option::Option<jacquard_common::CowStr<'a>>),
     #[serde(rename = "NotFollowedBySender")]
     NotFollowedBySender(std::option::Option<jacquard_common::CowStr<'a>>),
     #[serde(rename = "RecipientNotFound")]
     RecipientNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
+    #[serde(rename = "UserForbidsGroups")]
+    UserForbidsGroups(std::option::Option<jacquard_common::CowStr<'a>>),
 }
 
 impl std::fmt::Display for CreateGroupError<'_> {
@@ -211,8 +215,15 @@ impl std::fmt::Display for CreateGroupError<'_> {
                 }
                 Ok(())
             }
-            Self::GroupInvitesDisabled(msg) => {
-                write!(f, "GroupInvitesDisabled")?;
+            Self::BlockedSubject(msg) => {
+                write!(f, "BlockedSubject")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::NewAccountCannotCreateGroup(msg) => {
+                write!(f, "NewAccountCannotCreateGroup")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }
@@ -227,6 +238,13 @@ impl std::fmt::Display for CreateGroupError<'_> {
             }
             Self::RecipientNotFound(msg) => {
                 write!(f, "RecipientNotFound")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::UserForbidsGroups(msg) => {
+                write!(f, "UserForbidsGroups")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }

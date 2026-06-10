@@ -141,9 +141,9 @@ pub struct GetServicesOutput<'a> {
 #[serde(bound(deserialize = "'de: 'a"))]
 pub enum GetServicesOutputViewsItem<'a> {
     #[serde(rename = "app.bsky.labeler.defs#labelerView")]
-    LabelerView(Box<crate::app_bsky::labeler::LabelerView<'a>>),
+    LabelerView(Box<crate::generated::app_bsky::labeler::LabelerView<'a>>),
     #[serde(rename = "app.bsky.labeler.defs#labelerViewDetailed")]
-    LabelerViewDetailed(Box<crate::app_bsky::labeler::LabelerViewDetailed<'a>>),
+    LabelerViewDetailed(Box<crate::generated::app_bsky::labeler::LabelerViewDetailed<'a>>),
 }
 
 /// Response type for

@@ -194,7 +194,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Info<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct Labels<'a> {
     #[serde(borrow)]
-    pub labels: Vec<crate::com_atproto::label::Label<'a>>,
+    pub labels: Vec<crate::generated::com_atproto::label::Label<'a>>,
     pub seq: i64,
 }
 
@@ -246,7 +246,7 @@ pub mod labels_state {
 pub struct LabelsBuilder<'a, S: labels_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
-        ::core::option::Option<Vec<crate::com_atproto::label::Label<'a>>>,
+        ::core::option::Option<Vec<crate::generated::com_atproto::label::Label<'a>>>,
         ::core::option::Option<i64>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
@@ -278,7 +278,7 @@ where
     /// Set the `labels` field (required)
     pub fn labels(
         mut self,
-        value: impl Into<Vec<crate::com_atproto::label::Label<'a>>>,
+        value: impl Into<Vec<crate::generated::com_atproto::label::Label<'a>>>,
     ) -> LabelsBuilder<'a, labels_state::SetLabels<S>> {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         LabelsBuilder {
@@ -436,9 +436,9 @@ where
 #[serde(bound(deserialize = "'de: 'a"))]
 pub enum SubscribeLabelsMessage<'a> {
     #[serde(rename = "#labels")]
-    Labels(Box<crate::com_atproto::label::subscribe_labels::Labels<'a>>),
+    Labels(Box<crate::generated::com_atproto::label::subscribe_labels::Labels<'a>>),
     #[serde(rename = "#info")]
-    Info(Box<crate::com_atproto::label::subscribe_labels::Info<'a>>),
+    Info(Box<crate::generated::com_atproto::label::subscribe_labels::Info<'a>>),
 }
 
 impl<'a> SubscribeLabelsMessage<'a> {

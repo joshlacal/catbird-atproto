@@ -27,37 +27,37 @@ pub mod add_members_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Members;
         type ConvoId;
+        type Members;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Members = Unset;
         type ConvoId = Unset;
-    }
-    ///State transition - sets the `members` field to Set
-    pub struct SetMembers<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetMembers<S> {}
-    impl<S: State> State for SetMembers<S> {
-        type Members = Set<members::members>;
-        type ConvoId = S::ConvoId;
+        type Members = Unset;
     }
     ///State transition - sets the `convo_id` field to Set
     pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetConvoId<S> {}
     impl<S: State> State for SetConvoId<S> {
-        type Members = S::Members;
         type ConvoId = Set<members::convo_id>;
+        type Members = S::Members;
+    }
+    ///State transition - sets the `members` field to Set
+    pub struct SetMembers<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetMembers<S> {}
+    impl<S: State> State for SetMembers<S> {
+        type ConvoId = S::ConvoId;
+        type Members = Set<members::members>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `members` field
-        pub struct members(());
         ///Marker type for the `convo_id` field
         pub struct convo_id(());
+        ///Marker type for the `members` field
+        pub struct members(());
     }
 }
 
@@ -130,8 +130,8 @@ where
 impl<'a, S> AddMembersBuilder<'a, S>
 where
     S: add_members_state::State,
-    S::Members: add_members_state::IsSet,
     S::ConvoId: add_members_state::IsSet,
+    S::Members: add_members_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> AddMembers<'a> {
@@ -190,8 +190,8 @@ pub enum AddMembersError<'a> {
     AccountSuspended(std::option::Option<jacquard_common::CowStr<'a>>),
     #[serde(rename = "BlockedActor")]
     BlockedActor(std::option::Option<jacquard_common::CowStr<'a>>),
-    #[serde(rename = "GroupInvitesDisabled")]
-    GroupInvitesDisabled(std::option::Option<jacquard_common::CowStr<'a>>),
+    #[serde(rename = "BlockedSubject")]
+    BlockedSubject(std::option::Option<jacquard_common::CowStr<'a>>),
     #[serde(rename = "ConvoLocked")]
     ConvoLocked(std::option::Option<jacquard_common::CowStr<'a>>),
     #[serde(rename = "InsufficientRole")]
@@ -204,6 +204,8 @@ pub enum AddMembersError<'a> {
     NotFollowedBySender(std::option::Option<jacquard_common::CowStr<'a>>),
     #[serde(rename = "RecipientNotFound")]
     RecipientNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
+    #[serde(rename = "UserForbidsGroups")]
+    UserForbidsGroups(std::option::Option<jacquard_common::CowStr<'a>>),
 }
 
 impl std::fmt::Display for AddMembersError<'_> {
@@ -223,8 +225,8 @@ impl std::fmt::Display for AddMembersError<'_> {
                 }
                 Ok(())
             }
-            Self::GroupInvitesDisabled(msg) => {
-                write!(f, "GroupInvitesDisabled")?;
+            Self::BlockedSubject(msg) => {
+                write!(f, "BlockedSubject")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }
@@ -267,6 +269,13 @@ impl std::fmt::Display for AddMembersError<'_> {
             }
             Self::RecipientNotFound(msg) => {
                 write!(f, "RecipientNotFound")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::UserForbidsGroups(msg) => {
+                write!(f, "UserForbidsGroups")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }

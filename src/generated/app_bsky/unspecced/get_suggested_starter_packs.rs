@@ -89,7 +89,7 @@ where
 #[serde(rename_all = "camelCase")]
 pub struct GetSuggestedStarterPacksOutput<'a> {
     #[serde(borrow)]
-    pub starter_packs: Vec<crate::app_bsky::graph::StarterPackView<'a>>,
+    pub starter_packs: Vec<crate::generated::app_bsky::graph::StarterPackView<'a>>,
 }
 
 /// Response type for

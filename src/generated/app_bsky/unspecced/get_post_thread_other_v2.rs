@@ -111,7 +111,8 @@ where
 pub struct GetPostThreadOtherV2Output<'a> {
     /// A flat list of other thread items. The depth of each item is indicated by the depth property inside the item.
     #[serde(borrow)]
-    pub thread: Vec<crate::app_bsky::unspecced::get_post_thread_other_v2::ThreadItem<'a>>,
+    pub thread:
+        Vec<crate::generated::app_bsky::unspecced::get_post_thread_other_v2::ThreadItem<'a>>,
 }
 
 /// Response type for
@@ -151,7 +152,7 @@ pub struct ThreadItem<'a> {
     #[serde(borrow)]
     pub uri: jacquard_common::types::string::AtUri<'a>,
     #[serde(borrow)]
-    pub value: crate::app_bsky::unspecced::ThreadItemPost<'a>,
+    pub value: crate::generated::app_bsky::unspecced::ThreadItemPost<'a>,
 }
 
 pub mod thread_item_state {
@@ -218,7 +219,7 @@ pub struct ThreadItemBuilder<'a, S: thread_item_state::State> {
     __unsafe_private_named: (
         ::core::option::Option<i64>,
         ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
-        ::core::option::Option<crate::app_bsky::unspecced::ThreadItemPost<'a>>,
+        ::core::option::Option<crate::generated::app_bsky::unspecced::ThreadItemPost<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
@@ -287,7 +288,7 @@ where
     /// Set the `value` field (required)
     pub fn value(
         mut self,
-        value: impl Into<crate::app_bsky::unspecced::ThreadItemPost<'a>>,
+        value: impl Into<crate::generated::app_bsky::unspecced::ThreadItemPost<'a>>,
     ) -> ThreadItemBuilder<'a, thread_item_state::SetValue<S>> {
         self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
         ThreadItemBuilder {

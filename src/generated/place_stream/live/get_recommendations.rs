@@ -29,37 +29,37 @@ pub mod livestream_recommendation_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Source;
         type Did;
+        type Source;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Source = Unset;
         type Did = Unset;
-    }
-    ///State transition - sets the `source` field to Set
-    pub struct SetSource<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetSource<S> {}
-    impl<S: State> State for SetSource<S> {
-        type Source = Set<members::source>;
-        type Did = S::Did;
+        type Source = Unset;
     }
     ///State transition - sets the `did` field to Set
     pub struct SetDid<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetDid<S> {}
     impl<S: State> State for SetDid<S> {
-        type Source = S::Source;
         type Did = Set<members::did>;
+        type Source = S::Source;
+    }
+    ///State transition - sets the `source` field to Set
+    pub struct SetSource<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetSource<S> {}
+    impl<S: State> State for SetSource<S> {
+        type Did = S::Did;
+        type Source = Set<members::source>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `source` field
-        pub struct source(());
         ///Marker type for the `did` field
         pub struct did(());
+        ///Marker type for the `source` field
+        pub struct source(());
     }
 }
 
@@ -132,8 +132,8 @@ where
 impl<'a, S> LivestreamRecommendationBuilder<'a, S>
 where
     S: livestream_recommendation_state::State,
-    S::Source: livestream_recommendation_state::IsSet,
     S::Did: livestream_recommendation_state::IsSet,
+    S::Source: livestream_recommendation_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> LivestreamRecommendation<'a> {
@@ -398,8 +398,9 @@ where
 pub struct GetRecommendationsOutput<'a> {
     /// Ordered list of recommendations
     #[serde(borrow)]
-    pub recommendations:
-        Vec<crate::place_stream::live::get_recommendations::LivestreamRecommendation<'a>>,
+    pub recommendations: Vec<
+        crate::generated::place_stream::live::get_recommendations::LivestreamRecommendation<'a>,
+    >,
     /// The user DID this recommendation is for
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]

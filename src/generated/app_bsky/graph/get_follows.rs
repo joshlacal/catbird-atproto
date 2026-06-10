@@ -151,9 +151,9 @@ pub struct GetFollowsOutput<'a> {
     #[serde(borrow)]
     pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(borrow)]
-    pub follows: Vec<crate::app_bsky::actor::ProfileView<'a>>,
+    pub follows: Vec<crate::generated::app_bsky::actor::ProfileView<'a>>,
     #[serde(borrow)]
-    pub subject: crate::app_bsky::actor::ProfileView<'a>,
+    pub subject: crate::generated::app_bsky::actor::ProfileView<'a>,
 }
 
 /// Response type for

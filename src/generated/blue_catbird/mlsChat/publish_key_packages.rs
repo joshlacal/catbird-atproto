@@ -1056,51 +1056,51 @@ pub mod key_package_stats_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Expired;
         type Published;
         type Available;
+        type Expired;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Expired = Unset;
         type Published = Unset;
         type Available = Unset;
-    }
-    ///State transition - sets the `expired` field to Set
-    pub struct SetExpired<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetExpired<S> {}
-    impl<S: State> State for SetExpired<S> {
-        type Expired = Set<members::expired>;
-        type Published = S::Published;
-        type Available = S::Available;
+        type Expired = Unset;
     }
     ///State transition - sets the `published` field to Set
     pub struct SetPublished<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetPublished<S> {}
     impl<S: State> State for SetPublished<S> {
-        type Expired = S::Expired;
         type Published = Set<members::published>;
         type Available = S::Available;
+        type Expired = S::Expired;
     }
     ///State transition - sets the `available` field to Set
     pub struct SetAvailable<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetAvailable<S> {}
     impl<S: State> State for SetAvailable<S> {
-        type Expired = S::Expired;
         type Published = S::Published;
         type Available = Set<members::available>;
+        type Expired = S::Expired;
+    }
+    ///State transition - sets the `expired` field to Set
+    pub struct SetExpired<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetExpired<S> {}
+    impl<S: State> State for SetExpired<S> {
+        type Published = S::Published;
+        type Available = S::Available;
+        type Expired = Set<members::expired>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `expired` field
-        pub struct expired(());
         ///Marker type for the `published` field
         pub struct published(());
         ///Marker type for the `available` field
         pub struct available(());
+        ///Marker type for the `expired` field
+        pub struct expired(());
     }
 }
 
@@ -1193,9 +1193,9 @@ where
 impl<'a, S> KeyPackageStatsBuilder<'a, S>
 where
     S: key_package_stats_state::State,
-    S::Expired: key_package_stats_state::IsSet,
     S::Published: key_package_stats_state::IsSet,
     S::Available: key_package_stats_state::IsSet,
+    S::Expired: key_package_stats_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> KeyPackageStats<'a> {
@@ -1494,37 +1494,37 @@ pub mod publish_result_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Failed;
         type Succeeded;
+        type Failed;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Failed = Unset;
         type Succeeded = Unset;
-    }
-    ///State transition - sets the `failed` field to Set
-    pub struct SetFailed<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetFailed<S> {}
-    impl<S: State> State for SetFailed<S> {
-        type Failed = Set<members::failed>;
-        type Succeeded = S::Succeeded;
+        type Failed = Unset;
     }
     ///State transition - sets the `succeeded` field to Set
     pub struct SetSucceeded<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetSucceeded<S> {}
     impl<S: State> State for SetSucceeded<S> {
-        type Failed = S::Failed;
         type Succeeded = Set<members::succeeded>;
+        type Failed = S::Failed;
+    }
+    ///State transition - sets the `failed` field to Set
+    pub struct SetFailed<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetFailed<S> {}
+    impl<S: State> State for SetFailed<S> {
+        type Succeeded = S::Succeeded;
+        type Failed = Set<members::failed>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `failed` field
-        pub struct failed(());
         ///Marker type for the `succeeded` field
         pub struct succeeded(());
+        ///Marker type for the `failed` field
+        pub struct failed(());
     }
 }
 
@@ -1625,8 +1625,8 @@ where
 impl<'a, S> PublishResultBuilder<'a, S>
 where
     S: publish_result_state::State,
-    S::Failed: publish_result_state::IsSet,
     S::Succeeded: publish_result_state::IsSet,
+    S::Failed: publish_result_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> PublishResult<'a> {
@@ -1717,67 +1717,67 @@ pub mod replenish_result_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type TargetCount;
         type DeliveredCount;
         type DeviceCount;
         type Requested;
+        type TargetCount;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type TargetCount = Unset;
         type DeliveredCount = Unset;
         type DeviceCount = Unset;
         type Requested = Unset;
-    }
-    ///State transition - sets the `target_count` field to Set
-    pub struct SetTargetCount<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetTargetCount<S> {}
-    impl<S: State> State for SetTargetCount<S> {
-        type TargetCount = Set<members::target_count>;
-        type DeliveredCount = S::DeliveredCount;
-        type DeviceCount = S::DeviceCount;
-        type Requested = S::Requested;
+        type TargetCount = Unset;
     }
     ///State transition - sets the `delivered_count` field to Set
     pub struct SetDeliveredCount<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetDeliveredCount<S> {}
     impl<S: State> State for SetDeliveredCount<S> {
-        type TargetCount = S::TargetCount;
         type DeliveredCount = Set<members::delivered_count>;
         type DeviceCount = S::DeviceCount;
         type Requested = S::Requested;
+        type TargetCount = S::TargetCount;
     }
     ///State transition - sets the `device_count` field to Set
     pub struct SetDeviceCount<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetDeviceCount<S> {}
     impl<S: State> State for SetDeviceCount<S> {
-        type TargetCount = S::TargetCount;
         type DeliveredCount = S::DeliveredCount;
         type DeviceCount = Set<members::device_count>;
         type Requested = S::Requested;
+        type TargetCount = S::TargetCount;
     }
     ///State transition - sets the `requested` field to Set
     pub struct SetRequested<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetRequested<S> {}
     impl<S: State> State for SetRequested<S> {
-        type TargetCount = S::TargetCount;
         type DeliveredCount = S::DeliveredCount;
         type DeviceCount = S::DeviceCount;
         type Requested = Set<members::requested>;
+        type TargetCount = S::TargetCount;
+    }
+    ///State transition - sets the `target_count` field to Set
+    pub struct SetTargetCount<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetTargetCount<S> {}
+    impl<S: State> State for SetTargetCount<S> {
+        type DeliveredCount = S::DeliveredCount;
+        type DeviceCount = S::DeviceCount;
+        type Requested = S::Requested;
+        type TargetCount = Set<members::target_count>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `target_count` field
-        pub struct target_count(());
         ///Marker type for the `delivered_count` field
         pub struct delivered_count(());
         ///Marker type for the `device_count` field
         pub struct device_count(());
         ///Marker type for the `requested` field
         pub struct requested(());
+        ///Marker type for the `target_count` field
+        pub struct target_count(());
     }
 }
 
@@ -1890,10 +1890,10 @@ where
 impl<'a, S> ReplenishResultBuilder<'a, S>
 where
     S: replenish_result_state::State,
-    S::TargetCount: replenish_result_state::IsSet,
     S::DeliveredCount: replenish_result_state::IsSet,
     S::DeviceCount: replenish_result_state::IsSet,
     S::Requested: replenish_result_state::IsSet,
+    S::TargetCount: replenish_result_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> ReplenishResult<'a> {
@@ -2011,67 +2011,67 @@ pub mod sync_result_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type DeviceId;
+        type ServerHashes;
         type OrphanedCount;
         type DeletedCount;
-        type ServerHashes;
+        type DeviceId;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type DeviceId = Unset;
+        type ServerHashes = Unset;
         type OrphanedCount = Unset;
         type DeletedCount = Unset;
-        type ServerHashes = Unset;
-    }
-    ///State transition - sets the `device_id` field to Set
-    pub struct SetDeviceId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDeviceId<S> {}
-    impl<S: State> State for SetDeviceId<S> {
-        type DeviceId = Set<members::device_id>;
-        type OrphanedCount = S::OrphanedCount;
-        type DeletedCount = S::DeletedCount;
-        type ServerHashes = S::ServerHashes;
-    }
-    ///State transition - sets the `orphaned_count` field to Set
-    pub struct SetOrphanedCount<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetOrphanedCount<S> {}
-    impl<S: State> State for SetOrphanedCount<S> {
-        type DeviceId = S::DeviceId;
-        type OrphanedCount = Set<members::orphaned_count>;
-        type DeletedCount = S::DeletedCount;
-        type ServerHashes = S::ServerHashes;
-    }
-    ///State transition - sets the `deleted_count` field to Set
-    pub struct SetDeletedCount<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDeletedCount<S> {}
-    impl<S: State> State for SetDeletedCount<S> {
-        type DeviceId = S::DeviceId;
-        type OrphanedCount = S::OrphanedCount;
-        type DeletedCount = Set<members::deleted_count>;
-        type ServerHashes = S::ServerHashes;
+        type DeviceId = Unset;
     }
     ///State transition - sets the `server_hashes` field to Set
     pub struct SetServerHashes<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetServerHashes<S> {}
     impl<S: State> State for SetServerHashes<S> {
-        type DeviceId = S::DeviceId;
+        type ServerHashes = Set<members::server_hashes>;
         type OrphanedCount = S::OrphanedCount;
         type DeletedCount = S::DeletedCount;
-        type ServerHashes = Set<members::server_hashes>;
+        type DeviceId = S::DeviceId;
+    }
+    ///State transition - sets the `orphaned_count` field to Set
+    pub struct SetOrphanedCount<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetOrphanedCount<S> {}
+    impl<S: State> State for SetOrphanedCount<S> {
+        type ServerHashes = S::ServerHashes;
+        type OrphanedCount = Set<members::orphaned_count>;
+        type DeletedCount = S::DeletedCount;
+        type DeviceId = S::DeviceId;
+    }
+    ///State transition - sets the `deleted_count` field to Set
+    pub struct SetDeletedCount<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetDeletedCount<S> {}
+    impl<S: State> State for SetDeletedCount<S> {
+        type ServerHashes = S::ServerHashes;
+        type OrphanedCount = S::OrphanedCount;
+        type DeletedCount = Set<members::deleted_count>;
+        type DeviceId = S::DeviceId;
+    }
+    ///State transition - sets the `device_id` field to Set
+    pub struct SetDeviceId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetDeviceId<S> {}
+    impl<S: State> State for SetDeviceId<S> {
+        type ServerHashes = S::ServerHashes;
+        type OrphanedCount = S::OrphanedCount;
+        type DeletedCount = S::DeletedCount;
+        type DeviceId = Set<members::device_id>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `device_id` field
-        pub struct device_id(());
+        ///Marker type for the `server_hashes` field
+        pub struct server_hashes(());
         ///Marker type for the `orphaned_count` field
         pub struct orphaned_count(());
         ///Marker type for the `deleted_count` field
         pub struct deleted_count(());
-        ///Marker type for the `server_hashes` field
-        pub struct server_hashes(());
+        ///Marker type for the `device_id` field
+        pub struct device_id(());
     }
 }
 
@@ -2218,10 +2218,10 @@ where
 impl<'a, S> SyncResultBuilder<'a, S>
 where
     S: sync_result_state::State,
-    S::DeviceId: sync_result_state::IsSet,
+    S::ServerHashes: sync_result_state::IsSet,
     S::OrphanedCount: sync_result_state::IsSet,
     S::DeletedCount: sync_result_state::IsSet,
-    S::ServerHashes: sync_result_state::IsSet,
+    S::DeviceId: sync_result_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> SyncResult<'a> {

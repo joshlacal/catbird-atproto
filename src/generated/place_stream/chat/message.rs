@@ -17,10 +17,11 @@ pub struct Message<'a> {
     /// Annotations of text (mentions, URLs, etc)
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub facets: std::option::Option<Vec<crate::place_stream::richtext::facet::Facet<'a>>>,
+    pub facets:
+        std::option::Option<Vec<crate::generated::place_stream::richtext::facet::Facet<'a>>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub reply: std::option::Option<crate::place_stream::chat::message::ReplyRef<'a>>,
+    pub reply: std::option::Option<crate::generated::place_stream::chat::message::ReplyRef<'a>>,
     /// The DID of the streamer whose chat this is.
     #[serde(borrow)]
     pub streamer: jacquard_common::types::string::Did<'a>,
@@ -40,50 +41,50 @@ pub mod message_state {
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
         type Streamer;
-        type Text;
         type CreatedAt;
+        type Text;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
         type Streamer = Unset;
-        type Text = Unset;
         type CreatedAt = Unset;
+        type Text = Unset;
     }
     ///State transition - sets the `streamer` field to Set
     pub struct SetStreamer<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetStreamer<S> {}
     impl<S: State> State for SetStreamer<S> {
         type Streamer = Set<members::streamer>;
+        type CreatedAt = S::CreatedAt;
         type Text = S::Text;
-        type CreatedAt = S::CreatedAt;
-    }
-    ///State transition - sets the `text` field to Set
-    pub struct SetText<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetText<S> {}
-    impl<S: State> State for SetText<S> {
-        type Streamer = S::Streamer;
-        type Text = Set<members::text>;
-        type CreatedAt = S::CreatedAt;
     }
     ///State transition - sets the `created_at` field to Set
     pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
     impl<S: State> State for SetCreatedAt<S> {
         type Streamer = S::Streamer;
-        type Text = S::Text;
         type CreatedAt = Set<members::created_at>;
+        type Text = S::Text;
+    }
+    ///State transition - sets the `text` field to Set
+    pub struct SetText<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetText<S> {}
+    impl<S: State> State for SetText<S> {
+        type Streamer = S::Streamer;
+        type CreatedAt = S::CreatedAt;
+        type Text = Set<members::text>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
         ///Marker type for the `streamer` field
         pub struct streamer(());
-        ///Marker type for the `text` field
-        pub struct text(());
         ///Marker type for the `created_at` field
         pub struct created_at(());
+        ///Marker type for the `text` field
+        pub struct text(());
     }
 }
 
@@ -92,8 +93,8 @@ pub struct MessageBuilder<'a, S: message_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
         ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<Vec<crate::place_stream::richtext::facet::Facet<'a>>>,
-        ::core::option::Option<crate::place_stream::chat::message::ReplyRef<'a>>,
+        ::core::option::Option<Vec<crate::generated::place_stream::richtext::facet::Facet<'a>>>,
+        ::core::option::Option<crate::generated::place_stream::chat::message::ReplyRef<'a>>,
         ::core::option::Option<jacquard_common::types::string::Did<'a>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
     ),
@@ -141,7 +142,7 @@ impl<'a, S: message_state::State> MessageBuilder<'a, S> {
     /// Set the `facets` field (optional)
     pub fn facets(
         mut self,
-        value: impl Into<Option<Vec<crate::place_stream::richtext::facet::Facet<'a>>>>,
+        value: impl Into<Option<Vec<crate::generated::place_stream::richtext::facet::Facet<'a>>>>,
     ) -> Self {
         self.__unsafe_private_named.1 = value.into();
         self
@@ -149,7 +150,7 @@ impl<'a, S: message_state::State> MessageBuilder<'a, S> {
     /// Set the `facets` field to an Option value (optional)
     pub fn maybe_facets(
         mut self,
-        value: Option<Vec<crate::place_stream::richtext::facet::Facet<'a>>>,
+        value: Option<Vec<crate::generated::place_stream::richtext::facet::Facet<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.1 = value;
         self
@@ -160,7 +161,7 @@ impl<'a, S: message_state::State> MessageBuilder<'a, S> {
     /// Set the `reply` field (optional)
     pub fn reply(
         mut self,
-        value: impl Into<Option<crate::place_stream::chat::message::ReplyRef<'a>>>,
+        value: impl Into<Option<crate::generated::place_stream::chat::message::ReplyRef<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.2 = value.into();
         self
@@ -168,7 +169,7 @@ impl<'a, S: message_state::State> MessageBuilder<'a, S> {
     /// Set the `reply` field to an Option value (optional)
     pub fn maybe_reply(
         mut self,
-        value: Option<crate::place_stream::chat::message::ReplyRef<'a>>,
+        value: Option<crate::generated::place_stream::chat::message::ReplyRef<'a>>,
     ) -> Self {
         self.__unsafe_private_named.2 = value;
         self
@@ -217,8 +218,8 @@ impl<'a, S> MessageBuilder<'a, S>
 where
     S: message_state::State,
     S::Streamer: message_state::IsSet,
-    S::Text: message_state::IsSet,
     S::CreatedAt: message_state::IsSet,
+    S::Text: message_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> Message<'a> {
@@ -529,9 +530,9 @@ fn lexicon_doc_place_stream_chat_message() -> ::jacquard_lexicon::lexicon::Lexic
 #[serde(rename_all = "camelCase")]
 pub struct ReplyRef<'a> {
     #[serde(borrow)]
-    pub parent: crate::com_atproto::repo::strong_ref::StrongRef<'a>,
+    pub parent: crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>,
     #[serde(borrow)]
-    pub root: crate::com_atproto::repo::strong_ref::StrongRef<'a>,
+    pub root: crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>,
 }
 
 pub mod reply_ref_state {
@@ -582,8 +583,8 @@ pub mod reply_ref_state {
 pub struct ReplyRefBuilder<'a, S: reply_ref_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
-        ::core::option::Option<crate::com_atproto::repo::strong_ref::StrongRef<'a>>,
-        ::core::option::Option<crate::com_atproto::repo::strong_ref::StrongRef<'a>>,
+        ::core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,
+        ::core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
@@ -614,7 +615,7 @@ where
     /// Set the `parent` field (required)
     pub fn parent(
         mut self,
-        value: impl Into<crate::com_atproto::repo::strong_ref::StrongRef<'a>>,
+        value: impl Into<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,
     ) -> ReplyRefBuilder<'a, reply_ref_state::SetParent<S>> {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         ReplyRefBuilder {
@@ -633,7 +634,7 @@ where
     /// Set the `root` field (required)
     pub fn root(
         mut self,
-        value: impl Into<crate::com_atproto::repo::strong_ref::StrongRef<'a>>,
+        value: impl Into<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,
     ) -> ReplyRefBuilder<'a, reply_ref_state::SetRoot<S>> {
         self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
         ReplyRefBuilder {

@@ -415,8 +415,9 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for GrantError<'a> {
 pub struct GrantVerifications<'a> {
     /// Array of verification requests to process
     #[serde(borrow)]
-    pub verifications:
-        Vec<crate::tools_ozone::verification::grant_verifications::VerificationInput<'a>>,
+    pub verifications: Vec<
+        crate::generated::tools_ozone::verification::grant_verifications::VerificationInput<'a>,
+    >,
 }
 
 pub mod grant_verifications_state {
@@ -456,7 +457,11 @@ pub struct GrantVerificationsBuilder<'a, S: grant_verifications_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
         ::core::option::Option<
-            Vec<crate::tools_ozone::verification::grant_verifications::VerificationInput<'a>>,
+            Vec<
+                crate::generated::tools_ozone::verification::grant_verifications::VerificationInput<
+                    'a,
+                >,
+            >,
         >,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
@@ -489,7 +494,11 @@ where
     pub fn verifications(
         mut self,
         value: impl Into<
-            Vec<crate::tools_ozone::verification::grant_verifications::VerificationInput<'a>>,
+            Vec<
+                crate::generated::tools_ozone::verification::grant_verifications::VerificationInput<
+                    'a,
+                >,
+            >,
         >,
     ) -> GrantVerificationsBuilder<'a, grant_verifications_state::SetVerifications<S>> {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
@@ -536,9 +545,9 @@ where
 pub struct GrantVerificationsOutput<'a> {
     #[serde(borrow)]
     pub failed_verifications:
-        Vec<crate::tools_ozone::verification::grant_verifications::GrantError<'a>>,
+        Vec<crate::generated::tools_ozone::verification::grant_verifications::GrantError<'a>>,
     #[serde(borrow)]
-    pub verifications: Vec<crate::tools_ozone::verification::VerificationView<'a>>,
+    pub verifications: Vec<crate::generated::tools_ozone::verification::VerificationView<'a>>,
 }
 
 /// Response type for
@@ -599,51 +608,51 @@ pub mod verification_input_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type DisplayName;
         type Subject;
         type Handle;
+        type DisplayName;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type DisplayName = Unset;
         type Subject = Unset;
         type Handle = Unset;
-    }
-    ///State transition - sets the `display_name` field to Set
-    pub struct SetDisplayName<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDisplayName<S> {}
-    impl<S: State> State for SetDisplayName<S> {
-        type DisplayName = Set<members::display_name>;
-        type Subject = S::Subject;
-        type Handle = S::Handle;
+        type DisplayName = Unset;
     }
     ///State transition - sets the `subject` field to Set
     pub struct SetSubject<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetSubject<S> {}
     impl<S: State> State for SetSubject<S> {
-        type DisplayName = S::DisplayName;
         type Subject = Set<members::subject>;
         type Handle = S::Handle;
+        type DisplayName = S::DisplayName;
     }
     ///State transition - sets the `handle` field to Set
     pub struct SetHandle<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetHandle<S> {}
     impl<S: State> State for SetHandle<S> {
-        type DisplayName = S::DisplayName;
         type Subject = S::Subject;
         type Handle = Set<members::handle>;
+        type DisplayName = S::DisplayName;
+    }
+    ///State transition - sets the `display_name` field to Set
+    pub struct SetDisplayName<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetDisplayName<S> {}
+    impl<S: State> State for SetDisplayName<S> {
+        type Subject = S::Subject;
+        type Handle = S::Handle;
+        type DisplayName = Set<members::display_name>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `display_name` field
-        pub struct display_name(());
         ///Marker type for the `subject` field
         pub struct subject(());
         ///Marker type for the `handle` field
         pub struct handle(());
+        ///Marker type for the `display_name` field
+        pub struct display_name(());
     }
 }
 
@@ -756,9 +765,9 @@ where
 impl<'a, S> VerificationInputBuilder<'a, S>
 where
     S: verification_input_state::State,
-    S::DisplayName: verification_input_state::IsSet,
     S::Subject: verification_input_state::IsSet,
     S::Handle: verification_input_state::IsSet,
+    S::DisplayName: verification_input_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> VerificationInput<'a> {

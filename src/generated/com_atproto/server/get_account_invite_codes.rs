@@ -106,7 +106,7 @@ where
 #[serde(rename_all = "camelCase")]
 pub struct GetAccountInviteCodesOutput<'a> {
     #[serde(borrow)]
-    pub codes: Vec<crate::com_atproto::server::InviteCode<'a>>,
+    pub codes: Vec<crate::generated::com_atproto::server::InviteCode<'a>>,
 }
 
 #[jacquard_derive::open_union]

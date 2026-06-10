@@ -25,7 +25,7 @@ pub struct MatchAndContactIndex<'a> {
     pub contact_index: i64,
     /// Profile of the matched user.
     #[serde(borrow)]
-    pub r#match: crate::app_bsky::actor::ProfileView<'a>,
+    pub r#match: crate::generated::app_bsky::actor::ProfileView<'a>,
 }
 
 pub mod match_and_contact_index_state {
@@ -77,7 +77,7 @@ pub struct MatchAndContactIndexBuilder<'a, S: match_and_contact_index_state::Sta
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
         ::core::option::Option<i64>,
-        ::core::option::Option<crate::app_bsky::actor::ProfileView<'a>>,
+        ::core::option::Option<crate::generated::app_bsky::actor::ProfileView<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
@@ -127,7 +127,7 @@ where
     /// Set the `match` field (required)
     pub fn r#match(
         mut self,
-        value: impl Into<crate::app_bsky::actor::ProfileView<'a>>,
+        value: impl Into<crate::generated::app_bsky::actor::ProfileView<'a>>,
     ) -> MatchAndContactIndexBuilder<'a, match_and_contact_index_state::SetMatch<S>> {
         self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
         MatchAndContactIndexBuilder {
@@ -576,37 +576,37 @@ pub mod sync_status_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type SyncedAt;
         type MatchesCount;
+        type SyncedAt;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type SyncedAt = Unset;
         type MatchesCount = Unset;
-    }
-    ///State transition - sets the `synced_at` field to Set
-    pub struct SetSyncedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetSyncedAt<S> {}
-    impl<S: State> State for SetSyncedAt<S> {
-        type SyncedAt = Set<members::synced_at>;
-        type MatchesCount = S::MatchesCount;
+        type SyncedAt = Unset;
     }
     ///State transition - sets the `matches_count` field to Set
     pub struct SetMatchesCount<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetMatchesCount<S> {}
     impl<S: State> State for SetMatchesCount<S> {
-        type SyncedAt = S::SyncedAt;
         type MatchesCount = Set<members::matches_count>;
+        type SyncedAt = S::SyncedAt;
+    }
+    ///State transition - sets the `synced_at` field to Set
+    pub struct SetSyncedAt<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetSyncedAt<S> {}
+    impl<S: State> State for SetSyncedAt<S> {
+        type MatchesCount = S::MatchesCount;
+        type SyncedAt = Set<members::synced_at>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `synced_at` field
-        pub struct synced_at(());
         ///Marker type for the `matches_count` field
         pub struct matches_count(());
+        ///Marker type for the `synced_at` field
+        pub struct synced_at(());
     }
 }
 
@@ -679,8 +679,8 @@ where
 impl<'a, S> SyncStatusBuilder<'a, S>
 where
     S: sync_status_state::State,
-    S::SyncedAt: sync_status_state::IsSet,
     S::MatchesCount: sync_status_state::IsSet,
+    S::SyncedAt: sync_status_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> SyncStatus<'a> {

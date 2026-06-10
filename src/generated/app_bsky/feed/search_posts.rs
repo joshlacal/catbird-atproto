@@ -336,7 +336,7 @@ pub struct SearchPostsOutput<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     pub hits_total: std::option::Option<i64>,
     #[serde(borrow)]
-    pub posts: Vec<crate::app_bsky::feed::PostView<'a>>,
+    pub posts: Vec<crate::generated::app_bsky::feed::PostView<'a>>,
 }
 
 #[jacquard_derive::open_union]

@@ -111,7 +111,7 @@ where
 #[serde(rename_all = "camelCase")]
 pub struct GetBookmarksOutput<'a> {
     #[serde(borrow)]
-    pub bookmarks: Vec<crate::app_bsky::bookmark::BookmarkView<'a>>,
+    pub bookmarks: Vec<crate::generated::app_bsky::bookmark::BookmarkView<'a>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,

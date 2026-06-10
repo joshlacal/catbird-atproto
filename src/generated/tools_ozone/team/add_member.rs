@@ -165,7 +165,7 @@ where
 pub struct AddMemberOutput<'a> {
     #[serde(flatten)]
     #[serde(borrow)]
-    pub value: crate::tools_ozone::team::Member<'a>,
+    pub value: crate::generated::tools_ozone::team::Member<'a>,
 }
 
 #[jacquard_derive::open_union]

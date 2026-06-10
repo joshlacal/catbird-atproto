@@ -111,7 +111,7 @@ where
 #[serde(rename_all = "camelCase")]
 pub struct ListMissingBlobsOutput<'a> {
     #[serde(borrow)]
-    pub blobs: Vec<crate::com_atproto::repo::list_missing_blobs::RecordBlob<'a>>,
+    pub blobs: Vec<crate::generated::com_atproto::repo::list_missing_blobs::RecordBlob<'a>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,

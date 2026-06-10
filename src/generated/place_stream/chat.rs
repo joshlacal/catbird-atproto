@@ -17,14 +17,15 @@ pub mod profile;
 #[serde(rename_all = "camelCase")]
 pub struct MessageView<'a> {
     #[serde(borrow)]
-    pub author: crate::app_bsky::actor::ProfileViewBasic<'a>,
+    pub author: crate::generated::app_bsky::actor::ProfileViewBasic<'a>,
     /// Up to 3 badge tokens to display with the message. First badge is server-controlled, remaining badges are user-settable. Tokens are looked up in badges.json for display info.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub badges: std::option::Option<Vec<crate::place_stream::badge::BadgeView<'a>>>,
+    pub badges: std::option::Option<Vec<crate::generated::place_stream::badge::BadgeView<'a>>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub chat_profile: std::option::Option<crate::place_stream::chat::profile::Profile<'a>>,
+    pub chat_profile:
+        std::option::Option<crate::generated::place_stream::chat::profile::Profile<'a>>,
     #[serde(borrow)]
     pub cid: jacquard_common::types::string::Cid<'a>,
     /// If true, this message has been deleted or labeled and should be cleared from the cache
@@ -50,83 +51,83 @@ pub mod message_view_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Cid;
         type IndexedAt;
-        type Author;
         type Uri;
+        type Cid;
+        type Author;
         type Record;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Cid = Unset;
         type IndexedAt = Unset;
-        type Author = Unset;
         type Uri = Unset;
+        type Cid = Unset;
+        type Author = Unset;
         type Record = Unset;
-    }
-    ///State transition - sets the `cid` field to Set
-    pub struct SetCid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCid<S> {}
-    impl<S: State> State for SetCid<S> {
-        type Cid = Set<members::cid>;
-        type IndexedAt = S::IndexedAt;
-        type Author = S::Author;
-        type Uri = S::Uri;
-        type Record = S::Record;
     }
     ///State transition - sets the `indexed_at` field to Set
     pub struct SetIndexedAt<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetIndexedAt<S> {}
     impl<S: State> State for SetIndexedAt<S> {
-        type Cid = S::Cid;
         type IndexedAt = Set<members::indexed_at>;
-        type Author = S::Author;
         type Uri = S::Uri;
-        type Record = S::Record;
-    }
-    ///State transition - sets the `author` field to Set
-    pub struct SetAuthor<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetAuthor<S> {}
-    impl<S: State> State for SetAuthor<S> {
         type Cid = S::Cid;
-        type IndexedAt = S::IndexedAt;
-        type Author = Set<members::author>;
-        type Uri = S::Uri;
+        type Author = S::Author;
         type Record = S::Record;
     }
     ///State transition - sets the `uri` field to Set
     pub struct SetUri<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetUri<S> {}
     impl<S: State> State for SetUri<S> {
-        type Cid = S::Cid;
         type IndexedAt = S::IndexedAt;
-        type Author = S::Author;
         type Uri = Set<members::uri>;
+        type Cid = S::Cid;
+        type Author = S::Author;
+        type Record = S::Record;
+    }
+    ///State transition - sets the `cid` field to Set
+    pub struct SetCid<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCid<S> {}
+    impl<S: State> State for SetCid<S> {
+        type IndexedAt = S::IndexedAt;
+        type Uri = S::Uri;
+        type Cid = Set<members::cid>;
+        type Author = S::Author;
+        type Record = S::Record;
+    }
+    ///State transition - sets the `author` field to Set
+    pub struct SetAuthor<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetAuthor<S> {}
+    impl<S: State> State for SetAuthor<S> {
+        type IndexedAt = S::IndexedAt;
+        type Uri = S::Uri;
+        type Cid = S::Cid;
+        type Author = Set<members::author>;
         type Record = S::Record;
     }
     ///State transition - sets the `record` field to Set
     pub struct SetRecord<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetRecord<S> {}
     impl<S: State> State for SetRecord<S> {
-        type Cid = S::Cid;
         type IndexedAt = S::IndexedAt;
-        type Author = S::Author;
         type Uri = S::Uri;
+        type Cid = S::Cid;
+        type Author = S::Author;
         type Record = Set<members::record>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `cid` field
-        pub struct cid(());
         ///Marker type for the `indexed_at` field
         pub struct indexed_at(());
-        ///Marker type for the `author` field
-        pub struct author(());
         ///Marker type for the `uri` field
         pub struct uri(());
+        ///Marker type for the `cid` field
+        pub struct cid(());
+        ///Marker type for the `author` field
+        pub struct author(());
         ///Marker type for the `record` field
         pub struct record(());
     }
@@ -136,9 +137,9 @@ pub mod message_view_state {
 pub struct MessageViewBuilder<'a, S: message_view_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
-        ::core::option::Option<crate::app_bsky::actor::ProfileViewBasic<'a>>,
-        ::core::option::Option<Vec<crate::place_stream::badge::BadgeView<'a>>>,
-        ::core::option::Option<crate::place_stream::chat::profile::Profile<'a>>,
+        ::core::option::Option<crate::generated::app_bsky::actor::ProfileViewBasic<'a>>,
+        ::core::option::Option<Vec<crate::generated::place_stream::badge::BadgeView<'a>>>,
+        ::core::option::Option<crate::generated::place_stream::chat::profile::Profile<'a>>,
         ::core::option::Option<jacquard_common::types::string::Cid<'a>>,
         ::core::option::Option<bool>,
         ::core::option::Option<jacquard_common::types::string::Datetime>,
@@ -175,7 +176,7 @@ where
     /// Set the `author` field (required)
     pub fn author(
         mut self,
-        value: impl Into<crate::app_bsky::actor::ProfileViewBasic<'a>>,
+        value: impl Into<crate::generated::app_bsky::actor::ProfileViewBasic<'a>>,
     ) -> MessageViewBuilder<'a, message_view_state::SetAuthor<S>> {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         MessageViewBuilder {
@@ -190,7 +191,7 @@ impl<'a, S: message_view_state::State> MessageViewBuilder<'a, S> {
     /// Set the `badges` field (optional)
     pub fn badges(
         mut self,
-        value: impl Into<Option<Vec<crate::place_stream::badge::BadgeView<'a>>>>,
+        value: impl Into<Option<Vec<crate::generated::place_stream::badge::BadgeView<'a>>>>,
     ) -> Self {
         self.__unsafe_private_named.1 = value.into();
         self
@@ -198,7 +199,7 @@ impl<'a, S: message_view_state::State> MessageViewBuilder<'a, S> {
     /// Set the `badges` field to an Option value (optional)
     pub fn maybe_badges(
         mut self,
-        value: Option<Vec<crate::place_stream::badge::BadgeView<'a>>>,
+        value: Option<Vec<crate::generated::place_stream::badge::BadgeView<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.1 = value;
         self
@@ -209,7 +210,7 @@ impl<'a, S: message_view_state::State> MessageViewBuilder<'a, S> {
     /// Set the `chatProfile` field (optional)
     pub fn chat_profile(
         mut self,
-        value: impl Into<Option<crate::place_stream::chat::profile::Profile<'a>>>,
+        value: impl Into<Option<crate::generated::place_stream::chat::profile::Profile<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.2 = value.into();
         self
@@ -217,7 +218,7 @@ impl<'a, S: message_view_state::State> MessageViewBuilder<'a, S> {
     /// Set the `chatProfile` field to an Option value (optional)
     pub fn maybe_chat_profile(
         mut self,
-        value: Option<crate::place_stream::chat::profile::Profile<'a>>,
+        value: Option<crate::generated::place_stream::chat::profile::Profile<'a>>,
     ) -> Self {
         self.__unsafe_private_named.2 = value;
         self
@@ -329,10 +330,10 @@ where
 impl<'a, S> MessageViewBuilder<'a, S>
 where
     S: message_view_state::State,
-    S::Cid: message_view_state::IsSet,
     S::IndexedAt: message_view_state::IsSet,
-    S::Author: message_view_state::IsSet,
     S::Uri: message_view_state::IsSet,
+    S::Cid: message_view_state::IsSet,
+    S::Author: message_view_state::IsSet,
     S::Record: message_view_state::IsSet,
 {
     /// Build the final struct
@@ -381,7 +382,7 @@ where
 #[serde(bound(deserialize = "'de: 'a"))]
 pub enum MessageViewReplyTo<'a> {
     #[serde(rename = "place.stream.chat.defs#messageView")]
-    MessageView(Box<crate::place_stream::chat::MessageView<'a>>),
+    MessageView(Box<crate::generated::place_stream::chat::MessageView<'a>>),
 }
 
 fn lexicon_doc_place_stream_chat_defs() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
@@ -684,12 +685,12 @@ pub struct PinnedRecordView<'a> {
     pub indexed_at: jacquard_common::types::string::Datetime,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub message: std::option::Option<crate::place_stream::chat::MessageView<'a>>,
+    pub message: std::option::Option<crate::generated::place_stream::chat::MessageView<'a>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub pinned_by: std::option::Option<crate::place_stream::chat::profile::Profile<'a>>,
+    pub pinned_by: std::option::Option<crate::generated::place_stream::chat::profile::Profile<'a>>,
     #[serde(borrow)]
-    pub record: crate::place_stream::chat::pinned_record::PinnedRecord<'a>,
+    pub record: crate::generated::place_stream::chat::pinned_record::PinnedRecord<'a>,
     #[serde(borrow)]
     pub uri: jacquard_common::types::string::AtUri<'a>,
 }
@@ -704,67 +705,67 @@ pub mod pinned_record_view_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Uri;
-        type Record;
         type Cid;
+        type Uri;
         type IndexedAt;
+        type Record;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Uri = Unset;
-        type Record = Unset;
         type Cid = Unset;
+        type Uri = Unset;
         type IndexedAt = Unset;
-    }
-    ///State transition - sets the `uri` field to Set
-    pub struct SetUri<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUri<S> {}
-    impl<S: State> State for SetUri<S> {
-        type Uri = Set<members::uri>;
-        type Record = S::Record;
-        type Cid = S::Cid;
-        type IndexedAt = S::IndexedAt;
-    }
-    ///State transition - sets the `record` field to Set
-    pub struct SetRecord<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRecord<S> {}
-    impl<S: State> State for SetRecord<S> {
-        type Uri = S::Uri;
-        type Record = Set<members::record>;
-        type Cid = S::Cid;
-        type IndexedAt = S::IndexedAt;
+        type Record = Unset;
     }
     ///State transition - sets the `cid` field to Set
     pub struct SetCid<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCid<S> {}
     impl<S: State> State for SetCid<S> {
-        type Uri = S::Uri;
-        type Record = S::Record;
         type Cid = Set<members::cid>;
+        type Uri = S::Uri;
         type IndexedAt = S::IndexedAt;
+        type Record = S::Record;
+    }
+    ///State transition - sets the `uri` field to Set
+    pub struct SetUri<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetUri<S> {}
+    impl<S: State> State for SetUri<S> {
+        type Cid = S::Cid;
+        type Uri = Set<members::uri>;
+        type IndexedAt = S::IndexedAt;
+        type Record = S::Record;
     }
     ///State transition - sets the `indexed_at` field to Set
     pub struct SetIndexedAt<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetIndexedAt<S> {}
     impl<S: State> State for SetIndexedAt<S> {
-        type Uri = S::Uri;
-        type Record = S::Record;
         type Cid = S::Cid;
+        type Uri = S::Uri;
         type IndexedAt = Set<members::indexed_at>;
+        type Record = S::Record;
+    }
+    ///State transition - sets the `record` field to Set
+    pub struct SetRecord<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetRecord<S> {}
+    impl<S: State> State for SetRecord<S> {
+        type Cid = S::Cid;
+        type Uri = S::Uri;
+        type IndexedAt = S::IndexedAt;
+        type Record = Set<members::record>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `uri` field
-        pub struct uri(());
-        ///Marker type for the `record` field
-        pub struct record(());
         ///Marker type for the `cid` field
         pub struct cid(());
+        ///Marker type for the `uri` field
+        pub struct uri(());
         ///Marker type for the `indexed_at` field
         pub struct indexed_at(());
+        ///Marker type for the `record` field
+        pub struct record(());
     }
 }
 
@@ -774,9 +775,11 @@ pub struct PinnedRecordViewBuilder<'a, S: pinned_record_view_state::State> {
     __unsafe_private_named: (
         ::core::option::Option<jacquard_common::types::string::Cid<'a>>,
         ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<crate::place_stream::chat::MessageView<'a>>,
-        ::core::option::Option<crate::place_stream::chat::profile::Profile<'a>>,
-        ::core::option::Option<crate::place_stream::chat::pinned_record::PinnedRecord<'a>>,
+        ::core::option::Option<crate::generated::place_stream::chat::MessageView<'a>>,
+        ::core::option::Option<crate::generated::place_stream::chat::profile::Profile<'a>>,
+        ::core::option::Option<
+            crate::generated::place_stream::chat::pinned_record::PinnedRecord<'a>,
+        >,
         ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
@@ -842,7 +845,7 @@ impl<'a, S: pinned_record_view_state::State> PinnedRecordViewBuilder<'a, S> {
     /// Set the `message` field (optional)
     pub fn message(
         mut self,
-        value: impl Into<Option<crate::place_stream::chat::MessageView<'a>>>,
+        value: impl Into<Option<crate::generated::place_stream::chat::MessageView<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.2 = value.into();
         self
@@ -850,7 +853,7 @@ impl<'a, S: pinned_record_view_state::State> PinnedRecordViewBuilder<'a, S> {
     /// Set the `message` field to an Option value (optional)
     pub fn maybe_message(
         mut self,
-        value: Option<crate::place_stream::chat::MessageView<'a>>,
+        value: Option<crate::generated::place_stream::chat::MessageView<'a>>,
     ) -> Self {
         self.__unsafe_private_named.2 = value;
         self
@@ -861,7 +864,7 @@ impl<'a, S: pinned_record_view_state::State> PinnedRecordViewBuilder<'a, S> {
     /// Set the `pinnedBy` field (optional)
     pub fn pinned_by(
         mut self,
-        value: impl Into<Option<crate::place_stream::chat::profile::Profile<'a>>>,
+        value: impl Into<Option<crate::generated::place_stream::chat::profile::Profile<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.3 = value.into();
         self
@@ -869,7 +872,7 @@ impl<'a, S: pinned_record_view_state::State> PinnedRecordViewBuilder<'a, S> {
     /// Set the `pinnedBy` field to an Option value (optional)
     pub fn maybe_pinned_by(
         mut self,
-        value: Option<crate::place_stream::chat::profile::Profile<'a>>,
+        value: Option<crate::generated::place_stream::chat::profile::Profile<'a>>,
     ) -> Self {
         self.__unsafe_private_named.3 = value;
         self
@@ -884,7 +887,7 @@ where
     /// Set the `record` field (required)
     pub fn record(
         mut self,
-        value: impl Into<crate::place_stream::chat::pinned_record::PinnedRecord<'a>>,
+        value: impl Into<crate::generated::place_stream::chat::pinned_record::PinnedRecord<'a>>,
     ) -> PinnedRecordViewBuilder<'a, pinned_record_view_state::SetRecord<S>> {
         self.__unsafe_private_named.4 = ::core::option::Option::Some(value.into());
         PinnedRecordViewBuilder {
@@ -917,10 +920,10 @@ where
 impl<'a, S> PinnedRecordViewBuilder<'a, S>
 where
     S: pinned_record_view_state::State,
-    S::Uri: pinned_record_view_state::IsSet,
-    S::Record: pinned_record_view_state::IsSet,
     S::Cid: pinned_record_view_state::IsSet,
+    S::Uri: pinned_record_view_state::IsSet,
     S::IndexedAt: pinned_record_view_state::IsSet,
+    S::Record: pinned_record_view_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> PinnedRecordView<'a> {

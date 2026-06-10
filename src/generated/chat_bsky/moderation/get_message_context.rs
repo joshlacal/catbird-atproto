@@ -19,6 +19,9 @@ pub struct GetMessageContext<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub convo_id: std::option::Option<jacquard_common::CowStr<'a>>,
+    ///(default: 10, min: 0, max: 1000)
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    pub max_interleaved_system_messages: std::option::Option<i64>,
     #[serde(borrow)]
     pub message_id: jacquard_common::CowStr<'a>,
 }
@@ -62,6 +65,7 @@ pub struct GetMessageContextBuilder<'a, S: get_message_context_state::State> {
         ::core::option::Option<i64>,
         ::core::option::Option<i64>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
+        ::core::option::Option<i64>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
@@ -79,7 +83,7 @@ impl<'a> GetMessageContextBuilder<'a, get_message_context_state::Empty> {
     pub fn new() -> Self {
         GetMessageContextBuilder {
             _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None),
+            __unsafe_private_named: (None, None, None, None, None),
             _phantom: ::core::marker::PhantomData,
         }
     }
@@ -124,6 +128,19 @@ impl<'a, S: get_message_context_state::State> GetMessageContextBuilder<'a, S> {
     }
 }
 
+impl<'a, S: get_message_context_state::State> GetMessageContextBuilder<'a, S> {
+    /// Set the `maxInterleavedSystemMessages` field (optional)
+    pub fn max_interleaved_system_messages(mut self, value: impl Into<Option<i64>>) -> Self {
+        self.__unsafe_private_named.3 = value.into();
+        self
+    }
+    /// Set the `maxInterleavedSystemMessages` field to an Option value (optional)
+    pub fn maybe_max_interleaved_system_messages(mut self, value: Option<i64>) -> Self {
+        self.__unsafe_private_named.3 = value;
+        self
+    }
+}
+
 impl<'a, S> GetMessageContextBuilder<'a, S>
 where
     S: get_message_context_state::State,
@@ -134,7 +151,7 @@ where
         mut self,
         value: impl Into<jacquard_common::CowStr<'a>>,
     ) -> GetMessageContextBuilder<'a, get_message_context_state::SetMessageId<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        self.__unsafe_private_named.4 = ::core::option::Option::Some(value.into());
         GetMessageContextBuilder {
             _phantom_state: ::core::marker::PhantomData,
             __unsafe_private_named: self.__unsafe_private_named,
@@ -154,7 +171,8 @@ where
             after: self.__unsafe_private_named.0,
             before: self.__unsafe_private_named.1,
             convo_id: self.__unsafe_private_named.2,
-            message_id: self.__unsafe_private_named.3.unwrap(),
+            max_interleaved_system_messages: self.__unsafe_private_named.3,
+            message_id: self.__unsafe_private_named.4.unwrap(),
         }
     }
 }
@@ -178,8 +196,6 @@ pub struct GetMessageContextOutput<'a> {
 pub enum GetMessageContextOutputMessagesItem<'a> {
     #[serde(rename = "chat.bsky.convo.defs#messageView")]
     MessageView(Box<crate::generated::chat_bsky::convo::MessageView<'a>>),
-    #[serde(rename = "chat.bsky.convo.defs#deletedMessageView")]
-    DeletedMessageView(Box<crate::generated::chat_bsky::convo::DeletedMessageView<'a>>),
     #[serde(rename = "chat.bsky.convo.defs#systemMessageView")]
     SystemMessageView(Box<crate::generated::chat_bsky::convo::SystemMessageView<'a>>),
 }

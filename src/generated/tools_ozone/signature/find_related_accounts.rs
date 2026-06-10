@@ -148,7 +148,8 @@ where
 #[serde(rename_all = "camelCase")]
 pub struct FindRelatedAccountsOutput<'a> {
     #[serde(borrow)]
-    pub accounts: Vec<crate::tools_ozone::signature::find_related_accounts::RelatedAccount<'a>>,
+    pub accounts:
+        Vec<crate::generated::tools_ozone::signature::find_related_accounts::RelatedAccount<'a>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
@@ -187,10 +188,11 @@ impl jacquard_common::xrpc::XrpcEndpoint for FindRelatedAccountsRequest {
 #[serde(rename_all = "camelCase")]
 pub struct RelatedAccount<'a> {
     #[serde(borrow)]
-    pub account: crate::com_atproto::admin::AccountView<'a>,
+    pub account: crate::generated::com_atproto::admin::AccountView<'a>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub similarities: std::option::Option<Vec<crate::tools_ozone::signature::SigDetail<'a>>>,
+    pub similarities:
+        std::option::Option<Vec<crate::generated::tools_ozone::signature::SigDetail<'a>>>,
 }
 
 pub mod related_account_state {
@@ -229,8 +231,8 @@ pub mod related_account_state {
 pub struct RelatedAccountBuilder<'a, S: related_account_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
-        ::core::option::Option<crate::com_atproto::admin::AccountView<'a>>,
-        ::core::option::Option<Vec<crate::tools_ozone::signature::SigDetail<'a>>>,
+        ::core::option::Option<crate::generated::com_atproto::admin::AccountView<'a>>,
+        ::core::option::Option<Vec<crate::generated::tools_ozone::signature::SigDetail<'a>>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
@@ -261,7 +263,7 @@ where
     /// Set the `account` field (required)
     pub fn account(
         mut self,
-        value: impl Into<crate::com_atproto::admin::AccountView<'a>>,
+        value: impl Into<crate::generated::com_atproto::admin::AccountView<'a>>,
     ) -> RelatedAccountBuilder<'a, related_account_state::SetAccount<S>> {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         RelatedAccountBuilder {
@@ -276,7 +278,7 @@ impl<'a, S: related_account_state::State> RelatedAccountBuilder<'a, S> {
     /// Set the `similarities` field (optional)
     pub fn similarities(
         mut self,
-        value: impl Into<Option<Vec<crate::tools_ozone::signature::SigDetail<'a>>>>,
+        value: impl Into<Option<Vec<crate::generated::tools_ozone::signature::SigDetail<'a>>>>,
     ) -> Self {
         self.__unsafe_private_named.1 = value.into();
         self
@@ -284,7 +286,7 @@ impl<'a, S: related_account_state::State> RelatedAccountBuilder<'a, S> {
     /// Set the `similarities` field to an Option value (optional)
     pub fn maybe_similarities(
         mut self,
-        value: Option<Vec<crate::tools_ozone::signature::SigDetail<'a>>>,
+        value: Option<Vec<crate::generated::tools_ozone::signature::SigDetail<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.1 = value;
         self

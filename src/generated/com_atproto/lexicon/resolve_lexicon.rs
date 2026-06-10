@@ -114,7 +114,7 @@ pub struct ResolveLexiconOutput<'a> {
     pub cid: jacquard_common::types::string::Cid<'a>,
     /// The resolved lexicon schema record.
     #[serde(borrow)]
-    pub schema: crate::com_atproto::lexicon::schema::Schema<'a>,
+    pub schema: crate::generated::com_atproto::lexicon::schema::Schema<'a>,
     /// The AT-URI of the lexicon schema record.
     #[serde(borrow)]
     pub uri: jacquard_common::types::string::AtUri<'a>,

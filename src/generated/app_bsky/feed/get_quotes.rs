@@ -175,7 +175,7 @@ pub struct GetQuotesOutput<'a> {
     #[serde(borrow)]
     pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(borrow)]
-    pub posts: Vec<crate::app_bsky::feed::PostView<'a>>,
+    pub posts: Vec<crate::generated::app_bsky::feed::PostView<'a>>,
     #[serde(borrow)]
     pub uri: jacquard_common::types::string::AtUri<'a>,
 }

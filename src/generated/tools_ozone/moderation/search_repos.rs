@@ -150,7 +150,7 @@ pub struct SearchReposOutput<'a> {
     #[serde(borrow)]
     pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(borrow)]
-    pub repos: Vec<crate::tools_ozone::moderation::RepoView<'a>>,
+    pub repos: Vec<crate::generated::tools_ozone::moderation::RepoView<'a>>,
 }
 
 /// Response type for

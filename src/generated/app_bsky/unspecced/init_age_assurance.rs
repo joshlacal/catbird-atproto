@@ -37,7 +37,7 @@ pub struct InitAgeAssurance<'a> {
 pub struct InitAgeAssuranceOutput<'a> {
     #[serde(flatten)]
     #[serde(borrow)]
-    pub value: crate::app_bsky::unspecced::AgeAssuranceState<'a>,
+    pub value: crate::generated::app_bsky::unspecced::AgeAssuranceState<'a>,
 }
 
 #[jacquard_derive::open_union]

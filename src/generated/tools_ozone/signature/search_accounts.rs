@@ -148,7 +148,7 @@ where
 #[serde(rename_all = "camelCase")]
 pub struct SearchAccountsOutput<'a> {
     #[serde(borrow)]
-    pub accounts: Vec<crate::com_atproto::admin::AccountView<'a>>,
+    pub accounts: Vec<crate::generated::com_atproto::admin::AccountView<'a>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,

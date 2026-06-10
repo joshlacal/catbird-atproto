@@ -132,6 +132,8 @@ pub enum GetConvoForMembersError<'a> {
     AccountSuspended(std::option::Option<jacquard_common::CowStr<'a>>),
     #[serde(rename = "BlockedActor")]
     BlockedActor(std::option::Option<jacquard_common::CowStr<'a>>),
+    #[serde(rename = "BlockedSubject")]
+    BlockedSubject(std::option::Option<jacquard_common::CowStr<'a>>),
     #[serde(rename = "MessagesDisabled")]
     MessagesDisabled(std::option::Option<jacquard_common::CowStr<'a>>),
     #[serde(rename = "NotFollowedBySender")]
@@ -152,6 +154,13 @@ impl std::fmt::Display for GetConvoForMembersError<'_> {
             }
             Self::BlockedActor(msg) => {
                 write!(f, "BlockedActor")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::BlockedSubject(msg) => {
+                write!(f, "BlockedSubject")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }

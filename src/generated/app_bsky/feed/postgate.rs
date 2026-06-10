@@ -197,7 +197,8 @@ pub struct Postgate<'a> {
     /// List of rules defining who can embed this post. If value is an empty array or is undefined, no particular rules apply and anyone can embed.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub embedding_rules: std::option::Option<Vec<crate::app_bsky::feed::postgate::DisableRule<'a>>>,
+    pub embedding_rules:
+        std::option::Option<Vec<crate::generated::app_bsky::feed::postgate::DisableRule<'a>>>,
     /// Reference (AT-URI) to the post record.
     #[serde(borrow)]
     pub post: jacquard_common::types::string::AtUri<'a>,
@@ -213,37 +214,37 @@ pub mod postgate_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Post;
         type CreatedAt;
+        type Post;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Post = Unset;
         type CreatedAt = Unset;
-    }
-    ///State transition - sets the `post` field to Set
-    pub struct SetPost<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetPost<S> {}
-    impl<S: State> State for SetPost<S> {
-        type Post = Set<members::post>;
-        type CreatedAt = S::CreatedAt;
+        type Post = Unset;
     }
     ///State transition - sets the `created_at` field to Set
     pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
     impl<S: State> State for SetCreatedAt<S> {
-        type Post = S::Post;
         type CreatedAt = Set<members::created_at>;
+        type Post = S::Post;
+    }
+    ///State transition - sets the `post` field to Set
+    pub struct SetPost<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetPost<S> {}
+    impl<S: State> State for SetPost<S> {
+        type CreatedAt = S::CreatedAt;
+        type Post = Set<members::post>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `post` field
-        pub struct post(());
         ///Marker type for the `created_at` field
         pub struct created_at(());
+        ///Marker type for the `post` field
+        pub struct post(());
     }
 }
 
@@ -253,7 +254,7 @@ pub struct PostgateBuilder<'a, S: postgate_state::State> {
     __unsafe_private_named: (
         ::core::option::Option<jacquard_common::types::string::Datetime>,
         ::core::option::Option<Vec<jacquard_common::types::string::AtUri<'a>>>,
-        ::core::option::Option<Vec<crate::app_bsky::feed::postgate::DisableRule<'a>>>,
+        ::core::option::Option<Vec<crate::generated::app_bsky::feed::postgate::DisableRule<'a>>>,
         ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
@@ -319,7 +320,7 @@ impl<'a, S: postgate_state::State> PostgateBuilder<'a, S> {
     /// Set the `embeddingRules` field (optional)
     pub fn embedding_rules(
         mut self,
-        value: impl Into<Option<Vec<crate::app_bsky::feed::postgate::DisableRule<'a>>>>,
+        value: impl Into<Option<Vec<crate::generated::app_bsky::feed::postgate::DisableRule<'a>>>>,
     ) -> Self {
         self.__unsafe_private_named.2 = value.into();
         self
@@ -327,7 +328,7 @@ impl<'a, S: postgate_state::State> PostgateBuilder<'a, S> {
     /// Set the `embeddingRules` field to an Option value (optional)
     pub fn maybe_embedding_rules(
         mut self,
-        value: Option<Vec<crate::app_bsky::feed::postgate::DisableRule<'a>>>,
+        value: Option<Vec<crate::generated::app_bsky::feed::postgate::DisableRule<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.2 = value;
         self
@@ -356,8 +357,8 @@ where
 impl<'a, S> PostgateBuilder<'a, S>
 where
     S: postgate_state::State,
-    S::Post: postgate_state::IsSet,
     S::CreatedAt: postgate_state::IsSet,
+    S::Post: postgate_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> Postgate<'a> {

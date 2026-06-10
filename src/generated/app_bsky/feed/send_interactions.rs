@@ -12,7 +12,7 @@
 #[serde(rename_all = "camelCase")]
 pub struct SendInteractions<'a> {
     #[serde(borrow)]
-    pub interactions: Vec<crate::app_bsky::feed::Interaction<'a>>,
+    pub interactions: Vec<crate::generated::app_bsky::feed::Interaction<'a>>,
 }
 
 pub mod send_interactions_state {
@@ -50,7 +50,8 @@ pub mod send_interactions_state {
 /// Builder for constructing an instance of this type
 pub struct SendInteractionsBuilder<'a, S: send_interactions_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<Vec<crate::app_bsky::feed::Interaction<'a>>>,),
+    __unsafe_private_named:
+        (::core::option::Option<Vec<crate::generated::app_bsky::feed::Interaction<'a>>>,),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
 
@@ -80,7 +81,7 @@ where
     /// Set the `interactions` field (required)
     pub fn interactions(
         mut self,
-        value: impl Into<Vec<crate::app_bsky::feed::Interaction<'a>>>,
+        value: impl Into<Vec<crate::generated::app_bsky::feed::Interaction<'a>>>,
     ) -> SendInteractionsBuilder<'a, send_interactions_state::SetInteractions<S>> {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         SendInteractionsBuilder {

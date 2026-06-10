@@ -111,7 +111,7 @@ where
 pub struct GetAccountInfoOutput<'a> {
     #[serde(flatten)]
     #[serde(borrow)]
-    pub value: crate::com_atproto::admin::AccountView<'a>,
+    pub value: crate::generated::com_atproto::admin::AccountView<'a>,
 }
 
 /// Response type for

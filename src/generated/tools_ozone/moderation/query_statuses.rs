@@ -795,7 +795,7 @@ pub struct QueryStatusesOutput<'a> {
     #[serde(borrow)]
     pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(borrow)]
-    pub subject_statuses: Vec<crate::tools_ozone::moderation::SubjectStatusView<'a>>,
+    pub subject_statuses: Vec<crate::generated::tools_ozone::moderation::SubjectStatusView<'a>>,
 }
 
 /// Response type for

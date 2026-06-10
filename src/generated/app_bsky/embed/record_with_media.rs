@@ -14,7 +14,7 @@ pub struct RecordWithMedia<'a> {
     #[serde(borrow)]
     pub media: RecordWithMediaMedia<'a>,
     #[serde(borrow)]
-    pub record: crate::app_bsky::embed::record::Record<'a>,
+    pub record: crate::generated::app_bsky::embed::record::Record<'a>,
 }
 
 pub mod record_with_media_state {
@@ -27,37 +27,37 @@ pub mod record_with_media_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Media;
         type Record;
+        type Media;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Media = Unset;
         type Record = Unset;
-    }
-    ///State transition - sets the `media` field to Set
-    pub struct SetMedia<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetMedia<S> {}
-    impl<S: State> State for SetMedia<S> {
-        type Media = Set<members::media>;
-        type Record = S::Record;
+        type Media = Unset;
     }
     ///State transition - sets the `record` field to Set
     pub struct SetRecord<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetRecord<S> {}
     impl<S: State> State for SetRecord<S> {
-        type Media = S::Media;
         type Record = Set<members::record>;
+        type Media = S::Media;
+    }
+    ///State transition - sets the `media` field to Set
+    pub struct SetMedia<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetMedia<S> {}
+    impl<S: State> State for SetMedia<S> {
+        type Record = S::Record;
+        type Media = Set<members::media>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `media` field
-        pub struct media(());
         ///Marker type for the `record` field
         pub struct record(());
+        ///Marker type for the `media` field
+        pub struct media(());
     }
 }
 
@@ -66,7 +66,7 @@ pub struct RecordWithMediaBuilder<'a, S: record_with_media_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
         ::core::option::Option<RecordWithMediaMedia<'a>>,
-        ::core::option::Option<crate::app_bsky::embed::record::Record<'a>>,
+        ::core::option::Option<crate::generated::app_bsky::embed::record::Record<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
@@ -116,7 +116,7 @@ where
     /// Set the `record` field (required)
     pub fn record(
         mut self,
-        value: impl Into<crate::app_bsky::embed::record::Record<'a>>,
+        value: impl Into<crate::generated::app_bsky::embed::record::Record<'a>>,
     ) -> RecordWithMediaBuilder<'a, record_with_media_state::SetRecord<S>> {
         self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
         RecordWithMediaBuilder {
@@ -130,8 +130,8 @@ where
 impl<'a, S> RecordWithMediaBuilder<'a, S>
 where
     S: record_with_media_state::State,
-    S::Media: record_with_media_state::IsSet,
     S::Record: record_with_media_state::IsSet,
+    S::Media: record_with_media_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> RecordWithMedia<'a> {
@@ -165,11 +165,11 @@ where
 #[serde(bound(deserialize = "'de: 'a"))]
 pub enum RecordWithMediaMedia<'a> {
     #[serde(rename = "app.bsky.embed.images")]
-    Images(Box<crate::app_bsky::embed::images::Images<'a>>),
+    Images(Box<crate::generated::app_bsky::embed::images::Images<'a>>),
     #[serde(rename = "app.bsky.embed.video")]
-    Video(Box<crate::app_bsky::embed::video::Video<'a>>),
+    Video(Box<crate::generated::app_bsky::embed::video::Video<'a>>),
     #[serde(rename = "app.bsky.embed.external")]
-    External(Box<crate::app_bsky::embed::external::ExternalRecord<'a>>),
+    External(Box<crate::generated::app_bsky::embed::external::ExternalRecord<'a>>),
 }
 
 fn lexicon_doc_app_bsky_embed_recordWithMedia() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static>
@@ -310,7 +310,7 @@ pub struct View<'a> {
     #[serde(borrow)]
     pub media: ViewMedia<'a>,
     #[serde(borrow)]
-    pub record: crate::app_bsky::embed::record::View<'a>,
+    pub record: crate::generated::app_bsky::embed::record::View<'a>,
 }
 
 pub mod view_state {
@@ -362,7 +362,7 @@ pub struct ViewBuilder<'a, S: view_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
         ::core::option::Option<ViewMedia<'a>>,
-        ::core::option::Option<crate::app_bsky::embed::record::View<'a>>,
+        ::core::option::Option<crate::generated::app_bsky::embed::record::View<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
@@ -412,7 +412,7 @@ where
     /// Set the `record` field (required)
     pub fn record(
         mut self,
-        value: impl Into<crate::app_bsky::embed::record::View<'a>>,
+        value: impl Into<crate::generated::app_bsky::embed::record::View<'a>>,
     ) -> ViewBuilder<'a, view_state::SetRecord<S>> {
         self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
         ViewBuilder {
@@ -461,11 +461,11 @@ where
 #[serde(bound(deserialize = "'de: 'a"))]
 pub enum ViewMedia<'a> {
     #[serde(rename = "app.bsky.embed.images#view")]
-    ImagesView(Box<crate::app_bsky::embed::images::View<'a>>),
+    ImagesView(Box<crate::generated::app_bsky::embed::images::View<'a>>),
     #[serde(rename = "app.bsky.embed.video#view")]
-    VideoView(Box<crate::app_bsky::embed::video::View<'a>>),
+    VideoView(Box<crate::generated::app_bsky::embed::video::View<'a>>),
     #[serde(rename = "app.bsky.embed.external#view")]
-    ExternalView(Box<crate::app_bsky::embed::external::View<'a>>),
+    ExternalView(Box<crate::generated::app_bsky::embed::external::View<'a>>),
 }
 
 impl<'a> ::jacquard_lexicon::schema::LexiconSchema for View<'a> {

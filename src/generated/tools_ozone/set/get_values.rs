@@ -151,7 +151,7 @@ pub struct GetValuesOutput<'a> {
     #[serde(borrow)]
     pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(borrow)]
-    pub set: crate::tools_ozone::set::SetView<'a>,
+    pub set: crate::generated::tools_ozone::set::SetView<'a>,
     #[serde(borrow)]
     pub values: Vec<jacquard_common::CowStr<'a>>,
 }

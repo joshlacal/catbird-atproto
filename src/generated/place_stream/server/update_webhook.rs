@@ -47,7 +47,7 @@ pub struct UpdateWebhook<'a> {
     /// Text replacement rules for webhook messages.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub rewrite: std::option::Option<Vec<crate::place_stream::server::RewriteRule<'a>>>,
+    pub rewrite: std::option::Option<Vec<crate::generated::place_stream::server::RewriteRule<'a>>>,
     /// Text to append to webhook messages.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
@@ -65,7 +65,7 @@ pub struct UpdateWebhook<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct UpdateWebhookOutput<'a> {
     #[serde(borrow)]
-    pub webhook: crate::place_stream::server::Webhook<'a>,
+    pub webhook: crate::generated::place_stream::server::Webhook<'a>,
 }
 
 #[jacquard_derive::open_union]

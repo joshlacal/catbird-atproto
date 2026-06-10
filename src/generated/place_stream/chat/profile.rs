@@ -378,7 +378,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Color<'a> {
 pub struct Profile<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub color: std::option::Option<crate::place_stream::chat::profile::Color<'a>>,
+    pub color: std::option::Option<crate::generated::place_stream::chat::profile::Color<'a>>,
 }
 
 pub mod profile_state {
@@ -403,7 +403,8 @@ pub mod profile_state {
 /// Builder for constructing an instance of this type
 pub struct ProfileBuilder<'a, S: profile_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<crate::place_stream::chat::profile::Color<'a>>,),
+    __unsafe_private_named:
+        (::core::option::Option<crate::generated::place_stream::chat::profile::Color<'a>>,),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
 
@@ -429,7 +430,7 @@ impl<'a, S: profile_state::State> ProfileBuilder<'a, S> {
     /// Set the `color` field (optional)
     pub fn color(
         mut self,
-        value: impl Into<Option<crate::place_stream::chat::profile::Color<'a>>>,
+        value: impl Into<Option<crate::generated::place_stream::chat::profile::Color<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.0 = value.into();
         self
@@ -437,7 +438,7 @@ impl<'a, S: profile_state::State> ProfileBuilder<'a, S> {
     /// Set the `color` field to an Option value (optional)
     pub fn maybe_color(
         mut self,
-        value: Option<crate::place_stream::chat::profile::Color<'a>>,
+        value: Option<crate::generated::place_stream::chat::profile::Color<'a>>,
     ) -> Self {
         self.__unsafe_private_named.0 = value;
         self

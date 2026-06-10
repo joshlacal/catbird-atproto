@@ -111,7 +111,7 @@ where
 #[serde(bound(deserialize = "'de: 'a"))]
 pub enum SubscribeSegmentsMessage<'a> {
     #[serde(rename = "#segment")]
-    Segment(Box<crate::place_stream::live::subscribe_segments::Segment>),
+    Segment(Box<crate::generated::place_stream::live::subscribe_segments::Segment>),
 }
 
 impl<'a> SubscribeSegmentsMessage<'a> {

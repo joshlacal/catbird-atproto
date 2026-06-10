@@ -26,37 +26,37 @@ pub mod caption_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type File;
         type Lang;
+        type File;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type File = Unset;
         type Lang = Unset;
-    }
-    ///State transition - sets the `file` field to Set
-    pub struct SetFile<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetFile<S> {}
-    impl<S: State> State for SetFile<S> {
-        type File = Set<members::file>;
-        type Lang = S::Lang;
+        type File = Unset;
     }
     ///State transition - sets the `lang` field to Set
     pub struct SetLang<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetLang<S> {}
     impl<S: State> State for SetLang<S> {
-        type File = S::File;
         type Lang = Set<members::lang>;
+        type File = S::File;
+    }
+    ///State transition - sets the `file` field to Set
+    pub struct SetFile<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetFile<S> {}
+    impl<S: State> State for SetFile<S> {
+        type Lang = S::Lang;
+        type File = Set<members::file>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `file` field
-        pub struct file(());
         ///Marker type for the `lang` field
         pub struct lang(());
+        ///Marker type for the `file` field
+        pub struct file(());
     }
 }
 
@@ -129,8 +129,8 @@ where
 impl<'a, S> CaptionBuilder<'a, S>
 where
     S: caption_state::State,
-    S::File: caption_state::IsSet,
     S::Lang: caption_state::IsSet,
+    S::File: caption_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> Caption<'a> {
@@ -461,10 +461,10 @@ pub struct Video<'a> {
     pub alt: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub aspect_ratio: std::option::Option<crate::app_bsky::embed::AspectRatio<'a>>,
+    pub aspect_ratio: std::option::Option<crate::generated::app_bsky::embed::AspectRatio<'a>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub captions: std::option::Option<Vec<crate::app_bsky::embed::video::Caption<'a>>>,
+    pub captions: std::option::Option<Vec<crate::generated::app_bsky::embed::video::Caption<'a>>>,
     /// A hint to the client about how to present the video.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
@@ -511,8 +511,8 @@ pub struct VideoBuilder<'a, S: video_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
         ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<crate::app_bsky::embed::AspectRatio<'a>>,
-        ::core::option::Option<Vec<crate::app_bsky::embed::video::Caption<'a>>>,
+        ::core::option::Option<crate::generated::app_bsky::embed::AspectRatio<'a>>,
+        ::core::option::Option<Vec<crate::generated::app_bsky::embed::video::Caption<'a>>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
         ::core::option::Option<jacquard_common::types::blob::BlobRef<'a>>,
     ),
@@ -554,7 +554,7 @@ impl<'a, S: video_state::State> VideoBuilder<'a, S> {
     /// Set the `aspectRatio` field (optional)
     pub fn aspect_ratio(
         mut self,
-        value: impl Into<Option<crate::app_bsky::embed::AspectRatio<'a>>>,
+        value: impl Into<Option<crate::generated::app_bsky::embed::AspectRatio<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.1 = value.into();
         self
@@ -562,7 +562,7 @@ impl<'a, S: video_state::State> VideoBuilder<'a, S> {
     /// Set the `aspectRatio` field to an Option value (optional)
     pub fn maybe_aspect_ratio(
         mut self,
-        value: Option<crate::app_bsky::embed::AspectRatio<'a>>,
+        value: Option<crate::generated::app_bsky::embed::AspectRatio<'a>>,
     ) -> Self {
         self.__unsafe_private_named.1 = value;
         self
@@ -573,7 +573,7 @@ impl<'a, S: video_state::State> VideoBuilder<'a, S> {
     /// Set the `captions` field (optional)
     pub fn captions(
         mut self,
-        value: impl Into<Option<Vec<crate::app_bsky::embed::video::Caption<'a>>>>,
+        value: impl Into<Option<Vec<crate::generated::app_bsky::embed::video::Caption<'a>>>>,
     ) -> Self {
         self.__unsafe_private_named.2 = value.into();
         self
@@ -581,7 +581,7 @@ impl<'a, S: video_state::State> VideoBuilder<'a, S> {
     /// Set the `captions` field to an Option value (optional)
     pub fn maybe_captions(
         mut self,
-        value: Option<Vec<crate::app_bsky::embed::video::Caption<'a>>>,
+        value: Option<Vec<crate::generated::app_bsky::embed::video::Caption<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.2 = value;
         self
@@ -719,7 +719,7 @@ pub struct View<'a> {
     pub alt: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub aspect_ratio: std::option::Option<crate::app_bsky::embed::AspectRatio<'a>>,
+    pub aspect_ratio: std::option::Option<crate::generated::app_bsky::embed::AspectRatio<'a>>,
     #[serde(borrow)]
     pub cid: jacquard_common::types::string::Cid<'a>,
     #[serde(borrow)]
@@ -782,7 +782,7 @@ pub struct ViewBuilder<'a, S: view_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
         ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<crate::app_bsky::embed::AspectRatio<'a>>,
+        ::core::option::Option<crate::generated::app_bsky::embed::AspectRatio<'a>>,
         ::core::option::Option<jacquard_common::types::string::Cid<'a>>,
         ::core::option::Option<jacquard_common::types::string::Uri<'a>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
@@ -826,7 +826,7 @@ impl<'a, S: view_state::State> ViewBuilder<'a, S> {
     /// Set the `aspectRatio` field (optional)
     pub fn aspect_ratio(
         mut self,
-        value: impl Into<Option<crate::app_bsky::embed::AspectRatio<'a>>>,
+        value: impl Into<Option<crate::generated::app_bsky::embed::AspectRatio<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.1 = value.into();
         self
@@ -834,7 +834,7 @@ impl<'a, S: view_state::State> ViewBuilder<'a, S> {
     /// Set the `aspectRatio` field to an Option value (optional)
     pub fn maybe_aspect_ratio(
         mut self,
-        value: Option<crate::app_bsky::embed::AspectRatio<'a>>,
+        value: Option<crate::generated::app_bsky::embed::AspectRatio<'a>>,
     ) -> Self {
         self.__unsafe_private_named.1 = value;
         self

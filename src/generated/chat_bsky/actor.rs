@@ -8,6 +8,7 @@
 pub mod declaration;
 pub mod delete_account;
 pub mod export_account_data;
+pub mod get_status;
 
 /// [NOTE: This is under active development and should be considered unstable while this note is here].
 #[jacquard_derive::lexicon]
@@ -590,7 +591,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for PastGroupConvoMember<'a> 
 pub struct ProfileViewBasic<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub associated: std::option::Option<jacquard_common::types::value::Data<'a>>,
+    pub associated: std::option::Option<crate::generated::app_bsky::actor::ProfileAssociated<'a>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub avatar: std::option::Option<jacquard_common::types::string::Uri<'a>>,
@@ -612,13 +613,13 @@ pub struct ProfileViewBasic<'a> {
     pub kind: std::option::Option<ProfileViewBasicKind<'a>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub labels: std::option::Option<Vec<jacquard_common::types::value::Data<'a>>>,
+    pub labels: std::option::Option<Vec<crate::generated::com_atproto::label::Label<'a>>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub verification: std::option::Option<jacquard_common::types::value::Data<'a>>,
+    pub verification: std::option::Option<crate::generated::app_bsky::actor::VerificationState<'a>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub viewer: std::option::Option<jacquard_common::types::value::Data<'a>>,
+    pub viewer: std::option::Option<crate::generated::app_bsky::actor::ViewerState<'a>>,
 }
 
 pub mod profile_view_basic_state {
@@ -669,7 +670,7 @@ pub mod profile_view_basic_state {
 pub struct ProfileViewBasicBuilder<'a, S: profile_view_basic_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::value::Data<'a>>,
+        ::core::option::Option<crate::generated::app_bsky::actor::ProfileAssociated<'a>>,
         ::core::option::Option<jacquard_common::types::string::Uri<'a>>,
         ::core::option::Option<bool>,
         ::core::option::Option<jacquard_common::types::string::Datetime>,
@@ -677,9 +678,9 @@ pub struct ProfileViewBasicBuilder<'a, S: profile_view_basic_state::State> {
         ::core::option::Option<jacquard_common::CowStr<'a>>,
         ::core::option::Option<jacquard_common::types::string::Handle<'a>>,
         ::core::option::Option<ProfileViewBasicKind<'a>>,
-        ::core::option::Option<Vec<jacquard_common::types::value::Data<'a>>>,
-        ::core::option::Option<jacquard_common::types::value::Data<'a>>,
-        ::core::option::Option<jacquard_common::types::value::Data<'a>>,
+        ::core::option::Option<Vec<crate::generated::com_atproto::label::Label<'a>>>,
+        ::core::option::Option<crate::generated::app_bsky::actor::VerificationState<'a>>,
+        ::core::option::Option<crate::generated::app_bsky::actor::ViewerState<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
@@ -708,7 +709,7 @@ impl<'a, S: profile_view_basic_state::State> ProfileViewBasicBuilder<'a, S> {
     /// Set the `associated` field (optional)
     pub fn associated(
         mut self,
-        value: impl Into<Option<jacquard_common::types::value::Data<'a>>>,
+        value: impl Into<Option<crate::generated::app_bsky::actor::ProfileAssociated<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.0 = value.into();
         self
@@ -716,7 +717,7 @@ impl<'a, S: profile_view_basic_state::State> ProfileViewBasicBuilder<'a, S> {
     /// Set the `associated` field to an Option value (optional)
     pub fn maybe_associated(
         mut self,
-        value: Option<jacquard_common::types::value::Data<'a>>,
+        value: Option<crate::generated::app_bsky::actor::ProfileAssociated<'a>>,
     ) -> Self {
         self.__unsafe_private_named.0 = value;
         self
@@ -839,7 +840,7 @@ impl<'a, S: profile_view_basic_state::State> ProfileViewBasicBuilder<'a, S> {
     /// Set the `labels` field (optional)
     pub fn labels(
         mut self,
-        value: impl Into<Option<Vec<jacquard_common::types::value::Data<'a>>>>,
+        value: impl Into<Option<Vec<crate::generated::com_atproto::label::Label<'a>>>>,
     ) -> Self {
         self.__unsafe_private_named.8 = value.into();
         self
@@ -847,7 +848,7 @@ impl<'a, S: profile_view_basic_state::State> ProfileViewBasicBuilder<'a, S> {
     /// Set the `labels` field to an Option value (optional)
     pub fn maybe_labels(
         mut self,
-        value: Option<Vec<jacquard_common::types::value::Data<'a>>>,
+        value: Option<Vec<crate::generated::com_atproto::label::Label<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.8 = value;
         self
@@ -858,7 +859,7 @@ impl<'a, S: profile_view_basic_state::State> ProfileViewBasicBuilder<'a, S> {
     /// Set the `verification` field (optional)
     pub fn verification(
         mut self,
-        value: impl Into<Option<jacquard_common::types::value::Data<'a>>>,
+        value: impl Into<Option<crate::generated::app_bsky::actor::VerificationState<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.9 = value.into();
         self
@@ -866,7 +867,7 @@ impl<'a, S: profile_view_basic_state::State> ProfileViewBasicBuilder<'a, S> {
     /// Set the `verification` field to an Option value (optional)
     pub fn maybe_verification(
         mut self,
-        value: Option<jacquard_common::types::value::Data<'a>>,
+        value: Option<crate::generated::app_bsky::actor::VerificationState<'a>>,
     ) -> Self {
         self.__unsafe_private_named.9 = value;
         self
@@ -877,13 +878,16 @@ impl<'a, S: profile_view_basic_state::State> ProfileViewBasicBuilder<'a, S> {
     /// Set the `viewer` field (optional)
     pub fn viewer(
         mut self,
-        value: impl Into<Option<jacquard_common::types::value::Data<'a>>>,
+        value: impl Into<Option<crate::generated::app_bsky::actor::ViewerState<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.10 = value.into();
         self
     }
     /// Set the `viewer` field to an Option value (optional)
-    pub fn maybe_viewer(mut self, value: Option<jacquard_common::types::value::Data<'a>>) -> Self {
+    pub fn maybe_viewer(
+        mut self,
+        value: Option<crate::generated::app_bsky::actor::ViewerState<'a>>,
+    ) -> Self {
         self.__unsafe_private_named.10 = value;
         self
     }

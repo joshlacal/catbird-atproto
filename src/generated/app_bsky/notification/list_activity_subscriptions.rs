@@ -114,7 +114,7 @@ pub struct ListActivitySubscriptionsOutput<'a> {
     #[serde(borrow)]
     pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(borrow)]
-    pub subscriptions: Vec<crate::app_bsky::actor::ProfileView<'a>>,
+    pub subscriptions: Vec<crate::generated::app_bsky::actor::ProfileView<'a>>,
 }
 
 /// Response type for

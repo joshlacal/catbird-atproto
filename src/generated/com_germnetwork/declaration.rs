@@ -21,7 +21,8 @@ pub struct Declaration<'a> {
     pub key_package: std::option::Option<bytes::Bytes>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub message_me: std::option::Option<crate::com_germnetwork::declaration::MessageMe<'a>>,
+    pub message_me:
+        std::option::Option<crate::generated::com_germnetwork::declaration::MessageMe<'a>>,
     #[serde(borrow)]
     pub version: jacquard_common::CowStr<'a>,
 }
@@ -36,37 +37,37 @@ pub mod declaration_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type CurrentKey;
         type Version;
+        type CurrentKey;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type CurrentKey = Unset;
         type Version = Unset;
-    }
-    ///State transition - sets the `current_key` field to Set
-    pub struct SetCurrentKey<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCurrentKey<S> {}
-    impl<S: State> State for SetCurrentKey<S> {
-        type CurrentKey = Set<members::current_key>;
-        type Version = S::Version;
+        type CurrentKey = Unset;
     }
     ///State transition - sets the `version` field to Set
     pub struct SetVersion<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetVersion<S> {}
     impl<S: State> State for SetVersion<S> {
-        type CurrentKey = S::CurrentKey;
         type Version = Set<members::version>;
+        type CurrentKey = S::CurrentKey;
+    }
+    ///State transition - sets the `current_key` field to Set
+    pub struct SetCurrentKey<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCurrentKey<S> {}
+    impl<S: State> State for SetCurrentKey<S> {
+        type Version = S::Version;
+        type CurrentKey = Set<members::current_key>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `current_key` field
-        pub struct current_key(());
         ///Marker type for the `version` field
         pub struct version(());
+        ///Marker type for the `current_key` field
+        pub struct current_key(());
     }
 }
 
@@ -77,7 +78,7 @@ pub struct DeclarationBuilder<'a, S: declaration_state::State> {
         ::core::option::Option<Vec<bytes::Bytes>>,
         ::core::option::Option<bytes::Bytes>,
         ::core::option::Option<bytes::Bytes>,
-        ::core::option::Option<crate::com_germnetwork::declaration::MessageMe<'a>>,
+        ::core::option::Option<crate::generated::com_germnetwork::declaration::MessageMe<'a>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
@@ -150,7 +151,7 @@ impl<'a, S: declaration_state::State> DeclarationBuilder<'a, S> {
     /// Set the `messageMe` field (optional)
     pub fn message_me(
         mut self,
-        value: impl Into<Option<crate::com_germnetwork::declaration::MessageMe<'a>>>,
+        value: impl Into<Option<crate::generated::com_germnetwork::declaration::MessageMe<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.3 = value.into();
         self
@@ -158,7 +159,7 @@ impl<'a, S: declaration_state::State> DeclarationBuilder<'a, S> {
     /// Set the `messageMe` field to an Option value (optional)
     pub fn maybe_message_me(
         mut self,
-        value: Option<crate::com_germnetwork::declaration::MessageMe<'a>>,
+        value: Option<crate::generated::com_germnetwork::declaration::MessageMe<'a>>,
     ) -> Self {
         self.__unsafe_private_named.3 = value;
         self
@@ -187,8 +188,8 @@ where
 impl<'a, S> DeclarationBuilder<'a, S>
 where
     S: declaration_state::State,
-    S::CurrentKey: declaration_state::IsSet,
     S::Version: declaration_state::IsSet,
+    S::CurrentKey: declaration_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> Declaration<'a> {
@@ -464,37 +465,37 @@ pub mod message_me_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type MessageMeUrl;
         type ShowButtonTo;
+        type MessageMeUrl;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type MessageMeUrl = Unset;
         type ShowButtonTo = Unset;
-    }
-    ///State transition - sets the `message_me_url` field to Set
-    pub struct SetMessageMeUrl<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetMessageMeUrl<S> {}
-    impl<S: State> State for SetMessageMeUrl<S> {
-        type MessageMeUrl = Set<members::message_me_url>;
-        type ShowButtonTo = S::ShowButtonTo;
+        type MessageMeUrl = Unset;
     }
     ///State transition - sets the `show_button_to` field to Set
     pub struct SetShowButtonTo<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetShowButtonTo<S> {}
     impl<S: State> State for SetShowButtonTo<S> {
-        type MessageMeUrl = S::MessageMeUrl;
         type ShowButtonTo = Set<members::show_button_to>;
+        type MessageMeUrl = S::MessageMeUrl;
+    }
+    ///State transition - sets the `message_me_url` field to Set
+    pub struct SetMessageMeUrl<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetMessageMeUrl<S> {}
+    impl<S: State> State for SetMessageMeUrl<S> {
+        type ShowButtonTo = S::ShowButtonTo;
+        type MessageMeUrl = Set<members::message_me_url>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `message_me_url` field
-        pub struct message_me_url(());
         ///Marker type for the `show_button_to` field
         pub struct show_button_to(());
+        ///Marker type for the `message_me_url` field
+        pub struct message_me_url(());
     }
 }
 
@@ -567,8 +568,8 @@ where
 impl<'a, S> MessageMeBuilder<'a, S>
 where
     S: message_me_state::State,
-    S::MessageMeUrl: message_me_state::IsSet,
     S::ShowButtonTo: message_me_state::IsSet,
+    S::MessageMeUrl: message_me_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> MessageMe<'a> {

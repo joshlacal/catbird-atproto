@@ -12,7 +12,7 @@
 #[serde(rename_all = "camelCase")]
 pub struct CreateTarget<'a> {
     #[serde(borrow)]
-    pub multistream_target: crate::place_stream::multistream::target::Target<'a>,
+    pub multistream_target: crate::generated::place_stream::multistream::target::Target<'a>,
 }
 
 pub mod create_target_state {
@@ -51,7 +51,7 @@ pub mod create_target_state {
 pub struct CreateTargetBuilder<'a, S: create_target_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named:
-        (::core::option::Option<crate::place_stream::multistream::target::Target<'a>>,),
+        (::core::option::Option<crate::generated::place_stream::multistream::target::Target<'a>>,),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
 
@@ -81,7 +81,7 @@ where
     /// Set the `multistreamTarget` field (required)
     pub fn multistream_target(
         mut self,
-        value: impl Into<crate::place_stream::multistream::target::Target<'a>>,
+        value: impl Into<crate::generated::place_stream::multistream::target::Target<'a>>,
     ) -> CreateTargetBuilder<'a, create_target_state::SetMultistreamTarget<S>> {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         CreateTargetBuilder {
@@ -127,7 +127,7 @@ where
 pub struct CreateTargetOutput<'a> {
     #[serde(flatten)]
     #[serde(borrow)]
-    pub value: crate::place_stream::multistream::TargetView<'a>,
+    pub value: crate::generated::place_stream::multistream::TargetView<'a>,
 }
 
 #[jacquard_derive::open_union]

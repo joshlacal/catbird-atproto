@@ -110,7 +110,7 @@ where
 #[serde(rename_all = "camelCase")]
 pub struct GetReporterStatsOutput<'a> {
     #[serde(borrow)]
-    pub stats: Vec<crate::tools_ozone::moderation::ReporterStats<'a>>,
+    pub stats: Vec<crate::generated::tools_ozone::moderation::ReporterStats<'a>>,
 }
 
 /// Response type for

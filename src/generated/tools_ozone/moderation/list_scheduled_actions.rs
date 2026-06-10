@@ -243,7 +243,7 @@ where
 #[serde(rename_all = "camelCase")]
 pub struct ListScheduledActionsOutput<'a> {
     #[serde(borrow)]
-    pub actions: Vec<crate::tools_ozone::moderation::ScheduledActionView<'a>>,
+    pub actions: Vec<crate::generated::tools_ozone::moderation::ScheduledActionView<'a>>,
     /// Cursor for next page of results
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]

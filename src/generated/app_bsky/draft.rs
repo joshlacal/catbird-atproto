@@ -32,10 +32,10 @@ pub struct Draft<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub postgate_embedding_rules:
-        std::option::Option<Vec<crate::app_bsky::feed::postgate::DisableRule<'a>>>,
+        std::option::Option<Vec<crate::generated::app_bsky::feed::postgate::DisableRule<'a>>>,
     /// Array of draft posts that compose this draft.
     #[serde(borrow)]
-    pub posts: Vec<crate::app_bsky::draft::DraftPost<'a>>,
+    pub posts: Vec<crate::generated::app_bsky::draft::DraftPost<'a>>,
     /// Allow-rules for the threadgate to be created when this draft is published.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
@@ -81,8 +81,8 @@ pub struct DraftBuilder<'a, S: draft_state::State> {
         ::core::option::Option<jacquard_common::CowStr<'a>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
         ::core::option::Option<Vec<jacquard_common::types::string::Language>>,
-        ::core::option::Option<Vec<crate::app_bsky::feed::postgate::DisableRule<'a>>>,
-        ::core::option::Option<Vec<crate::app_bsky::draft::DraftPost<'a>>>,
+        ::core::option::Option<Vec<crate::generated::app_bsky::feed::postgate::DisableRule<'a>>>,
+        ::core::option::Option<Vec<crate::generated::app_bsky::draft::DraftPost<'a>>>,
         ::core::option::Option<Vec<DraftThreadgateAllowItem<'a>>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
@@ -155,7 +155,7 @@ impl<'a, S: draft_state::State> DraftBuilder<'a, S> {
     /// Set the `postgateEmbeddingRules` field (optional)
     pub fn postgate_embedding_rules(
         mut self,
-        value: impl Into<Option<Vec<crate::app_bsky::feed::postgate::DisableRule<'a>>>>,
+        value: impl Into<Option<Vec<crate::generated::app_bsky::feed::postgate::DisableRule<'a>>>>,
     ) -> Self {
         self.__unsafe_private_named.3 = value.into();
         self
@@ -163,7 +163,7 @@ impl<'a, S: draft_state::State> DraftBuilder<'a, S> {
     /// Set the `postgateEmbeddingRules` field to an Option value (optional)
     pub fn maybe_postgate_embedding_rules(
         mut self,
-        value: Option<Vec<crate::app_bsky::feed::postgate::DisableRule<'a>>>,
+        value: Option<Vec<crate::generated::app_bsky::feed::postgate::DisableRule<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.3 = value;
         self
@@ -178,7 +178,7 @@ where
     /// Set the `posts` field (required)
     pub fn posts(
         mut self,
-        value: impl Into<Vec<crate::app_bsky::draft::DraftPost<'a>>>,
+        value: impl Into<Vec<crate::generated::app_bsky::draft::DraftPost<'a>>>,
     ) -> DraftBuilder<'a, draft_state::SetPosts<S>> {
         self.__unsafe_private_named.4 = ::core::option::Option::Some(value.into());
         DraftBuilder {
@@ -253,13 +253,13 @@ where
 #[serde(bound(deserialize = "'de: 'a"))]
 pub enum DraftThreadgateAllowItem<'a> {
     #[serde(rename = "app.bsky.feed.threadgate#mentionRule")]
-    ThreadgateMentionRule(Box<crate::app_bsky::feed::threadgate::MentionRule<'a>>),
+    ThreadgateMentionRule(Box<crate::generated::app_bsky::feed::threadgate::MentionRule<'a>>),
     #[serde(rename = "app.bsky.feed.threadgate#followerRule")]
-    ThreadgateFollowerRule(Box<crate::app_bsky::feed::threadgate::FollowerRule<'a>>),
+    ThreadgateFollowerRule(Box<crate::generated::app_bsky::feed::threadgate::FollowerRule<'a>>),
     #[serde(rename = "app.bsky.feed.threadgate#followingRule")]
-    ThreadgateFollowingRule(Box<crate::app_bsky::feed::threadgate::FollowingRule<'a>>),
+    ThreadgateFollowingRule(Box<crate::generated::app_bsky::feed::threadgate::FollowingRule<'a>>),
     #[serde(rename = "app.bsky.feed.threadgate#listRule")]
-    ThreadgateListRule(Box<crate::app_bsky::feed::threadgate::ListRule<'a>>),
+    ThreadgateListRule(Box<crate::generated::app_bsky::feed::threadgate::ListRule<'a>>),
 }
 
 fn lexicon_doc_app_bsky_draft_defs() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
@@ -1353,7 +1353,7 @@ pub struct DraftEmbedImage<'a> {
     #[serde(borrow)]
     pub alt: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(borrow)]
-    pub local_ref: crate::app_bsky::draft::DraftEmbedLocalRef<'a>,
+    pub local_ref: crate::generated::app_bsky::draft::DraftEmbedLocalRef<'a>,
 }
 
 pub mod draft_embed_image_state {
@@ -1393,7 +1393,7 @@ pub struct DraftEmbedImageBuilder<'a, S: draft_embed_image_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
         ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<crate::app_bsky::draft::DraftEmbedLocalRef<'a>>,
+        ::core::option::Option<crate::generated::app_bsky::draft::DraftEmbedLocalRef<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
@@ -1437,7 +1437,7 @@ where
     /// Set the `localRef` field (required)
     pub fn local_ref(
         mut self,
-        value: impl Into<crate::app_bsky::draft::DraftEmbedLocalRef<'a>>,
+        value: impl Into<crate::generated::app_bsky::draft::DraftEmbedLocalRef<'a>>,
     ) -> DraftEmbedImageBuilder<'a, draft_embed_image_state::SetLocalRef<S>> {
         self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
         DraftEmbedImageBuilder {
@@ -1574,7 +1574,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for DraftEmbedLocalRef<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct DraftEmbedRecord<'a> {
     #[serde(borrow)]
-    pub record: crate::com_atproto::repo::strong_ref::StrongRef<'a>,
+    pub record: crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>,
 }
 
 pub mod draft_embed_record_state {
@@ -1613,7 +1613,7 @@ pub mod draft_embed_record_state {
 pub struct DraftEmbedRecordBuilder<'a, S: draft_embed_record_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named:
-        (::core::option::Option<crate::com_atproto::repo::strong_ref::StrongRef<'a>>,),
+        (::core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
 
@@ -1643,7 +1643,7 @@ where
     /// Set the `record` field (required)
     pub fn record(
         mut self,
-        value: impl Into<crate::com_atproto::repo::strong_ref::StrongRef<'a>>,
+        value: impl Into<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,
     ) -> DraftEmbedRecordBuilder<'a, draft_embed_record_state::SetRecord<S>> {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         DraftEmbedRecordBuilder {
@@ -1709,9 +1709,10 @@ pub struct DraftEmbedVideo<'a> {
     pub alt: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub captions: std::option::Option<Vec<crate::app_bsky::draft::DraftEmbedCaption<'a>>>,
+    pub captions:
+        std::option::Option<Vec<crate::generated::app_bsky::draft::DraftEmbedCaption<'a>>>,
     #[serde(borrow)]
-    pub local_ref: crate::app_bsky::draft::DraftEmbedLocalRef<'a>,
+    pub local_ref: crate::generated::app_bsky::draft::DraftEmbedLocalRef<'a>,
 }
 
 pub mod draft_embed_video_state {
@@ -1751,8 +1752,8 @@ pub struct DraftEmbedVideoBuilder<'a, S: draft_embed_video_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
         ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<Vec<crate::app_bsky::draft::DraftEmbedCaption<'a>>>,
-        ::core::option::Option<crate::app_bsky::draft::DraftEmbedLocalRef<'a>>,
+        ::core::option::Option<Vec<crate::generated::app_bsky::draft::DraftEmbedCaption<'a>>>,
+        ::core::option::Option<crate::generated::app_bsky::draft::DraftEmbedLocalRef<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
@@ -1792,7 +1793,7 @@ impl<'a, S: draft_embed_video_state::State> DraftEmbedVideoBuilder<'a, S> {
     /// Set the `captions` field (optional)
     pub fn captions(
         mut self,
-        value: impl Into<Option<Vec<crate::app_bsky::draft::DraftEmbedCaption<'a>>>>,
+        value: impl Into<Option<Vec<crate::generated::app_bsky::draft::DraftEmbedCaption<'a>>>>,
     ) -> Self {
         self.__unsafe_private_named.1 = value.into();
         self
@@ -1800,7 +1801,7 @@ impl<'a, S: draft_embed_video_state::State> DraftEmbedVideoBuilder<'a, S> {
     /// Set the `captions` field to an Option value (optional)
     pub fn maybe_captions(
         mut self,
-        value: Option<Vec<crate::app_bsky::draft::DraftEmbedCaption<'a>>>,
+        value: Option<Vec<crate::generated::app_bsky::draft::DraftEmbedCaption<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.1 = value;
         self
@@ -1815,7 +1816,7 @@ where
     /// Set the `localRef` field (required)
     pub fn local_ref(
         mut self,
-        value: impl Into<crate::app_bsky::draft::DraftEmbedLocalRef<'a>>,
+        value: impl Into<crate::generated::app_bsky::draft::DraftEmbedLocalRef<'a>>,
     ) -> DraftEmbedVideoBuilder<'a, draft_embed_video_state::SetLocalRef<S>> {
         self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
         DraftEmbedVideoBuilder {
@@ -1916,20 +1917,24 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for DraftEmbedVideo<'a> {
 pub struct DraftPost<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub embed_externals: std::option::Option<Vec<crate::app_bsky::draft::DraftEmbedExternal<'a>>>,
+    pub embed_externals:
+        std::option::Option<Vec<crate::generated::app_bsky::draft::DraftEmbedExternal<'a>>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub embed_images: std::option::Option<Vec<crate::app_bsky::draft::DraftEmbedImage<'a>>>,
+    pub embed_images:
+        std::option::Option<Vec<crate::generated::app_bsky::draft::DraftEmbedImage<'a>>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub embed_records: std::option::Option<Vec<crate::app_bsky::draft::DraftEmbedRecord<'a>>>,
+    pub embed_records:
+        std::option::Option<Vec<crate::generated::app_bsky::draft::DraftEmbedRecord<'a>>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub embed_videos: std::option::Option<Vec<crate::app_bsky::draft::DraftEmbedVideo<'a>>>,
+    pub embed_videos:
+        std::option::Option<Vec<crate::generated::app_bsky::draft::DraftEmbedVideo<'a>>>,
     /// Self-label values for this post. Effectively content warnings.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub labels: std::option::Option<crate::com_atproto::label::SelfLabels<'a>>,
+    pub labels: std::option::Option<crate::generated::com_atproto::label::SelfLabels<'a>>,
     /// The primary post content.
     #[serde(borrow)]
     pub text: jacquard_common::CowStr<'a>,
@@ -2040,7 +2045,7 @@ pub struct DraftView<'a> {
     /// The time the draft was created.
     pub created_at: jacquard_common::types::string::Datetime,
     #[serde(borrow)]
-    pub draft: crate::app_bsky::draft::Draft<'a>,
+    pub draft: crate::generated::app_bsky::draft::Draft<'a>,
     /// A TID to be used as a draft identifier.
     pub id: jacquard_common::types::string::Tid,
     /// The time the draft was last updated.
@@ -2057,65 +2062,65 @@ pub mod draft_view_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type UpdatedAt;
         type CreatedAt;
         type Draft;
+        type UpdatedAt;
         type Id;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type UpdatedAt = Unset;
         type CreatedAt = Unset;
         type Draft = Unset;
+        type UpdatedAt = Unset;
         type Id = Unset;
-    }
-    ///State transition - sets the `updated_at` field to Set
-    pub struct SetUpdatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUpdatedAt<S> {}
-    impl<S: State> State for SetUpdatedAt<S> {
-        type UpdatedAt = Set<members::updated_at>;
-        type CreatedAt = S::CreatedAt;
-        type Draft = S::Draft;
-        type Id = S::Id;
     }
     ///State transition - sets the `created_at` field to Set
     pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
     impl<S: State> State for SetCreatedAt<S> {
-        type UpdatedAt = S::UpdatedAt;
         type CreatedAt = Set<members::created_at>;
         type Draft = S::Draft;
+        type UpdatedAt = S::UpdatedAt;
         type Id = S::Id;
     }
     ///State transition - sets the `draft` field to Set
     pub struct SetDraft<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetDraft<S> {}
     impl<S: State> State for SetDraft<S> {
-        type UpdatedAt = S::UpdatedAt;
         type CreatedAt = S::CreatedAt;
         type Draft = Set<members::draft>;
+        type UpdatedAt = S::UpdatedAt;
+        type Id = S::Id;
+    }
+    ///State transition - sets the `updated_at` field to Set
+    pub struct SetUpdatedAt<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetUpdatedAt<S> {}
+    impl<S: State> State for SetUpdatedAt<S> {
+        type CreatedAt = S::CreatedAt;
+        type Draft = S::Draft;
+        type UpdatedAt = Set<members::updated_at>;
         type Id = S::Id;
     }
     ///State transition - sets the `id` field to Set
     pub struct SetId<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetId<S> {}
     impl<S: State> State for SetId<S> {
-        type UpdatedAt = S::UpdatedAt;
         type CreatedAt = S::CreatedAt;
         type Draft = S::Draft;
+        type UpdatedAt = S::UpdatedAt;
         type Id = Set<members::id>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `updated_at` field
-        pub struct updated_at(());
         ///Marker type for the `created_at` field
         pub struct created_at(());
         ///Marker type for the `draft` field
         pub struct draft(());
+        ///Marker type for the `updated_at` field
+        pub struct updated_at(());
         ///Marker type for the `id` field
         pub struct id(());
     }
@@ -2126,7 +2131,7 @@ pub struct DraftViewBuilder<'a, S: draft_view_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
         ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<crate::app_bsky::draft::Draft<'a>>,
+        ::core::option::Option<crate::generated::app_bsky::draft::Draft<'a>>,
         ::core::option::Option<jacquard_common::types::string::Tid>,
         ::core::option::Option<jacquard_common::types::string::Datetime>,
     ),
@@ -2178,7 +2183,7 @@ where
     /// Set the `draft` field (required)
     pub fn draft(
         mut self,
-        value: impl Into<crate::app_bsky::draft::Draft<'a>>,
+        value: impl Into<crate::generated::app_bsky::draft::Draft<'a>>,
     ) -> DraftViewBuilder<'a, draft_view_state::SetDraft<S>> {
         self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
         DraftViewBuilder {
@@ -2230,9 +2235,9 @@ where
 impl<'a, S> DraftViewBuilder<'a, S>
 where
     S: draft_view_state::State,
-    S::UpdatedAt: draft_view_state::IsSet,
     S::CreatedAt: draft_view_state::IsSet,
     S::Draft: draft_view_state::IsSet,
+    S::UpdatedAt: draft_view_state::IsSet,
     S::Id: draft_view_state::IsSet,
 {
     /// Build the final struct
@@ -2288,7 +2293,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for DraftView<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct DraftWithId<'a> {
     #[serde(borrow)]
-    pub draft: crate::app_bsky::draft::Draft<'a>,
+    pub draft: crate::generated::app_bsky::draft::Draft<'a>,
     /// A TID to be used as a draft identifier.
     pub id: jacquard_common::types::string::Tid,
 }
@@ -2303,37 +2308,37 @@ pub mod draft_with_id_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Id;
         type Draft;
+        type Id;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Id = Unset;
         type Draft = Unset;
-    }
-    ///State transition - sets the `id` field to Set
-    pub struct SetId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetId<S> {}
-    impl<S: State> State for SetId<S> {
-        type Id = Set<members::id>;
-        type Draft = S::Draft;
+        type Id = Unset;
     }
     ///State transition - sets the `draft` field to Set
     pub struct SetDraft<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetDraft<S> {}
     impl<S: State> State for SetDraft<S> {
-        type Id = S::Id;
         type Draft = Set<members::draft>;
+        type Id = S::Id;
+    }
+    ///State transition - sets the `id` field to Set
+    pub struct SetId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetId<S> {}
+    impl<S: State> State for SetId<S> {
+        type Draft = S::Draft;
+        type Id = Set<members::id>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `id` field
-        pub struct id(());
         ///Marker type for the `draft` field
         pub struct draft(());
+        ///Marker type for the `id` field
+        pub struct id(());
     }
 }
 
@@ -2341,7 +2346,7 @@ pub mod draft_with_id_state {
 pub struct DraftWithIdBuilder<'a, S: draft_with_id_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
-        ::core::option::Option<crate::app_bsky::draft::Draft<'a>>,
+        ::core::option::Option<crate::generated::app_bsky::draft::Draft<'a>>,
         ::core::option::Option<jacquard_common::types::string::Tid>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
@@ -2373,7 +2378,7 @@ where
     /// Set the `draft` field (required)
     pub fn draft(
         mut self,
-        value: impl Into<crate::app_bsky::draft::Draft<'a>>,
+        value: impl Into<crate::generated::app_bsky::draft::Draft<'a>>,
     ) -> DraftWithIdBuilder<'a, draft_with_id_state::SetDraft<S>> {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         DraftWithIdBuilder {
@@ -2406,8 +2411,8 @@ where
 impl<'a, S> DraftWithIdBuilder<'a, S>
 where
     S: draft_with_id_state::State,
-    S::Id: draft_with_id_state::IsSet,
     S::Draft: draft_with_id_state::IsSet,
+    S::Id: draft_with_id_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> DraftWithId<'a> {

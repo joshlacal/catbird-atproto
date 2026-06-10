@@ -130,9 +130,9 @@ where
 #[serde(rename_all = "camelCase")]
 pub struct GetStateOutput<'a> {
     #[serde(borrow)]
-    pub metadata: crate::app_bsky::ageassurance::StateMetadata<'a>,
+    pub metadata: crate::generated::app_bsky::ageassurance::StateMetadata<'a>,
     #[serde(borrow)]
-    pub state: crate::app_bsky::ageassurance::State<'a>,
+    pub state: crate::generated::app_bsky::ageassurance::State<'a>,
 }
 
 /// Response type for

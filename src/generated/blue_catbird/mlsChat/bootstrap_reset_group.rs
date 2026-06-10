@@ -30,37 +30,37 @@ pub mod key_package_hash_entry_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Hash;
         type Did;
+        type Hash;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Hash = Unset;
         type Did = Unset;
-    }
-    ///State transition - sets the `hash` field to Set
-    pub struct SetHash<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetHash<S> {}
-    impl<S: State> State for SetHash<S> {
-        type Hash = Set<members::hash>;
-        type Did = S::Did;
+        type Hash = Unset;
     }
     ///State transition - sets the `did` field to Set
     pub struct SetDid<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetDid<S> {}
     impl<S: State> State for SetDid<S> {
-        type Hash = S::Hash;
         type Did = Set<members::did>;
+        type Hash = S::Hash;
+    }
+    ///State transition - sets the `hash` field to Set
+    pub struct SetHash<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetHash<S> {}
+    impl<S: State> State for SetHash<S> {
+        type Did = S::Did;
+        type Hash = Set<members::hash>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `hash` field
-        pub struct hash(());
         ///Marker type for the `did` field
         pub struct did(());
+        ///Marker type for the `hash` field
+        pub struct hash(());
     }
 }
 
@@ -133,8 +133,8 @@ where
 impl<'a, S> KeyPackageHashEntryBuilder<'a, S>
 where
     S: key_package_hash_entry_state::State,
-    S::Hash: key_package_hash_entry_state::IsSet,
     S::Did: key_package_hash_entry_state::IsSet,
+    S::Hash: key_package_hash_entry_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> KeyPackageHashEntry<'a> {
@@ -518,9 +518,9 @@ pub mod bootstrap_reset_group_state {
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
         type Members;
-        type CipherSuite;
-        type NewGroupId;
         type OriginalConvoId;
+        type NewGroupId;
+        type CipherSuite;
         type GroupInfo;
     }
     /// Empty state - all required fields are unset
@@ -528,9 +528,9 @@ pub mod bootstrap_reset_group_state {
     impl sealed::Sealed for Empty {}
     impl State for Empty {
         type Members = Unset;
-        type CipherSuite = Unset;
-        type NewGroupId = Unset;
         type OriginalConvoId = Unset;
+        type NewGroupId = Unset;
+        type CipherSuite = Unset;
         type GroupInfo = Unset;
     }
     ///State transition - sets the `members` field to Set
@@ -538,29 +538,9 @@ pub mod bootstrap_reset_group_state {
     impl<S: State> sealed::Sealed for SetMembers<S> {}
     impl<S: State> State for SetMembers<S> {
         type Members = Set<members::members>;
-        type CipherSuite = S::CipherSuite;
+        type OriginalConvoId = S::OriginalConvoId;
         type NewGroupId = S::NewGroupId;
-        type OriginalConvoId = S::OriginalConvoId;
-        type GroupInfo = S::GroupInfo;
-    }
-    ///State transition - sets the `cipher_suite` field to Set
-    pub struct SetCipherSuite<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCipherSuite<S> {}
-    impl<S: State> State for SetCipherSuite<S> {
-        type Members = S::Members;
-        type CipherSuite = Set<members::cipher_suite>;
-        type NewGroupId = S::NewGroupId;
-        type OriginalConvoId = S::OriginalConvoId;
-        type GroupInfo = S::GroupInfo;
-    }
-    ///State transition - sets the `new_group_id` field to Set
-    pub struct SetNewGroupId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetNewGroupId<S> {}
-    impl<S: State> State for SetNewGroupId<S> {
-        type Members = S::Members;
         type CipherSuite = S::CipherSuite;
-        type NewGroupId = Set<members::new_group_id>;
-        type OriginalConvoId = S::OriginalConvoId;
         type GroupInfo = S::GroupInfo;
     }
     ///State transition - sets the `original_convo_id` field to Set
@@ -568,9 +548,29 @@ pub mod bootstrap_reset_group_state {
     impl<S: State> sealed::Sealed for SetOriginalConvoId<S> {}
     impl<S: State> State for SetOriginalConvoId<S> {
         type Members = S::Members;
-        type CipherSuite = S::CipherSuite;
-        type NewGroupId = S::NewGroupId;
         type OriginalConvoId = Set<members::original_convo_id>;
+        type NewGroupId = S::NewGroupId;
+        type CipherSuite = S::CipherSuite;
+        type GroupInfo = S::GroupInfo;
+    }
+    ///State transition - sets the `new_group_id` field to Set
+    pub struct SetNewGroupId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetNewGroupId<S> {}
+    impl<S: State> State for SetNewGroupId<S> {
+        type Members = S::Members;
+        type OriginalConvoId = S::OriginalConvoId;
+        type NewGroupId = Set<members::new_group_id>;
+        type CipherSuite = S::CipherSuite;
+        type GroupInfo = S::GroupInfo;
+    }
+    ///State transition - sets the `cipher_suite` field to Set
+    pub struct SetCipherSuite<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCipherSuite<S> {}
+    impl<S: State> State for SetCipherSuite<S> {
+        type Members = S::Members;
+        type OriginalConvoId = S::OriginalConvoId;
+        type NewGroupId = S::NewGroupId;
+        type CipherSuite = Set<members::cipher_suite>;
         type GroupInfo = S::GroupInfo;
     }
     ///State transition - sets the `group_info` field to Set
@@ -578,9 +578,9 @@ pub mod bootstrap_reset_group_state {
     impl<S: State> sealed::Sealed for SetGroupInfo<S> {}
     impl<S: State> State for SetGroupInfo<S> {
         type Members = S::Members;
-        type CipherSuite = S::CipherSuite;
-        type NewGroupId = S::NewGroupId;
         type OriginalConvoId = S::OriginalConvoId;
+        type NewGroupId = S::NewGroupId;
+        type CipherSuite = S::CipherSuite;
         type GroupInfo = Set<members::group_info>;
     }
     /// Marker types for field names
@@ -588,12 +588,12 @@ pub mod bootstrap_reset_group_state {
     pub mod members {
         ///Marker type for the `members` field
         pub struct members(());
-        ///Marker type for the `cipher_suite` field
-        pub struct cipher_suite(());
-        ///Marker type for the `new_group_id` field
-        pub struct new_group_id(());
         ///Marker type for the `original_convo_id` field
         pub struct original_convo_id(());
+        ///Marker type for the `new_group_id` field
+        pub struct new_group_id(());
+        ///Marker type for the `cipher_suite` field
+        pub struct cipher_suite(());
         ///Marker type for the `group_info` field
         pub struct group_info(());
     }
@@ -831,9 +831,9 @@ impl<'a, S> BootstrapResetGroupBuilder<'a, S>
 where
     S: bootstrap_reset_group_state::State,
     S::Members: bootstrap_reset_group_state::IsSet,
-    S::CipherSuite: bootstrap_reset_group_state::IsSet,
-    S::NewGroupId: bootstrap_reset_group_state::IsSet,
     S::OriginalConvoId: bootstrap_reset_group_state::IsSet,
+    S::NewGroupId: bootstrap_reset_group_state::IsSet,
+    S::CipherSuite: bootstrap_reset_group_state::IsSet,
     S::GroupInfo: bootstrap_reset_group_state::IsSet,
 {
     /// Build the final struct

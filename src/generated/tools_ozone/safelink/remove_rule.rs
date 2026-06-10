@@ -20,7 +20,7 @@ pub struct RemoveRule<'a> {
     #[serde(borrow)]
     pub created_by: std::option::Option<jacquard_common::types::string::Did<'a>>,
     #[serde(borrow)]
-    pub pattern: crate::tools_ozone::safelink::PatternType<'a>,
+    pub pattern: crate::generated::tools_ozone::safelink::PatternType<'a>,
     /// The URL or domain to remove the rule for
     #[serde(borrow)]
     pub url: jacquard_common::CowStr<'a>,
@@ -76,7 +76,7 @@ pub struct RemoveRuleBuilder<'a, S: remove_rule_state::State> {
     __unsafe_private_named: (
         ::core::option::Option<jacquard_common::CowStr<'a>>,
         ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<crate::tools_ozone::safelink::PatternType<'a>>,
+        ::core::option::Option<crate::generated::tools_ozone::safelink::PatternType<'a>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
@@ -140,7 +140,7 @@ where
     /// Set the `pattern` field (required)
     pub fn pattern(
         mut self,
-        value: impl Into<crate::tools_ozone::safelink::PatternType<'a>>,
+        value: impl Into<crate::generated::tools_ozone::safelink::PatternType<'a>>,
     ) -> RemoveRuleBuilder<'a, remove_rule_state::SetPattern<S>> {
         self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
         RemoveRuleBuilder {
@@ -212,7 +212,7 @@ where
 pub struct RemoveRuleOutput<'a> {
     #[serde(flatten)]
     #[serde(borrow)]
-    pub value: crate::tools_ozone::safelink::Event<'a>,
+    pub value: crate::generated::tools_ozone::safelink::Event<'a>,
 }
 
 #[jacquard_derive::open_union]

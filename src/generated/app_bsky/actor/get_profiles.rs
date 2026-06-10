@@ -111,7 +111,7 @@ where
 #[serde(rename_all = "camelCase")]
 pub struct GetProfilesOutput<'a> {
     #[serde(borrow)]
-    pub profiles: Vec<crate::app_bsky::actor::ProfileViewDetailed<'a>>,
+    pub profiles: Vec<crate::generated::app_bsky::actor::ProfileViewDetailed<'a>>,
 }
 
 /// Response type for

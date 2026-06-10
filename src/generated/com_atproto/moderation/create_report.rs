@@ -13,14 +13,15 @@
 pub struct CreateReport<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub mod_tool: std::option::Option<crate::com_atproto::moderation::create_report::ModTool<'a>>,
+    pub mod_tool:
+        std::option::Option<crate::generated::com_atproto::moderation::create_report::ModTool<'a>>,
     /// Additional context about the content and violation.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub reason: std::option::Option<jacquard_common::CowStr<'a>>,
     /// Indicates the broad category of violation the report is for.
     #[serde(borrow)]
-    pub reason_type: crate::com_atproto::moderation::ReasonType<'a>,
+    pub reason_type: crate::generated::com_atproto::moderation::ReasonType<'a>,
     #[serde(borrow)]
     pub subject: CreateReportSubject<'a>,
 }
@@ -35,37 +36,37 @@ pub mod create_report_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type ReasonType;
         type Subject;
+        type ReasonType;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type ReasonType = Unset;
         type Subject = Unset;
-    }
-    ///State transition - sets the `reason_type` field to Set
-    pub struct SetReasonType<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetReasonType<S> {}
-    impl<S: State> State for SetReasonType<S> {
-        type ReasonType = Set<members::reason_type>;
-        type Subject = S::Subject;
+        type ReasonType = Unset;
     }
     ///State transition - sets the `subject` field to Set
     pub struct SetSubject<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetSubject<S> {}
     impl<S: State> State for SetSubject<S> {
-        type ReasonType = S::ReasonType;
         type Subject = Set<members::subject>;
+        type ReasonType = S::ReasonType;
+    }
+    ///State transition - sets the `reason_type` field to Set
+    pub struct SetReasonType<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetReasonType<S> {}
+    impl<S: State> State for SetReasonType<S> {
+        type Subject = S::Subject;
+        type ReasonType = Set<members::reason_type>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `reason_type` field
-        pub struct reason_type(());
         ///Marker type for the `subject` field
         pub struct subject(());
+        ///Marker type for the `reason_type` field
+        pub struct reason_type(());
     }
 }
 
@@ -73,9 +74,11 @@ pub mod create_report_state {
 pub struct CreateReportBuilder<'a, S: create_report_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
-        ::core::option::Option<crate::com_atproto::moderation::create_report::ModTool<'a>>,
+        ::core::option::Option<
+            crate::generated::com_atproto::moderation::create_report::ModTool<'a>,
+        >,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<crate::com_atproto::moderation::ReasonType<'a>>,
+        ::core::option::Option<crate::generated::com_atproto::moderation::ReasonType<'a>>,
         ::core::option::Option<CreateReportSubject<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
@@ -103,7 +106,7 @@ impl<'a, S: create_report_state::State> CreateReportBuilder<'a, S> {
     /// Set the `modTool` field (optional)
     pub fn mod_tool(
         mut self,
-        value: impl Into<Option<crate::com_atproto::moderation::create_report::ModTool<'a>>>,
+        value: impl Into<Option<crate::generated::com_atproto::moderation::create_report::ModTool<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.0 = value.into();
         self
@@ -111,7 +114,7 @@ impl<'a, S: create_report_state::State> CreateReportBuilder<'a, S> {
     /// Set the `modTool` field to an Option value (optional)
     pub fn maybe_mod_tool(
         mut self,
-        value: Option<crate::com_atproto::moderation::create_report::ModTool<'a>>,
+        value: Option<crate::generated::com_atproto::moderation::create_report::ModTool<'a>>,
     ) -> Self {
         self.__unsafe_private_named.0 = value;
         self
@@ -139,7 +142,7 @@ where
     /// Set the `reasonType` field (required)
     pub fn reason_type(
         mut self,
-        value: impl Into<crate::com_atproto::moderation::ReasonType<'a>>,
+        value: impl Into<crate::generated::com_atproto::moderation::ReasonType<'a>>,
     ) -> CreateReportBuilder<'a, create_report_state::SetReasonType<S>> {
         self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
         CreateReportBuilder {
@@ -172,8 +175,8 @@ where
 impl<'a, S> CreateReportBuilder<'a, S>
 where
     S: create_report_state::State,
-    S::ReasonType: create_report_state::IsSet,
     S::Subject: create_report_state::IsSet,
+    S::ReasonType: create_report_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> CreateReport<'a> {
@@ -211,9 +214,9 @@ where
 #[serde(bound(deserialize = "'de: 'a"))]
 pub enum CreateReportSubject<'a> {
     #[serde(rename = "com.atproto.admin.defs#repoRef")]
-    RepoRef(Box<crate::com_atproto::admin::RepoRef<'a>>),
+    RepoRef(Box<crate::generated::com_atproto::admin::RepoRef<'a>>),
     #[serde(rename = "com.atproto.repo.strongRef")]
-    StrongRef(Box<crate::com_atproto::repo::strong_ref::StrongRef<'a>>),
+    StrongRef(Box<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>),
 }
 
 #[jacquard_derive::lexicon]
@@ -228,7 +231,7 @@ pub struct CreateReportOutput<'a> {
     #[serde(borrow)]
     pub reason: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(borrow)]
-    pub reason_type: crate::com_atproto::moderation::ReasonType<'a>,
+    pub reason_type: crate::generated::com_atproto::moderation::ReasonType<'a>,
     #[serde(borrow)]
     pub reported_by: jacquard_common::types::string::Did<'a>,
     #[serde(borrow)]
@@ -243,9 +246,9 @@ pub struct CreateReportOutput<'a> {
 #[serde(bound(deserialize = "'de: 'a"))]
 pub enum CreateReportOutputSubject<'a> {
     #[serde(rename = "com.atproto.admin.defs#repoRef")]
-    RepoRef(Box<crate::com_atproto::admin::RepoRef<'a>>),
+    RepoRef(Box<crate::generated::com_atproto::admin::RepoRef<'a>>),
     #[serde(rename = "com.atproto.repo.strongRef")]
-    StrongRef(Box<crate::com_atproto::repo::strong_ref::StrongRef<'a>>),
+    StrongRef(Box<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>),
 }
 
 /// Response type for

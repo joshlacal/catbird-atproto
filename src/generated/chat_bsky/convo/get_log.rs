@@ -158,6 +158,16 @@ pub enum GetLogOutputLogsItem<'a> {
     LogRejectJoinRequest(Box<crate::generated::chat_bsky::convo::LogRejectJoinRequest<'a>>),
     #[serde(rename = "chat.bsky.convo.defs#logOutgoingJoinRequest")]
     LogOutgoingJoinRequest(Box<crate::generated::chat_bsky::convo::LogOutgoingJoinRequest<'a>>),
+    #[serde(rename = "chat.bsky.convo.defs#logWithdrawIncomingJoinRequest")]
+    LogWithdrawIncomingJoinRequest(
+        Box<crate::generated::chat_bsky::convo::LogWithdrawIncomingJoinRequest<'a>>,
+    ),
+    #[serde(rename = "chat.bsky.convo.defs#logWithdrawOutgoingJoinRequest")]
+    LogWithdrawOutgoingJoinRequest(
+        Box<crate::generated::chat_bsky::convo::LogWithdrawOutgoingJoinRequest<'a>>,
+    ),
+    #[serde(rename = "chat.bsky.convo.defs#logReadJoinRequests")]
+    LogReadJoinRequests(Box<crate::generated::chat_bsky::convo::LogReadJoinRequests<'a>>),
 }
 
 /// Response type for

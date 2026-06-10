@@ -97,7 +97,7 @@ where
 #[serde(rename_all = "camelCase")]
 pub struct GetValidBadgesOutput<'a> {
     #[serde(borrow)]
-    pub badges: Vec<crate::place_stream::badge::BadgeView<'a>>,
+    pub badges: Vec<crate::generated::place_stream::badge::BadgeView<'a>>,
 }
 
 /// Response type for

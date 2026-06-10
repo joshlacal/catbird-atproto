@@ -52,7 +52,7 @@ pub struct UpdateTemplate<'a> {
 pub struct UpdateTemplateOutput<'a> {
     #[serde(flatten)]
     #[serde(borrow)]
-    pub value: crate::tools_ozone::communication::TemplateView<'a>,
+    pub value: crate::generated::tools_ozone::communication::TemplateView<'a>,
 }
 
 #[jacquard_derive::open_union]

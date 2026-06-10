@@ -31,51 +31,51 @@ pub mod reconcile_key_packages_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type LocalHashes;
         type DeviceId;
         type SchemaVersion;
+        type LocalHashes;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type LocalHashes = Unset;
         type DeviceId = Unset;
         type SchemaVersion = Unset;
-    }
-    ///State transition - sets the `local_hashes` field to Set
-    pub struct SetLocalHashes<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetLocalHashes<S> {}
-    impl<S: State> State for SetLocalHashes<S> {
-        type LocalHashes = Set<members::local_hashes>;
-        type DeviceId = S::DeviceId;
-        type SchemaVersion = S::SchemaVersion;
+        type LocalHashes = Unset;
     }
     ///State transition - sets the `device_id` field to Set
     pub struct SetDeviceId<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetDeviceId<S> {}
     impl<S: State> State for SetDeviceId<S> {
-        type LocalHashes = S::LocalHashes;
         type DeviceId = Set<members::device_id>;
         type SchemaVersion = S::SchemaVersion;
+        type LocalHashes = S::LocalHashes;
     }
     ///State transition - sets the `schema_version` field to Set
     pub struct SetSchemaVersion<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetSchemaVersion<S> {}
     impl<S: State> State for SetSchemaVersion<S> {
-        type LocalHashes = S::LocalHashes;
         type DeviceId = S::DeviceId;
         type SchemaVersion = Set<members::schema_version>;
+        type LocalHashes = S::LocalHashes;
+    }
+    ///State transition - sets the `local_hashes` field to Set
+    pub struct SetLocalHashes<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetLocalHashes<S> {}
+    impl<S: State> State for SetLocalHashes<S> {
+        type DeviceId = S::DeviceId;
+        type SchemaVersion = S::SchemaVersion;
+        type LocalHashes = Set<members::local_hashes>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `local_hashes` field
-        pub struct local_hashes(());
         ///Marker type for the `device_id` field
         pub struct device_id(());
         ///Marker type for the `schema_version` field
         pub struct schema_version(());
+        ///Marker type for the `local_hashes` field
+        pub struct local_hashes(());
     }
 }
 
@@ -168,9 +168,9 @@ where
 impl<'a, S> ReconcileKeyPackagesBuilder<'a, S>
 where
     S: reconcile_key_packages_state::State,
-    S::LocalHashes: reconcile_key_packages_state::IsSet,
     S::DeviceId: reconcile_key_packages_state::IsSet,
     S::SchemaVersion: reconcile_key_packages_state::IsSet,
+    S::LocalHashes: reconcile_key_packages_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> ReconcileKeyPackages<'a> {

@@ -151,9 +151,9 @@ pub struct GetListOutput<'a> {
     #[serde(borrow)]
     pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(borrow)]
-    pub items: Vec<crate::app_bsky::graph::ListItemView<'a>>,
+    pub items: Vec<crate::generated::app_bsky::graph::ListItemView<'a>>,
     #[serde(borrow)]
-    pub list: crate::app_bsky::graph::ListView<'a>,
+    pub list: crate::generated::app_bsky::graph::ListView<'a>,
 }
 
 /// Response type for

@@ -130,7 +130,7 @@ where
 #[serde(rename_all = "camelCase")]
 pub struct GetInviteCodesOutput<'a> {
     #[serde(borrow)]
-    pub codes: Vec<crate::com_atproto::server::InviteCode<'a>>,
+    pub codes: Vec<crate::generated::com_atproto::server::InviteCode<'a>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,

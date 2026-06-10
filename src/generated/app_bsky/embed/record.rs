@@ -12,7 +12,7 @@
 #[serde(rename_all = "camelCase")]
 pub struct Record<'a> {
     #[serde(borrow)]
-    pub record: crate::com_atproto::repo::strong_ref::StrongRef<'a>,
+    pub record: crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>,
 }
 
 pub mod record_state {
@@ -51,7 +51,7 @@ pub mod record_state {
 pub struct RecordBuilder<'a, S: record_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named:
-        (::core::option::Option<crate::com_atproto::repo::strong_ref::StrongRef<'a>>,),
+        (::core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
 
@@ -81,7 +81,7 @@ where
     /// Set the `record` field (required)
     pub fn record(
         mut self,
-        value: impl Into<crate::com_atproto::repo::strong_ref::StrongRef<'a>>,
+        value: impl Into<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,
     ) -> RecordBuilder<'a, record_state::SetRecord<S>> {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         RecordBuilder {
@@ -693,21 +693,21 @@ where
 #[serde(bound(deserialize = "'de: 'a"))]
 pub enum ViewUnionRecord<'a> {
     #[serde(rename = "app.bsky.embed.record#viewRecord")]
-    ViewRecord(Box<crate::app_bsky::embed::record::ViewRecord<'a>>),
+    ViewRecord(Box<crate::generated::app_bsky::embed::record::ViewRecord<'a>>),
     #[serde(rename = "app.bsky.embed.record#viewNotFound")]
-    ViewNotFound(Box<crate::app_bsky::embed::record::ViewNotFound<'a>>),
+    ViewNotFound(Box<crate::generated::app_bsky::embed::record::ViewNotFound<'a>>),
     #[serde(rename = "app.bsky.embed.record#viewBlocked")]
-    ViewBlocked(Box<crate::app_bsky::embed::record::ViewBlocked<'a>>),
+    ViewBlocked(Box<crate::generated::app_bsky::embed::record::ViewBlocked<'a>>),
     #[serde(rename = "app.bsky.embed.record#viewDetached")]
-    ViewDetached(Box<crate::app_bsky::embed::record::ViewDetached<'a>>),
+    ViewDetached(Box<crate::generated::app_bsky::embed::record::ViewDetached<'a>>),
     #[serde(rename = "app.bsky.feed.defs#generatorView")]
-    GeneratorView(Box<crate::app_bsky::feed::GeneratorView<'a>>),
+    GeneratorView(Box<crate::generated::app_bsky::feed::GeneratorView<'a>>),
     #[serde(rename = "app.bsky.graph.defs#listView")]
-    ListView(Box<crate::app_bsky::graph::ListView<'a>>),
+    ListView(Box<crate::generated::app_bsky::graph::ListView<'a>>),
     #[serde(rename = "app.bsky.labeler.defs#labelerView")]
-    LabelerView(Box<crate::app_bsky::labeler::LabelerView<'a>>),
+    LabelerView(Box<crate::generated::app_bsky::labeler::LabelerView<'a>>),
     #[serde(rename = "app.bsky.graph.defs#starterPackViewBasic")]
-    StarterPackViewBasic(Box<crate::app_bsky::graph::StarterPackViewBasic<'a>>),
+    StarterPackViewBasic(Box<crate::generated::app_bsky::graph::StarterPackViewBasic<'a>>),
 }
 
 impl<'a> ::jacquard_lexicon::schema::LexiconSchema for View<'a> {
@@ -734,7 +734,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for View<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct ViewBlocked<'a> {
     #[serde(borrow)]
-    pub author: crate::app_bsky::feed::BlockedAuthor<'a>,
+    pub author: crate::generated::app_bsky::feed::BlockedAuthor<'a>,
     pub blocked: bool,
     #[serde(borrow)]
     pub uri: jacquard_common::types::string::AtUri<'a>,
@@ -750,49 +750,49 @@ pub mod view_blocked_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Uri;
         type Author;
+        type Uri;
         type Blocked;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Uri = Unset;
         type Author = Unset;
+        type Uri = Unset;
         type Blocked = Unset;
-    }
-    ///State transition - sets the `uri` field to Set
-    pub struct SetUri<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUri<S> {}
-    impl<S: State> State for SetUri<S> {
-        type Uri = Set<members::uri>;
-        type Author = S::Author;
-        type Blocked = S::Blocked;
     }
     ///State transition - sets the `author` field to Set
     pub struct SetAuthor<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetAuthor<S> {}
     impl<S: State> State for SetAuthor<S> {
-        type Uri = S::Uri;
         type Author = Set<members::author>;
+        type Uri = S::Uri;
+        type Blocked = S::Blocked;
+    }
+    ///State transition - sets the `uri` field to Set
+    pub struct SetUri<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetUri<S> {}
+    impl<S: State> State for SetUri<S> {
+        type Author = S::Author;
+        type Uri = Set<members::uri>;
         type Blocked = S::Blocked;
     }
     ///State transition - sets the `blocked` field to Set
     pub struct SetBlocked<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetBlocked<S> {}
     impl<S: State> State for SetBlocked<S> {
-        type Uri = S::Uri;
         type Author = S::Author;
+        type Uri = S::Uri;
         type Blocked = Set<members::blocked>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `uri` field
-        pub struct uri(());
         ///Marker type for the `author` field
         pub struct author(());
+        ///Marker type for the `uri` field
+        pub struct uri(());
         ///Marker type for the `blocked` field
         pub struct blocked(());
     }
@@ -802,7 +802,7 @@ pub mod view_blocked_state {
 pub struct ViewBlockedBuilder<'a, S: view_blocked_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
-        ::core::option::Option<crate::app_bsky::feed::BlockedAuthor<'a>>,
+        ::core::option::Option<crate::generated::app_bsky::feed::BlockedAuthor<'a>>,
         ::core::option::Option<bool>,
         ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
     ),
@@ -835,7 +835,7 @@ where
     /// Set the `author` field (required)
     pub fn author(
         mut self,
-        value: impl Into<crate::app_bsky::feed::BlockedAuthor<'a>>,
+        value: impl Into<crate::generated::app_bsky::feed::BlockedAuthor<'a>>,
     ) -> ViewBlockedBuilder<'a, view_blocked_state::SetAuthor<S>> {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         ViewBlockedBuilder {
@@ -887,8 +887,8 @@ where
 impl<'a, S> ViewBlockedBuilder<'a, S>
 where
     S: view_blocked_state::State,
-    S::Uri: view_blocked_state::IsSet,
     S::Author: view_blocked_state::IsSet,
+    S::Uri: view_blocked_state::IsSet,
     S::Blocked: view_blocked_state::IsSet,
 {
     /// Build the final struct
@@ -1277,7 +1277,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ViewNotFound<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct ViewRecord<'a> {
     #[serde(borrow)]
-    pub author: crate::app_bsky::actor::ProfileViewBasic<'a>,
+    pub author: crate::generated::app_bsky::actor::ProfileViewBasic<'a>,
     #[serde(borrow)]
     pub cid: jacquard_common::types::string::Cid<'a>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
@@ -1286,7 +1286,7 @@ pub struct ViewRecord<'a> {
     pub indexed_at: jacquard_common::types::string::Datetime,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub labels: std::option::Option<Vec<crate::com_atproto::label::Label<'a>>>,
+    pub labels: std::option::Option<Vec<crate::generated::com_atproto::label::Label<'a>>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     pub like_count: std::option::Option<i64>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
@@ -1312,85 +1312,85 @@ pub mod view_record_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Author;
-        type IndexedAt;
         type Value;
         type Uri;
         type Cid;
+        type Author;
+        type IndexedAt;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Author = Unset;
-        type IndexedAt = Unset;
         type Value = Unset;
         type Uri = Unset;
         type Cid = Unset;
-    }
-    ///State transition - sets the `author` field to Set
-    pub struct SetAuthor<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetAuthor<S> {}
-    impl<S: State> State for SetAuthor<S> {
-        type Author = Set<members::author>;
-        type IndexedAt = S::IndexedAt;
-        type Value = S::Value;
-        type Uri = S::Uri;
-        type Cid = S::Cid;
-    }
-    ///State transition - sets the `indexed_at` field to Set
-    pub struct SetIndexedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetIndexedAt<S> {}
-    impl<S: State> State for SetIndexedAt<S> {
-        type Author = S::Author;
-        type IndexedAt = Set<members::indexed_at>;
-        type Value = S::Value;
-        type Uri = S::Uri;
-        type Cid = S::Cid;
+        type Author = Unset;
+        type IndexedAt = Unset;
     }
     ///State transition - sets the `value` field to Set
     pub struct SetValue<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetValue<S> {}
     impl<S: State> State for SetValue<S> {
-        type Author = S::Author;
-        type IndexedAt = S::IndexedAt;
         type Value = Set<members::value>;
         type Uri = S::Uri;
         type Cid = S::Cid;
+        type Author = S::Author;
+        type IndexedAt = S::IndexedAt;
     }
     ///State transition - sets the `uri` field to Set
     pub struct SetUri<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetUri<S> {}
     impl<S: State> State for SetUri<S> {
-        type Author = S::Author;
-        type IndexedAt = S::IndexedAt;
         type Value = S::Value;
         type Uri = Set<members::uri>;
         type Cid = S::Cid;
+        type Author = S::Author;
+        type IndexedAt = S::IndexedAt;
     }
     ///State transition - sets the `cid` field to Set
     pub struct SetCid<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCid<S> {}
     impl<S: State> State for SetCid<S> {
-        type Author = S::Author;
-        type IndexedAt = S::IndexedAt;
         type Value = S::Value;
         type Uri = S::Uri;
         type Cid = Set<members::cid>;
+        type Author = S::Author;
+        type IndexedAt = S::IndexedAt;
+    }
+    ///State transition - sets the `author` field to Set
+    pub struct SetAuthor<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetAuthor<S> {}
+    impl<S: State> State for SetAuthor<S> {
+        type Value = S::Value;
+        type Uri = S::Uri;
+        type Cid = S::Cid;
+        type Author = Set<members::author>;
+        type IndexedAt = S::IndexedAt;
+    }
+    ///State transition - sets the `indexed_at` field to Set
+    pub struct SetIndexedAt<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetIndexedAt<S> {}
+    impl<S: State> State for SetIndexedAt<S> {
+        type Value = S::Value;
+        type Uri = S::Uri;
+        type Cid = S::Cid;
+        type Author = S::Author;
+        type IndexedAt = Set<members::indexed_at>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `author` field
-        pub struct author(());
-        ///Marker type for the `indexed_at` field
-        pub struct indexed_at(());
         ///Marker type for the `value` field
         pub struct value(());
         ///Marker type for the `uri` field
         pub struct uri(());
         ///Marker type for the `cid` field
         pub struct cid(());
+        ///Marker type for the `author` field
+        pub struct author(());
+        ///Marker type for the `indexed_at` field
+        pub struct indexed_at(());
     }
 }
 
@@ -1398,11 +1398,11 @@ pub mod view_record_state {
 pub struct ViewRecordBuilder<'a, S: view_record_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
-        ::core::option::Option<crate::app_bsky::actor::ProfileViewBasic<'a>>,
+        ::core::option::Option<crate::generated::app_bsky::actor::ProfileViewBasic<'a>>,
         ::core::option::Option<jacquard_common::types::string::Cid<'a>>,
         ::core::option::Option<Vec<ViewRecordEmbedsItem<'a>>>,
         ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<Vec<crate::com_atproto::label::Label<'a>>>,
+        ::core::option::Option<Vec<crate::generated::com_atproto::label::Label<'a>>>,
         ::core::option::Option<i64>,
         ::core::option::Option<i64>,
         ::core::option::Option<i64>,
@@ -1441,7 +1441,7 @@ where
     /// Set the `author` field (required)
     pub fn author(
         mut self,
-        value: impl Into<crate::app_bsky::actor::ProfileViewBasic<'a>>,
+        value: impl Into<crate::generated::app_bsky::actor::ProfileViewBasic<'a>>,
     ) -> ViewRecordBuilder<'a, view_record_state::SetAuthor<S>> {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         ViewRecordBuilder {
@@ -1507,7 +1507,7 @@ impl<'a, S: view_record_state::State> ViewRecordBuilder<'a, S> {
     /// Set the `labels` field (optional)
     pub fn labels(
         mut self,
-        value: impl Into<Option<Vec<crate::com_atproto::label::Label<'a>>>>,
+        value: impl Into<Option<Vec<crate::generated::com_atproto::label::Label<'a>>>>,
     ) -> Self {
         self.__unsafe_private_named.4 = value.into();
         self
@@ -1515,7 +1515,7 @@ impl<'a, S: view_record_state::State> ViewRecordBuilder<'a, S> {
     /// Set the `labels` field to an Option value (optional)
     pub fn maybe_labels(
         mut self,
-        value: Option<Vec<crate::com_atproto::label::Label<'a>>>,
+        value: Option<Vec<crate::generated::com_atproto::label::Label<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.4 = value;
         self
@@ -1615,11 +1615,11 @@ where
 impl<'a, S> ViewRecordBuilder<'a, S>
 where
     S: view_record_state::State,
-    S::Author: view_record_state::IsSet,
-    S::IndexedAt: view_record_state::IsSet,
     S::Value: view_record_state::IsSet,
     S::Uri: view_record_state::IsSet,
     S::Cid: view_record_state::IsSet,
+    S::Author: view_record_state::IsSet,
+    S::IndexedAt: view_record_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> ViewRecord<'a> {
@@ -1671,15 +1671,15 @@ where
 #[serde(bound(deserialize = "'de: 'a"))]
 pub enum ViewRecordEmbedsItem<'a> {
     #[serde(rename = "app.bsky.embed.images#view")]
-    ImagesView(Box<crate::app_bsky::embed::images::View<'a>>),
+    ImagesView(Box<crate::generated::app_bsky::embed::images::View<'a>>),
     #[serde(rename = "app.bsky.embed.video#view")]
-    VideoView(Box<crate::app_bsky::embed::video::View<'a>>),
+    VideoView(Box<crate::generated::app_bsky::embed::video::View<'a>>),
     #[serde(rename = "app.bsky.embed.external#view")]
-    ExternalView(Box<crate::app_bsky::embed::external::View<'a>>),
+    ExternalView(Box<crate::generated::app_bsky::embed::external::View<'a>>),
     #[serde(rename = "app.bsky.embed.record#view")]
-    View(Box<crate::app_bsky::embed::record::View<'a>>),
+    View(Box<crate::generated::app_bsky::embed::record::View<'a>>),
     #[serde(rename = "app.bsky.embed.recordWithMedia#view")]
-    RecordWithMediaView(Box<crate::app_bsky::embed::record_with_media::View<'a>>),
+    RecordWithMediaView(Box<crate::generated::app_bsky::embed::record_with_media::View<'a>>),
 }
 
 impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ViewRecord<'a> {

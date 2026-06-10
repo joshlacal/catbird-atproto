@@ -16,7 +16,7 @@ pub struct Image<'a> {
     pub alt: jacquard_common::CowStr<'a>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub aspect_ratio: std::option::Option<crate::app_bsky::embed::AspectRatio<'a>>,
+    pub aspect_ratio: std::option::Option<crate::generated::app_bsky::embed::AspectRatio<'a>>,
     #[serde(borrow)]
     pub image: jacquard_common::types::blob::BlobRef<'a>,
 }
@@ -70,7 +70,7 @@ pub struct ImageBuilder<'a, S: image_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
         ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<crate::app_bsky::embed::AspectRatio<'a>>,
+        ::core::option::Option<crate::generated::app_bsky::embed::AspectRatio<'a>>,
         ::core::option::Option<jacquard_common::types::blob::BlobRef<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
@@ -117,7 +117,7 @@ impl<'a, S: image_state::State> ImageBuilder<'a, S> {
     /// Set the `aspectRatio` field (optional)
     pub fn aspect_ratio(
         mut self,
-        value: impl Into<Option<crate::app_bsky::embed::AspectRatio<'a>>>,
+        value: impl Into<Option<crate::generated::app_bsky::embed::AspectRatio<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.1 = value.into();
         self
@@ -125,7 +125,7 @@ impl<'a, S: image_state::State> ImageBuilder<'a, S> {
     /// Set the `aspectRatio` field to an Option value (optional)
     pub fn maybe_aspect_ratio(
         mut self,
-        value: Option<crate::app_bsky::embed::AspectRatio<'a>>,
+        value: Option<crate::generated::app_bsky::embed::AspectRatio<'a>>,
     ) -> Self {
         self.__unsafe_private_named.1 = value;
         self
@@ -439,7 +439,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Image<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct Images<'a> {
     #[serde(borrow)]
-    pub images: Vec<crate::app_bsky::embed::images::Image<'a>>,
+    pub images: Vec<crate::generated::app_bsky::embed::images::Image<'a>>,
 }
 
 pub mod images_state {
@@ -478,7 +478,7 @@ pub mod images_state {
 pub struct ImagesBuilder<'a, S: images_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named:
-        (::core::option::Option<Vec<crate::app_bsky::embed::images::Image<'a>>>,),
+        (::core::option::Option<Vec<crate::generated::app_bsky::embed::images::Image<'a>>>,),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
 
@@ -508,7 +508,7 @@ where
     /// Set the `images` field (required)
     pub fn images(
         mut self,
-        value: impl Into<Vec<crate::app_bsky::embed::images::Image<'a>>>,
+        value: impl Into<Vec<crate::generated::app_bsky::embed::images::Image<'a>>>,
     ) -> ImagesBuilder<'a, images_state::SetImages<S>> {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         ImagesBuilder {
@@ -581,7 +581,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Images<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct View<'a> {
     #[serde(borrow)]
-    pub images: Vec<crate::app_bsky::embed::images::ViewImage<'a>>,
+    pub images: Vec<crate::generated::app_bsky::embed::images::ViewImage<'a>>,
 }
 
 pub mod view_state {
@@ -620,7 +620,7 @@ pub mod view_state {
 pub struct ViewBuilder<'a, S: view_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named:
-        (::core::option::Option<Vec<crate::app_bsky::embed::images::ViewImage<'a>>>,),
+        (::core::option::Option<Vec<crate::generated::app_bsky::embed::images::ViewImage<'a>>>,),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
 
@@ -650,7 +650,7 @@ where
     /// Set the `images` field (required)
     pub fn images(
         mut self,
-        value: impl Into<Vec<crate::app_bsky::embed::images::ViewImage<'a>>>,
+        value: impl Into<Vec<crate::generated::app_bsky::embed::images::ViewImage<'a>>>,
     ) -> ViewBuilder<'a, view_state::SetImages<S>> {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         ViewBuilder {
@@ -727,7 +727,7 @@ pub struct ViewImage<'a> {
     pub alt: jacquard_common::CowStr<'a>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub aspect_ratio: std::option::Option<crate::app_bsky::embed::AspectRatio<'a>>,
+    pub aspect_ratio: std::option::Option<crate::generated::app_bsky::embed::AspectRatio<'a>>,
     /// Fully-qualified URL where a large version of the image can be fetched. May or may not be the exact original blob. For example, CDN location provided by the App View.
     #[serde(borrow)]
     pub fullsize: jacquard_common::types::string::Uri<'a>,
@@ -746,51 +746,51 @@ pub mod view_image_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
+        type Alt;
         type Fullsize;
         type Thumb;
-        type Alt;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
+        type Alt = Unset;
         type Fullsize = Unset;
         type Thumb = Unset;
-        type Alt = Unset;
-    }
-    ///State transition - sets the `fullsize` field to Set
-    pub struct SetFullsize<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetFullsize<S> {}
-    impl<S: State> State for SetFullsize<S> {
-        type Fullsize = Set<members::fullsize>;
-        type Thumb = S::Thumb;
-        type Alt = S::Alt;
-    }
-    ///State transition - sets the `thumb` field to Set
-    pub struct SetThumb<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetThumb<S> {}
-    impl<S: State> State for SetThumb<S> {
-        type Fullsize = S::Fullsize;
-        type Thumb = Set<members::thumb>;
-        type Alt = S::Alt;
     }
     ///State transition - sets the `alt` field to Set
     pub struct SetAlt<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetAlt<S> {}
     impl<S: State> State for SetAlt<S> {
+        type Alt = Set<members::alt>;
         type Fullsize = S::Fullsize;
         type Thumb = S::Thumb;
-        type Alt = Set<members::alt>;
+    }
+    ///State transition - sets the `fullsize` field to Set
+    pub struct SetFullsize<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetFullsize<S> {}
+    impl<S: State> State for SetFullsize<S> {
+        type Alt = S::Alt;
+        type Fullsize = Set<members::fullsize>;
+        type Thumb = S::Thumb;
+    }
+    ///State transition - sets the `thumb` field to Set
+    pub struct SetThumb<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetThumb<S> {}
+    impl<S: State> State for SetThumb<S> {
+        type Alt = S::Alt;
+        type Fullsize = S::Fullsize;
+        type Thumb = Set<members::thumb>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
+        ///Marker type for the `alt` field
+        pub struct alt(());
         ///Marker type for the `fullsize` field
         pub struct fullsize(());
         ///Marker type for the `thumb` field
         pub struct thumb(());
-        ///Marker type for the `alt` field
-        pub struct alt(());
     }
 }
 
@@ -799,7 +799,7 @@ pub struct ViewImageBuilder<'a, S: view_image_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
         ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<crate::app_bsky::embed::AspectRatio<'a>>,
+        ::core::option::Option<crate::generated::app_bsky::embed::AspectRatio<'a>>,
         ::core::option::Option<jacquard_common::types::string::Uri<'a>>,
         ::core::option::Option<jacquard_common::types::string::Uri<'a>>,
     ),
@@ -847,7 +847,7 @@ impl<'a, S: view_image_state::State> ViewImageBuilder<'a, S> {
     /// Set the `aspectRatio` field (optional)
     pub fn aspect_ratio(
         mut self,
-        value: impl Into<Option<crate::app_bsky::embed::AspectRatio<'a>>>,
+        value: impl Into<Option<crate::generated::app_bsky::embed::AspectRatio<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.1 = value.into();
         self
@@ -855,7 +855,7 @@ impl<'a, S: view_image_state::State> ViewImageBuilder<'a, S> {
     /// Set the `aspectRatio` field to an Option value (optional)
     pub fn maybe_aspect_ratio(
         mut self,
-        value: Option<crate::app_bsky::embed::AspectRatio<'a>>,
+        value: Option<crate::generated::app_bsky::embed::AspectRatio<'a>>,
     ) -> Self {
         self.__unsafe_private_named.1 = value;
         self
@@ -903,9 +903,9 @@ where
 impl<'a, S> ViewImageBuilder<'a, S>
 where
     S: view_image_state::State,
+    S::Alt: view_image_state::IsSet,
     S::Fullsize: view_image_state::IsSet,
     S::Thumb: view_image_state::IsSet,
-    S::Alt: view_image_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> ViewImage<'a> {

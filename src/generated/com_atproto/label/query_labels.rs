@@ -175,7 +175,7 @@ pub struct QueryLabelsOutput<'a> {
     #[serde(borrow)]
     pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(borrow)]
-    pub labels: Vec<crate::com_atproto::label::Label<'a>>,
+    pub labels: Vec<crate::generated::com_atproto::label::Label<'a>>,
 }
 
 /// Response type for
