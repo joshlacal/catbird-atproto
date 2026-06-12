@@ -18,10 +18,10 @@ pub struct LabelerPolicies<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub label_value_definitions:
-        std::option::Option<Vec<crate::com_atproto::label::LabelValueDefinition<'a>>>,
+        std::option::Option<Vec<crate::generated::com_atproto::label::LabelValueDefinition<'a>>>,
     /// The label values which this labeler publishes. May include global or custom labels.
     #[serde(borrow)]
-    pub label_values: Vec<crate::com_atproto::label::LabelValue<'a>>,
+    pub label_values: Vec<crate::generated::com_atproto::label::LabelValue<'a>>,
 }
 
 pub mod labeler_policies_state {
@@ -60,8 +60,8 @@ pub mod labeler_policies_state {
 pub struct LabelerPoliciesBuilder<'a, S: labeler_policies_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
-        ::core::option::Option<Vec<crate::com_atproto::label::LabelValueDefinition<'a>>>,
-        ::core::option::Option<Vec<crate::com_atproto::label::LabelValue<'a>>>,
+        ::core::option::Option<Vec<crate::generated::com_atproto::label::LabelValueDefinition<'a>>>,
+        ::core::option::Option<Vec<crate::generated::com_atproto::label::LabelValue<'a>>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
@@ -88,7 +88,7 @@ impl<'a, S: labeler_policies_state::State> LabelerPoliciesBuilder<'a, S> {
     /// Set the `labelValueDefinitions` field (optional)
     pub fn label_value_definitions(
         mut self,
-        value: impl Into<Option<Vec<crate::com_atproto::label::LabelValueDefinition<'a>>>>,
+        value: impl Into<Option<Vec<crate::generated::com_atproto::label::LabelValueDefinition<'a>>>>,
     ) -> Self {
         self.__unsafe_private_named.0 = value.into();
         self
@@ -96,7 +96,7 @@ impl<'a, S: labeler_policies_state::State> LabelerPoliciesBuilder<'a, S> {
     /// Set the `labelValueDefinitions` field to an Option value (optional)
     pub fn maybe_label_value_definitions(
         mut self,
-        value: Option<Vec<crate::com_atproto::label::LabelValueDefinition<'a>>>,
+        value: Option<Vec<crate::generated::com_atproto::label::LabelValueDefinition<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.0 = value;
         self
@@ -111,7 +111,7 @@ where
     /// Set the `labelValues` field (required)
     pub fn label_values(
         mut self,
-        value: impl Into<Vec<crate::com_atproto::label::LabelValue<'a>>>,
+        value: impl Into<Vec<crate::generated::com_atproto::label::LabelValue<'a>>>,
     ) -> LabelerPoliciesBuilder<'a, labeler_policies_state::SetLabelValues<S>> {
         self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
         LabelerPoliciesBuilder {
@@ -607,18 +607,18 @@ pub struct LabelerView<'a> {
     #[serde(borrow)]
     pub cid: jacquard_common::types::string::Cid<'a>,
     #[serde(borrow)]
-    pub creator: crate::app_bsky::actor::ProfileView<'a>,
+    pub creator: crate::generated::app_bsky::actor::ProfileView<'a>,
     pub indexed_at: jacquard_common::types::string::Datetime,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub labels: std::option::Option<Vec<crate::com_atproto::label::Label<'a>>>,
+    pub labels: std::option::Option<Vec<crate::generated::com_atproto::label::Label<'a>>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     pub like_count: std::option::Option<i64>,
     #[serde(borrow)]
     pub uri: jacquard_common::types::string::AtUri<'a>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub viewer: std::option::Option<crate::app_bsky::labeler::LabelerViewerState<'a>>,
+    pub viewer: std::option::Option<crate::generated::app_bsky::labeler::LabelerViewerState<'a>>,
 }
 
 pub mod labeler_view_state {
@@ -631,67 +631,67 @@ pub mod labeler_view_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
+        type Creator;
+        type Uri;
         type IndexedAt;
         type Cid;
-        type Uri;
-        type Creator;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
+        type Creator = Unset;
+        type Uri = Unset;
         type IndexedAt = Unset;
         type Cid = Unset;
-        type Uri = Unset;
-        type Creator = Unset;
-    }
-    ///State transition - sets the `indexed_at` field to Set
-    pub struct SetIndexedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetIndexedAt<S> {}
-    impl<S: State> State for SetIndexedAt<S> {
-        type IndexedAt = Set<members::indexed_at>;
-        type Cid = S::Cid;
-        type Uri = S::Uri;
-        type Creator = S::Creator;
-    }
-    ///State transition - sets the `cid` field to Set
-    pub struct SetCid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCid<S> {}
-    impl<S: State> State for SetCid<S> {
-        type IndexedAt = S::IndexedAt;
-        type Cid = Set<members::cid>;
-        type Uri = S::Uri;
-        type Creator = S::Creator;
-    }
-    ///State transition - sets the `uri` field to Set
-    pub struct SetUri<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUri<S> {}
-    impl<S: State> State for SetUri<S> {
-        type IndexedAt = S::IndexedAt;
-        type Cid = S::Cid;
-        type Uri = Set<members::uri>;
-        type Creator = S::Creator;
     }
     ///State transition - sets the `creator` field to Set
     pub struct SetCreator<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCreator<S> {}
     impl<S: State> State for SetCreator<S> {
+        type Creator = Set<members::creator>;
+        type Uri = S::Uri;
         type IndexedAt = S::IndexedAt;
         type Cid = S::Cid;
+    }
+    ///State transition - sets the `uri` field to Set
+    pub struct SetUri<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetUri<S> {}
+    impl<S: State> State for SetUri<S> {
+        type Creator = S::Creator;
+        type Uri = Set<members::uri>;
+        type IndexedAt = S::IndexedAt;
+        type Cid = S::Cid;
+    }
+    ///State transition - sets the `indexed_at` field to Set
+    pub struct SetIndexedAt<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetIndexedAt<S> {}
+    impl<S: State> State for SetIndexedAt<S> {
+        type Creator = S::Creator;
         type Uri = S::Uri;
-        type Creator = Set<members::creator>;
+        type IndexedAt = Set<members::indexed_at>;
+        type Cid = S::Cid;
+    }
+    ///State transition - sets the `cid` field to Set
+    pub struct SetCid<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCid<S> {}
+    impl<S: State> State for SetCid<S> {
+        type Creator = S::Creator;
+        type Uri = S::Uri;
+        type IndexedAt = S::IndexedAt;
+        type Cid = Set<members::cid>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
+        ///Marker type for the `creator` field
+        pub struct creator(());
+        ///Marker type for the `uri` field
+        pub struct uri(());
         ///Marker type for the `indexed_at` field
         pub struct indexed_at(());
         ///Marker type for the `cid` field
         pub struct cid(());
-        ///Marker type for the `uri` field
-        pub struct uri(());
-        ///Marker type for the `creator` field
-        pub struct creator(());
     }
 }
 
@@ -700,12 +700,12 @@ pub struct LabelerViewBuilder<'a, S: labeler_view_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
         ::core::option::Option<jacquard_common::types::string::Cid<'a>>,
-        ::core::option::Option<crate::app_bsky::actor::ProfileView<'a>>,
+        ::core::option::Option<crate::generated::app_bsky::actor::ProfileView<'a>>,
         ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<Vec<crate::com_atproto::label::Label<'a>>>,
+        ::core::option::Option<Vec<crate::generated::com_atproto::label::Label<'a>>>,
         ::core::option::Option<i64>,
         ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
-        ::core::option::Option<crate::app_bsky::labeler::LabelerViewerState<'a>>,
+        ::core::option::Option<crate::generated::app_bsky::labeler::LabelerViewerState<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
@@ -755,7 +755,7 @@ where
     /// Set the `creator` field (required)
     pub fn creator(
         mut self,
-        value: impl Into<crate::app_bsky::actor::ProfileView<'a>>,
+        value: impl Into<crate::generated::app_bsky::actor::ProfileView<'a>>,
     ) -> LabelerViewBuilder<'a, labeler_view_state::SetCreator<S>> {
         self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
         LabelerViewBuilder {
@@ -789,7 +789,7 @@ impl<'a, S: labeler_view_state::State> LabelerViewBuilder<'a, S> {
     /// Set the `labels` field (optional)
     pub fn labels(
         mut self,
-        value: impl Into<Option<Vec<crate::com_atproto::label::Label<'a>>>>,
+        value: impl Into<Option<Vec<crate::generated::com_atproto::label::Label<'a>>>>,
     ) -> Self {
         self.__unsafe_private_named.3 = value.into();
         self
@@ -797,7 +797,7 @@ impl<'a, S: labeler_view_state::State> LabelerViewBuilder<'a, S> {
     /// Set the `labels` field to an Option value (optional)
     pub fn maybe_labels(
         mut self,
-        value: Option<Vec<crate::com_atproto::label::Label<'a>>>,
+        value: Option<Vec<crate::generated::com_atproto::label::Label<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.3 = value;
         self
@@ -840,7 +840,7 @@ impl<'a, S: labeler_view_state::State> LabelerViewBuilder<'a, S> {
     /// Set the `viewer` field (optional)
     pub fn viewer(
         mut self,
-        value: impl Into<Option<crate::app_bsky::labeler::LabelerViewerState<'a>>>,
+        value: impl Into<Option<crate::generated::app_bsky::labeler::LabelerViewerState<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.6 = value.into();
         self
@@ -848,7 +848,7 @@ impl<'a, S: labeler_view_state::State> LabelerViewBuilder<'a, S> {
     /// Set the `viewer` field to an Option value (optional)
     pub fn maybe_viewer(
         mut self,
-        value: Option<crate::app_bsky::labeler::LabelerViewerState<'a>>,
+        value: Option<crate::generated::app_bsky::labeler::LabelerViewerState<'a>>,
     ) -> Self {
         self.__unsafe_private_named.6 = value;
         self
@@ -858,10 +858,10 @@ impl<'a, S: labeler_view_state::State> LabelerViewBuilder<'a, S> {
 impl<'a, S> LabelerViewBuilder<'a, S>
 where
     S: labeler_view_state::State,
+    S::Creator: labeler_view_state::IsSet,
+    S::Uri: labeler_view_state::IsSet,
     S::IndexedAt: labeler_view_state::IsSet,
     S::Cid: labeler_view_state::IsSet,
-    S::Uri: labeler_view_state::IsSet,
-    S::Creator: labeler_view_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> LabelerView<'a> {
@@ -932,19 +932,20 @@ pub struct LabelerViewDetailed<'a> {
     #[serde(borrow)]
     pub cid: jacquard_common::types::string::Cid<'a>,
     #[serde(borrow)]
-    pub creator: crate::app_bsky::actor::ProfileView<'a>,
+    pub creator: crate::generated::app_bsky::actor::ProfileView<'a>,
     pub indexed_at: jacquard_common::types::string::Datetime,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub labels: std::option::Option<Vec<crate::com_atproto::label::Label<'a>>>,
+    pub labels: std::option::Option<Vec<crate::generated::com_atproto::label::Label<'a>>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     pub like_count: std::option::Option<i64>,
     #[serde(borrow)]
-    pub policies: crate::app_bsky::labeler::LabelerPolicies<'a>,
+    pub policies: crate::generated::app_bsky::labeler::LabelerPolicies<'a>,
     /// The set of report reason 'codes' which are in-scope for this service to review and action. These usually align to policy categories. If not defined (distinct from empty array), all reason types are allowed.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub reason_types: std::option::Option<Vec<crate::com_atproto::moderation::ReasonType<'a>>>,
+    pub reason_types:
+        std::option::Option<Vec<crate::generated::com_atproto::moderation::ReasonType<'a>>>,
     /// Set of record types (collection NSIDs) which can be reported to this service. If not defined (distinct from empty array), default is any record type.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
@@ -952,12 +953,13 @@ pub struct LabelerViewDetailed<'a> {
     /// The set of subject types (account, record, etc) this service accepts reports on.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub subject_types: std::option::Option<Vec<crate::com_atproto::moderation::SubjectType<'a>>>,
+    pub subject_types:
+        std::option::Option<Vec<crate::generated::com_atproto::moderation::SubjectType<'a>>>,
     #[serde(borrow)]
     pub uri: jacquard_common::types::string::AtUri<'a>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub viewer: std::option::Option<crate::app_bsky::labeler::LabelerViewerState<'a>>,
+    pub viewer: std::option::Option<crate::generated::app_bsky::labeler::LabelerViewerState<'a>>,
 }
 
 pub mod labeler_view_detailed_state {
@@ -971,84 +973,84 @@ pub mod labeler_view_detailed_state {
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
         type Cid;
+        type Creator;
+        type IndexedAt;
         type Uri;
         type Policies;
-        type IndexedAt;
-        type Creator;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
         type Cid = Unset;
+        type Creator = Unset;
+        type IndexedAt = Unset;
         type Uri = Unset;
         type Policies = Unset;
-        type IndexedAt = Unset;
-        type Creator = Unset;
     }
     ///State transition - sets the `cid` field to Set
     pub struct SetCid<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCid<S> {}
     impl<S: State> State for SetCid<S> {
         type Cid = Set<members::cid>;
+        type Creator = S::Creator;
+        type IndexedAt = S::IndexedAt;
         type Uri = S::Uri;
         type Policies = S::Policies;
-        type IndexedAt = S::IndexedAt;
-        type Creator = S::Creator;
-    }
-    ///State transition - sets the `uri` field to Set
-    pub struct SetUri<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUri<S> {}
-    impl<S: State> State for SetUri<S> {
-        type Cid = S::Cid;
-        type Uri = Set<members::uri>;
-        type Policies = S::Policies;
-        type IndexedAt = S::IndexedAt;
-        type Creator = S::Creator;
-    }
-    ///State transition - sets the `policies` field to Set
-    pub struct SetPolicies<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetPolicies<S> {}
-    impl<S: State> State for SetPolicies<S> {
-        type Cid = S::Cid;
-        type Uri = S::Uri;
-        type Policies = Set<members::policies>;
-        type IndexedAt = S::IndexedAt;
-        type Creator = S::Creator;
-    }
-    ///State transition - sets the `indexed_at` field to Set
-    pub struct SetIndexedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetIndexedAt<S> {}
-    impl<S: State> State for SetIndexedAt<S> {
-        type Cid = S::Cid;
-        type Uri = S::Uri;
-        type Policies = S::Policies;
-        type IndexedAt = Set<members::indexed_at>;
-        type Creator = S::Creator;
     }
     ///State transition - sets the `creator` field to Set
     pub struct SetCreator<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCreator<S> {}
     impl<S: State> State for SetCreator<S> {
         type Cid = S::Cid;
+        type Creator = Set<members::creator>;
+        type IndexedAt = S::IndexedAt;
         type Uri = S::Uri;
         type Policies = S::Policies;
+    }
+    ///State transition - sets the `indexed_at` field to Set
+    pub struct SetIndexedAt<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetIndexedAt<S> {}
+    impl<S: State> State for SetIndexedAt<S> {
+        type Cid = S::Cid;
+        type Creator = S::Creator;
+        type IndexedAt = Set<members::indexed_at>;
+        type Uri = S::Uri;
+        type Policies = S::Policies;
+    }
+    ///State transition - sets the `uri` field to Set
+    pub struct SetUri<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetUri<S> {}
+    impl<S: State> State for SetUri<S> {
+        type Cid = S::Cid;
+        type Creator = S::Creator;
         type IndexedAt = S::IndexedAt;
-        type Creator = Set<members::creator>;
+        type Uri = Set<members::uri>;
+        type Policies = S::Policies;
+    }
+    ///State transition - sets the `policies` field to Set
+    pub struct SetPolicies<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetPolicies<S> {}
+    impl<S: State> State for SetPolicies<S> {
+        type Cid = S::Cid;
+        type Creator = S::Creator;
+        type IndexedAt = S::IndexedAt;
+        type Uri = S::Uri;
+        type Policies = Set<members::policies>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
         ///Marker type for the `cid` field
         pub struct cid(());
+        ///Marker type for the `creator` field
+        pub struct creator(());
+        ///Marker type for the `indexed_at` field
+        pub struct indexed_at(());
         ///Marker type for the `uri` field
         pub struct uri(());
         ///Marker type for the `policies` field
         pub struct policies(());
-        ///Marker type for the `indexed_at` field
-        pub struct indexed_at(());
-        ///Marker type for the `creator` field
-        pub struct creator(());
     }
 }
 
@@ -1057,16 +1059,16 @@ pub struct LabelerViewDetailedBuilder<'a, S: labeler_view_detailed_state::State>
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
         ::core::option::Option<jacquard_common::types::string::Cid<'a>>,
-        ::core::option::Option<crate::app_bsky::actor::ProfileView<'a>>,
+        ::core::option::Option<crate::generated::app_bsky::actor::ProfileView<'a>>,
         ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<Vec<crate::com_atproto::label::Label<'a>>>,
+        ::core::option::Option<Vec<crate::generated::com_atproto::label::Label<'a>>>,
         ::core::option::Option<i64>,
-        ::core::option::Option<crate::app_bsky::labeler::LabelerPolicies<'a>>,
-        ::core::option::Option<Vec<crate::com_atproto::moderation::ReasonType<'a>>>,
+        ::core::option::Option<crate::generated::app_bsky::labeler::LabelerPolicies<'a>>,
+        ::core::option::Option<Vec<crate::generated::com_atproto::moderation::ReasonType<'a>>>,
         ::core::option::Option<Vec<jacquard_common::types::string::Nsid<'a>>>,
-        ::core::option::Option<Vec<crate::com_atproto::moderation::SubjectType<'a>>>,
+        ::core::option::Option<Vec<crate::generated::com_atproto::moderation::SubjectType<'a>>>,
         ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
-        ::core::option::Option<crate::app_bsky::labeler::LabelerViewerState<'a>>,
+        ::core::option::Option<crate::generated::app_bsky::labeler::LabelerViewerState<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
@@ -1118,7 +1120,7 @@ where
     /// Set the `creator` field (required)
     pub fn creator(
         mut self,
-        value: impl Into<crate::app_bsky::actor::ProfileView<'a>>,
+        value: impl Into<crate::generated::app_bsky::actor::ProfileView<'a>>,
     ) -> LabelerViewDetailedBuilder<'a, labeler_view_detailed_state::SetCreator<S>> {
         self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
         LabelerViewDetailedBuilder {
@@ -1152,7 +1154,7 @@ impl<'a, S: labeler_view_detailed_state::State> LabelerViewDetailedBuilder<'a, S
     /// Set the `labels` field (optional)
     pub fn labels(
         mut self,
-        value: impl Into<Option<Vec<crate::com_atproto::label::Label<'a>>>>,
+        value: impl Into<Option<Vec<crate::generated::com_atproto::label::Label<'a>>>>,
     ) -> Self {
         self.__unsafe_private_named.3 = value.into();
         self
@@ -1160,7 +1162,7 @@ impl<'a, S: labeler_view_detailed_state::State> LabelerViewDetailedBuilder<'a, S
     /// Set the `labels` field to an Option value (optional)
     pub fn maybe_labels(
         mut self,
-        value: Option<Vec<crate::com_atproto::label::Label<'a>>>,
+        value: Option<Vec<crate::generated::com_atproto::label::Label<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.3 = value;
         self
@@ -1188,7 +1190,7 @@ where
     /// Set the `policies` field (required)
     pub fn policies(
         mut self,
-        value: impl Into<crate::app_bsky::labeler::LabelerPolicies<'a>>,
+        value: impl Into<crate::generated::app_bsky::labeler::LabelerPolicies<'a>>,
     ) -> LabelerViewDetailedBuilder<'a, labeler_view_detailed_state::SetPolicies<S>> {
         self.__unsafe_private_named.5 = ::core::option::Option::Some(value.into());
         LabelerViewDetailedBuilder {
@@ -1203,7 +1205,7 @@ impl<'a, S: labeler_view_detailed_state::State> LabelerViewDetailedBuilder<'a, S
     /// Set the `reasonTypes` field (optional)
     pub fn reason_types(
         mut self,
-        value: impl Into<Option<Vec<crate::com_atproto::moderation::ReasonType<'a>>>>,
+        value: impl Into<Option<Vec<crate::generated::com_atproto::moderation::ReasonType<'a>>>>,
     ) -> Self {
         self.__unsafe_private_named.6 = value.into();
         self
@@ -1211,7 +1213,7 @@ impl<'a, S: labeler_view_detailed_state::State> LabelerViewDetailedBuilder<'a, S
     /// Set the `reasonTypes` field to an Option value (optional)
     pub fn maybe_reason_types(
         mut self,
-        value: Option<Vec<crate::com_atproto::moderation::ReasonType<'a>>>,
+        value: Option<Vec<crate::generated::com_atproto::moderation::ReasonType<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.6 = value;
         self
@@ -1241,7 +1243,7 @@ impl<'a, S: labeler_view_detailed_state::State> LabelerViewDetailedBuilder<'a, S
     /// Set the `subjectTypes` field (optional)
     pub fn subject_types(
         mut self,
-        value: impl Into<Option<Vec<crate::com_atproto::moderation::SubjectType<'a>>>>,
+        value: impl Into<Option<Vec<crate::generated::com_atproto::moderation::SubjectType<'a>>>>,
     ) -> Self {
         self.__unsafe_private_named.8 = value.into();
         self
@@ -1249,7 +1251,7 @@ impl<'a, S: labeler_view_detailed_state::State> LabelerViewDetailedBuilder<'a, S
     /// Set the `subjectTypes` field to an Option value (optional)
     pub fn maybe_subject_types(
         mut self,
-        value: Option<Vec<crate::com_atproto::moderation::SubjectType<'a>>>,
+        value: Option<Vec<crate::generated::com_atproto::moderation::SubjectType<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.8 = value;
         self
@@ -1279,7 +1281,7 @@ impl<'a, S: labeler_view_detailed_state::State> LabelerViewDetailedBuilder<'a, S
     /// Set the `viewer` field (optional)
     pub fn viewer(
         mut self,
-        value: impl Into<Option<crate::app_bsky::labeler::LabelerViewerState<'a>>>,
+        value: impl Into<Option<crate::generated::app_bsky::labeler::LabelerViewerState<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.10 = value.into();
         self
@@ -1287,7 +1289,7 @@ impl<'a, S: labeler_view_detailed_state::State> LabelerViewDetailedBuilder<'a, S
     /// Set the `viewer` field to an Option value (optional)
     pub fn maybe_viewer(
         mut self,
-        value: Option<crate::app_bsky::labeler::LabelerViewerState<'a>>,
+        value: Option<crate::generated::app_bsky::labeler::LabelerViewerState<'a>>,
     ) -> Self {
         self.__unsafe_private_named.10 = value;
         self
@@ -1298,10 +1300,10 @@ impl<'a, S> LabelerViewDetailedBuilder<'a, S>
 where
     S: labeler_view_detailed_state::State,
     S::Cid: labeler_view_detailed_state::IsSet,
+    S::Creator: labeler_view_detailed_state::IsSet,
+    S::IndexedAt: labeler_view_detailed_state::IsSet,
     S::Uri: labeler_view_detailed_state::IsSet,
     S::Policies: labeler_view_detailed_state::IsSet,
-    S::IndexedAt: labeler_view_detailed_state::IsSet,
-    S::Creator: labeler_view_detailed_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> LabelerViewDetailed<'a> {

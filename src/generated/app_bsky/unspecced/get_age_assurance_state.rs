@@ -13,7 +13,7 @@
 pub struct GetAgeAssuranceStateOutput<'a> {
     #[serde(flatten)]
     #[serde(borrow)]
-    pub value: crate::app_bsky::unspecced::AgeAssuranceState<'a>,
+    pub value: crate::generated::app_bsky::unspecced::AgeAssuranceState<'a>,
 }
 
 /// XRPC request marker type

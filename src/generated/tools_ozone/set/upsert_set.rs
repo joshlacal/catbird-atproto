@@ -13,7 +13,7 @@
 pub struct UpsertSet<'a> {
     #[serde(flatten)]
     #[serde(borrow)]
-    pub value: crate::tools_ozone::set::Set<'a>,
+    pub value: crate::generated::tools_ozone::set::Set<'a>,
 }
 
 #[jacquard_derive::lexicon]
@@ -24,7 +24,7 @@ pub struct UpsertSet<'a> {
 pub struct UpsertSetOutput<'a> {
     #[serde(flatten)]
     #[serde(borrow)]
-    pub value: crate::tools_ozone::set::SetView<'a>,
+    pub value: crate::generated::tools_ozone::set::SetView<'a>,
 }
 
 /// Response type for

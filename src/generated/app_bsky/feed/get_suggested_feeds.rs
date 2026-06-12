@@ -114,7 +114,7 @@ pub struct GetSuggestedFeedsOutput<'a> {
     #[serde(borrow)]
     pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(borrow)]
-    pub feeds: Vec<crate::app_bsky::feed::GeneratorView<'a>>,
+    pub feeds: Vec<crate::generated::app_bsky::feed::GeneratorView<'a>>,
 }
 
 /// Response type for

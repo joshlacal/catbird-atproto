@@ -119,7 +119,8 @@ where
 pub struct GetLiveUsersOutput<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub streams: std::option::Option<Vec<crate::place_stream::livestream::LivestreamView<'a>>>,
+    pub streams:
+        std::option::Option<Vec<crate::generated::place_stream::livestream::LivestreamView<'a>>>,
 }
 
 /// Response type for

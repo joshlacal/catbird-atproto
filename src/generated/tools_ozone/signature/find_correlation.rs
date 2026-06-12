@@ -110,7 +110,7 @@ where
 #[serde(rename_all = "camelCase")]
 pub struct FindCorrelationOutput<'a> {
     #[serde(borrow)]
-    pub details: Vec<crate::tools_ozone::signature::SigDetail<'a>>,
+    pub details: Vec<crate::generated::tools_ozone::signature::SigDetail<'a>>,
 }
 
 /// Response type for

@@ -12,7 +12,7 @@
 #[serde(rename_all = "camelCase")]
 pub struct PutTarget<'a> {
     #[serde(borrow)]
-    pub multistream_target: crate::place_stream::multistream::target::Target<'a>,
+    pub multistream_target: crate::generated::place_stream::multistream::target::Target<'a>,
     /// The Record Key.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
@@ -57,7 +57,7 @@ pub mod put_target_state {
 pub struct PutTargetBuilder<'a, S: put_target_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
-        ::core::option::Option<crate::place_stream::multistream::target::Target<'a>>,
+        ::core::option::Option<crate::generated::place_stream::multistream::target::Target<'a>>,
         ::core::option::Option<
             jacquard_common::types::string::RecordKey<jacquard_common::types::string::Rkey<'a>>,
         >,
@@ -91,7 +91,7 @@ where
     /// Set the `multistreamTarget` field (required)
     pub fn multistream_target(
         mut self,
-        value: impl Into<crate::place_stream::multistream::target::Target<'a>>,
+        value: impl Into<crate::generated::place_stream::multistream::target::Target<'a>>,
     ) -> PutTargetBuilder<'a, put_target_state::SetMultistreamTarget<S>> {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         PutTargetBuilder {
@@ -164,7 +164,7 @@ where
 pub struct PutTargetOutput<'a> {
     #[serde(flatten)]
     #[serde(borrow)]
-    pub value: crate::place_stream::multistream::TargetView<'a>,
+    pub value: crate::generated::place_stream::multistream::TargetView<'a>,
 }
 
 #[jacquard_derive::open_union]

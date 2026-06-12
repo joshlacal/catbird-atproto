@@ -62,7 +62,7 @@ pub struct QueryRulesOutput<'a> {
     #[serde(borrow)]
     pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(borrow)]
-    pub rules: Vec<crate::tools_ozone::safelink::UrlRule<'a>>,
+    pub rules: Vec<crate::generated::tools_ozone::safelink::UrlRule<'a>>,
 }
 
 /// Response type for

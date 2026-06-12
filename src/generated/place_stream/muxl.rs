@@ -41,37 +41,37 @@ pub mod track_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Id;
         type Codec;
+        type Id;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Id = Unset;
         type Codec = Unset;
-    }
-    ///State transition - sets the `id` field to Set
-    pub struct SetId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetId<S> {}
-    impl<S: State> State for SetId<S> {
-        type Id = Set<members::id>;
-        type Codec = S::Codec;
+        type Id = Unset;
     }
     ///State transition - sets the `codec` field to Set
     pub struct SetCodec<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCodec<S> {}
     impl<S: State> State for SetCodec<S> {
-        type Id = S::Id;
         type Codec = Set<members::codec>;
+        type Id = S::Id;
+    }
+    ///State transition - sets the `id` field to Set
+    pub struct SetId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetId<S> {}
+    impl<S: State> State for SetId<S> {
+        type Codec = S::Codec;
+        type Id = Set<members::id>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `id` field
-        pub struct id(());
         ///Marker type for the `codec` field
         pub struct codec(());
+        ///Marker type for the `id` field
+        pub struct id(());
     }
 }
 
@@ -197,8 +197,8 @@ impl<'a, S: track_state::State> TrackBuilder<'a, S> {
 impl<'a, S> TrackBuilder<'a, S>
 where
     S: track_state::State,
-    S::Id: track_state::IsSet,
     S::Codec: track_state::IsSet,
+    S::Id: track_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> Track<'a> {

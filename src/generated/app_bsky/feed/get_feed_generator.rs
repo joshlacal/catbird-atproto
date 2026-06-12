@@ -114,7 +114,7 @@ pub struct GetFeedGeneratorOutput<'a> {
     /// Indicates whether the feed generator service is compatible with the record declaration.
     pub is_valid: bool,
     #[serde(borrow)]
-    pub view: crate::app_bsky::feed::GeneratorView<'a>,
+    pub view: crate::generated::app_bsky::feed::GeneratorView<'a>,
 }
 
 /// Response type for

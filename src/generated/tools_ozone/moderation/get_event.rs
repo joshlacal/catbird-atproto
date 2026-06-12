@@ -104,7 +104,7 @@ where
 pub struct GetEventOutput<'a> {
     #[serde(flatten)]
     #[serde(borrow)]
-    pub value: crate::tools_ozone::moderation::ModEventViewDetail<'a>,
+    pub value: crate::generated::tools_ozone::moderation::ModEventViewDetail<'a>,
 }
 
 /// Response type for

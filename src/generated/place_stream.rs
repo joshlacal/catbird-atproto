@@ -32,12 +32,12 @@ pub mod video;
 #[serde(rename_all = "camelCase")]
 pub struct BlockView<'a> {
     #[serde(borrow)]
-    pub blocker: crate::app_bsky::actor::ProfileViewBasic<'a>,
+    pub blocker: crate::generated::app_bsky::actor::ProfileViewBasic<'a>,
     #[serde(borrow)]
     pub cid: jacquard_common::types::string::Cid<'a>,
     pub indexed_at: jacquard_common::types::string::Datetime,
     #[serde(borrow)]
-    pub record: crate::app_bsky::graph::block::Block<'a>,
+    pub record: crate::generated::app_bsky::graph::block::Block<'a>,
     #[serde(borrow)]
     pub uri: jacquard_common::types::string::AtUri<'a>,
 }
@@ -138,10 +138,10 @@ pub mod block_view_state {
 pub struct BlockViewBuilder<'a, S: block_view_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
-        ::core::option::Option<crate::app_bsky::actor::ProfileViewBasic<'a>>,
+        ::core::option::Option<crate::generated::app_bsky::actor::ProfileViewBasic<'a>>,
         ::core::option::Option<jacquard_common::types::string::Cid<'a>>,
         ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<crate::app_bsky::graph::block::Block<'a>>,
+        ::core::option::Option<crate::generated::app_bsky::graph::block::Block<'a>>,
         ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
@@ -173,7 +173,7 @@ where
     /// Set the `blocker` field (required)
     pub fn blocker(
         mut self,
-        value: impl Into<crate::app_bsky::actor::ProfileViewBasic<'a>>,
+        value: impl Into<crate::generated::app_bsky::actor::ProfileViewBasic<'a>>,
     ) -> BlockViewBuilder<'a, block_view_state::SetBlocker<S>> {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         BlockViewBuilder {
@@ -230,7 +230,7 @@ where
     /// Set the `record` field (required)
     pub fn record(
         mut self,
-        value: impl Into<crate::app_bsky::graph::block::Block<'a>>,
+        value: impl Into<crate::generated::app_bsky::graph::block::Block<'a>>,
     ) -> BlockViewBuilder<'a, block_view_state::SetRecord<S>> {
         self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
         BlockViewBuilder {
@@ -539,7 +539,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Rendition<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct Renditions<'a> {
     #[serde(borrow)]
-    pub renditions: Vec<crate::place_stream::Rendition<'a>>,
+    pub renditions: Vec<crate::generated::place_stream::Rendition<'a>>,
 }
 
 pub mod renditions_state {
@@ -577,7 +577,8 @@ pub mod renditions_state {
 /// Builder for constructing an instance of this type
 pub struct RenditionsBuilder<'a, S: renditions_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<Vec<crate::place_stream::Rendition<'a>>>,),
+    __unsafe_private_named:
+        (::core::option::Option<Vec<crate::generated::place_stream::Rendition<'a>>>,),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
 
@@ -607,7 +608,7 @@ where
     /// Set the `renditions` field (required)
     pub fn renditions(
         mut self,
-        value: impl Into<Vec<crate::place_stream::Rendition<'a>>>,
+        value: impl Into<Vec<crate::generated::place_stream::Rendition<'a>>>,
     ) -> RenditionsBuilder<'a, renditions_state::SetRenditions<S>> {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         RenditionsBuilder {

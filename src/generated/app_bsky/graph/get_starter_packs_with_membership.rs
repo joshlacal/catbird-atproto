@@ -164,7 +164,9 @@ pub struct GetStarterPacksWithMembershipOutput<'a> {
     pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(borrow)]
     pub starter_packs_with_membership: Vec<
-        crate::app_bsky::graph::get_starter_packs_with_membership::StarterPackWithMembership<'a>,
+        crate::generated::app_bsky::graph::get_starter_packs_with_membership::StarterPackWithMembership<
+            'a,
+        >,
     >,
 }
 
@@ -203,9 +205,9 @@ impl jacquard_common::xrpc::XrpcEndpoint for GetStarterPacksWithMembershipReques
 pub struct StarterPackWithMembership<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub list_item: std::option::Option<crate::app_bsky::graph::ListItemView<'a>>,
+    pub list_item: std::option::Option<crate::generated::app_bsky::graph::ListItemView<'a>>,
     #[serde(borrow)]
-    pub starter_pack: crate::app_bsky::graph::StarterPackView<'a>,
+    pub starter_pack: crate::generated::app_bsky::graph::StarterPackView<'a>,
 }
 
 pub mod starter_pack_with_membership_state {
@@ -244,8 +246,8 @@ pub mod starter_pack_with_membership_state {
 pub struct StarterPackWithMembershipBuilder<'a, S: starter_pack_with_membership_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
-        ::core::option::Option<crate::app_bsky::graph::ListItemView<'a>>,
-        ::core::option::Option<crate::app_bsky::graph::StarterPackView<'a>>,
+        ::core::option::Option<crate::generated::app_bsky::graph::ListItemView<'a>>,
+        ::core::option::Option<crate::generated::app_bsky::graph::StarterPackView<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
@@ -273,7 +275,7 @@ impl<'a, S: starter_pack_with_membership_state::State> StarterPackWithMembership
     /// Set the `listItem` field (optional)
     pub fn list_item(
         mut self,
-        value: impl Into<Option<crate::app_bsky::graph::ListItemView<'a>>>,
+        value: impl Into<Option<crate::generated::app_bsky::graph::ListItemView<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.0 = value.into();
         self
@@ -281,7 +283,7 @@ impl<'a, S: starter_pack_with_membership_state::State> StarterPackWithMembership
     /// Set the `listItem` field to an Option value (optional)
     pub fn maybe_list_item(
         mut self,
-        value: Option<crate::app_bsky::graph::ListItemView<'a>>,
+        value: Option<crate::generated::app_bsky::graph::ListItemView<'a>>,
     ) -> Self {
         self.__unsafe_private_named.0 = value;
         self
@@ -296,7 +298,7 @@ where
     /// Set the `starterPack` field (required)
     pub fn starter_pack(
         mut self,
-        value: impl Into<crate::app_bsky::graph::StarterPackView<'a>>,
+        value: impl Into<crate::generated::app_bsky::graph::StarterPackView<'a>>,
     ) -> StarterPackWithMembershipBuilder<'a, starter_pack_with_membership_state::SetStarterPack<S>>
     {
         self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());

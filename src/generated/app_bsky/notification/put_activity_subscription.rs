@@ -12,7 +12,7 @@
 #[serde(rename_all = "camelCase")]
 pub struct PutActivitySubscription<'a> {
     #[serde(borrow)]
-    pub activity_subscription: crate::app_bsky::notification::ActivitySubscription<'a>,
+    pub activity_subscription: crate::generated::app_bsky::notification::ActivitySubscription<'a>,
     #[serde(borrow)]
     pub subject: jacquard_common::types::string::Did<'a>,
 }
@@ -27,37 +27,37 @@ pub mod put_activity_subscription_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type ActivitySubscription;
         type Subject;
+        type ActivitySubscription;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type ActivitySubscription = Unset;
         type Subject = Unset;
-    }
-    ///State transition - sets the `activity_subscription` field to Set
-    pub struct SetActivitySubscription<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetActivitySubscription<S> {}
-    impl<S: State> State for SetActivitySubscription<S> {
-        type ActivitySubscription = Set<members::activity_subscription>;
-        type Subject = S::Subject;
+        type ActivitySubscription = Unset;
     }
     ///State transition - sets the `subject` field to Set
     pub struct SetSubject<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetSubject<S> {}
     impl<S: State> State for SetSubject<S> {
-        type ActivitySubscription = S::ActivitySubscription;
         type Subject = Set<members::subject>;
+        type ActivitySubscription = S::ActivitySubscription;
+    }
+    ///State transition - sets the `activity_subscription` field to Set
+    pub struct SetActivitySubscription<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetActivitySubscription<S> {}
+    impl<S: State> State for SetActivitySubscription<S> {
+        type Subject = S::Subject;
+        type ActivitySubscription = Set<members::activity_subscription>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `activity_subscription` field
-        pub struct activity_subscription(());
         ///Marker type for the `subject` field
         pub struct subject(());
+        ///Marker type for the `activity_subscription` field
+        pub struct activity_subscription(());
     }
 }
 
@@ -65,7 +65,7 @@ pub mod put_activity_subscription_state {
 pub struct PutActivitySubscriptionBuilder<'a, S: put_activity_subscription_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
-        ::core::option::Option<crate::app_bsky::notification::ActivitySubscription<'a>>,
+        ::core::option::Option<crate::generated::app_bsky::notification::ActivitySubscription<'a>>,
         ::core::option::Option<jacquard_common::types::string::Did<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
@@ -97,7 +97,7 @@ where
     /// Set the `activitySubscription` field (required)
     pub fn activity_subscription(
         mut self,
-        value: impl Into<crate::app_bsky::notification::ActivitySubscription<'a>>,
+        value: impl Into<crate::generated::app_bsky::notification::ActivitySubscription<'a>>,
     ) -> PutActivitySubscriptionBuilder<
         'a,
         put_activity_subscription_state::SetActivitySubscription<S>,
@@ -133,8 +133,8 @@ where
 impl<'a, S> PutActivitySubscriptionBuilder<'a, S>
 where
     S: put_activity_subscription_state::State,
-    S::ActivitySubscription: put_activity_subscription_state::IsSet,
     S::Subject: put_activity_subscription_state::IsSet,
+    S::ActivitySubscription: put_activity_subscription_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> PutActivitySubscription<'a> {
@@ -169,7 +169,7 @@ pub struct PutActivitySubscriptionOutput<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub activity_subscription:
-        std::option::Option<crate::app_bsky::notification::ActivitySubscription<'a>>,
+        std::option::Option<crate::generated::app_bsky::notification::ActivitySubscription<'a>>,
     #[serde(borrow)]
     pub subject: jacquard_common::types::string::Did<'a>,
 }

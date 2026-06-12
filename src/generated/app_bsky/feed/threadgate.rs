@@ -636,13 +636,13 @@ impl<'a> Threadgate<'a> {
 #[serde(bound(deserialize = "'de: 'a"))]
 pub enum ThreadgateAllowItem<'a> {
     #[serde(rename = "app.bsky.feed.threadgate#mentionRule")]
-    MentionRule(Box<crate::app_bsky::feed::threadgate::MentionRule<'a>>),
+    MentionRule(Box<crate::generated::app_bsky::feed::threadgate::MentionRule<'a>>),
     #[serde(rename = "app.bsky.feed.threadgate#followerRule")]
-    FollowerRule(Box<crate::app_bsky::feed::threadgate::FollowerRule<'a>>),
+    FollowerRule(Box<crate::generated::app_bsky::feed::threadgate::FollowerRule<'a>>),
     #[serde(rename = "app.bsky.feed.threadgate#followingRule")]
-    FollowingRule(Box<crate::app_bsky::feed::threadgate::FollowingRule<'a>>),
+    FollowingRule(Box<crate::generated::app_bsky::feed::threadgate::FollowingRule<'a>>),
     #[serde(rename = "app.bsky.feed.threadgate#listRule")]
-    ListRule(Box<crate::app_bsky::feed::threadgate::ListRule<'a>>),
+    ListRule(Box<crate::generated::app_bsky::feed::threadgate::ListRule<'a>>),
 }
 
 /// Typed wrapper for GetRecord response with this collection's record type.

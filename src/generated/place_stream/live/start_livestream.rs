@@ -15,7 +15,7 @@ pub struct StartLivestream<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     pub create_bluesky_post: std::option::Option<bool>,
     #[serde(borrow)]
-    pub livestream: crate::place_stream::livestream::Livestream<'a>,
+    pub livestream: crate::generated::place_stream::livestream::Livestream<'a>,
     /// The DID of the streamer.
     #[serde(borrow)]
     pub streamer: jacquard_common::types::string::Did<'a>,
@@ -70,7 +70,7 @@ pub struct StartLivestreamBuilder<'a, S: start_livestream_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
         ::core::option::Option<bool>,
-        ::core::option::Option<crate::place_stream::livestream::Livestream<'a>>,
+        ::core::option::Option<crate::generated::place_stream::livestream::Livestream<'a>>,
         ::core::option::Option<jacquard_common::types::string::Did<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
@@ -115,7 +115,7 @@ where
     /// Set the `livestream` field (required)
     pub fn livestream(
         mut self,
-        value: impl Into<crate::place_stream::livestream::Livestream<'a>>,
+        value: impl Into<crate::generated::place_stream::livestream::Livestream<'a>>,
     ) -> StartLivestreamBuilder<'a, start_livestream_state::SetLivestream<S>> {
         self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
         StartLivestreamBuilder {

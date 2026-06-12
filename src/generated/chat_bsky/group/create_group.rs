@@ -27,37 +27,37 @@ pub mod create_group_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Name;
         type Members;
+        type Name;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Name = Unset;
         type Members = Unset;
-    }
-    ///State transition - sets the `name` field to Set
-    pub struct SetName<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetName<S> {}
-    impl<S: State> State for SetName<S> {
-        type Name = Set<members::name>;
-        type Members = S::Members;
+        type Name = Unset;
     }
     ///State transition - sets the `members` field to Set
     pub struct SetMembers<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetMembers<S> {}
     impl<S: State> State for SetMembers<S> {
-        type Name = S::Name;
         type Members = Set<members::members>;
+        type Name = S::Name;
+    }
+    ///State transition - sets the `name` field to Set
+    pub struct SetName<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetName<S> {}
+    impl<S: State> State for SetName<S> {
+        type Members = S::Members;
+        type Name = Set<members::name>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `name` field
-        pub struct name(());
         ///Marker type for the `members` field
         pub struct members(());
+        ///Marker type for the `name` field
+        pub struct name(());
     }
 }
 
@@ -130,8 +130,8 @@ where
 impl<'a, S> CreateGroupBuilder<'a, S>
 where
     S: create_group_state::State,
-    S::Name: create_group_state::IsSet,
     S::Members: create_group_state::IsSet,
+    S::Name: create_group_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> CreateGroup<'a> {
@@ -164,7 +164,7 @@ where
 #[serde(rename_all = "camelCase")]
 pub struct CreateGroupOutput<'a> {
     #[serde(borrow)]
-    pub convo: crate::chat_bsky::convo::ConvoView<'a>,
+    pub convo: crate::generated::chat_bsky::convo::ConvoView<'a>,
 }
 
 #[jacquard_derive::open_union]
@@ -186,12 +186,16 @@ pub enum CreateGroupError<'a> {
     AccountSuspended(std::option::Option<jacquard_common::CowStr<'a>>),
     #[serde(rename = "BlockedActor")]
     BlockedActor(std::option::Option<jacquard_common::CowStr<'a>>),
-    #[serde(rename = "GroupInvitesDisabled")]
-    GroupInvitesDisabled(std::option::Option<jacquard_common::CowStr<'a>>),
+    #[serde(rename = "BlockedSubject")]
+    BlockedSubject(std::option::Option<jacquard_common::CowStr<'a>>),
+    #[serde(rename = "NewAccountCannotCreateGroup")]
+    NewAccountCannotCreateGroup(std::option::Option<jacquard_common::CowStr<'a>>),
     #[serde(rename = "NotFollowedBySender")]
     NotFollowedBySender(std::option::Option<jacquard_common::CowStr<'a>>),
     #[serde(rename = "RecipientNotFound")]
     RecipientNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
+    #[serde(rename = "UserForbidsGroups")]
+    UserForbidsGroups(std::option::Option<jacquard_common::CowStr<'a>>),
 }
 
 impl std::fmt::Display for CreateGroupError<'_> {
@@ -211,8 +215,15 @@ impl std::fmt::Display for CreateGroupError<'_> {
                 }
                 Ok(())
             }
-            Self::GroupInvitesDisabled(msg) => {
-                write!(f, "GroupInvitesDisabled")?;
+            Self::BlockedSubject(msg) => {
+                write!(f, "BlockedSubject")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::NewAccountCannotCreateGroup(msg) => {
+                write!(f, "NewAccountCannotCreateGroup")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }
@@ -227,6 +238,13 @@ impl std::fmt::Display for CreateGroupError<'_> {
             }
             Self::RecipientNotFound(msg) => {
                 write!(f, "RecipientNotFound")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::UserForbidsGroups(msg) => {
+                write!(f, "UserForbidsGroups")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }

@@ -119,7 +119,7 @@ pub struct GetSuggestedFollowsByActorOutput<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     pub rec_id: std::option::Option<i64>,
     #[serde(borrow)]
-    pub suggestions: Vec<crate::app_bsky::actor::ProfileView<'a>>,
+    pub suggestions: Vec<crate::generated::app_bsky::actor::ProfileView<'a>>,
 }
 
 /// Response type for

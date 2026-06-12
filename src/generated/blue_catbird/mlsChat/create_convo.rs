@@ -554,7 +554,7 @@ pub struct CreateConvoOutput<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub invite_code: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// DID of the delivery service acting as sequencer for this conversation
+    /// DID of the delivery service acting as sequencer for this conversation. Deprecated: read convo.sequencerDid instead.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub sequencer_ds: std::option::Option<jacquard_common::types::string::Did<'a>>,

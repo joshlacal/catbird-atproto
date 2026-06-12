@@ -105,7 +105,7 @@ where
 #[serde(rename_all = "camelCase")]
 pub struct FetchLabelsOutput<'a> {
     #[serde(borrow)]
-    pub labels: Vec<crate::com_atproto::label::Label<'a>>,
+    pub labels: Vec<crate::generated::com_atproto::label::Label<'a>>,
 }
 
 /// Response type for

@@ -151,7 +151,7 @@ pub struct GetFeedOutput<'a> {
     #[serde(borrow)]
     pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(borrow)]
-    pub feed: Vec<crate::app_bsky::feed::FeedViewPost<'a>>,
+    pub feed: Vec<crate::generated::app_bsky::feed::FeedViewPost<'a>>,
 }
 
 #[jacquard_derive::open_union]

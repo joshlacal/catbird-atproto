@@ -111,7 +111,7 @@ where
 pub struct GetRepoOutput<'a> {
     #[serde(flatten)]
     #[serde(borrow)]
-    pub value: crate::tools_ozone::moderation::RepoViewDetail<'a>,
+    pub value: crate::generated::tools_ozone::moderation::RepoViewDetail<'a>,
 }
 
 #[jacquard_derive::open_union]

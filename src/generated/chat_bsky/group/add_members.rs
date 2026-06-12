@@ -165,9 +165,10 @@ where
 pub struct AddMembersOutput<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub added_members: std::option::Option<Vec<crate::chat_bsky::actor::ProfileViewBasic<'a>>>,
+    pub added_members:
+        std::option::Option<Vec<crate::generated::chat_bsky::actor::ProfileViewBasic<'a>>>,
     #[serde(borrow)]
-    pub convo: crate::chat_bsky::convo::ConvoView<'a>,
+    pub convo: crate::generated::chat_bsky::convo::ConvoView<'a>,
 }
 
 #[jacquard_derive::open_union]
@@ -189,8 +190,8 @@ pub enum AddMembersError<'a> {
     AccountSuspended(std::option::Option<jacquard_common::CowStr<'a>>),
     #[serde(rename = "BlockedActor")]
     BlockedActor(std::option::Option<jacquard_common::CowStr<'a>>),
-    #[serde(rename = "GroupInvitesDisabled")]
-    GroupInvitesDisabled(std::option::Option<jacquard_common::CowStr<'a>>),
+    #[serde(rename = "BlockedSubject")]
+    BlockedSubject(std::option::Option<jacquard_common::CowStr<'a>>),
     #[serde(rename = "ConvoLocked")]
     ConvoLocked(std::option::Option<jacquard_common::CowStr<'a>>),
     #[serde(rename = "InsufficientRole")]
@@ -203,6 +204,8 @@ pub enum AddMembersError<'a> {
     NotFollowedBySender(std::option::Option<jacquard_common::CowStr<'a>>),
     #[serde(rename = "RecipientNotFound")]
     RecipientNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
+    #[serde(rename = "UserForbidsGroups")]
+    UserForbidsGroups(std::option::Option<jacquard_common::CowStr<'a>>),
 }
 
 impl std::fmt::Display for AddMembersError<'_> {
@@ -222,8 +225,8 @@ impl std::fmt::Display for AddMembersError<'_> {
                 }
                 Ok(())
             }
-            Self::GroupInvitesDisabled(msg) => {
-                write!(f, "GroupInvitesDisabled")?;
+            Self::BlockedSubject(msg) => {
+                write!(f, "BlockedSubject")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }
@@ -266,6 +269,13 @@ impl std::fmt::Display for AddMembersError<'_> {
             }
             Self::RecipientNotFound(msg) => {
                 write!(f, "RecipientNotFound")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::UserForbidsGroups(msg) => {
+                write!(f, "UserForbidsGroups")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }

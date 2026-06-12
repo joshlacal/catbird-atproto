@@ -167,10 +167,12 @@ pub struct CheckHandleAvailabilityOutput<'a> {
 #[serde(bound(deserialize = "'de: 'a"))]
 pub enum CheckHandleAvailabilityOutputResult<'a> {
     #[serde(rename = "com.atproto.temp.checkHandleAvailability#resultAvailable")]
-    ResultAvailable(Box<crate::com_atproto::temp::check_handle_availability::ResultAvailable<'a>>),
+    ResultAvailable(
+        Box<crate::generated::com_atproto::temp::check_handle_availability::ResultAvailable<'a>>,
+    ),
     #[serde(rename = "com.atproto.temp.checkHandleAvailability#resultUnavailable")]
     ResultUnavailable(
-        Box<crate::com_atproto::temp::check_handle_availability::ResultUnavailable<'a>>,
+        Box<crate::generated::com_atproto::temp::check_handle_availability::ResultUnavailable<'a>>,
     ),
 }
 
@@ -485,7 +487,8 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ResultAvailable<'a> {
 pub struct ResultUnavailable<'a> {
     /// List of suggested handles based on the provided inputs.
     #[serde(borrow)]
-    pub suggestions: Vec<crate::com_atproto::temp::check_handle_availability::Suggestion<'a>>,
+    pub suggestions:
+        Vec<crate::generated::com_atproto::temp::check_handle_availability::Suggestion<'a>>,
 }
 
 pub mod result_unavailable_state {
@@ -525,7 +528,7 @@ pub struct ResultUnavailableBuilder<'a, S: result_unavailable_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
         ::core::option::Option<
-            Vec<crate::com_atproto::temp::check_handle_availability::Suggestion<'a>>,
+            Vec<crate::generated::com_atproto::temp::check_handle_availability::Suggestion<'a>>,
         >,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
@@ -557,7 +560,9 @@ where
     /// Set the `suggestions` field (required)
     pub fn suggestions(
         mut self,
-        value: impl Into<Vec<crate::com_atproto::temp::check_handle_availability::Suggestion<'a>>>,
+        value: impl Into<
+            Vec<crate::generated::com_atproto::temp::check_handle_availability::Suggestion<'a>>,
+        >,
     ) -> ResultUnavailableBuilder<'a, result_unavailable_state::SetSuggestions<S>> {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         ResultUnavailableBuilder {

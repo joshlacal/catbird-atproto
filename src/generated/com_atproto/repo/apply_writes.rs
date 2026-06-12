@@ -34,37 +34,37 @@ pub mod create_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Value;
         type Collection;
+        type Value;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Value = Unset;
         type Collection = Unset;
-    }
-    ///State transition - sets the `value` field to Set
-    pub struct SetValue<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetValue<S> {}
-    impl<S: State> State for SetValue<S> {
-        type Value = Set<members::value>;
-        type Collection = S::Collection;
+        type Value = Unset;
     }
     ///State transition - sets the `collection` field to Set
     pub struct SetCollection<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCollection<S> {}
     impl<S: State> State for SetCollection<S> {
-        type Value = S::Value;
         type Collection = Set<members::collection>;
+        type Value = S::Value;
+    }
+    ///State transition - sets the `value` field to Set
+    pub struct SetValue<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetValue<S> {}
+    impl<S: State> State for SetValue<S> {
+        type Collection = S::Collection;
+        type Value = Set<members::value>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `value` field
-        pub struct value(());
         ///Marker type for the `collection` field
         pub struct collection(());
+        ///Marker type for the `value` field
+        pub struct value(());
     }
 }
 
@@ -165,8 +165,8 @@ where
 impl<'a, S> CreateBuilder<'a, S>
 where
     S: create_state::State,
-    S::Value: create_state::IsSet,
     S::Collection: create_state::IsSet,
+    S::Value: create_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> Create<'a> {
@@ -907,37 +907,37 @@ pub mod delete_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Rkey;
         type Collection;
+        type Rkey;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Rkey = Unset;
         type Collection = Unset;
-    }
-    ///State transition - sets the `rkey` field to Set
-    pub struct SetRkey<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRkey<S> {}
-    impl<S: State> State for SetRkey<S> {
-        type Rkey = Set<members::rkey>;
-        type Collection = S::Collection;
+        type Rkey = Unset;
     }
     ///State transition - sets the `collection` field to Set
     pub struct SetCollection<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCollection<S> {}
     impl<S: State> State for SetCollection<S> {
-        type Rkey = S::Rkey;
         type Collection = Set<members::collection>;
+        type Rkey = S::Rkey;
+    }
+    ///State transition - sets the `rkey` field to Set
+    pub struct SetRkey<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetRkey<S> {}
+    impl<S: State> State for SetRkey<S> {
+        type Collection = S::Collection;
+        type Rkey = Set<members::rkey>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `rkey` field
-        pub struct rkey(());
         ///Marker type for the `collection` field
         pub struct collection(());
+        ///Marker type for the `rkey` field
+        pub struct rkey(());
     }
 }
 
@@ -1014,8 +1014,8 @@ where
 impl<'a, S> DeleteBuilder<'a, S>
 where
     S: delete_state::State,
-    S::Rkey: delete_state::IsSet,
     S::Collection: delete_state::IsSet,
+    S::Rkey: delete_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> Delete<'a> {
@@ -1118,37 +1118,37 @@ pub mod apply_writes_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Writes;
         type Repo;
+        type Writes;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Writes = Unset;
         type Repo = Unset;
-    }
-    ///State transition - sets the `writes` field to Set
-    pub struct SetWrites<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetWrites<S> {}
-    impl<S: State> State for SetWrites<S> {
-        type Writes = Set<members::writes>;
-        type Repo = S::Repo;
+        type Writes = Unset;
     }
     ///State transition - sets the `repo` field to Set
     pub struct SetRepo<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetRepo<S> {}
     impl<S: State> State for SetRepo<S> {
-        type Writes = S::Writes;
         type Repo = Set<members::repo>;
+        type Writes = S::Writes;
+    }
+    ///State transition - sets the `writes` field to Set
+    pub struct SetWrites<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetWrites<S> {}
+    impl<S: State> State for SetWrites<S> {
+        type Repo = S::Repo;
+        type Writes = Set<members::writes>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `writes` field
-        pub struct writes(());
         ///Marker type for the `repo` field
         pub struct repo(());
+        ///Marker type for the `writes` field
+        pub struct writes(());
     }
 }
 
@@ -1255,8 +1255,8 @@ where
 impl<'a, S> ApplyWritesBuilder<'a, S>
 where
     S: apply_writes_state::State,
-    S::Writes: apply_writes_state::IsSet,
     S::Repo: apply_writes_state::IsSet,
+    S::Writes: apply_writes_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> ApplyWrites<'a> {
@@ -1293,11 +1293,11 @@ where
 #[serde(bound(deserialize = "'de: 'a"))]
 pub enum ApplyWritesWritesItem<'a> {
     #[serde(rename = "com.atproto.repo.applyWrites#create")]
-    Create(Box<crate::com_atproto::repo::apply_writes::Create<'a>>),
+    Create(Box<crate::generated::com_atproto::repo::apply_writes::Create<'a>>),
     #[serde(rename = "com.atproto.repo.applyWrites#update")]
-    Update(Box<crate::com_atproto::repo::apply_writes::Update<'a>>),
+    Update(Box<crate::generated::com_atproto::repo::apply_writes::Update<'a>>),
     #[serde(rename = "com.atproto.repo.applyWrites#delete")]
-    Delete(Box<crate::com_atproto::repo::apply_writes::Delete<'a>>),
+    Delete(Box<crate::generated::com_atproto::repo::apply_writes::Delete<'a>>),
 }
 
 #[jacquard_derive::lexicon]
@@ -1315,7 +1315,7 @@ pub enum ApplyWritesWritesItem<'a> {
 pub struct ApplyWritesOutput<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub commit: std::option::Option<crate::com_atproto::repo::CommitMeta<'a>>,
+    pub commit: std::option::Option<crate::generated::com_atproto::repo::CommitMeta<'a>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub results: std::option::Option<Vec<ApplyWritesOutputResultsItem<'a>>>,
@@ -1328,11 +1328,11 @@ pub struct ApplyWritesOutput<'a> {
 #[serde(bound(deserialize = "'de: 'a"))]
 pub enum ApplyWritesOutputResultsItem<'a> {
     #[serde(rename = "com.atproto.repo.applyWrites#createResult")]
-    CreateResult(Box<crate::com_atproto::repo::apply_writes::CreateResult<'a>>),
+    CreateResult(Box<crate::generated::com_atproto::repo::apply_writes::CreateResult<'a>>),
     #[serde(rename = "com.atproto.repo.applyWrites#updateResult")]
-    UpdateResult(Box<crate::com_atproto::repo::apply_writes::UpdateResult<'a>>),
+    UpdateResult(Box<crate::generated::com_atproto::repo::apply_writes::UpdateResult<'a>>),
     #[serde(rename = "com.atproto.repo.applyWrites#deleteResult")]
-    DeleteResult(Box<crate::com_atproto::repo::apply_writes::DeleteResult<'a>>),
+    DeleteResult(Box<crate::generated::com_atproto::repo::apply_writes::DeleteResult<'a>>),
 }
 
 #[jacquard_derive::open_union]
@@ -1423,51 +1423,51 @@ pub mod update_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Value;
         type Collection;
         type Rkey;
+        type Value;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Value = Unset;
         type Collection = Unset;
         type Rkey = Unset;
-    }
-    ///State transition - sets the `value` field to Set
-    pub struct SetValue<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetValue<S> {}
-    impl<S: State> State for SetValue<S> {
-        type Value = Set<members::value>;
-        type Collection = S::Collection;
-        type Rkey = S::Rkey;
+        type Value = Unset;
     }
     ///State transition - sets the `collection` field to Set
     pub struct SetCollection<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCollection<S> {}
     impl<S: State> State for SetCollection<S> {
-        type Value = S::Value;
         type Collection = Set<members::collection>;
         type Rkey = S::Rkey;
+        type Value = S::Value;
     }
     ///State transition - sets the `rkey` field to Set
     pub struct SetRkey<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetRkey<S> {}
     impl<S: State> State for SetRkey<S> {
-        type Value = S::Value;
         type Collection = S::Collection;
         type Rkey = Set<members::rkey>;
+        type Value = S::Value;
+    }
+    ///State transition - sets the `value` field to Set
+    pub struct SetValue<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetValue<S> {}
+    impl<S: State> State for SetValue<S> {
+        type Collection = S::Collection;
+        type Rkey = S::Rkey;
+        type Value = Set<members::value>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `value` field
-        pub struct value(());
         ///Marker type for the `collection` field
         pub struct collection(());
         ///Marker type for the `rkey` field
         pub struct rkey(());
+        ///Marker type for the `value` field
+        pub struct value(());
     }
 }
 
@@ -1564,9 +1564,9 @@ where
 impl<'a, S> UpdateBuilder<'a, S>
 where
     S: update_state::State,
-    S::Value: update_state::IsSet,
     S::Collection: update_state::IsSet,
     S::Rkey: update_state::IsSet,
+    S::Value: update_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> Update<'a> {

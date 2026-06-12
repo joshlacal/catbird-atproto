@@ -8,6 +8,7 @@
 pub mod declaration;
 pub mod delete_account;
 pub mod export_account_data;
+pub mod get_status;
 
 /// [NOTE: This is under active development and should be considered unstable while this note is here].
 #[jacquard_derive::lexicon]
@@ -325,10 +326,10 @@ pub struct GroupConvoMember<'a> {
     /// Who added this member. Only present if the member was added (instead of joining via link).
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub added_by: std::option::Option<crate::chat_bsky::actor::ProfileViewBasic<'a>>,
+    pub added_by: std::option::Option<crate::generated::chat_bsky::actor::ProfileViewBasic<'a>>,
     /// The member's role within this conversation. Only present in group conversation member lists.
     #[serde(borrow)]
-    pub role: crate::chat_bsky::actor::MemberRole<'a>,
+    pub role: crate::generated::chat_bsky::actor::MemberRole<'a>,
 }
 
 pub mod group_convo_member_state {
@@ -367,8 +368,8 @@ pub mod group_convo_member_state {
 pub struct GroupConvoMemberBuilder<'a, S: group_convo_member_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
-        ::core::option::Option<crate::chat_bsky::actor::ProfileViewBasic<'a>>,
-        ::core::option::Option<crate::chat_bsky::actor::MemberRole<'a>>,
+        ::core::option::Option<crate::generated::chat_bsky::actor::ProfileViewBasic<'a>>,
+        ::core::option::Option<crate::generated::chat_bsky::actor::MemberRole<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
@@ -395,7 +396,7 @@ impl<'a, S: group_convo_member_state::State> GroupConvoMemberBuilder<'a, S> {
     /// Set the `addedBy` field (optional)
     pub fn added_by(
         mut self,
-        value: impl Into<Option<crate::chat_bsky::actor::ProfileViewBasic<'a>>>,
+        value: impl Into<Option<crate::generated::chat_bsky::actor::ProfileViewBasic<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.0 = value.into();
         self
@@ -403,7 +404,7 @@ impl<'a, S: group_convo_member_state::State> GroupConvoMemberBuilder<'a, S> {
     /// Set the `addedBy` field to an Option value (optional)
     pub fn maybe_added_by(
         mut self,
-        value: Option<crate::chat_bsky::actor::ProfileViewBasic<'a>>,
+        value: Option<crate::generated::chat_bsky::actor::ProfileViewBasic<'a>>,
     ) -> Self {
         self.__unsafe_private_named.0 = value;
         self
@@ -418,7 +419,7 @@ where
     /// Set the `role` field (required)
     pub fn role(
         mut self,
-        value: impl Into<crate::chat_bsky::actor::MemberRole<'a>>,
+        value: impl Into<crate::generated::chat_bsky::actor::MemberRole<'a>>,
     ) -> GroupConvoMemberBuilder<'a, group_convo_member_state::SetRole<S>> {
         self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
         GroupConvoMemberBuilder {
@@ -590,7 +591,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for PastGroupConvoMember<'a> 
 pub struct ProfileViewBasic<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub associated: std::option::Option<crate::app_bsky::actor::ProfileAssociated<'a>>,
+    pub associated: std::option::Option<crate::generated::app_bsky::actor::ProfileAssociated<'a>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub avatar: std::option::Option<jacquard_common::types::string::Uri<'a>>,
@@ -612,13 +613,13 @@ pub struct ProfileViewBasic<'a> {
     pub kind: std::option::Option<ProfileViewBasicKind<'a>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub labels: std::option::Option<Vec<crate::com_atproto::label::Label<'a>>>,
+    pub labels: std::option::Option<Vec<crate::generated::com_atproto::label::Label<'a>>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub verification: std::option::Option<crate::app_bsky::actor::VerificationState<'a>>,
+    pub verification: std::option::Option<crate::generated::app_bsky::actor::VerificationState<'a>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub viewer: std::option::Option<crate::app_bsky::actor::ViewerState<'a>>,
+    pub viewer: std::option::Option<crate::generated::app_bsky::actor::ViewerState<'a>>,
 }
 
 pub mod profile_view_basic_state {
@@ -631,37 +632,37 @@ pub mod profile_view_basic_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Did;
         type Handle;
+        type Did;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Did = Unset;
         type Handle = Unset;
-    }
-    ///State transition - sets the `did` field to Set
-    pub struct SetDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDid<S> {}
-    impl<S: State> State for SetDid<S> {
-        type Did = Set<members::did>;
-        type Handle = S::Handle;
+        type Did = Unset;
     }
     ///State transition - sets the `handle` field to Set
     pub struct SetHandle<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetHandle<S> {}
     impl<S: State> State for SetHandle<S> {
-        type Did = S::Did;
         type Handle = Set<members::handle>;
+        type Did = S::Did;
+    }
+    ///State transition - sets the `did` field to Set
+    pub struct SetDid<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetDid<S> {}
+    impl<S: State> State for SetDid<S> {
+        type Handle = S::Handle;
+        type Did = Set<members::did>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `did` field
-        pub struct did(());
         ///Marker type for the `handle` field
         pub struct handle(());
+        ///Marker type for the `did` field
+        pub struct did(());
     }
 }
 
@@ -669,7 +670,7 @@ pub mod profile_view_basic_state {
 pub struct ProfileViewBasicBuilder<'a, S: profile_view_basic_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
-        ::core::option::Option<crate::app_bsky::actor::ProfileAssociated<'a>>,
+        ::core::option::Option<crate::generated::app_bsky::actor::ProfileAssociated<'a>>,
         ::core::option::Option<jacquard_common::types::string::Uri<'a>>,
         ::core::option::Option<bool>,
         ::core::option::Option<jacquard_common::types::string::Datetime>,
@@ -677,9 +678,9 @@ pub struct ProfileViewBasicBuilder<'a, S: profile_view_basic_state::State> {
         ::core::option::Option<jacquard_common::CowStr<'a>>,
         ::core::option::Option<jacquard_common::types::string::Handle<'a>>,
         ::core::option::Option<ProfileViewBasicKind<'a>>,
-        ::core::option::Option<Vec<crate::com_atproto::label::Label<'a>>>,
-        ::core::option::Option<crate::app_bsky::actor::VerificationState<'a>>,
-        ::core::option::Option<crate::app_bsky::actor::ViewerState<'a>>,
+        ::core::option::Option<Vec<crate::generated::com_atproto::label::Label<'a>>>,
+        ::core::option::Option<crate::generated::app_bsky::actor::VerificationState<'a>>,
+        ::core::option::Option<crate::generated::app_bsky::actor::ViewerState<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
@@ -708,7 +709,7 @@ impl<'a, S: profile_view_basic_state::State> ProfileViewBasicBuilder<'a, S> {
     /// Set the `associated` field (optional)
     pub fn associated(
         mut self,
-        value: impl Into<Option<crate::app_bsky::actor::ProfileAssociated<'a>>>,
+        value: impl Into<Option<crate::generated::app_bsky::actor::ProfileAssociated<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.0 = value.into();
         self
@@ -716,7 +717,7 @@ impl<'a, S: profile_view_basic_state::State> ProfileViewBasicBuilder<'a, S> {
     /// Set the `associated` field to an Option value (optional)
     pub fn maybe_associated(
         mut self,
-        value: Option<crate::app_bsky::actor::ProfileAssociated<'a>>,
+        value: Option<crate::generated::app_bsky::actor::ProfileAssociated<'a>>,
     ) -> Self {
         self.__unsafe_private_named.0 = value;
         self
@@ -839,7 +840,7 @@ impl<'a, S: profile_view_basic_state::State> ProfileViewBasicBuilder<'a, S> {
     /// Set the `labels` field (optional)
     pub fn labels(
         mut self,
-        value: impl Into<Option<Vec<crate::com_atproto::label::Label<'a>>>>,
+        value: impl Into<Option<Vec<crate::generated::com_atproto::label::Label<'a>>>>,
     ) -> Self {
         self.__unsafe_private_named.8 = value.into();
         self
@@ -847,7 +848,7 @@ impl<'a, S: profile_view_basic_state::State> ProfileViewBasicBuilder<'a, S> {
     /// Set the `labels` field to an Option value (optional)
     pub fn maybe_labels(
         mut self,
-        value: Option<Vec<crate::com_atproto::label::Label<'a>>>,
+        value: Option<Vec<crate::generated::com_atproto::label::Label<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.8 = value;
         self
@@ -858,7 +859,7 @@ impl<'a, S: profile_view_basic_state::State> ProfileViewBasicBuilder<'a, S> {
     /// Set the `verification` field (optional)
     pub fn verification(
         mut self,
-        value: impl Into<Option<crate::app_bsky::actor::VerificationState<'a>>>,
+        value: impl Into<Option<crate::generated::app_bsky::actor::VerificationState<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.9 = value.into();
         self
@@ -866,7 +867,7 @@ impl<'a, S: profile_view_basic_state::State> ProfileViewBasicBuilder<'a, S> {
     /// Set the `verification` field to an Option value (optional)
     pub fn maybe_verification(
         mut self,
-        value: Option<crate::app_bsky::actor::VerificationState<'a>>,
+        value: Option<crate::generated::app_bsky::actor::VerificationState<'a>>,
     ) -> Self {
         self.__unsafe_private_named.9 = value;
         self
@@ -877,13 +878,16 @@ impl<'a, S: profile_view_basic_state::State> ProfileViewBasicBuilder<'a, S> {
     /// Set the `viewer` field (optional)
     pub fn viewer(
         mut self,
-        value: impl Into<Option<crate::app_bsky::actor::ViewerState<'a>>>,
+        value: impl Into<Option<crate::generated::app_bsky::actor::ViewerState<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.10 = value.into();
         self
     }
     /// Set the `viewer` field to an Option value (optional)
-    pub fn maybe_viewer(mut self, value: Option<crate::app_bsky::actor::ViewerState<'a>>) -> Self {
+    pub fn maybe_viewer(
+        mut self,
+        value: Option<crate::generated::app_bsky::actor::ViewerState<'a>>,
+    ) -> Self {
         self.__unsafe_private_named.10 = value;
         self
     }
@@ -892,8 +896,8 @@ impl<'a, S: profile_view_basic_state::State> ProfileViewBasicBuilder<'a, S> {
 impl<'a, S> ProfileViewBasicBuilder<'a, S>
 where
     S: profile_view_basic_state::State,
-    S::Did: profile_view_basic_state::IsSet,
     S::Handle: profile_view_basic_state::IsSet,
+    S::Did: profile_view_basic_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> ProfileViewBasic<'a> {
@@ -945,11 +949,11 @@ where
 #[serde(bound(deserialize = "'de: 'a"))]
 pub enum ProfileViewBasicKind<'a> {
     #[serde(rename = "chat.bsky.actor.defs#directConvoMember")]
-    DirectConvoMember(Box<crate::chat_bsky::actor::DirectConvoMember<'a>>),
+    DirectConvoMember(Box<crate::generated::chat_bsky::actor::DirectConvoMember<'a>>),
     #[serde(rename = "chat.bsky.actor.defs#groupConvoMember")]
-    GroupConvoMember(Box<crate::chat_bsky::actor::GroupConvoMember<'a>>),
+    GroupConvoMember(Box<crate::generated::chat_bsky::actor::GroupConvoMember<'a>>),
     #[serde(rename = "chat.bsky.actor.defs#pastGroupConvoMember")]
-    PastGroupConvoMember(Box<crate::chat_bsky::actor::PastGroupConvoMember<'a>>),
+    PastGroupConvoMember(Box<crate::generated::chat_bsky::actor::PastGroupConvoMember<'a>>),
 }
 
 impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ProfileViewBasic<'a> {

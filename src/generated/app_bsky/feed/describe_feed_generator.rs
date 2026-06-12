@@ -292,10 +292,11 @@ pub struct DescribeFeedGeneratorOutput<'a> {
     #[serde(borrow)]
     pub did: jacquard_common::types::string::Did<'a>,
     #[serde(borrow)]
-    pub feeds: Vec<crate::app_bsky::feed::describe_feed_generator::Feed<'a>>,
+    pub feeds: Vec<crate::generated::app_bsky::feed::describe_feed_generator::Feed<'a>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub links: std::option::Option<crate::app_bsky::feed::describe_feed_generator::Links<'a>>,
+    pub links:
+        std::option::Option<crate::generated::app_bsky::feed::describe_feed_generator::Links<'a>>,
 }
 
 /// XRPC request marker type

@@ -188,10 +188,10 @@ pub struct GetPostThreadV2Output<'a> {
     pub has_other_replies: bool,
     /// A flat list of thread items. The depth of each item is indicated by the depth property inside the item.
     #[serde(borrow)]
-    pub thread: Vec<crate::app_bsky::unspecced::get_post_thread_v2::ThreadItem<'a>>,
+    pub thread: Vec<crate::generated::app_bsky::unspecced::get_post_thread_v2::ThreadItem<'a>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub threadgate: std::option::Option<crate::app_bsky::feed::ThreadgateView<'a>>,
+    pub threadgate: std::option::Option<crate::generated::app_bsky::feed::ThreadgateView<'a>>,
 }
 
 /// Response type for
@@ -419,13 +419,15 @@ where
 #[serde(bound(deserialize = "'de: 'a"))]
 pub enum ThreadItemValue<'a> {
     #[serde(rename = "app.bsky.unspecced.defs#threadItemPost")]
-    ThreadItemPost(Box<crate::app_bsky::unspecced::ThreadItemPost<'a>>),
+    ThreadItemPost(Box<crate::generated::app_bsky::unspecced::ThreadItemPost<'a>>),
     #[serde(rename = "app.bsky.unspecced.defs#threadItemNoUnauthenticated")]
-    ThreadItemNoUnauthenticated(Box<crate::app_bsky::unspecced::ThreadItemNoUnauthenticated<'a>>),
+    ThreadItemNoUnauthenticated(
+        Box<crate::generated::app_bsky::unspecced::ThreadItemNoUnauthenticated<'a>>,
+    ),
     #[serde(rename = "app.bsky.unspecced.defs#threadItemNotFound")]
-    ThreadItemNotFound(Box<crate::app_bsky::unspecced::ThreadItemNotFound<'a>>),
+    ThreadItemNotFound(Box<crate::generated::app_bsky::unspecced::ThreadItemNotFound<'a>>),
     #[serde(rename = "app.bsky.unspecced.defs#threadItemBlocked")]
-    ThreadItemBlocked(Box<crate::app_bsky::unspecced::ThreadItemBlocked<'a>>),
+    ThreadItemBlocked(Box<crate::generated::app_bsky::unspecced::ThreadItemBlocked<'a>>),
 }
 
 fn lexicon_doc_app_bsky_unspecced_getPostThreadV2(

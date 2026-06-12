@@ -37,7 +37,7 @@ pub struct Status<'a> {
     /// An optional embed associated with the status.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub embed: std::option::Option<crate::app_bsky::embed::external::ExternalRecord<'a>>,
+    pub embed: std::option::Option<crate::generated::app_bsky::embed::external::ExternalRecord<'a>>,
     /// The status for the account.
     #[serde(borrow)]
     pub status: jacquard_common::CowStr<'a>,
@@ -53,37 +53,37 @@ pub mod status_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Status;
         type CreatedAt;
+        type Status;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Status = Unset;
         type CreatedAt = Unset;
-    }
-    ///State transition - sets the `status` field to Set
-    pub struct SetStatus<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetStatus<S> {}
-    impl<S: State> State for SetStatus<S> {
-        type Status = Set<members::status>;
-        type CreatedAt = S::CreatedAt;
+        type Status = Unset;
     }
     ///State transition - sets the `created_at` field to Set
     pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
     impl<S: State> State for SetCreatedAt<S> {
-        type Status = S::Status;
         type CreatedAt = Set<members::created_at>;
+        type Status = S::Status;
+    }
+    ///State transition - sets the `status` field to Set
+    pub struct SetStatus<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetStatus<S> {}
+    impl<S: State> State for SetStatus<S> {
+        type CreatedAt = S::CreatedAt;
+        type Status = Set<members::status>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `status` field
-        pub struct status(());
         ///Marker type for the `created_at` field
         pub struct created_at(());
+        ///Marker type for the `status` field
+        pub struct status(());
     }
 }
 
@@ -93,7 +93,7 @@ pub struct StatusBuilder<'a, S: status_state::State> {
     __unsafe_private_named: (
         ::core::option::Option<jacquard_common::types::string::Datetime>,
         ::core::option::Option<i64>,
-        ::core::option::Option<crate::app_bsky::embed::external::ExternalRecord<'a>>,
+        ::core::option::Option<crate::generated::app_bsky::embed::external::ExternalRecord<'a>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
@@ -153,7 +153,7 @@ impl<'a, S: status_state::State> StatusBuilder<'a, S> {
     /// Set the `embed` field (optional)
     pub fn embed(
         mut self,
-        value: impl Into<Option<crate::app_bsky::embed::external::ExternalRecord<'a>>>,
+        value: impl Into<Option<crate::generated::app_bsky::embed::external::ExternalRecord<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.2 = value.into();
         self
@@ -161,7 +161,7 @@ impl<'a, S: status_state::State> StatusBuilder<'a, S> {
     /// Set the `embed` field to an Option value (optional)
     pub fn maybe_embed(
         mut self,
-        value: Option<crate::app_bsky::embed::external::ExternalRecord<'a>>,
+        value: Option<crate::generated::app_bsky::embed::external::ExternalRecord<'a>>,
     ) -> Self {
         self.__unsafe_private_named.2 = value;
         self
@@ -190,8 +190,8 @@ where
 impl<'a, S> StatusBuilder<'a, S>
 where
     S: status_state::State,
-    S::Status: status_state::IsSet,
     S::CreatedAt: status_state::IsSet,
+    S::Status: status_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> Status<'a> {

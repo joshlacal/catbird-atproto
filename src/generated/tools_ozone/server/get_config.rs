@@ -20,23 +20,28 @@
 pub struct GetConfigOutput<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub appview: std::option::Option<crate::tools_ozone::server::get_config::ServiceConfig<'a>>,
+    pub appview:
+        std::option::Option<crate::generated::tools_ozone::server::get_config::ServiceConfig<'a>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub blob_divert: std::option::Option<crate::tools_ozone::server::get_config::ServiceConfig<'a>>,
+    pub blob_divert:
+        std::option::Option<crate::generated::tools_ozone::server::get_config::ServiceConfig<'a>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub chat: std::option::Option<crate::tools_ozone::server::get_config::ServiceConfig<'a>>,
+    pub chat:
+        std::option::Option<crate::generated::tools_ozone::server::get_config::ServiceConfig<'a>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub pds: std::option::Option<crate::tools_ozone::server::get_config::ServiceConfig<'a>>,
+    pub pds:
+        std::option::Option<crate::generated::tools_ozone::server::get_config::ServiceConfig<'a>>,
     /// The did of the verifier used for verification.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub verifier_did: std::option::Option<jacquard_common::types::string::Did<'a>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub viewer: std::option::Option<crate::tools_ozone::server::get_config::ViewerConfig<'a>>,
+    pub viewer:
+        std::option::Option<crate::generated::tools_ozone::server::get_config::ViewerConfig<'a>>,
 }
 
 /// XRPC request marker type

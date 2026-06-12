@@ -114,9 +114,9 @@ where
 #[serde(rename_all = "camelCase")]
 pub struct GetTrendingTopicsOutput<'a> {
     #[serde(borrow)]
-    pub suggested: Vec<crate::app_bsky::unspecced::TrendingTopic<'a>>,
+    pub suggested: Vec<crate::generated::app_bsky::unspecced::TrendingTopic<'a>>,
     #[serde(borrow)]
-    pub topics: Vec<crate::app_bsky::unspecced::TrendingTopic<'a>>,
+    pub topics: Vec<crate::generated::app_bsky::unspecced::TrendingTopic<'a>>,
 }
 
 /// Response type for

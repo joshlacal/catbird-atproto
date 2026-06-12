@@ -537,7 +537,7 @@ pub struct QueryEventsOutput<'a> {
     #[serde(borrow)]
     pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(borrow)]
-    pub events: Vec<crate::tools_ozone::moderation::ModEventView<'a>>,
+    pub events: Vec<crate::generated::tools_ozone::moderation::ModEventView<'a>>,
 }
 
 /// Response type for

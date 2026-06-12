@@ -12,7 +12,8 @@
 #[serde(rename_all = "camelCase")]
 pub struct ListTemplatesOutput<'a> {
     #[serde(borrow)]
-    pub communication_templates: Vec<crate::tools_ozone::communication::TemplateView<'a>>,
+    pub communication_templates:
+        Vec<crate::generated::tools_ozone::communication::TemplateView<'a>>,
 }
 
 /// XRPC request marker type

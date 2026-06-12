@@ -150,7 +150,7 @@ pub struct ListWebhooksOutput<'a> {
     #[serde(borrow)]
     pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(borrow)]
-    pub webhooks: Vec<crate::place_stream::server::Webhook<'a>>,
+    pub webhooks: Vec<crate::generated::place_stream::server::Webhook<'a>>,
 }
 
 #[jacquard_derive::open_union]

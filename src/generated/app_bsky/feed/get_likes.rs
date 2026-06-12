@@ -12,7 +12,7 @@
 #[serde(rename_all = "camelCase")]
 pub struct Like<'a> {
     #[serde(borrow)]
-    pub actor: crate::app_bsky::actor::ProfileView<'a>,
+    pub actor: crate::generated::app_bsky::actor::ProfileView<'a>,
     pub created_at: jacquard_common::types::string::Datetime,
     pub indexed_at: jacquard_common::types::string::Datetime,
 }
@@ -28,50 +28,50 @@ pub mod like_state {
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
         type CreatedAt;
-        type Actor;
         type IndexedAt;
+        type Actor;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
         type CreatedAt = Unset;
-        type Actor = Unset;
         type IndexedAt = Unset;
+        type Actor = Unset;
     }
     ///State transition - sets the `created_at` field to Set
     pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
     impl<S: State> State for SetCreatedAt<S> {
         type CreatedAt = Set<members::created_at>;
+        type IndexedAt = S::IndexedAt;
         type Actor = S::Actor;
-        type IndexedAt = S::IndexedAt;
-    }
-    ///State transition - sets the `actor` field to Set
-    pub struct SetActor<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetActor<S> {}
-    impl<S: State> State for SetActor<S> {
-        type CreatedAt = S::CreatedAt;
-        type Actor = Set<members::actor>;
-        type IndexedAt = S::IndexedAt;
     }
     ///State transition - sets the `indexed_at` field to Set
     pub struct SetIndexedAt<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetIndexedAt<S> {}
     impl<S: State> State for SetIndexedAt<S> {
         type CreatedAt = S::CreatedAt;
-        type Actor = S::Actor;
         type IndexedAt = Set<members::indexed_at>;
+        type Actor = S::Actor;
+    }
+    ///State transition - sets the `actor` field to Set
+    pub struct SetActor<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetActor<S> {}
+    impl<S: State> State for SetActor<S> {
+        type CreatedAt = S::CreatedAt;
+        type IndexedAt = S::IndexedAt;
+        type Actor = Set<members::actor>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
         ///Marker type for the `created_at` field
         pub struct created_at(());
-        ///Marker type for the `actor` field
-        pub struct actor(());
         ///Marker type for the `indexed_at` field
         pub struct indexed_at(());
+        ///Marker type for the `actor` field
+        pub struct actor(());
     }
 }
 
@@ -79,7 +79,7 @@ pub mod like_state {
 pub struct LikeBuilder<'a, S: like_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
-        ::core::option::Option<crate::app_bsky::actor::ProfileView<'a>>,
+        ::core::option::Option<crate::generated::app_bsky::actor::ProfileView<'a>>,
         ::core::option::Option<jacquard_common::types::string::Datetime>,
         ::core::option::Option<jacquard_common::types::string::Datetime>,
     ),
@@ -112,7 +112,7 @@ where
     /// Set the `actor` field (required)
     pub fn actor(
         mut self,
-        value: impl Into<crate::app_bsky::actor::ProfileView<'a>>,
+        value: impl Into<crate::generated::app_bsky::actor::ProfileView<'a>>,
     ) -> LikeBuilder<'a, like_state::SetActor<S>> {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         LikeBuilder {
@@ -165,8 +165,8 @@ impl<'a, S> LikeBuilder<'a, S>
 where
     S: like_state::State,
     S::CreatedAt: like_state::IsSet,
-    S::Actor: like_state::IsSet,
     S::IndexedAt: like_state::IsSet,
+    S::Actor: like_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> Like<'a> {
@@ -553,7 +553,7 @@ pub struct GetLikesOutput<'a> {
     #[serde(borrow)]
     pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(borrow)]
-    pub likes: Vec<crate::app_bsky::feed::get_likes::Like<'a>>,
+    pub likes: Vec<crate::generated::app_bsky::feed::get_likes::Like<'a>>,
     #[serde(borrow)]
     pub uri: jacquard_common::types::string::AtUri<'a>,
 }

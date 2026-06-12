@@ -114,7 +114,7 @@ pub struct GetMutesOutput<'a> {
     #[serde(borrow)]
     pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(borrow)]
-    pub mutes: Vec<crate::app_bsky::actor::ProfileView<'a>>,
+    pub mutes: Vec<crate::generated::app_bsky::actor::ProfileView<'a>>,
 }
 
 /// Response type for

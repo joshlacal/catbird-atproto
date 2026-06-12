@@ -111,7 +111,7 @@ where
 #[serde(rename_all = "camelCase")]
 pub struct GetSuggestionsOutput<'a> {
     #[serde(borrow)]
-    pub actors: Vec<crate::app_bsky::actor::ProfileView<'a>>,
+    pub actors: Vec<crate::generated::app_bsky::actor::ProfileView<'a>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,

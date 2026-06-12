@@ -121,9 +121,9 @@ pub struct GetReposOutput<'a> {
 #[serde(bound(deserialize = "'de: 'a"))]
 pub enum GetReposOutputReposItem<'a> {
     #[serde(rename = "tools.ozone.moderation.defs#repoViewDetail")]
-    RepoViewDetail(Box<crate::tools_ozone::moderation::RepoViewDetail<'a>>),
+    RepoViewDetail(Box<crate::generated::tools_ozone::moderation::RepoViewDetail<'a>>),
     #[serde(rename = "tools.ozone.moderation.defs#repoViewNotFound")]
-    RepoViewNotFound(Box<crate::tools_ozone::moderation::RepoViewNotFound<'a>>),
+    RepoViewNotFound(Box<crate::generated::tools_ozone::moderation::RepoViewNotFound<'a>>),
 }
 
 /// Response type for

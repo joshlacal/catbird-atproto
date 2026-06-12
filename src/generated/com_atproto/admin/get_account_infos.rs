@@ -110,7 +110,7 @@ where
 #[serde(rename_all = "camelCase")]
 pub struct GetAccountInfosOutput<'a> {
     #[serde(borrow)]
-    pub infos: Vec<crate::com_atproto::admin::AccountView<'a>>,
+    pub infos: Vec<crate::generated::com_atproto::admin::AccountView<'a>>,
 }
 
 /// Response type for

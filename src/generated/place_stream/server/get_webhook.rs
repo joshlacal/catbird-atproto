@@ -110,7 +110,7 @@ where
 #[serde(rename_all = "camelCase")]
 pub struct GetWebhookOutput<'a> {
     #[serde(borrow)]
-    pub webhook: crate::place_stream::server::Webhook<'a>,
+    pub webhook: crate::generated::place_stream::server::Webhook<'a>,
 }
 
 #[jacquard_derive::open_union]

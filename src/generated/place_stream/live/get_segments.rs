@@ -158,7 +158,8 @@ where
 pub struct GetSegmentsOutput<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub segments: std::option::Option<Vec<crate::place_stream::segment::SegmentView<'a>>>,
+    pub segments:
+        std::option::Option<Vec<crate::generated::place_stream::segment::SegmentView<'a>>>,
 }
 
 /// Response type for

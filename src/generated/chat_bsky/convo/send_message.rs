@@ -14,7 +14,7 @@ pub struct SendMessage<'a> {
     #[serde(borrow)]
     pub convo_id: jacquard_common::CowStr<'a>,
     #[serde(borrow)]
-    pub message: crate::chat_bsky::convo::MessageInput<'a>,
+    pub message: crate::generated::chat_bsky::convo::MessageInput<'a>,
 }
 
 pub mod send_message_state {
@@ -66,7 +66,7 @@ pub struct SendMessageBuilder<'a, S: send_message_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
         ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<crate::chat_bsky::convo::MessageInput<'a>>,
+        ::core::option::Option<crate::generated::chat_bsky::convo::MessageInput<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
@@ -116,7 +116,7 @@ where
     /// Set the `message` field (required)
     pub fn message(
         mut self,
-        value: impl Into<crate::chat_bsky::convo::MessageInput<'a>>,
+        value: impl Into<crate::generated::chat_bsky::convo::MessageInput<'a>>,
     ) -> SendMessageBuilder<'a, send_message_state::SetMessage<S>> {
         self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
         SendMessageBuilder {
@@ -165,7 +165,7 @@ where
 pub struct SendMessageOutput<'a> {
     #[serde(flatten)]
     #[serde(borrow)]
-    pub value: crate::chat_bsky::convo::MessageView<'a>,
+    pub value: crate::generated::chat_bsky::convo::MessageView<'a>,
 }
 
 #[jacquard_derive::open_union]

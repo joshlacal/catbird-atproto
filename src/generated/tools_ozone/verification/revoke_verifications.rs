@@ -150,7 +150,7 @@ pub struct RevokeVerificationsOutput<'a> {
     /// List of verification uris that couldn't be revoked, including failure reasons
     #[serde(borrow)]
     pub failed_revocations:
-        Vec<crate::tools_ozone::verification::revoke_verifications::RevokeError<'a>>,
+        Vec<crate::generated::tools_ozone::verification::revoke_verifications::RevokeError<'a>>,
     /// List of verification uris successfully revoked
     #[serde(borrow)]
     pub revoked_verifications: Vec<jacquard_common::types::string::AtUri<'a>>,
@@ -209,37 +209,37 @@ pub mod revoke_error_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Error;
         type Uri;
+        type Error;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Error = Unset;
         type Uri = Unset;
-    }
-    ///State transition - sets the `error` field to Set
-    pub struct SetError<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetError<S> {}
-    impl<S: State> State for SetError<S> {
-        type Error = Set<members::error>;
-        type Uri = S::Uri;
+        type Error = Unset;
     }
     ///State transition - sets the `uri` field to Set
     pub struct SetUri<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetUri<S> {}
     impl<S: State> State for SetUri<S> {
-        type Error = S::Error;
         type Uri = Set<members::uri>;
+        type Error = S::Error;
+    }
+    ///State transition - sets the `error` field to Set
+    pub struct SetError<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetError<S> {}
+    impl<S: State> State for SetError<S> {
+        type Uri = S::Uri;
+        type Error = Set<members::error>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `error` field
-        pub struct error(());
         ///Marker type for the `uri` field
         pub struct uri(());
+        ///Marker type for the `error` field
+        pub struct error(());
     }
 }
 
@@ -312,8 +312,8 @@ where
 impl<'a, S> RevokeErrorBuilder<'a, S>
 where
     S: revoke_error_state::State,
-    S::Error: revoke_error_state::IsSet,
     S::Uri: revoke_error_state::IsSet,
+    S::Error: revoke_error_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> RevokeError<'a> {

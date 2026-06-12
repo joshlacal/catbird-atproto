@@ -20,7 +20,7 @@ pub struct UploadVideo {
 #[serde(rename_all = "camelCase")]
 pub struct UploadVideoOutput<'a> {
     #[serde(borrow)]
-    pub job_status: crate::app_bsky::video::JobStatus<'a>,
+    pub job_status: crate::generated::app_bsky::video::JobStatus<'a>,
 }
 
 /// Response type for

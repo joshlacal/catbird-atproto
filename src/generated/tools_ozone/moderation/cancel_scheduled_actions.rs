@@ -13,8 +13,9 @@
 pub struct CancellationResults<'a> {
     /// DIDs for which cancellation failed with error details
     #[serde(borrow)]
-    pub failed:
-        Vec<crate::tools_ozone::moderation::cancel_scheduled_actions::FailedCancellation<'a>>,
+    pub failed: Vec<
+        crate::generated::tools_ozone::moderation::cancel_scheduled_actions::FailedCancellation<'a>,
+    >,
     /// DIDs for which all pending scheduled actions were successfully cancelled
     #[serde(borrow)]
     pub succeeded: Vec<jacquard_common::types::string::Did<'a>>,
@@ -69,7 +70,11 @@ pub struct CancellationResultsBuilder<'a, S: cancellation_results_state::State> 
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
         ::core::option::Option<
-            Vec<crate::tools_ozone::moderation::cancel_scheduled_actions::FailedCancellation<'a>>,
+            Vec<
+                crate::generated::tools_ozone::moderation::cancel_scheduled_actions::FailedCancellation<
+                    'a,
+                >,
+            >,
         >,
         ::core::option::Option<Vec<jacquard_common::types::string::Did<'a>>>,
     ),
@@ -103,7 +108,11 @@ where
     pub fn failed(
         mut self,
         value: impl Into<
-            Vec<crate::tools_ozone::moderation::cancel_scheduled_actions::FailedCancellation<'a>>,
+            Vec<
+                crate::generated::tools_ozone::moderation::cancel_scheduled_actions::FailedCancellation<
+                    'a,
+                >,
+            >,
         >,
     ) -> CancellationResultsBuilder<'a, cancellation_results_state::SetFailed<S>> {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());

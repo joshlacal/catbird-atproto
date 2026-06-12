@@ -176,7 +176,7 @@ pub struct SearchStarterPacksSkeletonOutput<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     pub hits_total: std::option::Option<i64>,
     #[serde(borrow)]
-    pub starter_packs: Vec<crate::app_bsky::unspecced::SkeletonSearchStarterPack<'a>>,
+    pub starter_packs: Vec<crate::generated::app_bsky::unspecced::SkeletonSearchStarterPack<'a>>,
 }
 
 #[jacquard_derive::open_union]

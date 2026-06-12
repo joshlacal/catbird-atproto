@@ -36,7 +36,7 @@ pub struct CreateWebhook<'a> {
     /// Text replacement rules for webhook messages.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub rewrite: std::option::Option<Vec<crate::place_stream::server::RewriteRule<'a>>>,
+    pub rewrite: std::option::Option<Vec<crate::generated::place_stream::server::RewriteRule<'a>>>,
     /// Text to append to webhook messages.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
@@ -100,7 +100,7 @@ pub struct CreateWebhookBuilder<'a, S: create_webhook_state::State> {
         ::core::option::Option<Vec<jacquard_common::CowStr<'a>>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<Vec<crate::place_stream::server::RewriteRule<'a>>>,
+        ::core::option::Option<Vec<crate::generated::place_stream::server::RewriteRule<'a>>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
         ::core::option::Option<jacquard_common::types::string::Uri<'a>>,
     ),
@@ -216,7 +216,7 @@ impl<'a, S: create_webhook_state::State> CreateWebhookBuilder<'a, S> {
     /// Set the `rewrite` field (optional)
     pub fn rewrite(
         mut self,
-        value: impl Into<Option<Vec<crate::place_stream::server::RewriteRule<'a>>>>,
+        value: impl Into<Option<Vec<crate::generated::place_stream::server::RewriteRule<'a>>>>,
     ) -> Self {
         self.__unsafe_private_named.6 = value.into();
         self
@@ -224,7 +224,7 @@ impl<'a, S: create_webhook_state::State> CreateWebhookBuilder<'a, S> {
     /// Set the `rewrite` field to an Option value (optional)
     pub fn maybe_rewrite(
         mut self,
-        value: Option<Vec<crate::place_stream::server::RewriteRule<'a>>>,
+        value: Option<Vec<crate::generated::place_stream::server::RewriteRule<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.6 = value;
         self
@@ -314,7 +314,7 @@ where
 #[serde(rename_all = "camelCase")]
 pub struct CreateWebhookOutput<'a> {
     #[serde(borrow)]
-    pub webhook: crate::place_stream::server::Webhook<'a>,
+    pub webhook: crate::generated::place_stream::server::Webhook<'a>,
 }
 
 #[jacquard_derive::open_union]

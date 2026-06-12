@@ -112,7 +112,7 @@ where
 pub struct ResolveIdentityOutput<'a> {
     #[serde(flatten)]
     #[serde(borrow)]
-    pub value: crate::com_atproto::identity::IdentityInfo<'a>,
+    pub value: crate::generated::com_atproto::identity::IdentityInfo<'a>,
 }
 
 #[jacquard_derive::open_union]

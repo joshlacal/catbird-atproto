@@ -27,7 +27,8 @@ pub struct Generator<'a> {
     pub description: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub description_facets: std::option::Option<Vec<crate::app_bsky::richtext::facet::Facet<'a>>>,
+    pub description_facets:
+        std::option::Option<Vec<crate::generated::app_bsky::richtext::facet::Facet<'a>>>,
     #[serde(borrow)]
     pub did: jacquard_common::types::string::Did<'a>,
     #[serde(borrow)]
@@ -35,7 +36,7 @@ pub struct Generator<'a> {
     /// Self-label values
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub labels: std::option::Option<crate::com_atproto::label::SelfLabels<'a>>,
+    pub labels: std::option::Option<crate::generated::com_atproto::label::SelfLabels<'a>>,
 }
 
 pub mod generator_state {
@@ -48,51 +49,51 @@ pub mod generator_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Did;
-        type DisplayName;
         type CreatedAt;
+        type DisplayName;
+        type Did;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Did = Unset;
-        type DisplayName = Unset;
         type CreatedAt = Unset;
-    }
-    ///State transition - sets the `did` field to Set
-    pub struct SetDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDid<S> {}
-    impl<S: State> State for SetDid<S> {
-        type Did = Set<members::did>;
-        type DisplayName = S::DisplayName;
-        type CreatedAt = S::CreatedAt;
-    }
-    ///State transition - sets the `display_name` field to Set
-    pub struct SetDisplayName<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDisplayName<S> {}
-    impl<S: State> State for SetDisplayName<S> {
-        type Did = S::Did;
-        type DisplayName = Set<members::display_name>;
-        type CreatedAt = S::CreatedAt;
+        type DisplayName = Unset;
+        type Did = Unset;
     }
     ///State transition - sets the `created_at` field to Set
     pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
     impl<S: State> State for SetCreatedAt<S> {
-        type Did = S::Did;
-        type DisplayName = S::DisplayName;
         type CreatedAt = Set<members::created_at>;
+        type DisplayName = S::DisplayName;
+        type Did = S::Did;
+    }
+    ///State transition - sets the `display_name` field to Set
+    pub struct SetDisplayName<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetDisplayName<S> {}
+    impl<S: State> State for SetDisplayName<S> {
+        type CreatedAt = S::CreatedAt;
+        type DisplayName = Set<members::display_name>;
+        type Did = S::Did;
+    }
+    ///State transition - sets the `did` field to Set
+    pub struct SetDid<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetDid<S> {}
+    impl<S: State> State for SetDid<S> {
+        type CreatedAt = S::CreatedAt;
+        type DisplayName = S::DisplayName;
+        type Did = Set<members::did>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `did` field
-        pub struct did(());
-        ///Marker type for the `display_name` field
-        pub struct display_name(());
         ///Marker type for the `created_at` field
         pub struct created_at(());
+        ///Marker type for the `display_name` field
+        pub struct display_name(());
+        ///Marker type for the `did` field
+        pub struct did(());
     }
 }
 
@@ -105,10 +106,10 @@ pub struct GeneratorBuilder<'a, S: generator_state::State> {
         ::core::option::Option<jacquard_common::CowStr<'a>>,
         ::core::option::Option<jacquard_common::types::string::Datetime>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<Vec<crate::app_bsky::richtext::facet::Facet<'a>>>,
+        ::core::option::Option<Vec<crate::generated::app_bsky::richtext::facet::Facet<'a>>>,
         ::core::option::Option<jacquard_common::types::string::Did<'a>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<crate::com_atproto::label::SelfLabels<'a>>,
+        ::core::option::Option<crate::generated::com_atproto::label::SelfLabels<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
@@ -212,7 +213,7 @@ impl<'a, S: generator_state::State> GeneratorBuilder<'a, S> {
     /// Set the `descriptionFacets` field (optional)
     pub fn description_facets(
         mut self,
-        value: impl Into<Option<Vec<crate::app_bsky::richtext::facet::Facet<'a>>>>,
+        value: impl Into<Option<Vec<crate::generated::app_bsky::richtext::facet::Facet<'a>>>>,
     ) -> Self {
         self.__unsafe_private_named.5 = value.into();
         self
@@ -220,7 +221,7 @@ impl<'a, S: generator_state::State> GeneratorBuilder<'a, S> {
     /// Set the `descriptionFacets` field to an Option value (optional)
     pub fn maybe_description_facets(
         mut self,
-        value: Option<Vec<crate::app_bsky::richtext::facet::Facet<'a>>>,
+        value: Option<Vec<crate::generated::app_bsky::richtext::facet::Facet<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.5 = value;
         self
@@ -269,7 +270,7 @@ impl<'a, S: generator_state::State> GeneratorBuilder<'a, S> {
     /// Set the `labels` field (optional)
     pub fn labels(
         mut self,
-        value: impl Into<Option<crate::com_atproto::label::SelfLabels<'a>>>,
+        value: impl Into<Option<crate::generated::com_atproto::label::SelfLabels<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.8 = value.into();
         self
@@ -277,7 +278,7 @@ impl<'a, S: generator_state::State> GeneratorBuilder<'a, S> {
     /// Set the `labels` field to an Option value (optional)
     pub fn maybe_labels(
         mut self,
-        value: Option<crate::com_atproto::label::SelfLabels<'a>>,
+        value: Option<crate::generated::com_atproto::label::SelfLabels<'a>>,
     ) -> Self {
         self.__unsafe_private_named.8 = value;
         self
@@ -287,9 +288,9 @@ impl<'a, S: generator_state::State> GeneratorBuilder<'a, S> {
 impl<'a, S> GeneratorBuilder<'a, S>
 where
     S: generator_state::State,
-    S::Did: generator_state::IsSet,
-    S::DisplayName: generator_state::IsSet,
     S::CreatedAt: generator_state::IsSet,
+    S::DisplayName: generator_state::IsSet,
+    S::Did: generator_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> Generator<'a> {

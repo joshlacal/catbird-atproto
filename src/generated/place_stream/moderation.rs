@@ -22,7 +22,7 @@ pub mod update_livestream;
 pub struct PermissionView<'a> {
     /// The streamer who granted these permissions
     #[serde(borrow)]
-    pub author: crate::app_bsky::actor::ProfileViewBasic<'a>,
+    pub author: crate::generated::app_bsky::actor::ProfileViewBasic<'a>,
     /// Content identifier of the permission record
     #[serde(borrow)]
     pub cid: jacquard_common::types::string::Cid<'a>,
@@ -44,67 +44,67 @@ pub mod permission_view_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Cid;
         type Author;
-        type Uri;
         type Record;
+        type Uri;
+        type Cid;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Cid = Unset;
         type Author = Unset;
-        type Uri = Unset;
         type Record = Unset;
-    }
-    ///State transition - sets the `cid` field to Set
-    pub struct SetCid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCid<S> {}
-    impl<S: State> State for SetCid<S> {
-        type Cid = Set<members::cid>;
-        type Author = S::Author;
-        type Uri = S::Uri;
-        type Record = S::Record;
+        type Uri = Unset;
+        type Cid = Unset;
     }
     ///State transition - sets the `author` field to Set
     pub struct SetAuthor<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetAuthor<S> {}
     impl<S: State> State for SetAuthor<S> {
-        type Cid = S::Cid;
         type Author = Set<members::author>;
+        type Record = S::Record;
         type Uri = S::Uri;
-        type Record = S::Record;
-    }
-    ///State transition - sets the `uri` field to Set
-    pub struct SetUri<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUri<S> {}
-    impl<S: State> State for SetUri<S> {
         type Cid = S::Cid;
-        type Author = S::Author;
-        type Uri = Set<members::uri>;
-        type Record = S::Record;
     }
     ///State transition - sets the `record` field to Set
     pub struct SetRecord<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetRecord<S> {}
     impl<S: State> State for SetRecord<S> {
-        type Cid = S::Cid;
         type Author = S::Author;
-        type Uri = S::Uri;
         type Record = Set<members::record>;
+        type Uri = S::Uri;
+        type Cid = S::Cid;
+    }
+    ///State transition - sets the `uri` field to Set
+    pub struct SetUri<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetUri<S> {}
+    impl<S: State> State for SetUri<S> {
+        type Author = S::Author;
+        type Record = S::Record;
+        type Uri = Set<members::uri>;
+        type Cid = S::Cid;
+    }
+    ///State transition - sets the `cid` field to Set
+    pub struct SetCid<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCid<S> {}
+    impl<S: State> State for SetCid<S> {
+        type Author = S::Author;
+        type Record = S::Record;
+        type Uri = S::Uri;
+        type Cid = Set<members::cid>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `cid` field
-        pub struct cid(());
         ///Marker type for the `author` field
         pub struct author(());
-        ///Marker type for the `uri` field
-        pub struct uri(());
         ///Marker type for the `record` field
         pub struct record(());
+        ///Marker type for the `uri` field
+        pub struct uri(());
+        ///Marker type for the `cid` field
+        pub struct cid(());
     }
 }
 
@@ -112,7 +112,7 @@ pub mod permission_view_state {
 pub struct PermissionViewBuilder<'a, S: permission_view_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
-        ::core::option::Option<crate::app_bsky::actor::ProfileViewBasic<'a>>,
+        ::core::option::Option<crate::generated::app_bsky::actor::ProfileViewBasic<'a>>,
         ::core::option::Option<jacquard_common::types::string::Cid<'a>>,
         ::core::option::Option<jacquard_common::types::value::Data<'a>>,
         ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
@@ -146,7 +146,7 @@ where
     /// Set the `author` field (required)
     pub fn author(
         mut self,
-        value: impl Into<crate::app_bsky::actor::ProfileViewBasic<'a>>,
+        value: impl Into<crate::generated::app_bsky::actor::ProfileViewBasic<'a>>,
     ) -> PermissionViewBuilder<'a, permission_view_state::SetAuthor<S>> {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         PermissionViewBuilder {
@@ -217,10 +217,10 @@ where
 impl<'a, S> PermissionViewBuilder<'a, S>
 where
     S: permission_view_state::State,
-    S::Cid: permission_view_state::IsSet,
     S::Author: permission_view_state::IsSet,
-    S::Uri: permission_view_state::IsSet,
     S::Record: permission_view_state::IsSet,
+    S::Uri: permission_view_state::IsSet,
+    S::Cid: permission_view_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> PermissionView<'a> {

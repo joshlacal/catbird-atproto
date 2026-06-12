@@ -111,7 +111,7 @@ where
 #[serde(rename_all = "camelCase")]
 pub struct GetPostsOutput<'a> {
     #[serde(borrow)]
-    pub posts: Vec<crate::app_bsky::feed::PostView<'a>>,
+    pub posts: Vec<crate::generated::app_bsky::feed::PostView<'a>>,
 }
 
 /// Response type for

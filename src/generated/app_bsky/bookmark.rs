@@ -18,7 +18,7 @@ pub mod get_bookmarks;
 pub struct Bookmark<'a> {
     /// A strong ref to the record to be bookmarked. Currently, only `app.bsky.feed.post` records are supported.
     #[serde(borrow)]
-    pub subject: crate::com_atproto::repo::strong_ref::StrongRef<'a>,
+    pub subject: crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>,
 }
 
 pub mod bookmark_state {
@@ -57,7 +57,7 @@ pub mod bookmark_state {
 pub struct BookmarkBuilder<'a, S: bookmark_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named:
-        (::core::option::Option<crate::com_atproto::repo::strong_ref::StrongRef<'a>>,),
+        (::core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
 
@@ -87,7 +87,7 @@ where
     /// Set the `subject` field (required)
     pub fn subject(
         mut self,
-        value: impl Into<crate::com_atproto::repo::strong_ref::StrongRef<'a>>,
+        value: impl Into<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,
     ) -> BookmarkBuilder<'a, bookmark_state::SetSubject<S>> {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         BookmarkBuilder {
@@ -265,7 +265,7 @@ pub struct BookmarkView<'a> {
     pub item: BookmarkViewItem<'a>,
     /// A strong ref to the bookmarked record.
     #[serde(borrow)]
-    pub subject: crate::com_atproto::repo::strong_ref::StrongRef<'a>,
+    pub subject: crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>,
 }
 
 pub mod bookmark_view_state {
@@ -278,37 +278,37 @@ pub mod bookmark_view_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Item;
         type Subject;
+        type Item;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Item = Unset;
         type Subject = Unset;
-    }
-    ///State transition - sets the `item` field to Set
-    pub struct SetItem<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetItem<S> {}
-    impl<S: State> State for SetItem<S> {
-        type Item = Set<members::item>;
-        type Subject = S::Subject;
+        type Item = Unset;
     }
     ///State transition - sets the `subject` field to Set
     pub struct SetSubject<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetSubject<S> {}
     impl<S: State> State for SetSubject<S> {
-        type Item = S::Item;
         type Subject = Set<members::subject>;
+        type Item = S::Item;
+    }
+    ///State transition - sets the `item` field to Set
+    pub struct SetItem<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetItem<S> {}
+    impl<S: State> State for SetItem<S> {
+        type Subject = S::Subject;
+        type Item = Set<members::item>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `item` field
-        pub struct item(());
         ///Marker type for the `subject` field
         pub struct subject(());
+        ///Marker type for the `item` field
+        pub struct item(());
     }
 }
 
@@ -318,7 +318,7 @@ pub struct BookmarkViewBuilder<'a, S: bookmark_view_state::State> {
     __unsafe_private_named: (
         ::core::option::Option<jacquard_common::types::string::Datetime>,
         ::core::option::Option<BookmarkViewItem<'a>>,
-        ::core::option::Option<crate::com_atproto::repo::strong_ref::StrongRef<'a>>,
+        ::core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
@@ -387,7 +387,7 @@ where
     /// Set the `subject` field (required)
     pub fn subject(
         mut self,
-        value: impl Into<crate::com_atproto::repo::strong_ref::StrongRef<'a>>,
+        value: impl Into<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,
     ) -> BookmarkViewBuilder<'a, bookmark_view_state::SetSubject<S>> {
         self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
         BookmarkViewBuilder {
@@ -401,8 +401,8 @@ where
 impl<'a, S> BookmarkViewBuilder<'a, S>
 where
     S: bookmark_view_state::State,
-    S::Item: bookmark_view_state::IsSet,
     S::Subject: bookmark_view_state::IsSet,
+    S::Item: bookmark_view_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> BookmarkView<'a> {
@@ -438,11 +438,11 @@ where
 #[serde(bound(deserialize = "'de: 'a"))]
 pub enum BookmarkViewItem<'a> {
     #[serde(rename = "app.bsky.feed.defs#blockedPost")]
-    BlockedPost(Box<crate::app_bsky::feed::BlockedPost<'a>>),
+    BlockedPost(Box<crate::generated::app_bsky::feed::BlockedPost<'a>>),
     #[serde(rename = "app.bsky.feed.defs#notFoundPost")]
-    NotFoundPost(Box<crate::app_bsky::feed::NotFoundPost<'a>>),
+    NotFoundPost(Box<crate::generated::app_bsky::feed::NotFoundPost<'a>>),
     #[serde(rename = "app.bsky.feed.defs#postView")]
-    PostView(Box<crate::app_bsky::feed::PostView<'a>>),
+    PostView(Box<crate::generated::app_bsky::feed::PostView<'a>>),
 }
 
 impl<'a> ::jacquard_lexicon::schema::LexiconSchema for BookmarkView<'a> {

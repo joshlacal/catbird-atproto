@@ -12,7 +12,7 @@
 #[serde(rename_all = "camelCase")]
 pub struct AddRule<'a> {
     #[serde(borrow)]
-    pub action: crate::tools_ozone::safelink::ActionType<'a>,
+    pub action: crate::generated::tools_ozone::safelink::ActionType<'a>,
     /// Optional comment about the decision
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
@@ -22,9 +22,9 @@ pub struct AddRule<'a> {
     #[serde(borrow)]
     pub created_by: std::option::Option<jacquard_common::types::string::Did<'a>>,
     #[serde(borrow)]
-    pub pattern: crate::tools_ozone::safelink::PatternType<'a>,
+    pub pattern: crate::generated::tools_ozone::safelink::PatternType<'a>,
     #[serde(borrow)]
-    pub reason: crate::tools_ozone::safelink::ReasonType<'a>,
+    pub reason: crate::generated::tools_ozone::safelink::ReasonType<'a>,
     /// The URL or domain to apply the rule to
     #[serde(borrow)]
     pub url: jacquard_common::CowStr<'a>,
@@ -40,67 +40,67 @@ pub mod add_rule_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Action;
-        type Url;
-        type Pattern;
         type Reason;
+        type Pattern;
+        type Url;
+        type Action;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Action = Unset;
-        type Url = Unset;
-        type Pattern = Unset;
         type Reason = Unset;
-    }
-    ///State transition - sets the `action` field to Set
-    pub struct SetAction<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetAction<S> {}
-    impl<S: State> State for SetAction<S> {
-        type Action = Set<members::action>;
-        type Url = S::Url;
-        type Pattern = S::Pattern;
-        type Reason = S::Reason;
-    }
-    ///State transition - sets the `url` field to Set
-    pub struct SetUrl<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUrl<S> {}
-    impl<S: State> State for SetUrl<S> {
-        type Action = S::Action;
-        type Url = Set<members::url>;
-        type Pattern = S::Pattern;
-        type Reason = S::Reason;
-    }
-    ///State transition - sets the `pattern` field to Set
-    pub struct SetPattern<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetPattern<S> {}
-    impl<S: State> State for SetPattern<S> {
-        type Action = S::Action;
-        type Url = S::Url;
-        type Pattern = Set<members::pattern>;
-        type Reason = S::Reason;
+        type Pattern = Unset;
+        type Url = Unset;
+        type Action = Unset;
     }
     ///State transition - sets the `reason` field to Set
     pub struct SetReason<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetReason<S> {}
     impl<S: State> State for SetReason<S> {
-        type Action = S::Action;
-        type Url = S::Url;
-        type Pattern = S::Pattern;
         type Reason = Set<members::reason>;
+        type Pattern = S::Pattern;
+        type Url = S::Url;
+        type Action = S::Action;
+    }
+    ///State transition - sets the `pattern` field to Set
+    pub struct SetPattern<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetPattern<S> {}
+    impl<S: State> State for SetPattern<S> {
+        type Reason = S::Reason;
+        type Pattern = Set<members::pattern>;
+        type Url = S::Url;
+        type Action = S::Action;
+    }
+    ///State transition - sets the `url` field to Set
+    pub struct SetUrl<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetUrl<S> {}
+    impl<S: State> State for SetUrl<S> {
+        type Reason = S::Reason;
+        type Pattern = S::Pattern;
+        type Url = Set<members::url>;
+        type Action = S::Action;
+    }
+    ///State transition - sets the `action` field to Set
+    pub struct SetAction<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetAction<S> {}
+    impl<S: State> State for SetAction<S> {
+        type Reason = S::Reason;
+        type Pattern = S::Pattern;
+        type Url = S::Url;
+        type Action = Set<members::action>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `action` field
-        pub struct action(());
-        ///Marker type for the `url` field
-        pub struct url(());
-        ///Marker type for the `pattern` field
-        pub struct pattern(());
         ///Marker type for the `reason` field
         pub struct reason(());
+        ///Marker type for the `pattern` field
+        pub struct pattern(());
+        ///Marker type for the `url` field
+        pub struct url(());
+        ///Marker type for the `action` field
+        pub struct action(());
     }
 }
 
@@ -108,11 +108,11 @@ pub mod add_rule_state {
 pub struct AddRuleBuilder<'a, S: add_rule_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
-        ::core::option::Option<crate::tools_ozone::safelink::ActionType<'a>>,
+        ::core::option::Option<crate::generated::tools_ozone::safelink::ActionType<'a>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
         ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<crate::tools_ozone::safelink::PatternType<'a>>,
-        ::core::option::Option<crate::tools_ozone::safelink::ReasonType<'a>>,
+        ::core::option::Option<crate::generated::tools_ozone::safelink::PatternType<'a>>,
+        ::core::option::Option<crate::generated::tools_ozone::safelink::ReasonType<'a>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
@@ -144,7 +144,7 @@ where
     /// Set the `action` field (required)
     pub fn action(
         mut self,
-        value: impl Into<crate::tools_ozone::safelink::ActionType<'a>>,
+        value: impl Into<crate::generated::tools_ozone::safelink::ActionType<'a>>,
     ) -> AddRuleBuilder<'a, add_rule_state::SetAction<S>> {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         AddRuleBuilder {
@@ -195,7 +195,7 @@ where
     /// Set the `pattern` field (required)
     pub fn pattern(
         mut self,
-        value: impl Into<crate::tools_ozone::safelink::PatternType<'a>>,
+        value: impl Into<crate::generated::tools_ozone::safelink::PatternType<'a>>,
     ) -> AddRuleBuilder<'a, add_rule_state::SetPattern<S>> {
         self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
         AddRuleBuilder {
@@ -214,7 +214,7 @@ where
     /// Set the `reason` field (required)
     pub fn reason(
         mut self,
-        value: impl Into<crate::tools_ozone::safelink::ReasonType<'a>>,
+        value: impl Into<crate::generated::tools_ozone::safelink::ReasonType<'a>>,
     ) -> AddRuleBuilder<'a, add_rule_state::SetReason<S>> {
         self.__unsafe_private_named.4 = ::core::option::Option::Some(value.into());
         AddRuleBuilder {
@@ -247,10 +247,10 @@ where
 impl<'a, S> AddRuleBuilder<'a, S>
 where
     S: add_rule_state::State,
-    S::Action: add_rule_state::IsSet,
-    S::Url: add_rule_state::IsSet,
-    S::Pattern: add_rule_state::IsSet,
     S::Reason: add_rule_state::IsSet,
+    S::Pattern: add_rule_state::IsSet,
+    S::Url: add_rule_state::IsSet,
+    S::Action: add_rule_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> AddRule<'a> {
@@ -292,7 +292,7 @@ where
 pub struct AddRuleOutput<'a> {
     #[serde(flatten)]
     #[serde(borrow)]
-    pub value: crate::tools_ozone::safelink::Event<'a>,
+    pub value: crate::generated::tools_ozone::safelink::Event<'a>,
 }
 
 #[jacquard_derive::open_union]

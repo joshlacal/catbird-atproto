@@ -34,51 +34,51 @@ pub mod event_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type CreatedAt;
         type Message;
         type Status;
+        type CreatedAt;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type CreatedAt = Unset;
         type Message = Unset;
         type Status = Unset;
-    }
-    ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type CreatedAt = Set<members::created_at>;
-        type Message = S::Message;
-        type Status = S::Status;
+        type CreatedAt = Unset;
     }
     ///State transition - sets the `message` field to Set
     pub struct SetMessage<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetMessage<S> {}
     impl<S: State> State for SetMessage<S> {
-        type CreatedAt = S::CreatedAt;
         type Message = Set<members::message>;
         type Status = S::Status;
+        type CreatedAt = S::CreatedAt;
     }
     ///State transition - sets the `status` field to Set
     pub struct SetStatus<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetStatus<S> {}
     impl<S: State> State for SetStatus<S> {
-        type CreatedAt = S::CreatedAt;
         type Message = S::Message;
         type Status = Set<members::status>;
+        type CreatedAt = S::CreatedAt;
+    }
+    ///State transition - sets the `created_at` field to Set
+    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
+    impl<S: State> State for SetCreatedAt<S> {
+        type Message = S::Message;
+        type Status = S::Status;
+        type CreatedAt = Set<members::created_at>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `created_at` field
-        pub struct created_at(());
         ///Marker type for the `message` field
         pub struct message(());
         ///Marker type for the `status` field
         pub struct status(());
+        ///Marker type for the `created_at` field
+        pub struct created_at(());
     }
 }
 
@@ -171,9 +171,9 @@ where
 impl<'a, S> EventBuilder<'a, S>
 where
     S: event_state::State,
-    S::CreatedAt: event_state::IsSet,
     S::Message: event_state::IsSet,
     S::Status: event_state::IsSet,
+    S::CreatedAt: event_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> Event<'a> {
@@ -387,7 +387,7 @@ pub struct TargetView<'a> {
     pub cid: jacquard_common::types::string::Cid<'a>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub latest_event: std::option::Option<crate::place_stream::multistream::Event<'a>>,
+    pub latest_event: std::option::Option<crate::generated::place_stream::multistream::Event<'a>>,
     #[serde(borrow)]
     pub record: jacquard_common::types::value::Data<'a>,
     #[serde(borrow)]
@@ -405,50 +405,50 @@ pub mod target_view_state {
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
         type Uri;
-        type Record;
         type Cid;
+        type Record;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
         type Uri = Unset;
-        type Record = Unset;
         type Cid = Unset;
+        type Record = Unset;
     }
     ///State transition - sets the `uri` field to Set
     pub struct SetUri<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetUri<S> {}
     impl<S: State> State for SetUri<S> {
         type Uri = Set<members::uri>;
+        type Cid = S::Cid;
         type Record = S::Record;
-        type Cid = S::Cid;
-    }
-    ///State transition - sets the `record` field to Set
-    pub struct SetRecord<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRecord<S> {}
-    impl<S: State> State for SetRecord<S> {
-        type Uri = S::Uri;
-        type Record = Set<members::record>;
-        type Cid = S::Cid;
     }
     ///State transition - sets the `cid` field to Set
     pub struct SetCid<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCid<S> {}
     impl<S: State> State for SetCid<S> {
         type Uri = S::Uri;
-        type Record = S::Record;
         type Cid = Set<members::cid>;
+        type Record = S::Record;
+    }
+    ///State transition - sets the `record` field to Set
+    pub struct SetRecord<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetRecord<S> {}
+    impl<S: State> State for SetRecord<S> {
+        type Uri = S::Uri;
+        type Cid = S::Cid;
+        type Record = Set<members::record>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
         ///Marker type for the `uri` field
         pub struct uri(());
-        ///Marker type for the `record` field
-        pub struct record(());
         ///Marker type for the `cid` field
         pub struct cid(());
+        ///Marker type for the `record` field
+        pub struct record(());
     }
 }
 
@@ -457,7 +457,7 @@ pub struct TargetViewBuilder<'a, S: target_view_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
         ::core::option::Option<jacquard_common::types::string::Cid<'a>>,
-        ::core::option::Option<crate::place_stream::multistream::Event<'a>>,
+        ::core::option::Option<crate::generated::place_stream::multistream::Event<'a>>,
         ::core::option::Option<jacquard_common::types::value::Data<'a>>,
         ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
     ),
@@ -505,7 +505,7 @@ impl<'a, S: target_view_state::State> TargetViewBuilder<'a, S> {
     /// Set the `latestEvent` field (optional)
     pub fn latest_event(
         mut self,
-        value: impl Into<Option<crate::place_stream::multistream::Event<'a>>>,
+        value: impl Into<Option<crate::generated::place_stream::multistream::Event<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.1 = value.into();
         self
@@ -513,7 +513,7 @@ impl<'a, S: target_view_state::State> TargetViewBuilder<'a, S> {
     /// Set the `latestEvent` field to an Option value (optional)
     pub fn maybe_latest_event(
         mut self,
-        value: Option<crate::place_stream::multistream::Event<'a>>,
+        value: Option<crate::generated::place_stream::multistream::Event<'a>>,
     ) -> Self {
         self.__unsafe_private_named.1 = value;
         self
@@ -562,8 +562,8 @@ impl<'a, S> TargetViewBuilder<'a, S>
 where
     S: target_view_state::State,
     S::Uri: target_view_state::IsSet,
-    S::Record: target_view_state::IsSet,
     S::Cid: target_view_state::IsSet,
+    S::Record: target_view_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> TargetView<'a> {

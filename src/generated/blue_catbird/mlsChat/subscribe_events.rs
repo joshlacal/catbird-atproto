@@ -34,67 +34,67 @@ pub mod circuit_breaker_tripped_event_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Cursor;
-        type TrippedAt;
         type ConvoId;
+        type Cursor;
         type ResetCount;
+        type TrippedAt;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Cursor = Unset;
-        type TrippedAt = Unset;
         type ConvoId = Unset;
+        type Cursor = Unset;
         type ResetCount = Unset;
-    }
-    ///State transition - sets the `cursor` field to Set
-    pub struct SetCursor<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCursor<S> {}
-    impl<S: State> State for SetCursor<S> {
-        type Cursor = Set<members::cursor>;
-        type TrippedAt = S::TrippedAt;
-        type ConvoId = S::ConvoId;
-        type ResetCount = S::ResetCount;
-    }
-    ///State transition - sets the `tripped_at` field to Set
-    pub struct SetTrippedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetTrippedAt<S> {}
-    impl<S: State> State for SetTrippedAt<S> {
-        type Cursor = S::Cursor;
-        type TrippedAt = Set<members::tripped_at>;
-        type ConvoId = S::ConvoId;
-        type ResetCount = S::ResetCount;
+        type TrippedAt = Unset;
     }
     ///State transition - sets the `convo_id` field to Set
     pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetConvoId<S> {}
     impl<S: State> State for SetConvoId<S> {
-        type Cursor = S::Cursor;
-        type TrippedAt = S::TrippedAt;
         type ConvoId = Set<members::convo_id>;
+        type Cursor = S::Cursor;
         type ResetCount = S::ResetCount;
+        type TrippedAt = S::TrippedAt;
+    }
+    ///State transition - sets the `cursor` field to Set
+    pub struct SetCursor<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCursor<S> {}
+    impl<S: State> State for SetCursor<S> {
+        type ConvoId = S::ConvoId;
+        type Cursor = Set<members::cursor>;
+        type ResetCount = S::ResetCount;
+        type TrippedAt = S::TrippedAt;
     }
     ///State transition - sets the `reset_count` field to Set
     pub struct SetResetCount<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetResetCount<S> {}
     impl<S: State> State for SetResetCount<S> {
-        type Cursor = S::Cursor;
-        type TrippedAt = S::TrippedAt;
         type ConvoId = S::ConvoId;
+        type Cursor = S::Cursor;
         type ResetCount = Set<members::reset_count>;
+        type TrippedAt = S::TrippedAt;
+    }
+    ///State transition - sets the `tripped_at` field to Set
+    pub struct SetTrippedAt<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetTrippedAt<S> {}
+    impl<S: State> State for SetTrippedAt<S> {
+        type ConvoId = S::ConvoId;
+        type Cursor = S::Cursor;
+        type ResetCount = S::ResetCount;
+        type TrippedAt = Set<members::tripped_at>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `cursor` field
-        pub struct cursor(());
-        ///Marker type for the `tripped_at` field
-        pub struct tripped_at(());
         ///Marker type for the `convo_id` field
         pub struct convo_id(());
+        ///Marker type for the `cursor` field
+        pub struct cursor(());
         ///Marker type for the `reset_count` field
         pub struct reset_count(());
+        ///Marker type for the `tripped_at` field
+        pub struct tripped_at(());
     }
 }
 
@@ -212,10 +212,10 @@ where
 impl<'a, S> CircuitBreakerTrippedEventBuilder<'a, S>
 where
     S: circuit_breaker_tripped_event_state::State,
-    S::Cursor: circuit_breaker_tripped_event_state::IsSet,
-    S::TrippedAt: circuit_breaker_tripped_event_state::IsSet,
     S::ConvoId: circuit_breaker_tripped_event_state::IsSet,
+    S::Cursor: circuit_breaker_tripped_event_state::IsSet,
     S::ResetCount: circuit_breaker_tripped_event_state::IsSet,
+    S::TrippedAt: circuit_breaker_tripped_event_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> CircuitBreakerTrippedEvent<'a> {
@@ -1974,66 +1974,66 @@ pub mod group_reset_event_state {
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
         type Cursor;
-        type ConvoId;
-        type ResetGeneration;
         type NewGroupId;
+        type ResetGeneration;
+        type ConvoId;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
         type Cursor = Unset;
-        type ConvoId = Unset;
-        type ResetGeneration = Unset;
         type NewGroupId = Unset;
+        type ResetGeneration = Unset;
+        type ConvoId = Unset;
     }
     ///State transition - sets the `cursor` field to Set
     pub struct SetCursor<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCursor<S> {}
     impl<S: State> State for SetCursor<S> {
         type Cursor = Set<members::cursor>;
-        type ConvoId = S::ConvoId;
+        type NewGroupId = S::NewGroupId;
         type ResetGeneration = S::ResetGeneration;
-        type NewGroupId = S::NewGroupId;
-    }
-    ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type Cursor = S::Cursor;
-        type ConvoId = Set<members::convo_id>;
-        type ResetGeneration = S::ResetGeneration;
-        type NewGroupId = S::NewGroupId;
-    }
-    ///State transition - sets the `reset_generation` field to Set
-    pub struct SetResetGeneration<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetResetGeneration<S> {}
-    impl<S: State> State for SetResetGeneration<S> {
-        type Cursor = S::Cursor;
         type ConvoId = S::ConvoId;
-        type ResetGeneration = Set<members::reset_generation>;
-        type NewGroupId = S::NewGroupId;
     }
     ///State transition - sets the `new_group_id` field to Set
     pub struct SetNewGroupId<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetNewGroupId<S> {}
     impl<S: State> State for SetNewGroupId<S> {
         type Cursor = S::Cursor;
-        type ConvoId = S::ConvoId;
-        type ResetGeneration = S::ResetGeneration;
         type NewGroupId = Set<members::new_group_id>;
+        type ResetGeneration = S::ResetGeneration;
+        type ConvoId = S::ConvoId;
+    }
+    ///State transition - sets the `reset_generation` field to Set
+    pub struct SetResetGeneration<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetResetGeneration<S> {}
+    impl<S: State> State for SetResetGeneration<S> {
+        type Cursor = S::Cursor;
+        type NewGroupId = S::NewGroupId;
+        type ResetGeneration = Set<members::reset_generation>;
+        type ConvoId = S::ConvoId;
+    }
+    ///State transition - sets the `convo_id` field to Set
+    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetConvoId<S> {}
+    impl<S: State> State for SetConvoId<S> {
+        type Cursor = S::Cursor;
+        type NewGroupId = S::NewGroupId;
+        type ResetGeneration = S::ResetGeneration;
+        type ConvoId = Set<members::convo_id>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
         ///Marker type for the `cursor` field
         pub struct cursor(());
-        ///Marker type for the `convo_id` field
-        pub struct convo_id(());
-        ///Marker type for the `reset_generation` field
-        pub struct reset_generation(());
         ///Marker type for the `new_group_id` field
         pub struct new_group_id(());
+        ///Marker type for the `reset_generation` field
+        pub struct reset_generation(());
+        ///Marker type for the `convo_id` field
+        pub struct convo_id(());
     }
 }
 
@@ -2195,9 +2195,9 @@ impl<'a, S> GroupResetEventBuilder<'a, S>
 where
     S: group_reset_event_state::State,
     S::Cursor: group_reset_event_state::IsSet,
-    S::ConvoId: group_reset_event_state::IsSet,
-    S::ResetGeneration: group_reset_event_state::IsSet,
     S::NewGroupId: group_reset_event_state::IsSet,
+    S::ResetGeneration: group_reset_event_state::IsSet,
+    S::ConvoId: group_reset_event_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> GroupResetEvent<'a> {
@@ -2616,66 +2616,66 @@ pub mod membership_change_event_state {
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
         type ConvoId;
+        type Action;
         type Cursor;
         type Did;
-        type Action;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
         type ConvoId = Unset;
+        type Action = Unset;
         type Cursor = Unset;
         type Did = Unset;
-        type Action = Unset;
     }
     ///State transition - sets the `convo_id` field to Set
     pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetConvoId<S> {}
     impl<S: State> State for SetConvoId<S> {
         type ConvoId = Set<members::convo_id>;
+        type Action = S::Action;
         type Cursor = S::Cursor;
         type Did = S::Did;
-        type Action = S::Action;
-    }
-    ///State transition - sets the `cursor` field to Set
-    pub struct SetCursor<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCursor<S> {}
-    impl<S: State> State for SetCursor<S> {
-        type ConvoId = S::ConvoId;
-        type Cursor = Set<members::cursor>;
-        type Did = S::Did;
-        type Action = S::Action;
-    }
-    ///State transition - sets the `did` field to Set
-    pub struct SetDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDid<S> {}
-    impl<S: State> State for SetDid<S> {
-        type ConvoId = S::ConvoId;
-        type Cursor = S::Cursor;
-        type Did = Set<members::did>;
-        type Action = S::Action;
     }
     ///State transition - sets the `action` field to Set
     pub struct SetAction<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetAction<S> {}
     impl<S: State> State for SetAction<S> {
         type ConvoId = S::ConvoId;
+        type Action = Set<members::action>;
         type Cursor = S::Cursor;
         type Did = S::Did;
-        type Action = Set<members::action>;
+    }
+    ///State transition - sets the `cursor` field to Set
+    pub struct SetCursor<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCursor<S> {}
+    impl<S: State> State for SetCursor<S> {
+        type ConvoId = S::ConvoId;
+        type Action = S::Action;
+        type Cursor = Set<members::cursor>;
+        type Did = S::Did;
+    }
+    ///State transition - sets the `did` field to Set
+    pub struct SetDid<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetDid<S> {}
+    impl<S: State> State for SetDid<S> {
+        type ConvoId = S::ConvoId;
+        type Action = S::Action;
+        type Cursor = S::Cursor;
+        type Did = Set<members::did>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
         ///Marker type for the `convo_id` field
         pub struct convo_id(());
+        ///Marker type for the `action` field
+        pub struct action(());
         ///Marker type for the `cursor` field
         pub struct cursor(());
         ///Marker type for the `did` field
         pub struct did(());
-        ///Marker type for the `action` field
-        pub struct action(());
     }
 }
 
@@ -2789,9 +2789,9 @@ impl<'a, S> MembershipChangeEventBuilder<'a, S>
 where
     S: membership_change_event_state::State,
     S::ConvoId: membership_change_event_state::IsSet,
+    S::Action: membership_change_event_state::IsSet,
     S::Cursor: membership_change_event_state::IsSet,
     S::Did: membership_change_event_state::IsSet,
-    S::Action: membership_change_event_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> MembershipChangeEvent<'a> {
@@ -3097,105 +3097,105 @@ pub mod new_device_event_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type DeviceId;
-        type Cursor;
-        type ConvoId;
-        type UserDid;
         type DeviceCredentialDid;
+        type ConvoId;
+        type Cursor;
         type PendingAdditionId;
+        type UserDid;
+        type DeviceId;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type DeviceId = Unset;
-        type Cursor = Unset;
-        type ConvoId = Unset;
-        type UserDid = Unset;
         type DeviceCredentialDid = Unset;
+        type ConvoId = Unset;
+        type Cursor = Unset;
         type PendingAdditionId = Unset;
-    }
-    ///State transition - sets the `device_id` field to Set
-    pub struct SetDeviceId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDeviceId<S> {}
-    impl<S: State> State for SetDeviceId<S> {
-        type DeviceId = Set<members::device_id>;
-        type Cursor = S::Cursor;
-        type ConvoId = S::ConvoId;
-        type UserDid = S::UserDid;
-        type DeviceCredentialDid = S::DeviceCredentialDid;
-        type PendingAdditionId = S::PendingAdditionId;
-    }
-    ///State transition - sets the `cursor` field to Set
-    pub struct SetCursor<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCursor<S> {}
-    impl<S: State> State for SetCursor<S> {
-        type DeviceId = S::DeviceId;
-        type Cursor = Set<members::cursor>;
-        type ConvoId = S::ConvoId;
-        type UserDid = S::UserDid;
-        type DeviceCredentialDid = S::DeviceCredentialDid;
-        type PendingAdditionId = S::PendingAdditionId;
-    }
-    ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type DeviceId = S::DeviceId;
-        type Cursor = S::Cursor;
-        type ConvoId = Set<members::convo_id>;
-        type UserDid = S::UserDid;
-        type DeviceCredentialDid = S::DeviceCredentialDid;
-        type PendingAdditionId = S::PendingAdditionId;
-    }
-    ///State transition - sets the `user_did` field to Set
-    pub struct SetUserDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUserDid<S> {}
-    impl<S: State> State for SetUserDid<S> {
-        type DeviceId = S::DeviceId;
-        type Cursor = S::Cursor;
-        type ConvoId = S::ConvoId;
-        type UserDid = Set<members::user_did>;
-        type DeviceCredentialDid = S::DeviceCredentialDid;
-        type PendingAdditionId = S::PendingAdditionId;
+        type UserDid = Unset;
+        type DeviceId = Unset;
     }
     ///State transition - sets the `device_credential_did` field to Set
     pub struct SetDeviceCredentialDid<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetDeviceCredentialDid<S> {}
     impl<S: State> State for SetDeviceCredentialDid<S> {
-        type DeviceId = S::DeviceId;
-        type Cursor = S::Cursor;
-        type ConvoId = S::ConvoId;
-        type UserDid = S::UserDid;
         type DeviceCredentialDid = Set<members::device_credential_did>;
+        type ConvoId = S::ConvoId;
+        type Cursor = S::Cursor;
         type PendingAdditionId = S::PendingAdditionId;
+        type UserDid = S::UserDid;
+        type DeviceId = S::DeviceId;
+    }
+    ///State transition - sets the `convo_id` field to Set
+    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetConvoId<S> {}
+    impl<S: State> State for SetConvoId<S> {
+        type DeviceCredentialDid = S::DeviceCredentialDid;
+        type ConvoId = Set<members::convo_id>;
+        type Cursor = S::Cursor;
+        type PendingAdditionId = S::PendingAdditionId;
+        type UserDid = S::UserDid;
+        type DeviceId = S::DeviceId;
+    }
+    ///State transition - sets the `cursor` field to Set
+    pub struct SetCursor<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCursor<S> {}
+    impl<S: State> State for SetCursor<S> {
+        type DeviceCredentialDid = S::DeviceCredentialDid;
+        type ConvoId = S::ConvoId;
+        type Cursor = Set<members::cursor>;
+        type PendingAdditionId = S::PendingAdditionId;
+        type UserDid = S::UserDid;
+        type DeviceId = S::DeviceId;
     }
     ///State transition - sets the `pending_addition_id` field to Set
     pub struct SetPendingAdditionId<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetPendingAdditionId<S> {}
     impl<S: State> State for SetPendingAdditionId<S> {
-        type DeviceId = S::DeviceId;
-        type Cursor = S::Cursor;
-        type ConvoId = S::ConvoId;
-        type UserDid = S::UserDid;
         type DeviceCredentialDid = S::DeviceCredentialDid;
+        type ConvoId = S::ConvoId;
+        type Cursor = S::Cursor;
         type PendingAdditionId = Set<members::pending_addition_id>;
+        type UserDid = S::UserDid;
+        type DeviceId = S::DeviceId;
+    }
+    ///State transition - sets the `user_did` field to Set
+    pub struct SetUserDid<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetUserDid<S> {}
+    impl<S: State> State for SetUserDid<S> {
+        type DeviceCredentialDid = S::DeviceCredentialDid;
+        type ConvoId = S::ConvoId;
+        type Cursor = S::Cursor;
+        type PendingAdditionId = S::PendingAdditionId;
+        type UserDid = Set<members::user_did>;
+        type DeviceId = S::DeviceId;
+    }
+    ///State transition - sets the `device_id` field to Set
+    pub struct SetDeviceId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetDeviceId<S> {}
+    impl<S: State> State for SetDeviceId<S> {
+        type DeviceCredentialDid = S::DeviceCredentialDid;
+        type ConvoId = S::ConvoId;
+        type Cursor = S::Cursor;
+        type PendingAdditionId = S::PendingAdditionId;
+        type UserDid = S::UserDid;
+        type DeviceId = Set<members::device_id>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `device_id` field
-        pub struct device_id(());
-        ///Marker type for the `cursor` field
-        pub struct cursor(());
-        ///Marker type for the `convo_id` field
-        pub struct convo_id(());
-        ///Marker type for the `user_did` field
-        pub struct user_did(());
         ///Marker type for the `device_credential_did` field
         pub struct device_credential_did(());
+        ///Marker type for the `convo_id` field
+        pub struct convo_id(());
+        ///Marker type for the `cursor` field
+        pub struct cursor(());
         ///Marker type for the `pending_addition_id` field
         pub struct pending_addition_id(());
+        ///Marker type for the `user_did` field
+        pub struct user_did(());
+        ///Marker type for the `device_id` field
+        pub struct device_id(());
     }
 }
 
@@ -3362,12 +3362,12 @@ where
 impl<'a, S> NewDeviceEventBuilder<'a, S>
 where
     S: new_device_event_state::State,
-    S::DeviceId: new_device_event_state::IsSet,
-    S::Cursor: new_device_event_state::IsSet,
-    S::ConvoId: new_device_event_state::IsSet,
-    S::UserDid: new_device_event_state::IsSet,
     S::DeviceCredentialDid: new_device_event_state::IsSet,
+    S::ConvoId: new_device_event_state::IsSet,
+    S::Cursor: new_device_event_state::IsSet,
     S::PendingAdditionId: new_device_event_state::IsSet,
+    S::UserDid: new_device_event_state::IsSet,
+    S::DeviceId: new_device_event_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> NewDeviceEvent<'a> {
@@ -3456,105 +3456,105 @@ pub mod reaction_event_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Action;
-        type Cursor;
-        type Did;
-        type MessageId;
         type Reaction;
         type ConvoId;
+        type Did;
+        type MessageId;
+        type Action;
+        type Cursor;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Action = Unset;
-        type Cursor = Unset;
-        type Did = Unset;
-        type MessageId = Unset;
         type Reaction = Unset;
         type ConvoId = Unset;
-    }
-    ///State transition - sets the `action` field to Set
-    pub struct SetAction<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetAction<S> {}
-    impl<S: State> State for SetAction<S> {
-        type Action = Set<members::action>;
-        type Cursor = S::Cursor;
-        type Did = S::Did;
-        type MessageId = S::MessageId;
-        type Reaction = S::Reaction;
-        type ConvoId = S::ConvoId;
-    }
-    ///State transition - sets the `cursor` field to Set
-    pub struct SetCursor<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCursor<S> {}
-    impl<S: State> State for SetCursor<S> {
-        type Action = S::Action;
-        type Cursor = Set<members::cursor>;
-        type Did = S::Did;
-        type MessageId = S::MessageId;
-        type Reaction = S::Reaction;
-        type ConvoId = S::ConvoId;
-    }
-    ///State transition - sets the `did` field to Set
-    pub struct SetDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDid<S> {}
-    impl<S: State> State for SetDid<S> {
-        type Action = S::Action;
-        type Cursor = S::Cursor;
-        type Did = Set<members::did>;
-        type MessageId = S::MessageId;
-        type Reaction = S::Reaction;
-        type ConvoId = S::ConvoId;
-    }
-    ///State transition - sets the `message_id` field to Set
-    pub struct SetMessageId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetMessageId<S> {}
-    impl<S: State> State for SetMessageId<S> {
-        type Action = S::Action;
-        type Cursor = S::Cursor;
-        type Did = S::Did;
-        type MessageId = Set<members::message_id>;
-        type Reaction = S::Reaction;
-        type ConvoId = S::ConvoId;
+        type Did = Unset;
+        type MessageId = Unset;
+        type Action = Unset;
+        type Cursor = Unset;
     }
     ///State transition - sets the `reaction` field to Set
     pub struct SetReaction<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetReaction<S> {}
     impl<S: State> State for SetReaction<S> {
-        type Action = S::Action;
-        type Cursor = S::Cursor;
-        type Did = S::Did;
-        type MessageId = S::MessageId;
         type Reaction = Set<members::reaction>;
         type ConvoId = S::ConvoId;
+        type Did = S::Did;
+        type MessageId = S::MessageId;
+        type Action = S::Action;
+        type Cursor = S::Cursor;
     }
     ///State transition - sets the `convo_id` field to Set
     pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetConvoId<S> {}
     impl<S: State> State for SetConvoId<S> {
-        type Action = S::Action;
-        type Cursor = S::Cursor;
-        type Did = S::Did;
-        type MessageId = S::MessageId;
         type Reaction = S::Reaction;
         type ConvoId = Set<members::convo_id>;
+        type Did = S::Did;
+        type MessageId = S::MessageId;
+        type Action = S::Action;
+        type Cursor = S::Cursor;
+    }
+    ///State transition - sets the `did` field to Set
+    pub struct SetDid<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetDid<S> {}
+    impl<S: State> State for SetDid<S> {
+        type Reaction = S::Reaction;
+        type ConvoId = S::ConvoId;
+        type Did = Set<members::did>;
+        type MessageId = S::MessageId;
+        type Action = S::Action;
+        type Cursor = S::Cursor;
+    }
+    ///State transition - sets the `message_id` field to Set
+    pub struct SetMessageId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetMessageId<S> {}
+    impl<S: State> State for SetMessageId<S> {
+        type Reaction = S::Reaction;
+        type ConvoId = S::ConvoId;
+        type Did = S::Did;
+        type MessageId = Set<members::message_id>;
+        type Action = S::Action;
+        type Cursor = S::Cursor;
+    }
+    ///State transition - sets the `action` field to Set
+    pub struct SetAction<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetAction<S> {}
+    impl<S: State> State for SetAction<S> {
+        type Reaction = S::Reaction;
+        type ConvoId = S::ConvoId;
+        type Did = S::Did;
+        type MessageId = S::MessageId;
+        type Action = Set<members::action>;
+        type Cursor = S::Cursor;
+    }
+    ///State transition - sets the `cursor` field to Set
+    pub struct SetCursor<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCursor<S> {}
+    impl<S: State> State for SetCursor<S> {
+        type Reaction = S::Reaction;
+        type ConvoId = S::ConvoId;
+        type Did = S::Did;
+        type MessageId = S::MessageId;
+        type Action = S::Action;
+        type Cursor = Set<members::cursor>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `action` field
-        pub struct action(());
-        ///Marker type for the `cursor` field
-        pub struct cursor(());
-        ///Marker type for the `did` field
-        pub struct did(());
-        ///Marker type for the `message_id` field
-        pub struct message_id(());
         ///Marker type for the `reaction` field
         pub struct reaction(());
         ///Marker type for the `convo_id` field
         pub struct convo_id(());
+        ///Marker type for the `did` field
+        pub struct did(());
+        ///Marker type for the `message_id` field
+        pub struct message_id(());
+        ///Marker type for the `action` field
+        pub struct action(());
+        ///Marker type for the `cursor` field
+        pub struct cursor(());
     }
 }
 
@@ -3707,12 +3707,12 @@ where
 impl<'a, S> ReactionEventBuilder<'a, S>
 where
     S: reaction_event_state::State,
-    S::Action: reaction_event_state::IsSet,
-    S::Cursor: reaction_event_state::IsSet,
-    S::Did: reaction_event_state::IsSet,
-    S::MessageId: reaction_event_state::IsSet,
     S::Reaction: reaction_event_state::IsSet,
     S::ConvoId: reaction_event_state::IsSet,
+    S::Did: reaction_event_state::IsSet,
+    S::MessageId: reaction_event_state::IsSet,
+    S::Action: reaction_event_state::IsSet,
+    S::Cursor: reaction_event_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> ReactionEvent<'a> {
@@ -3857,104 +3857,104 @@ pub mod reset_requested_event_state {
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
         type Cursor;
+        type CryptoSessionId;
+        type ConvoId;
         type Generation;
         type Trigger;
         type RequestEventId;
-        type ConvoId;
-        type CryptoSessionId;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
         type Cursor = Unset;
+        type CryptoSessionId = Unset;
+        type ConvoId = Unset;
         type Generation = Unset;
         type Trigger = Unset;
         type RequestEventId = Unset;
-        type ConvoId = Unset;
-        type CryptoSessionId = Unset;
     }
     ///State transition - sets the `cursor` field to Set
     pub struct SetCursor<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCursor<S> {}
     impl<S: State> State for SetCursor<S> {
         type Cursor = Set<members::cursor>;
+        type CryptoSessionId = S::CryptoSessionId;
+        type ConvoId = S::ConvoId;
         type Generation = S::Generation;
         type Trigger = S::Trigger;
         type RequestEventId = S::RequestEventId;
-        type ConvoId = S::ConvoId;
-        type CryptoSessionId = S::CryptoSessionId;
-    }
-    ///State transition - sets the `generation` field to Set
-    pub struct SetGeneration<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetGeneration<S> {}
-    impl<S: State> State for SetGeneration<S> {
-        type Cursor = S::Cursor;
-        type Generation = Set<members::generation>;
-        type Trigger = S::Trigger;
-        type RequestEventId = S::RequestEventId;
-        type ConvoId = S::ConvoId;
-        type CryptoSessionId = S::CryptoSessionId;
-    }
-    ///State transition - sets the `trigger` field to Set
-    pub struct SetTrigger<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetTrigger<S> {}
-    impl<S: State> State for SetTrigger<S> {
-        type Cursor = S::Cursor;
-        type Generation = S::Generation;
-        type Trigger = Set<members::trigger>;
-        type RequestEventId = S::RequestEventId;
-        type ConvoId = S::ConvoId;
-        type CryptoSessionId = S::CryptoSessionId;
-    }
-    ///State transition - sets the `request_event_id` field to Set
-    pub struct SetRequestEventId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRequestEventId<S> {}
-    impl<S: State> State for SetRequestEventId<S> {
-        type Cursor = S::Cursor;
-        type Generation = S::Generation;
-        type Trigger = S::Trigger;
-        type RequestEventId = Set<members::request_event_id>;
-        type ConvoId = S::ConvoId;
-        type CryptoSessionId = S::CryptoSessionId;
-    }
-    ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type Cursor = S::Cursor;
-        type Generation = S::Generation;
-        type Trigger = S::Trigger;
-        type RequestEventId = S::RequestEventId;
-        type ConvoId = Set<members::convo_id>;
-        type CryptoSessionId = S::CryptoSessionId;
     }
     ///State transition - sets the `crypto_session_id` field to Set
     pub struct SetCryptoSessionId<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCryptoSessionId<S> {}
     impl<S: State> State for SetCryptoSessionId<S> {
         type Cursor = S::Cursor;
+        type CryptoSessionId = Set<members::crypto_session_id>;
+        type ConvoId = S::ConvoId;
         type Generation = S::Generation;
         type Trigger = S::Trigger;
         type RequestEventId = S::RequestEventId;
+    }
+    ///State transition - sets the `convo_id` field to Set
+    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetConvoId<S> {}
+    impl<S: State> State for SetConvoId<S> {
+        type Cursor = S::Cursor;
+        type CryptoSessionId = S::CryptoSessionId;
+        type ConvoId = Set<members::convo_id>;
+        type Generation = S::Generation;
+        type Trigger = S::Trigger;
+        type RequestEventId = S::RequestEventId;
+    }
+    ///State transition - sets the `generation` field to Set
+    pub struct SetGeneration<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetGeneration<S> {}
+    impl<S: State> State for SetGeneration<S> {
+        type Cursor = S::Cursor;
+        type CryptoSessionId = S::CryptoSessionId;
         type ConvoId = S::ConvoId;
-        type CryptoSessionId = Set<members::crypto_session_id>;
+        type Generation = Set<members::generation>;
+        type Trigger = S::Trigger;
+        type RequestEventId = S::RequestEventId;
+    }
+    ///State transition - sets the `trigger` field to Set
+    pub struct SetTrigger<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetTrigger<S> {}
+    impl<S: State> State for SetTrigger<S> {
+        type Cursor = S::Cursor;
+        type CryptoSessionId = S::CryptoSessionId;
+        type ConvoId = S::ConvoId;
+        type Generation = S::Generation;
+        type Trigger = Set<members::trigger>;
+        type RequestEventId = S::RequestEventId;
+    }
+    ///State transition - sets the `request_event_id` field to Set
+    pub struct SetRequestEventId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetRequestEventId<S> {}
+    impl<S: State> State for SetRequestEventId<S> {
+        type Cursor = S::Cursor;
+        type CryptoSessionId = S::CryptoSessionId;
+        type ConvoId = S::ConvoId;
+        type Generation = S::Generation;
+        type Trigger = S::Trigger;
+        type RequestEventId = Set<members::request_event_id>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
         ///Marker type for the `cursor` field
         pub struct cursor(());
+        ///Marker type for the `crypto_session_id` field
+        pub struct crypto_session_id(());
+        ///Marker type for the `convo_id` field
+        pub struct convo_id(());
         ///Marker type for the `generation` field
         pub struct generation(());
         ///Marker type for the `trigger` field
         pub struct trigger(());
         ///Marker type for the `request_event_id` field
         pub struct request_event_id(());
-        ///Marker type for the `convo_id` field
-        pub struct convo_id(());
-        ///Marker type for the `crypto_session_id` field
-        pub struct crypto_session_id(());
     }
 }
 
@@ -4162,11 +4162,11 @@ impl<'a, S> ResetRequestedEventBuilder<'a, S>
 where
     S: reset_requested_event_state::State,
     S::Cursor: reset_requested_event_state::IsSet,
+    S::CryptoSessionId: reset_requested_event_state::IsSet,
+    S::ConvoId: reset_requested_event_state::IsSet,
     S::Generation: reset_requested_event_state::IsSet,
     S::Trigger: reset_requested_event_state::IsSet,
     S::RequestEventId: reset_requested_event_state::IsSet,
-    S::ConvoId: reset_requested_event_state::IsSet,
-    S::CryptoSessionId: reset_requested_event_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> ResetRequestedEvent<'a> {
@@ -4253,67 +4253,67 @@ pub mod tree_changed_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type ConfirmationTag;
-        type Epoch;
         type Cursor;
         type ConvoId;
+        type Epoch;
+        type ConfirmationTag;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type ConfirmationTag = Unset;
-        type Epoch = Unset;
         type Cursor = Unset;
         type ConvoId = Unset;
-    }
-    ///State transition - sets the `confirmation_tag` field to Set
-    pub struct SetConfirmationTag<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConfirmationTag<S> {}
-    impl<S: State> State for SetConfirmationTag<S> {
-        type ConfirmationTag = Set<members::confirmation_tag>;
-        type Epoch = S::Epoch;
-        type Cursor = S::Cursor;
-        type ConvoId = S::ConvoId;
-    }
-    ///State transition - sets the `epoch` field to Set
-    pub struct SetEpoch<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetEpoch<S> {}
-    impl<S: State> State for SetEpoch<S> {
-        type ConfirmationTag = S::ConfirmationTag;
-        type Epoch = Set<members::epoch>;
-        type Cursor = S::Cursor;
-        type ConvoId = S::ConvoId;
+        type Epoch = Unset;
+        type ConfirmationTag = Unset;
     }
     ///State transition - sets the `cursor` field to Set
     pub struct SetCursor<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCursor<S> {}
     impl<S: State> State for SetCursor<S> {
-        type ConfirmationTag = S::ConfirmationTag;
-        type Epoch = S::Epoch;
         type Cursor = Set<members::cursor>;
         type ConvoId = S::ConvoId;
+        type Epoch = S::Epoch;
+        type ConfirmationTag = S::ConfirmationTag;
     }
     ///State transition - sets the `convo_id` field to Set
     pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetConvoId<S> {}
     impl<S: State> State for SetConvoId<S> {
-        type ConfirmationTag = S::ConfirmationTag;
-        type Epoch = S::Epoch;
         type Cursor = S::Cursor;
         type ConvoId = Set<members::convo_id>;
+        type Epoch = S::Epoch;
+        type ConfirmationTag = S::ConfirmationTag;
+    }
+    ///State transition - sets the `epoch` field to Set
+    pub struct SetEpoch<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetEpoch<S> {}
+    impl<S: State> State for SetEpoch<S> {
+        type Cursor = S::Cursor;
+        type ConvoId = S::ConvoId;
+        type Epoch = Set<members::epoch>;
+        type ConfirmationTag = S::ConfirmationTag;
+    }
+    ///State transition - sets the `confirmation_tag` field to Set
+    pub struct SetConfirmationTag<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetConfirmationTag<S> {}
+    impl<S: State> State for SetConfirmationTag<S> {
+        type Cursor = S::Cursor;
+        type ConvoId = S::ConvoId;
+        type Epoch = S::Epoch;
+        type ConfirmationTag = Set<members::confirmation_tag>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `confirmation_tag` field
-        pub struct confirmation_tag(());
-        ///Marker type for the `epoch` field
-        pub struct epoch(());
         ///Marker type for the `cursor` field
         pub struct cursor(());
         ///Marker type for the `convo_id` field
         pub struct convo_id(());
+        ///Marker type for the `epoch` field
+        pub struct epoch(());
+        ///Marker type for the `confirmation_tag` field
+        pub struct confirmation_tag(());
     }
 }
 
@@ -4426,10 +4426,10 @@ where
 impl<'a, S> TreeChangedBuilder<'a, S>
 where
     S: tree_changed_state::State,
-    S::ConfirmationTag: tree_changed_state::IsSet,
-    S::Epoch: tree_changed_state::IsSet,
     S::Cursor: tree_changed_state::IsSet,
     S::ConvoId: tree_changed_state::IsSet,
+    S::Epoch: tree_changed_state::IsSet,
+    S::ConfirmationTag: tree_changed_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> TreeChanged<'a> {
@@ -4506,65 +4506,65 @@ pub mod typing_event_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
+        type Did;
         type Cursor;
         type IsTyping;
-        type Did;
         type ConvoId;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
+        type Did = Unset;
         type Cursor = Unset;
         type IsTyping = Unset;
-        type Did = Unset;
         type ConvoId = Unset;
+    }
+    ///State transition - sets the `did` field to Set
+    pub struct SetDid<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetDid<S> {}
+    impl<S: State> State for SetDid<S> {
+        type Did = Set<members::did>;
+        type Cursor = S::Cursor;
+        type IsTyping = S::IsTyping;
+        type ConvoId = S::ConvoId;
     }
     ///State transition - sets the `cursor` field to Set
     pub struct SetCursor<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCursor<S> {}
     impl<S: State> State for SetCursor<S> {
+        type Did = S::Did;
         type Cursor = Set<members::cursor>;
         type IsTyping = S::IsTyping;
-        type Did = S::Did;
         type ConvoId = S::ConvoId;
     }
     ///State transition - sets the `is_typing` field to Set
     pub struct SetIsTyping<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetIsTyping<S> {}
     impl<S: State> State for SetIsTyping<S> {
+        type Did = S::Did;
         type Cursor = S::Cursor;
         type IsTyping = Set<members::is_typing>;
-        type Did = S::Did;
-        type ConvoId = S::ConvoId;
-    }
-    ///State transition - sets the `did` field to Set
-    pub struct SetDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDid<S> {}
-    impl<S: State> State for SetDid<S> {
-        type Cursor = S::Cursor;
-        type IsTyping = S::IsTyping;
-        type Did = Set<members::did>;
         type ConvoId = S::ConvoId;
     }
     ///State transition - sets the `convo_id` field to Set
     pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetConvoId<S> {}
     impl<S: State> State for SetConvoId<S> {
+        type Did = S::Did;
         type Cursor = S::Cursor;
         type IsTyping = S::IsTyping;
-        type Did = S::Did;
         type ConvoId = Set<members::convo_id>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
+        ///Marker type for the `did` field
+        pub struct did(());
         ///Marker type for the `cursor` field
         pub struct cursor(());
         ///Marker type for the `is_typing` field
         pub struct is_typing(());
-        ///Marker type for the `did` field
-        pub struct did(());
         ///Marker type for the `convo_id` field
         pub struct convo_id(());
     }
@@ -4679,9 +4679,9 @@ where
 impl<'a, S> TypingEventBuilder<'a, S>
 where
     S: typing_event_state::State,
+    S::Did: typing_event_state::IsSet,
     S::Cursor: typing_event_state::IsSet,
     S::IsTyping: typing_event_state::IsSet,
-    S::Did: typing_event_state::IsSet,
     S::ConvoId: typing_event_state::IsSet,
 {
     /// Build the final struct
@@ -4762,85 +4762,85 @@ pub mod welcome_reissue_requested_event_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
+        type ConvoId;
+        type RecipientDeviceDid;
         type Cursor;
         type RequestedAt;
-        type RecipientDeviceDid;
         type RequestId;
-        type ConvoId;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
+        type ConvoId = Unset;
+        type RecipientDeviceDid = Unset;
         type Cursor = Unset;
         type RequestedAt = Unset;
-        type RecipientDeviceDid = Unset;
         type RequestId = Unset;
-        type ConvoId = Unset;
-    }
-    ///State transition - sets the `cursor` field to Set
-    pub struct SetCursor<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCursor<S> {}
-    impl<S: State> State for SetCursor<S> {
-        type Cursor = Set<members::cursor>;
-        type RequestedAt = S::RequestedAt;
-        type RecipientDeviceDid = S::RecipientDeviceDid;
-        type RequestId = S::RequestId;
-        type ConvoId = S::ConvoId;
-    }
-    ///State transition - sets the `requested_at` field to Set
-    pub struct SetRequestedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRequestedAt<S> {}
-    impl<S: State> State for SetRequestedAt<S> {
-        type Cursor = S::Cursor;
-        type RequestedAt = Set<members::requested_at>;
-        type RecipientDeviceDid = S::RecipientDeviceDid;
-        type RequestId = S::RequestId;
-        type ConvoId = S::ConvoId;
-    }
-    ///State transition - sets the `recipient_device_did` field to Set
-    pub struct SetRecipientDeviceDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRecipientDeviceDid<S> {}
-    impl<S: State> State for SetRecipientDeviceDid<S> {
-        type Cursor = S::Cursor;
-        type RequestedAt = S::RequestedAt;
-        type RecipientDeviceDid = Set<members::recipient_device_did>;
-        type RequestId = S::RequestId;
-        type ConvoId = S::ConvoId;
-    }
-    ///State transition - sets the `request_id` field to Set
-    pub struct SetRequestId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRequestId<S> {}
-    impl<S: State> State for SetRequestId<S> {
-        type Cursor = S::Cursor;
-        type RequestedAt = S::RequestedAt;
-        type RecipientDeviceDid = S::RecipientDeviceDid;
-        type RequestId = Set<members::request_id>;
-        type ConvoId = S::ConvoId;
     }
     ///State transition - sets the `convo_id` field to Set
     pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetConvoId<S> {}
     impl<S: State> State for SetConvoId<S> {
+        type ConvoId = Set<members::convo_id>;
+        type RecipientDeviceDid = S::RecipientDeviceDid;
         type Cursor = S::Cursor;
         type RequestedAt = S::RequestedAt;
-        type RecipientDeviceDid = S::RecipientDeviceDid;
         type RequestId = S::RequestId;
-        type ConvoId = Set<members::convo_id>;
+    }
+    ///State transition - sets the `recipient_device_did` field to Set
+    pub struct SetRecipientDeviceDid<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetRecipientDeviceDid<S> {}
+    impl<S: State> State for SetRecipientDeviceDid<S> {
+        type ConvoId = S::ConvoId;
+        type RecipientDeviceDid = Set<members::recipient_device_did>;
+        type Cursor = S::Cursor;
+        type RequestedAt = S::RequestedAt;
+        type RequestId = S::RequestId;
+    }
+    ///State transition - sets the `cursor` field to Set
+    pub struct SetCursor<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCursor<S> {}
+    impl<S: State> State for SetCursor<S> {
+        type ConvoId = S::ConvoId;
+        type RecipientDeviceDid = S::RecipientDeviceDid;
+        type Cursor = Set<members::cursor>;
+        type RequestedAt = S::RequestedAt;
+        type RequestId = S::RequestId;
+    }
+    ///State transition - sets the `requested_at` field to Set
+    pub struct SetRequestedAt<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetRequestedAt<S> {}
+    impl<S: State> State for SetRequestedAt<S> {
+        type ConvoId = S::ConvoId;
+        type RecipientDeviceDid = S::RecipientDeviceDid;
+        type Cursor = S::Cursor;
+        type RequestedAt = Set<members::requested_at>;
+        type RequestId = S::RequestId;
+    }
+    ///State transition - sets the `request_id` field to Set
+    pub struct SetRequestId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetRequestId<S> {}
+    impl<S: State> State for SetRequestId<S> {
+        type ConvoId = S::ConvoId;
+        type RecipientDeviceDid = S::RecipientDeviceDid;
+        type Cursor = S::Cursor;
+        type RequestedAt = S::RequestedAt;
+        type RequestId = Set<members::request_id>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
+        ///Marker type for the `convo_id` field
+        pub struct convo_id(());
+        ///Marker type for the `recipient_device_did` field
+        pub struct recipient_device_did(());
         ///Marker type for the `cursor` field
         pub struct cursor(());
         ///Marker type for the `requested_at` field
         pub struct requested_at(());
-        ///Marker type for the `recipient_device_did` field
-        pub struct recipient_device_did(());
         ///Marker type for the `request_id` field
         pub struct request_id(());
-        ///Marker type for the `convo_id` field
-        pub struct convo_id(());
     }
 }
 
@@ -4986,11 +4986,11 @@ where
 impl<'a, S> WelcomeReissueRequestedEventBuilder<'a, S>
 where
     S: welcome_reissue_requested_event_state::State,
+    S::ConvoId: welcome_reissue_requested_event_state::IsSet,
+    S::RecipientDeviceDid: welcome_reissue_requested_event_state::IsSet,
     S::Cursor: welcome_reissue_requested_event_state::IsSet,
     S::RequestedAt: welcome_reissue_requested_event_state::IsSet,
-    S::RecipientDeviceDid: welcome_reissue_requested_event_state::IsSet,
     S::RequestId: welcome_reissue_requested_event_state::IsSet,
-    S::ConvoId: welcome_reissue_requested_event_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> WelcomeReissueRequestedEvent<'a> {

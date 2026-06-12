@@ -170,7 +170,7 @@ pub struct QuerySetsOutput<'a> {
     #[serde(borrow)]
     pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(borrow)]
-    pub sets: Vec<crate::tools_ozone::set::SetView<'a>>,
+    pub sets: Vec<crate::generated::tools_ozone::set::SetView<'a>>,
 }
 
 /// Response type for

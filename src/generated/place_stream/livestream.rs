@@ -12,7 +12,7 @@
 #[serde(rename_all = "camelCase")]
 pub struct LivestreamView<'a> {
     #[serde(borrow)]
-    pub author: crate::app_bsky::actor::ProfileViewBasic<'a>,
+    pub author: crate::generated::app_bsky::actor::ProfileViewBasic<'a>,
     #[serde(borrow)]
     pub cid: jacquard_common::types::string::Cid<'a>,
     pub indexed_at: jacquard_common::types::string::Datetime,
@@ -23,7 +23,8 @@ pub struct LivestreamView<'a> {
     /// The number of viewers watching this livestream. Use when you can't reasonably use #viewerCount directly.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub viewer_count: std::option::Option<crate::place_stream::livestream::ViewerCount<'a>>,
+    pub viewer_count:
+        std::option::Option<crate::generated::place_stream::livestream::ViewerCount<'a>>,
 }
 
 pub mod livestream_view_state {
@@ -37,84 +38,84 @@ pub mod livestream_view_state {
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
         type IndexedAt;
-        type Record;
-        type Cid;
-        type Uri;
         type Author;
+        type Record;
+        type Uri;
+        type Cid;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
         type IndexedAt = Unset;
-        type Record = Unset;
-        type Cid = Unset;
-        type Uri = Unset;
         type Author = Unset;
+        type Record = Unset;
+        type Uri = Unset;
+        type Cid = Unset;
     }
     ///State transition - sets the `indexed_at` field to Set
     pub struct SetIndexedAt<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetIndexedAt<S> {}
     impl<S: State> State for SetIndexedAt<S> {
         type IndexedAt = Set<members::indexed_at>;
+        type Author = S::Author;
         type Record = S::Record;
-        type Cid = S::Cid;
         type Uri = S::Uri;
-        type Author = S::Author;
-    }
-    ///State transition - sets the `record` field to Set
-    pub struct SetRecord<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRecord<S> {}
-    impl<S: State> State for SetRecord<S> {
-        type IndexedAt = S::IndexedAt;
-        type Record = Set<members::record>;
         type Cid = S::Cid;
-        type Uri = S::Uri;
-        type Author = S::Author;
-    }
-    ///State transition - sets the `cid` field to Set
-    pub struct SetCid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCid<S> {}
-    impl<S: State> State for SetCid<S> {
-        type IndexedAt = S::IndexedAt;
-        type Record = S::Record;
-        type Cid = Set<members::cid>;
-        type Uri = S::Uri;
-        type Author = S::Author;
-    }
-    ///State transition - sets the `uri` field to Set
-    pub struct SetUri<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUri<S> {}
-    impl<S: State> State for SetUri<S> {
-        type IndexedAt = S::IndexedAt;
-        type Record = S::Record;
-        type Cid = S::Cid;
-        type Uri = Set<members::uri>;
-        type Author = S::Author;
     }
     ///State transition - sets the `author` field to Set
     pub struct SetAuthor<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetAuthor<S> {}
     impl<S: State> State for SetAuthor<S> {
         type IndexedAt = S::IndexedAt;
-        type Record = S::Record;
-        type Cid = S::Cid;
-        type Uri = S::Uri;
         type Author = Set<members::author>;
+        type Record = S::Record;
+        type Uri = S::Uri;
+        type Cid = S::Cid;
+    }
+    ///State transition - sets the `record` field to Set
+    pub struct SetRecord<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetRecord<S> {}
+    impl<S: State> State for SetRecord<S> {
+        type IndexedAt = S::IndexedAt;
+        type Author = S::Author;
+        type Record = Set<members::record>;
+        type Uri = S::Uri;
+        type Cid = S::Cid;
+    }
+    ///State transition - sets the `uri` field to Set
+    pub struct SetUri<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetUri<S> {}
+    impl<S: State> State for SetUri<S> {
+        type IndexedAt = S::IndexedAt;
+        type Author = S::Author;
+        type Record = S::Record;
+        type Uri = Set<members::uri>;
+        type Cid = S::Cid;
+    }
+    ///State transition - sets the `cid` field to Set
+    pub struct SetCid<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCid<S> {}
+    impl<S: State> State for SetCid<S> {
+        type IndexedAt = S::IndexedAt;
+        type Author = S::Author;
+        type Record = S::Record;
+        type Uri = S::Uri;
+        type Cid = Set<members::cid>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
         ///Marker type for the `indexed_at` field
         pub struct indexed_at(());
-        ///Marker type for the `record` field
-        pub struct record(());
-        ///Marker type for the `cid` field
-        pub struct cid(());
-        ///Marker type for the `uri` field
-        pub struct uri(());
         ///Marker type for the `author` field
         pub struct author(());
+        ///Marker type for the `record` field
+        pub struct record(());
+        ///Marker type for the `uri` field
+        pub struct uri(());
+        ///Marker type for the `cid` field
+        pub struct cid(());
     }
 }
 
@@ -122,12 +123,12 @@ pub mod livestream_view_state {
 pub struct LivestreamViewBuilder<'a, S: livestream_view_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
-        ::core::option::Option<crate::app_bsky::actor::ProfileViewBasic<'a>>,
+        ::core::option::Option<crate::generated::app_bsky::actor::ProfileViewBasic<'a>>,
         ::core::option::Option<jacquard_common::types::string::Cid<'a>>,
         ::core::option::Option<jacquard_common::types::string::Datetime>,
         ::core::option::Option<jacquard_common::types::value::Data<'a>>,
         ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
-        ::core::option::Option<crate::place_stream::livestream::ViewerCount<'a>>,
+        ::core::option::Option<crate::generated::place_stream::livestream::ViewerCount<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
@@ -158,7 +159,7 @@ where
     /// Set the `author` field (required)
     pub fn author(
         mut self,
-        value: impl Into<crate::app_bsky::actor::ProfileViewBasic<'a>>,
+        value: impl Into<crate::generated::app_bsky::actor::ProfileViewBasic<'a>>,
     ) -> LivestreamViewBuilder<'a, livestream_view_state::SetAuthor<S>> {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         LivestreamViewBuilder {
@@ -249,7 +250,7 @@ impl<'a, S: livestream_view_state::State> LivestreamViewBuilder<'a, S> {
     /// Set the `viewerCount` field (optional)
     pub fn viewer_count(
         mut self,
-        value: impl Into<Option<crate::place_stream::livestream::ViewerCount<'a>>>,
+        value: impl Into<Option<crate::generated::place_stream::livestream::ViewerCount<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.5 = value.into();
         self
@@ -257,7 +258,7 @@ impl<'a, S: livestream_view_state::State> LivestreamViewBuilder<'a, S> {
     /// Set the `viewerCount` field to an Option value (optional)
     pub fn maybe_viewer_count(
         mut self,
-        value: Option<crate::place_stream::livestream::ViewerCount<'a>>,
+        value: Option<crate::generated::place_stream::livestream::ViewerCount<'a>>,
     ) -> Self {
         self.__unsafe_private_named.5 = value;
         self
@@ -268,10 +269,10 @@ impl<'a, S> LivestreamViewBuilder<'a, S>
 where
     S: livestream_view_state::State,
     S::IndexedAt: livestream_view_state::IsSet,
-    S::Record: livestream_view_state::IsSet,
-    S::Cid: livestream_view_state::IsSet,
-    S::Uri: livestream_view_state::IsSet,
     S::Author: livestream_view_state::IsSet,
+    S::Record: livestream_view_state::IsSet,
+    S::Uri: livestream_view_state::IsSet,
+    S::Cid: livestream_view_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> LivestreamView<'a> {
@@ -951,11 +952,11 @@ pub struct Livestream<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub notification_settings:
-        std::option::Option<crate::place_stream::livestream::NotificationSettings<'a>>,
+        std::option::Option<crate::generated::place_stream::livestream::NotificationSettings<'a>>,
     /// The post that announced this livestream.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub post: std::option::Option<crate::com_atproto::repo::strong_ref::StrongRef<'a>>,
+    pub post: std::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub thumb: std::option::Option<jacquard_common::types::blob::BlobRef<'a>>,
@@ -1022,8 +1023,10 @@ pub struct LivestreamBuilder<'a, S: livestream_state::State> {
         ::core::option::Option<jacquard_common::types::string::Datetime>,
         ::core::option::Option<i64>,
         ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<crate::place_stream::livestream::NotificationSettings<'a>>,
-        ::core::option::Option<crate::com_atproto::repo::strong_ref::StrongRef<'a>>,
+        ::core::option::Option<
+            crate::generated::place_stream::livestream::NotificationSettings<'a>,
+        >,
+        ::core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,
         ::core::option::Option<jacquard_common::types::blob::BlobRef<'a>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
         ::core::option::Option<jacquard_common::types::string::Uri<'a>>,
@@ -1157,7 +1160,7 @@ impl<'a, S: livestream_state::State> LivestreamBuilder<'a, S> {
     /// Set the `notificationSettings` field (optional)
     pub fn notification_settings(
         mut self,
-        value: impl Into<Option<crate::place_stream::livestream::NotificationSettings<'a>>>,
+        value: impl Into<Option<crate::generated::place_stream::livestream::NotificationSettings<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.6 = value.into();
         self
@@ -1165,7 +1168,7 @@ impl<'a, S: livestream_state::State> LivestreamBuilder<'a, S> {
     /// Set the `notificationSettings` field to an Option value (optional)
     pub fn maybe_notification_settings(
         mut self,
-        value: Option<crate::place_stream::livestream::NotificationSettings<'a>>,
+        value: Option<crate::generated::place_stream::livestream::NotificationSettings<'a>>,
     ) -> Self {
         self.__unsafe_private_named.6 = value;
         self
@@ -1176,7 +1179,7 @@ impl<'a, S: livestream_state::State> LivestreamBuilder<'a, S> {
     /// Set the `post` field (optional)
     pub fn post(
         mut self,
-        value: impl Into<Option<crate::com_atproto::repo::strong_ref::StrongRef<'a>>>,
+        value: impl Into<Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.7 = value.into();
         self
@@ -1184,7 +1187,7 @@ impl<'a, S: livestream_state::State> LivestreamBuilder<'a, S> {
     /// Set the `post` field to an Option value (optional)
     pub fn maybe_post(
         mut self,
-        value: Option<crate::com_atproto::repo::strong_ref::StrongRef<'a>>,
+        value: Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,
     ) -> Self {
         self.__unsafe_private_named.7 = value;
         self
@@ -1548,23 +1551,23 @@ where
 #[serde(bound(deserialize = "'de: 'a"))]
 pub enum StreamplaceAnythingLivestream<'a> {
     #[serde(rename = "place.stream.livestream#livestreamView")]
-    LivestreamView(Box<crate::place_stream::livestream::LivestreamView<'a>>),
+    LivestreamView(Box<crate::generated::place_stream::livestream::LivestreamView<'a>>),
     #[serde(rename = "place.stream.livestream#viewerCount")]
-    ViewerCount(Box<crate::place_stream::livestream::ViewerCount<'a>>),
+    ViewerCount(Box<crate::generated::place_stream::livestream::ViewerCount<'a>>),
     #[serde(rename = "place.stream.livestream#teleportArrival")]
-    TeleportArrival(Box<crate::place_stream::livestream::TeleportArrival<'a>>),
+    TeleportArrival(Box<crate::generated::place_stream::livestream::TeleportArrival<'a>>),
     #[serde(rename = "place.stream.livestream#teleportCanceled")]
-    TeleportCanceled(Box<crate::place_stream::livestream::TeleportCanceled<'a>>),
+    TeleportCanceled(Box<crate::generated::place_stream::livestream::TeleportCanceled<'a>>),
     #[serde(rename = "place.stream.defs#blockView")]
-    BlockView(Box<crate::place_stream::BlockView<'a>>),
+    BlockView(Box<crate::generated::place_stream::BlockView<'a>>),
     #[serde(rename = "place.stream.defs#renditions")]
-    Renditions(Box<crate::place_stream::Renditions<'a>>),
+    Renditions(Box<crate::generated::place_stream::Renditions<'a>>),
     #[serde(rename = "place.stream.defs#rendition")]
-    Rendition(Box<crate::place_stream::Rendition<'a>>),
+    Rendition(Box<crate::generated::place_stream::Rendition<'a>>),
     #[serde(rename = "place.stream.chat.defs#messageView")]
-    MessageView(Box<crate::place_stream::chat::MessageView<'a>>),
+    MessageView(Box<crate::generated::place_stream::chat::MessageView<'a>>),
     #[serde(rename = "place.stream.chat.defs#pinnedRecordView")]
-    PinnedRecordView(Box<crate::place_stream::chat::PinnedRecordView<'a>>),
+    PinnedRecordView(Box<crate::generated::place_stream::chat::PinnedRecordView<'a>>),
 }
 
 impl<'a> ::jacquard_lexicon::schema::LexiconSchema for StreamplaceAnything<'a> {
@@ -1593,10 +1596,11 @@ pub struct TeleportArrival<'a> {
     /// The chat profile of the source streamer
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub chat_profile: std::option::Option<crate::place_stream::chat::profile::Profile<'a>>,
+    pub chat_profile:
+        std::option::Option<crate::generated::place_stream::chat::profile::Profile<'a>>,
     /// The streamer who is teleporting their viewers here
     #[serde(borrow)]
-    pub source: crate::app_bsky::actor::ProfileViewBasic<'a>,
+    pub source: crate::generated::app_bsky::actor::ProfileViewBasic<'a>,
     /// When this teleport started
     pub starts_at: jacquard_common::types::string::Datetime,
     /// The URI of the teleport record
@@ -1616,65 +1620,65 @@ pub mod teleport_arrival_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
+        type TeleportUri;
         type Source;
         type ViewerCount;
-        type TeleportUri;
         type StartsAt;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
+        type TeleportUri = Unset;
         type Source = Unset;
         type ViewerCount = Unset;
-        type TeleportUri = Unset;
         type StartsAt = Unset;
+    }
+    ///State transition - sets the `teleport_uri` field to Set
+    pub struct SetTeleportUri<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetTeleportUri<S> {}
+    impl<S: State> State for SetTeleportUri<S> {
+        type TeleportUri = Set<members::teleport_uri>;
+        type Source = S::Source;
+        type ViewerCount = S::ViewerCount;
+        type StartsAt = S::StartsAt;
     }
     ///State transition - sets the `source` field to Set
     pub struct SetSource<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetSource<S> {}
     impl<S: State> State for SetSource<S> {
+        type TeleportUri = S::TeleportUri;
         type Source = Set<members::source>;
         type ViewerCount = S::ViewerCount;
-        type TeleportUri = S::TeleportUri;
         type StartsAt = S::StartsAt;
     }
     ///State transition - sets the `viewer_count` field to Set
     pub struct SetViewerCount<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetViewerCount<S> {}
     impl<S: State> State for SetViewerCount<S> {
+        type TeleportUri = S::TeleportUri;
         type Source = S::Source;
         type ViewerCount = Set<members::viewer_count>;
-        type TeleportUri = S::TeleportUri;
-        type StartsAt = S::StartsAt;
-    }
-    ///State transition - sets the `teleport_uri` field to Set
-    pub struct SetTeleportUri<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetTeleportUri<S> {}
-    impl<S: State> State for SetTeleportUri<S> {
-        type Source = S::Source;
-        type ViewerCount = S::ViewerCount;
-        type TeleportUri = Set<members::teleport_uri>;
         type StartsAt = S::StartsAt;
     }
     ///State transition - sets the `starts_at` field to Set
     pub struct SetStartsAt<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetStartsAt<S> {}
     impl<S: State> State for SetStartsAt<S> {
+        type TeleportUri = S::TeleportUri;
         type Source = S::Source;
         type ViewerCount = S::ViewerCount;
-        type TeleportUri = S::TeleportUri;
         type StartsAt = Set<members::starts_at>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
+        ///Marker type for the `teleport_uri` field
+        pub struct teleport_uri(());
         ///Marker type for the `source` field
         pub struct source(());
         ///Marker type for the `viewer_count` field
         pub struct viewer_count(());
-        ///Marker type for the `teleport_uri` field
-        pub struct teleport_uri(());
         ///Marker type for the `starts_at` field
         pub struct starts_at(());
     }
@@ -1684,8 +1688,8 @@ pub mod teleport_arrival_state {
 pub struct TeleportArrivalBuilder<'a, S: teleport_arrival_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
-        ::core::option::Option<crate::place_stream::chat::profile::Profile<'a>>,
-        ::core::option::Option<crate::app_bsky::actor::ProfileViewBasic<'a>>,
+        ::core::option::Option<crate::generated::place_stream::chat::profile::Profile<'a>>,
+        ::core::option::Option<crate::generated::app_bsky::actor::ProfileViewBasic<'a>>,
         ::core::option::Option<jacquard_common::types::string::Datetime>,
         ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
         ::core::option::Option<i64>,
@@ -1715,7 +1719,7 @@ impl<'a, S: teleport_arrival_state::State> TeleportArrivalBuilder<'a, S> {
     /// Set the `chatProfile` field (optional)
     pub fn chat_profile(
         mut self,
-        value: impl Into<Option<crate::place_stream::chat::profile::Profile<'a>>>,
+        value: impl Into<Option<crate::generated::place_stream::chat::profile::Profile<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.0 = value.into();
         self
@@ -1723,7 +1727,7 @@ impl<'a, S: teleport_arrival_state::State> TeleportArrivalBuilder<'a, S> {
     /// Set the `chatProfile` field to an Option value (optional)
     pub fn maybe_chat_profile(
         mut self,
-        value: Option<crate::place_stream::chat::profile::Profile<'a>>,
+        value: Option<crate::generated::place_stream::chat::profile::Profile<'a>>,
     ) -> Self {
         self.__unsafe_private_named.0 = value;
         self
@@ -1738,7 +1742,7 @@ where
     /// Set the `source` field (required)
     pub fn source(
         mut self,
-        value: impl Into<crate::app_bsky::actor::ProfileViewBasic<'a>>,
+        value: impl Into<crate::generated::app_bsky::actor::ProfileViewBasic<'a>>,
     ) -> TeleportArrivalBuilder<'a, teleport_arrival_state::SetSource<S>> {
         self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
         TeleportArrivalBuilder {
@@ -1809,9 +1813,9 @@ where
 impl<'a, S> TeleportArrivalBuilder<'a, S>
 where
     S: teleport_arrival_state::State,
+    S::TeleportUri: teleport_arrival_state::IsSet,
     S::Source: teleport_arrival_state::IsSet,
     S::ViewerCount: teleport_arrival_state::IsSet,
-    S::TeleportUri: teleport_arrival_state::IsSet,
     S::StartsAt: teleport_arrival_state::IsSet,
 {
     /// Build the final struct
@@ -1885,37 +1889,37 @@ pub mod teleport_canceled_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Reason;
         type TeleportUri;
+        type Reason;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Reason = Unset;
         type TeleportUri = Unset;
-    }
-    ///State transition - sets the `reason` field to Set
-    pub struct SetReason<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetReason<S> {}
-    impl<S: State> State for SetReason<S> {
-        type Reason = Set<members::reason>;
-        type TeleportUri = S::TeleportUri;
+        type Reason = Unset;
     }
     ///State transition - sets the `teleport_uri` field to Set
     pub struct SetTeleportUri<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetTeleportUri<S> {}
     impl<S: State> State for SetTeleportUri<S> {
-        type Reason = S::Reason;
         type TeleportUri = Set<members::teleport_uri>;
+        type Reason = S::Reason;
+    }
+    ///State transition - sets the `reason` field to Set
+    pub struct SetReason<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetReason<S> {}
+    impl<S: State> State for SetReason<S> {
+        type TeleportUri = S::TeleportUri;
+        type Reason = Set<members::reason>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `reason` field
-        pub struct reason(());
         ///Marker type for the `teleport_uri` field
         pub struct teleport_uri(());
+        ///Marker type for the `reason` field
+        pub struct reason(());
     }
 }
 
@@ -1988,8 +1992,8 @@ where
 impl<'a, S> TeleportCanceledBuilder<'a, S>
 where
     S: teleport_canceled_state::State,
-    S::Reason: teleport_canceled_state::IsSet,
     S::TeleportUri: teleport_canceled_state::IsSet,
+    S::Reason: teleport_canceled_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> TeleportCanceled<'a> {

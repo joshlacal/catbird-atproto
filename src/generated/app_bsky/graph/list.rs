@@ -21,16 +21,17 @@ pub struct List<'a> {
     pub description: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub description_facets: std::option::Option<Vec<crate::app_bsky::richtext::facet::Facet<'a>>>,
+    pub description_facets:
+        std::option::Option<Vec<crate::generated::app_bsky::richtext::facet::Facet<'a>>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub labels: std::option::Option<crate::com_atproto::label::SelfLabels<'a>>,
+    pub labels: std::option::Option<crate::generated::com_atproto::label::SelfLabels<'a>>,
     /// Display name for list; can not be empty.
     #[serde(borrow)]
     pub name: jacquard_common::CowStr<'a>,
     /// Defines the purpose of the list (aka, moderation-oriented or curration-oriented)
     #[serde(borrow)]
-    pub purpose: crate::app_bsky::graph::ListPurpose<'a>,
+    pub purpose: crate::generated::app_bsky::graph::ListPurpose<'a>,
 }
 
 pub mod list_state {
@@ -43,51 +44,51 @@ pub mod list_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
+        type CreatedAt;
         type Purpose;
         type Name;
-        type CreatedAt;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
+        type CreatedAt = Unset;
         type Purpose = Unset;
         type Name = Unset;
-        type CreatedAt = Unset;
-    }
-    ///State transition - sets the `purpose` field to Set
-    pub struct SetPurpose<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetPurpose<S> {}
-    impl<S: State> State for SetPurpose<S> {
-        type Purpose = Set<members::purpose>;
-        type Name = S::Name;
-        type CreatedAt = S::CreatedAt;
-    }
-    ///State transition - sets the `name` field to Set
-    pub struct SetName<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetName<S> {}
-    impl<S: State> State for SetName<S> {
-        type Purpose = S::Purpose;
-        type Name = Set<members::name>;
-        type CreatedAt = S::CreatedAt;
     }
     ///State transition - sets the `created_at` field to Set
     pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
     impl<S: State> State for SetCreatedAt<S> {
+        type CreatedAt = Set<members::created_at>;
         type Purpose = S::Purpose;
         type Name = S::Name;
-        type CreatedAt = Set<members::created_at>;
+    }
+    ///State transition - sets the `purpose` field to Set
+    pub struct SetPurpose<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetPurpose<S> {}
+    impl<S: State> State for SetPurpose<S> {
+        type CreatedAt = S::CreatedAt;
+        type Purpose = Set<members::purpose>;
+        type Name = S::Name;
+    }
+    ///State transition - sets the `name` field to Set
+    pub struct SetName<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetName<S> {}
+    impl<S: State> State for SetName<S> {
+        type CreatedAt = S::CreatedAt;
+        type Purpose = S::Purpose;
+        type Name = Set<members::name>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
+        ///Marker type for the `created_at` field
+        pub struct created_at(());
         ///Marker type for the `purpose` field
         pub struct purpose(());
         ///Marker type for the `name` field
         pub struct name(());
-        ///Marker type for the `created_at` field
-        pub struct created_at(());
     }
 }
 
@@ -98,10 +99,10 @@ pub struct ListBuilder<'a, S: list_state::State> {
         ::core::option::Option<jacquard_common::types::blob::BlobRef<'a>>,
         ::core::option::Option<jacquard_common::types::string::Datetime>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<Vec<crate::app_bsky::richtext::facet::Facet<'a>>>,
-        ::core::option::Option<crate::com_atproto::label::SelfLabels<'a>>,
+        ::core::option::Option<Vec<crate::generated::app_bsky::richtext::facet::Facet<'a>>>,
+        ::core::option::Option<crate::generated::com_atproto::label::SelfLabels<'a>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<crate::app_bsky::graph::ListPurpose<'a>>,
+        ::core::option::Option<crate::generated::app_bsky::graph::ListPurpose<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
@@ -179,7 +180,7 @@ impl<'a, S: list_state::State> ListBuilder<'a, S> {
     /// Set the `descriptionFacets` field (optional)
     pub fn description_facets(
         mut self,
-        value: impl Into<Option<Vec<crate::app_bsky::richtext::facet::Facet<'a>>>>,
+        value: impl Into<Option<Vec<crate::generated::app_bsky::richtext::facet::Facet<'a>>>>,
     ) -> Self {
         self.__unsafe_private_named.3 = value.into();
         self
@@ -187,7 +188,7 @@ impl<'a, S: list_state::State> ListBuilder<'a, S> {
     /// Set the `descriptionFacets` field to an Option value (optional)
     pub fn maybe_description_facets(
         mut self,
-        value: Option<Vec<crate::app_bsky::richtext::facet::Facet<'a>>>,
+        value: Option<Vec<crate::generated::app_bsky::richtext::facet::Facet<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.3 = value;
         self
@@ -198,7 +199,7 @@ impl<'a, S: list_state::State> ListBuilder<'a, S> {
     /// Set the `labels` field (optional)
     pub fn labels(
         mut self,
-        value: impl Into<Option<crate::com_atproto::label::SelfLabels<'a>>>,
+        value: impl Into<Option<crate::generated::com_atproto::label::SelfLabels<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.4 = value.into();
         self
@@ -206,7 +207,7 @@ impl<'a, S: list_state::State> ListBuilder<'a, S> {
     /// Set the `labels` field to an Option value (optional)
     pub fn maybe_labels(
         mut self,
-        value: Option<crate::com_atproto::label::SelfLabels<'a>>,
+        value: Option<crate::generated::com_atproto::label::SelfLabels<'a>>,
     ) -> Self {
         self.__unsafe_private_named.4 = value;
         self
@@ -240,7 +241,7 @@ where
     /// Set the `purpose` field (required)
     pub fn purpose(
         mut self,
-        value: impl Into<crate::app_bsky::graph::ListPurpose<'a>>,
+        value: impl Into<crate::generated::app_bsky::graph::ListPurpose<'a>>,
     ) -> ListBuilder<'a, list_state::SetPurpose<S>> {
         self.__unsafe_private_named.6 = ::core::option::Option::Some(value.into());
         ListBuilder {
@@ -254,9 +255,9 @@ where
 impl<'a, S> ListBuilder<'a, S>
 where
     S: list_state::State,
+    S::CreatedAt: list_state::IsSet,
     S::Purpose: list_state::IsSet,
     S::Name: list_state::IsSet,
-    S::CreatedAt: list_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> List<'a> {

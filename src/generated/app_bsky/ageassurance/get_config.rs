@@ -13,7 +13,7 @@
 pub struct GetConfigOutput<'a> {
     #[serde(flatten)]
     #[serde(borrow)]
-    pub value: crate::app_bsky::ageassurance::Config<'a>,
+    pub value: crate::generated::app_bsky::ageassurance::Config<'a>,
 }
 
 /// XRPC request marker type

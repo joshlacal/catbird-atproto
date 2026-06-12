@@ -151,7 +151,7 @@ pub struct GetFeedSkeletonOutput<'a> {
     #[serde(borrow)]
     pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(borrow)]
-    pub feed: Vec<crate::app_bsky::feed::SkeletonFeedPost<'a>>,
+    pub feed: Vec<crate::generated::app_bsky::feed::SkeletonFeedPost<'a>>,
     /// Unique identifier per request that may be passed back alongside interactions.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]

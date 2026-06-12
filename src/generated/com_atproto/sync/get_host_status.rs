@@ -126,7 +126,7 @@ pub struct GetHostStatusOutput<'a> {
     pub seq: std::option::Option<i64>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub status: std::option::Option<crate::com_atproto::sync::HostStatus<'a>>,
+    pub status: std::option::Option<crate::generated::com_atproto::sync::HostStatus<'a>>,
 }
 
 #[jacquard_derive::open_union]

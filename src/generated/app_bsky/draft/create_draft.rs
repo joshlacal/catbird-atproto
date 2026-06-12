@@ -12,7 +12,7 @@
 #[serde(rename_all = "camelCase")]
 pub struct CreateDraft<'a> {
     #[serde(borrow)]
-    pub draft: crate::app_bsky::draft::Draft<'a>,
+    pub draft: crate::generated::app_bsky::draft::Draft<'a>,
 }
 
 pub mod create_draft_state {
@@ -50,7 +50,7 @@ pub mod create_draft_state {
 /// Builder for constructing an instance of this type
 pub struct CreateDraftBuilder<'a, S: create_draft_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<crate::app_bsky::draft::Draft<'a>>,),
+    __unsafe_private_named: (::core::option::Option<crate::generated::app_bsky::draft::Draft<'a>>,),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
 
@@ -80,7 +80,7 @@ where
     /// Set the `draft` field (required)
     pub fn draft(
         mut self,
-        value: impl Into<crate::app_bsky::draft::Draft<'a>>,
+        value: impl Into<crate::generated::app_bsky::draft::Draft<'a>>,
     ) -> CreateDraftBuilder<'a, create_draft_state::SetDraft<S>> {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         CreateDraftBuilder {

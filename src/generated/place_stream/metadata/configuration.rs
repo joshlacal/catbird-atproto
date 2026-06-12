@@ -14,16 +14,18 @@
 pub struct Configuration<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub content_rights:
-        std::option::Option<crate::place_stream::metadata::content_rights::ContentRights<'a>>,
+    pub content_rights: std::option::Option<
+        crate::generated::place_stream::metadata::content_rights::ContentRights<'a>,
+    >,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub content_warnings:
-        std::option::Option<crate::place_stream::metadata::content_warnings::ContentWarnings<'a>>,
+    pub content_warnings: std::option::Option<
+        crate::generated::place_stream::metadata::content_warnings::ContentWarnings<'a>,
+    >,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub distribution_policy: std::option::Option<
-        crate::place_stream::metadata::distribution_policy::DistributionPolicy<'a>,
+        crate::generated::place_stream::metadata::distribution_policy::DistributionPolicy<'a>,
     >,
 }
 
@@ -50,12 +52,14 @@ pub mod configuration_state {
 pub struct ConfigurationBuilder<'a, S: configuration_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
-        ::core::option::Option<crate::place_stream::metadata::content_rights::ContentRights<'a>>,
         ::core::option::Option<
-            crate::place_stream::metadata::content_warnings::ContentWarnings<'a>,
+            crate::generated::place_stream::metadata::content_rights::ContentRights<'a>,
         >,
         ::core::option::Option<
-            crate::place_stream::metadata::distribution_policy::DistributionPolicy<'a>,
+            crate::generated::place_stream::metadata::content_warnings::ContentWarnings<'a>,
+        >,
+        ::core::option::Option<
+            crate::generated::place_stream::metadata::distribution_policy::DistributionPolicy<'a>,
         >,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
@@ -83,7 +87,9 @@ impl<'a, S: configuration_state::State> ConfigurationBuilder<'a, S> {
     /// Set the `contentRights` field (optional)
     pub fn content_rights(
         mut self,
-        value: impl Into<Option<crate::place_stream::metadata::content_rights::ContentRights<'a>>>,
+        value: impl Into<
+            Option<crate::generated::place_stream::metadata::content_rights::ContentRights<'a>>,
+        >,
     ) -> Self {
         self.__unsafe_private_named.0 = value.into();
         self
@@ -91,7 +97,7 @@ impl<'a, S: configuration_state::State> ConfigurationBuilder<'a, S> {
     /// Set the `contentRights` field to an Option value (optional)
     pub fn maybe_content_rights(
         mut self,
-        value: Option<crate::place_stream::metadata::content_rights::ContentRights<'a>>,
+        value: Option<crate::generated::place_stream::metadata::content_rights::ContentRights<'a>>,
     ) -> Self {
         self.__unsafe_private_named.0 = value;
         self
@@ -102,7 +108,9 @@ impl<'a, S: configuration_state::State> ConfigurationBuilder<'a, S> {
     /// Set the `contentWarnings` field (optional)
     pub fn content_warnings(
         mut self,
-        value: impl Into<Option<crate::place_stream::metadata::content_warnings::ContentWarnings<'a>>>,
+        value: impl Into<
+            Option<crate::generated::place_stream::metadata::content_warnings::ContentWarnings<'a>>,
+        >,
     ) -> Self {
         self.__unsafe_private_named.1 = value.into();
         self
@@ -110,7 +118,9 @@ impl<'a, S: configuration_state::State> ConfigurationBuilder<'a, S> {
     /// Set the `contentWarnings` field to an Option value (optional)
     pub fn maybe_content_warnings(
         mut self,
-        value: Option<crate::place_stream::metadata::content_warnings::ContentWarnings<'a>>,
+        value: Option<
+            crate::generated::place_stream::metadata::content_warnings::ContentWarnings<'a>,
+        >,
     ) -> Self {
         self.__unsafe_private_named.1 = value;
         self
@@ -122,7 +132,11 @@ impl<'a, S: configuration_state::State> ConfigurationBuilder<'a, S> {
     pub fn distribution_policy(
         mut self,
         value: impl Into<
-            Option<crate::place_stream::metadata::distribution_policy::DistributionPolicy<'a>>,
+            Option<
+                crate::generated::place_stream::metadata::distribution_policy::DistributionPolicy<
+                    'a,
+                >,
+            >,
         >,
     ) -> Self {
         self.__unsafe_private_named.2 = value.into();
@@ -131,7 +145,9 @@ impl<'a, S: configuration_state::State> ConfigurationBuilder<'a, S> {
     /// Set the `distributionPolicy` field to an Option value (optional)
     pub fn maybe_distribution_policy(
         mut self,
-        value: Option<crate::place_stream::metadata::distribution_policy::DistributionPolicy<'a>>,
+        value: Option<
+            crate::generated::place_stream::metadata::distribution_policy::DistributionPolicy<'a>,
+        >,
     ) -> Self {
         self.__unsafe_private_named.2 = value;
         self

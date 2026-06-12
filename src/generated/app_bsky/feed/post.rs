@@ -13,7 +13,7 @@
 #[serde(rename_all = "camelCase")]
 pub struct Entity<'a> {
     #[serde(borrow)]
-    pub index: crate::app_bsky::feed::post::TextSlice<'a>,
+    pub index: crate::generated::app_bsky::feed::post::TextSlice<'a>,
     /// Expected values are 'mention' and 'link'.
     #[serde(borrow)]
     pub r#type: jacquard_common::CowStr<'a>,
@@ -31,51 +31,51 @@ pub mod entity_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Type;
-        type Value;
         type Index;
+        type Value;
+        type Type;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Type = Unset;
-        type Value = Unset;
         type Index = Unset;
-    }
-    ///State transition - sets the `type` field to Set
-    pub struct SetType<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetType<S> {}
-    impl<S: State> State for SetType<S> {
-        type Type = Set<members::r#type>;
-        type Value = S::Value;
-        type Index = S::Index;
-    }
-    ///State transition - sets the `value` field to Set
-    pub struct SetValue<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetValue<S> {}
-    impl<S: State> State for SetValue<S> {
-        type Type = S::Type;
-        type Value = Set<members::value>;
-        type Index = S::Index;
+        type Value = Unset;
+        type Type = Unset;
     }
     ///State transition - sets the `index` field to Set
     pub struct SetIndex<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetIndex<S> {}
     impl<S: State> State for SetIndex<S> {
-        type Type = S::Type;
-        type Value = S::Value;
         type Index = Set<members::index>;
+        type Value = S::Value;
+        type Type = S::Type;
+    }
+    ///State transition - sets the `value` field to Set
+    pub struct SetValue<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetValue<S> {}
+    impl<S: State> State for SetValue<S> {
+        type Index = S::Index;
+        type Value = Set<members::value>;
+        type Type = S::Type;
+    }
+    ///State transition - sets the `type` field to Set
+    pub struct SetType<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetType<S> {}
+    impl<S: State> State for SetType<S> {
+        type Index = S::Index;
+        type Value = S::Value;
+        type Type = Set<members::r#type>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `type` field
-        pub struct r#type(());
-        ///Marker type for the `value` field
-        pub struct value(());
         ///Marker type for the `index` field
         pub struct index(());
+        ///Marker type for the `value` field
+        pub struct value(());
+        ///Marker type for the `type` field
+        pub struct r#type(());
     }
 }
 
@@ -83,7 +83,7 @@ pub mod entity_state {
 pub struct EntityBuilder<'a, S: entity_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
-        ::core::option::Option<crate::app_bsky::feed::post::TextSlice<'a>>,
+        ::core::option::Option<crate::generated::app_bsky::feed::post::TextSlice<'a>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
     ),
@@ -116,7 +116,7 @@ where
     /// Set the `index` field (required)
     pub fn index(
         mut self,
-        value: impl Into<crate::app_bsky::feed::post::TextSlice<'a>>,
+        value: impl Into<crate::generated::app_bsky::feed::post::TextSlice<'a>>,
     ) -> EntityBuilder<'a, entity_state::SetIndex<S>> {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         EntityBuilder {
@@ -168,9 +168,9 @@ where
 impl<'a, S> EntityBuilder<'a, S>
 where
     S: entity_state::State,
-    S::Type: entity_state::IsSet,
-    S::Value: entity_state::IsSet,
     S::Index: entity_state::IsSet,
+    S::Value: entity_state::IsSet,
+    S::Type: entity_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> Entity<'a> {
@@ -582,21 +582,21 @@ pub struct Post<'a> {
     /// DEPRECATED: replaced by app.bsky.richtext.facet.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub entities: std::option::Option<Vec<crate::app_bsky::feed::post::Entity<'a>>>,
+    pub entities: std::option::Option<Vec<crate::generated::app_bsky::feed::post::Entity<'a>>>,
     /// Annotations of text (mentions, URLs, hashtags, etc)
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub facets: std::option::Option<Vec<crate::app_bsky::richtext::facet::Facet<'a>>>,
+    pub facets: std::option::Option<Vec<crate::generated::app_bsky::richtext::facet::Facet<'a>>>,
     /// Self-label values for this post. Effectively content warnings.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub labels: std::option::Option<crate::com_atproto::label::SelfLabels<'a>>,
+    pub labels: std::option::Option<crate::generated::com_atproto::label::SelfLabels<'a>>,
     /// Indicates human language of post primary text content.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     pub langs: std::option::Option<Vec<jacquard_common::types::string::Language>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub reply: std::option::Option<crate::app_bsky::feed::post::ReplyRef<'a>>,
+    pub reply: std::option::Option<crate::generated::app_bsky::feed::post::ReplyRef<'a>>,
     /// Additional hashtags, in addition to any included in post text and facets.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
@@ -656,11 +656,11 @@ pub struct PostBuilder<'a, S: post_state::State> {
     __unsafe_private_named: (
         ::core::option::Option<jacquard_common::types::string::Datetime>,
         ::core::option::Option<PostEmbed<'a>>,
-        ::core::option::Option<Vec<crate::app_bsky::feed::post::Entity<'a>>>,
-        ::core::option::Option<Vec<crate::app_bsky::richtext::facet::Facet<'a>>>,
-        ::core::option::Option<crate::com_atproto::label::SelfLabels<'a>>,
+        ::core::option::Option<Vec<crate::generated::app_bsky::feed::post::Entity<'a>>>,
+        ::core::option::Option<Vec<crate::generated::app_bsky::richtext::facet::Facet<'a>>>,
+        ::core::option::Option<crate::generated::com_atproto::label::SelfLabels<'a>>,
         ::core::option::Option<Vec<jacquard_common::types::string::Language>>,
-        ::core::option::Option<crate::app_bsky::feed::post::ReplyRef<'a>>,
+        ::core::option::Option<crate::generated::app_bsky::feed::post::ReplyRef<'a>>,
         ::core::option::Option<Vec<jacquard_common::CowStr<'a>>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
     ),
@@ -721,7 +721,7 @@ impl<'a, S: post_state::State> PostBuilder<'a, S> {
     /// Set the `entities` field (optional)
     pub fn entities(
         mut self,
-        value: impl Into<Option<Vec<crate::app_bsky::feed::post::Entity<'a>>>>,
+        value: impl Into<Option<Vec<crate::generated::app_bsky::feed::post::Entity<'a>>>>,
     ) -> Self {
         self.__unsafe_private_named.2 = value.into();
         self
@@ -729,7 +729,7 @@ impl<'a, S: post_state::State> PostBuilder<'a, S> {
     /// Set the `entities` field to an Option value (optional)
     pub fn maybe_entities(
         mut self,
-        value: Option<Vec<crate::app_bsky::feed::post::Entity<'a>>>,
+        value: Option<Vec<crate::generated::app_bsky::feed::post::Entity<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.2 = value;
         self
@@ -740,7 +740,7 @@ impl<'a, S: post_state::State> PostBuilder<'a, S> {
     /// Set the `facets` field (optional)
     pub fn facets(
         mut self,
-        value: impl Into<Option<Vec<crate::app_bsky::richtext::facet::Facet<'a>>>>,
+        value: impl Into<Option<Vec<crate::generated::app_bsky::richtext::facet::Facet<'a>>>>,
     ) -> Self {
         self.__unsafe_private_named.3 = value.into();
         self
@@ -748,7 +748,7 @@ impl<'a, S: post_state::State> PostBuilder<'a, S> {
     /// Set the `facets` field to an Option value (optional)
     pub fn maybe_facets(
         mut self,
-        value: Option<Vec<crate::app_bsky::richtext::facet::Facet<'a>>>,
+        value: Option<Vec<crate::generated::app_bsky::richtext::facet::Facet<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.3 = value;
         self
@@ -759,7 +759,7 @@ impl<'a, S: post_state::State> PostBuilder<'a, S> {
     /// Set the `labels` field (optional)
     pub fn labels(
         mut self,
-        value: impl Into<Option<crate::com_atproto::label::SelfLabels<'a>>>,
+        value: impl Into<Option<crate::generated::com_atproto::label::SelfLabels<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.4 = value.into();
         self
@@ -767,7 +767,7 @@ impl<'a, S: post_state::State> PostBuilder<'a, S> {
     /// Set the `labels` field to an Option value (optional)
     pub fn maybe_labels(
         mut self,
-        value: Option<crate::com_atproto::label::SelfLabels<'a>>,
+        value: Option<crate::generated::com_atproto::label::SelfLabels<'a>>,
     ) -> Self {
         self.__unsafe_private_named.4 = value;
         self
@@ -797,13 +797,16 @@ impl<'a, S: post_state::State> PostBuilder<'a, S> {
     /// Set the `reply` field (optional)
     pub fn reply(
         mut self,
-        value: impl Into<Option<crate::app_bsky::feed::post::ReplyRef<'a>>>,
+        value: impl Into<Option<crate::generated::app_bsky::feed::post::ReplyRef<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.6 = value.into();
         self
     }
     /// Set the `reply` field to an Option value (optional)
-    pub fn maybe_reply(mut self, value: Option<crate::app_bsky::feed::post::ReplyRef<'a>>) -> Self {
+    pub fn maybe_reply(
+        mut self,
+        value: Option<crate::generated::app_bsky::feed::post::ReplyRef<'a>>,
+    ) -> Self {
         self.__unsafe_private_named.6 = value;
         self
     }
@@ -906,15 +909,15 @@ impl<'a> Post<'a> {
 #[serde(bound(deserialize = "'de: 'a"))]
 pub enum PostEmbed<'a> {
     #[serde(rename = "app.bsky.embed.images")]
-    Images(Box<crate::app_bsky::embed::images::Images<'a>>),
+    Images(Box<crate::generated::app_bsky::embed::images::Images<'a>>),
     #[serde(rename = "app.bsky.embed.video")]
-    Video(Box<crate::app_bsky::embed::video::Video<'a>>),
+    Video(Box<crate::generated::app_bsky::embed::video::Video<'a>>),
     #[serde(rename = "app.bsky.embed.external")]
-    External(Box<crate::app_bsky::embed::external::ExternalRecord<'a>>),
+    External(Box<crate::generated::app_bsky::embed::external::ExternalRecord<'a>>),
     #[serde(rename = "app.bsky.embed.record")]
-    Record(Box<crate::app_bsky::embed::record::Record<'a>>),
+    Record(Box<crate::generated::app_bsky::embed::record::Record<'a>>),
     #[serde(rename = "app.bsky.embed.recordWithMedia")]
-    RecordWithMedia(Box<crate::app_bsky::embed::record_with_media::RecordWithMedia<'a>>),
+    RecordWithMedia(Box<crate::generated::app_bsky::embed::record_with_media::RecordWithMedia<'a>>),
 }
 
 /// Typed wrapper for GetRecord response with this collection's record type.
@@ -1033,9 +1036,9 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Post<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct ReplyRef<'a> {
     #[serde(borrow)]
-    pub parent: crate::com_atproto::repo::strong_ref::StrongRef<'a>,
+    pub parent: crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>,
     #[serde(borrow)]
-    pub root: crate::com_atproto::repo::strong_ref::StrongRef<'a>,
+    pub root: crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>,
 }
 
 pub mod reply_ref_state {
@@ -1048,37 +1051,37 @@ pub mod reply_ref_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Root;
         type Parent;
+        type Root;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Root = Unset;
         type Parent = Unset;
-    }
-    ///State transition - sets the `root` field to Set
-    pub struct SetRoot<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRoot<S> {}
-    impl<S: State> State for SetRoot<S> {
-        type Root = Set<members::root>;
-        type Parent = S::Parent;
+        type Root = Unset;
     }
     ///State transition - sets the `parent` field to Set
     pub struct SetParent<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetParent<S> {}
     impl<S: State> State for SetParent<S> {
-        type Root = S::Root;
         type Parent = Set<members::parent>;
+        type Root = S::Root;
+    }
+    ///State transition - sets the `root` field to Set
+    pub struct SetRoot<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetRoot<S> {}
+    impl<S: State> State for SetRoot<S> {
+        type Parent = S::Parent;
+        type Root = Set<members::root>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `root` field
-        pub struct root(());
         ///Marker type for the `parent` field
         pub struct parent(());
+        ///Marker type for the `root` field
+        pub struct root(());
     }
 }
 
@@ -1086,8 +1089,8 @@ pub mod reply_ref_state {
 pub struct ReplyRefBuilder<'a, S: reply_ref_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
-        ::core::option::Option<crate::com_atproto::repo::strong_ref::StrongRef<'a>>,
-        ::core::option::Option<crate::com_atproto::repo::strong_ref::StrongRef<'a>>,
+        ::core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,
+        ::core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
@@ -1118,7 +1121,7 @@ where
     /// Set the `parent` field (required)
     pub fn parent(
         mut self,
-        value: impl Into<crate::com_atproto::repo::strong_ref::StrongRef<'a>>,
+        value: impl Into<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,
     ) -> ReplyRefBuilder<'a, reply_ref_state::SetParent<S>> {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         ReplyRefBuilder {
@@ -1137,7 +1140,7 @@ where
     /// Set the `root` field (required)
     pub fn root(
         mut self,
-        value: impl Into<crate::com_atproto::repo::strong_ref::StrongRef<'a>>,
+        value: impl Into<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,
     ) -> ReplyRefBuilder<'a, reply_ref_state::SetRoot<S>> {
         self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
         ReplyRefBuilder {
@@ -1151,8 +1154,8 @@ where
 impl<'a, S> ReplyRefBuilder<'a, S>
 where
     S: reply_ref_state::State,
-    S::Root: reply_ref_state::IsSet,
     S::Parent: reply_ref_state::IsSet,
+    S::Root: reply_ref_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> ReplyRef<'a> {
@@ -1216,37 +1219,37 @@ pub mod text_slice_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type End;
         type Start;
+        type End;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type End = Unset;
         type Start = Unset;
-    }
-    ///State transition - sets the `end` field to Set
-    pub struct SetEnd<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetEnd<S> {}
-    impl<S: State> State for SetEnd<S> {
-        type End = Set<members::end>;
-        type Start = S::Start;
+        type End = Unset;
     }
     ///State transition - sets the `start` field to Set
     pub struct SetStart<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetStart<S> {}
     impl<S: State> State for SetStart<S> {
-        type End = S::End;
         type Start = Set<members::start>;
+        type End = S::End;
+    }
+    ///State transition - sets the `end` field to Set
+    pub struct SetEnd<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetEnd<S> {}
+    impl<S: State> State for SetEnd<S> {
+        type Start = S::Start;
+        type End = Set<members::end>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `end` field
-        pub struct end(());
         ///Marker type for the `start` field
         pub struct start(());
+        ///Marker type for the `end` field
+        pub struct end(());
     }
 }
 
@@ -1316,8 +1319,8 @@ where
 impl<'a, S> TextSliceBuilder<'a, S>
 where
     S: text_slice_state::State,
-    S::End: text_slice_state::IsSet,
     S::Start: text_slice_state::IsSet,
+    S::End: text_slice_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> TextSlice<'a> {

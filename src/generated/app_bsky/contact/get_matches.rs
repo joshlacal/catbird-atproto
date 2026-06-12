@@ -114,7 +114,7 @@ pub struct GetMatchesOutput<'a> {
     #[serde(borrow)]
     pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(borrow)]
-    pub matches: Vec<crate::app_bsky::actor::ProfileView<'a>>,
+    pub matches: Vec<crate::generated::app_bsky::actor::ProfileView<'a>>,
 }
 
 #[jacquard_derive::open_union]

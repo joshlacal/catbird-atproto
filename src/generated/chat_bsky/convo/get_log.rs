@@ -105,59 +105,69 @@ pub struct GetLogOutput<'a> {
 #[serde(bound(deserialize = "'de: 'a"))]
 pub enum GetLogOutputLogsItem<'a> {
     #[serde(rename = "chat.bsky.convo.defs#logBeginConvo")]
-    LogBeginConvo(Box<crate::chat_bsky::convo::LogBeginConvo<'a>>),
+    LogBeginConvo(Box<crate::generated::chat_bsky::convo::LogBeginConvo<'a>>),
     #[serde(rename = "chat.bsky.convo.defs#logAcceptConvo")]
-    LogAcceptConvo(Box<crate::chat_bsky::convo::LogAcceptConvo<'a>>),
+    LogAcceptConvo(Box<crate::generated::chat_bsky::convo::LogAcceptConvo<'a>>),
     #[serde(rename = "chat.bsky.convo.defs#logLeaveConvo")]
-    LogLeaveConvo(Box<crate::chat_bsky::convo::LogLeaveConvo<'a>>),
+    LogLeaveConvo(Box<crate::generated::chat_bsky::convo::LogLeaveConvo<'a>>),
     #[serde(rename = "chat.bsky.convo.defs#logMuteConvo")]
-    LogMuteConvo(Box<crate::chat_bsky::convo::LogMuteConvo<'a>>),
+    LogMuteConvo(Box<crate::generated::chat_bsky::convo::LogMuteConvo<'a>>),
     #[serde(rename = "chat.bsky.convo.defs#logUnmuteConvo")]
-    LogUnmuteConvo(Box<crate::chat_bsky::convo::LogUnmuteConvo<'a>>),
+    LogUnmuteConvo(Box<crate::generated::chat_bsky::convo::LogUnmuteConvo<'a>>),
     #[serde(rename = "chat.bsky.convo.defs#logCreateMessage")]
-    LogCreateMessage(Box<crate::chat_bsky::convo::LogCreateMessage<'a>>),
+    LogCreateMessage(Box<crate::generated::chat_bsky::convo::LogCreateMessage<'a>>),
     #[serde(rename = "chat.bsky.convo.defs#logDeleteMessage")]
-    LogDeleteMessage(Box<crate::chat_bsky::convo::LogDeleteMessage<'a>>),
+    LogDeleteMessage(Box<crate::generated::chat_bsky::convo::LogDeleteMessage<'a>>),
     #[serde(rename = "chat.bsky.convo.defs#logReadMessage")]
-    LogReadMessage(Box<crate::chat_bsky::convo::LogReadMessage<'a>>),
+    LogReadMessage(Box<crate::generated::chat_bsky::convo::LogReadMessage<'a>>),
     #[serde(rename = "chat.bsky.convo.defs#logAddReaction")]
-    LogAddReaction(Box<crate::chat_bsky::convo::LogAddReaction<'a>>),
+    LogAddReaction(Box<crate::generated::chat_bsky::convo::LogAddReaction<'a>>),
     #[serde(rename = "chat.bsky.convo.defs#logRemoveReaction")]
-    LogRemoveReaction(Box<crate::chat_bsky::convo::LogRemoveReaction<'a>>),
+    LogRemoveReaction(Box<crate::generated::chat_bsky::convo::LogRemoveReaction<'a>>),
     #[serde(rename = "chat.bsky.convo.defs#logReadConvo")]
-    LogReadConvo(Box<crate::chat_bsky::convo::LogReadConvo<'a>>),
+    LogReadConvo(Box<crate::generated::chat_bsky::convo::LogReadConvo<'a>>),
     #[serde(rename = "chat.bsky.convo.defs#logAddMember")]
-    LogAddMember(Box<crate::chat_bsky::convo::LogAddMember<'a>>),
+    LogAddMember(Box<crate::generated::chat_bsky::convo::LogAddMember<'a>>),
     #[serde(rename = "chat.bsky.convo.defs#logRemoveMember")]
-    LogRemoveMember(Box<crate::chat_bsky::convo::LogRemoveMember<'a>>),
+    LogRemoveMember(Box<crate::generated::chat_bsky::convo::LogRemoveMember<'a>>),
     #[serde(rename = "chat.bsky.convo.defs#logMemberJoin")]
-    LogMemberJoin(Box<crate::chat_bsky::convo::LogMemberJoin<'a>>),
+    LogMemberJoin(Box<crate::generated::chat_bsky::convo::LogMemberJoin<'a>>),
     #[serde(rename = "chat.bsky.convo.defs#logMemberLeave")]
-    LogMemberLeave(Box<crate::chat_bsky::convo::LogMemberLeave<'a>>),
+    LogMemberLeave(Box<crate::generated::chat_bsky::convo::LogMemberLeave<'a>>),
     #[serde(rename = "chat.bsky.convo.defs#logLockConvo")]
-    LogLockConvo(Box<crate::chat_bsky::convo::LogLockConvo<'a>>),
+    LogLockConvo(Box<crate::generated::chat_bsky::convo::LogLockConvo<'a>>),
     #[serde(rename = "chat.bsky.convo.defs#logUnlockConvo")]
-    LogUnlockConvo(Box<crate::chat_bsky::convo::LogUnlockConvo<'a>>),
+    LogUnlockConvo(Box<crate::generated::chat_bsky::convo::LogUnlockConvo<'a>>),
     #[serde(rename = "chat.bsky.convo.defs#logLockConvoPermanently")]
-    LogLockConvoPermanently(Box<crate::chat_bsky::convo::LogLockConvoPermanently<'a>>),
+    LogLockConvoPermanently(Box<crate::generated::chat_bsky::convo::LogLockConvoPermanently<'a>>),
     #[serde(rename = "chat.bsky.convo.defs#logEditGroup")]
-    LogEditGroup(Box<crate::chat_bsky::convo::LogEditGroup<'a>>),
+    LogEditGroup(Box<crate::generated::chat_bsky::convo::LogEditGroup<'a>>),
     #[serde(rename = "chat.bsky.convo.defs#logCreateJoinLink")]
-    LogCreateJoinLink(Box<crate::chat_bsky::convo::LogCreateJoinLink<'a>>),
+    LogCreateJoinLink(Box<crate::generated::chat_bsky::convo::LogCreateJoinLink<'a>>),
     #[serde(rename = "chat.bsky.convo.defs#logEditJoinLink")]
-    LogEditJoinLink(Box<crate::chat_bsky::convo::LogEditJoinLink<'a>>),
+    LogEditJoinLink(Box<crate::generated::chat_bsky::convo::LogEditJoinLink<'a>>),
     #[serde(rename = "chat.bsky.convo.defs#logEnableJoinLink")]
-    LogEnableJoinLink(Box<crate::chat_bsky::convo::LogEnableJoinLink<'a>>),
+    LogEnableJoinLink(Box<crate::generated::chat_bsky::convo::LogEnableJoinLink<'a>>),
     #[serde(rename = "chat.bsky.convo.defs#logDisableJoinLink")]
-    LogDisableJoinLink(Box<crate::chat_bsky::convo::LogDisableJoinLink<'a>>),
+    LogDisableJoinLink(Box<crate::generated::chat_bsky::convo::LogDisableJoinLink<'a>>),
     #[serde(rename = "chat.bsky.convo.defs#logIncomingJoinRequest")]
-    LogIncomingJoinRequest(Box<crate::chat_bsky::convo::LogIncomingJoinRequest<'a>>),
+    LogIncomingJoinRequest(Box<crate::generated::chat_bsky::convo::LogIncomingJoinRequest<'a>>),
     #[serde(rename = "chat.bsky.convo.defs#logApproveJoinRequest")]
-    LogApproveJoinRequest(Box<crate::chat_bsky::convo::LogApproveJoinRequest<'a>>),
+    LogApproveJoinRequest(Box<crate::generated::chat_bsky::convo::LogApproveJoinRequest<'a>>),
     #[serde(rename = "chat.bsky.convo.defs#logRejectJoinRequest")]
-    LogRejectJoinRequest(Box<crate::chat_bsky::convo::LogRejectJoinRequest<'a>>),
+    LogRejectJoinRequest(Box<crate::generated::chat_bsky::convo::LogRejectJoinRequest<'a>>),
     #[serde(rename = "chat.bsky.convo.defs#logOutgoingJoinRequest")]
-    LogOutgoingJoinRequest(Box<crate::chat_bsky::convo::LogOutgoingJoinRequest<'a>>),
+    LogOutgoingJoinRequest(Box<crate::generated::chat_bsky::convo::LogOutgoingJoinRequest<'a>>),
+    #[serde(rename = "chat.bsky.convo.defs#logWithdrawIncomingJoinRequest")]
+    LogWithdrawIncomingJoinRequest(
+        Box<crate::generated::chat_bsky::convo::LogWithdrawIncomingJoinRequest<'a>>,
+    ),
+    #[serde(rename = "chat.bsky.convo.defs#logWithdrawOutgoingJoinRequest")]
+    LogWithdrawOutgoingJoinRequest(
+        Box<crate::generated::chat_bsky::convo::LogWithdrawOutgoingJoinRequest<'a>>,
+    ),
+    #[serde(rename = "chat.bsky.convo.defs#logReadJoinRequests")]
+    LogReadJoinRequests(Box<crate::generated::chat_bsky::convo::LogReadJoinRequests<'a>>),
 }
 
 /// Response type for

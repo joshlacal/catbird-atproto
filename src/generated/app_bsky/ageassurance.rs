@@ -105,7 +105,7 @@ impl jacquard_common::IntoStatic for Access<'_> {
 pub struct Config<'a> {
     /// The per-region Age Assurance configuration.
     #[serde(borrow)]
-    pub regions: Vec<crate::app_bsky::ageassurance::ConfigRegion<'a>>,
+    pub regions: Vec<crate::generated::app_bsky::ageassurance::ConfigRegion<'a>>,
 }
 
 pub mod config_state {
@@ -144,7 +144,7 @@ pub mod config_state {
 pub struct ConfigBuilder<'a, S: config_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named:
-        (::core::option::Option<Vec<crate::app_bsky::ageassurance::ConfigRegion<'a>>>,),
+        (::core::option::Option<Vec<crate::generated::app_bsky::ageassurance::ConfigRegion<'a>>>,),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
 
@@ -174,7 +174,7 @@ where
     /// Set the `regions` field (required)
     pub fn regions(
         mut self,
-        value: impl Into<Vec<crate::app_bsky::ageassurance::ConfigRegion<'a>>>,
+        value: impl Into<Vec<crate::generated::app_bsky::ageassurance::ConfigRegion<'a>>>,
     ) -> ConfigBuilder<'a, config_state::SetRegions<S>> {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         ConfigBuilder {
@@ -1307,30 +1307,32 @@ where
 #[serde(bound(deserialize = "'de: 'a"))]
 pub enum ConfigRegionRulesItem<'a> {
     #[serde(rename = "app.bsky.ageassurance.defs#configRegionRuleDefault")]
-    ConfigRegionRuleDefault(Box<crate::app_bsky::ageassurance::ConfigRegionRuleDefault<'a>>),
+    ConfigRegionRuleDefault(
+        Box<crate::generated::app_bsky::ageassurance::ConfigRegionRuleDefault<'a>>,
+    ),
     #[serde(rename = "app.bsky.ageassurance.defs#configRegionRuleIfDeclaredOverAge")]
     ConfigRegionRuleIfDeclaredOverAge(
-        Box<crate::app_bsky::ageassurance::ConfigRegionRuleIfDeclaredOverAge<'a>>,
+        Box<crate::generated::app_bsky::ageassurance::ConfigRegionRuleIfDeclaredOverAge<'a>>,
     ),
     #[serde(rename = "app.bsky.ageassurance.defs#configRegionRuleIfDeclaredUnderAge")]
     ConfigRegionRuleIfDeclaredUnderAge(
-        Box<crate::app_bsky::ageassurance::ConfigRegionRuleIfDeclaredUnderAge<'a>>,
+        Box<crate::generated::app_bsky::ageassurance::ConfigRegionRuleIfDeclaredUnderAge<'a>>,
     ),
     #[serde(rename = "app.bsky.ageassurance.defs#configRegionRuleIfAssuredOverAge")]
     ConfigRegionRuleIfAssuredOverAge(
-        Box<crate::app_bsky::ageassurance::ConfigRegionRuleIfAssuredOverAge<'a>>,
+        Box<crate::generated::app_bsky::ageassurance::ConfigRegionRuleIfAssuredOverAge<'a>>,
     ),
     #[serde(rename = "app.bsky.ageassurance.defs#configRegionRuleIfAssuredUnderAge")]
     ConfigRegionRuleIfAssuredUnderAge(
-        Box<crate::app_bsky::ageassurance::ConfigRegionRuleIfAssuredUnderAge<'a>>,
+        Box<crate::generated::app_bsky::ageassurance::ConfigRegionRuleIfAssuredUnderAge<'a>>,
     ),
     #[serde(rename = "app.bsky.ageassurance.defs#configRegionRuleIfAccountNewerThan")]
     ConfigRegionRuleIfAccountNewerThan(
-        Box<crate::app_bsky::ageassurance::ConfigRegionRuleIfAccountNewerThan<'a>>,
+        Box<crate::generated::app_bsky::ageassurance::ConfigRegionRuleIfAccountNewerThan<'a>>,
     ),
     #[serde(rename = "app.bsky.ageassurance.defs#configRegionRuleIfAccountOlderThan")]
     ConfigRegionRuleIfAccountOlderThan(
-        Box<crate::app_bsky::ageassurance::ConfigRegionRuleIfAccountOlderThan<'a>>,
+        Box<crate::generated::app_bsky::ageassurance::ConfigRegionRuleIfAccountOlderThan<'a>>,
     ),
 }
 
@@ -1359,7 +1361,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ConfigRegion<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct ConfigRegionRuleDefault<'a> {
     #[serde(borrow)]
-    pub access: crate::app_bsky::ageassurance::Access<'a>,
+    pub access: crate::generated::app_bsky::ageassurance::Access<'a>,
 }
 
 pub mod config_region_rule_default_state {
@@ -1397,7 +1399,8 @@ pub mod config_region_rule_default_state {
 /// Builder for constructing an instance of this type
 pub struct ConfigRegionRuleDefaultBuilder<'a, S: config_region_rule_default_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<crate::app_bsky::ageassurance::Access<'a>>,),
+    __unsafe_private_named:
+        (::core::option::Option<crate::generated::app_bsky::ageassurance::Access<'a>>,),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
 
@@ -1427,7 +1430,7 @@ where
     /// Set the `access` field (required)
     pub fn access(
         mut self,
-        value: impl Into<crate::app_bsky::ageassurance::Access<'a>>,
+        value: impl Into<crate::generated::app_bsky::ageassurance::Access<'a>>,
     ) -> ConfigRegionRuleDefaultBuilder<'a, config_region_rule_default_state::SetAccess<S>> {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         ConfigRegionRuleDefaultBuilder {
@@ -1490,7 +1493,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ConfigRegionRuleDefault<'
 #[serde(rename_all = "camelCase")]
 pub struct ConfigRegionRuleIfAccountNewerThan<'a> {
     #[serde(borrow)]
-    pub access: crate::app_bsky::ageassurance::Access<'a>,
+    pub access: crate::generated::app_bsky::ageassurance::Access<'a>,
     /// The date threshold as a datetime string.
     pub date: jacquard_common::types::string::Datetime,
 }
@@ -1546,7 +1549,7 @@ pub struct ConfigRegionRuleIfAccountNewerThanBuilder<
 > {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
-        ::core::option::Option<crate::app_bsky::ageassurance::Access<'a>>,
+        ::core::option::Option<crate::generated::app_bsky::ageassurance::Access<'a>>,
         ::core::option::Option<jacquard_common::types::string::Datetime>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
@@ -1586,7 +1589,7 @@ where
     /// Set the `access` field (required)
     pub fn access(
         mut self,
-        value: impl Into<crate::app_bsky::ageassurance::Access<'a>>,
+        value: impl Into<crate::generated::app_bsky::ageassurance::Access<'a>>,
     ) -> ConfigRegionRuleIfAccountNewerThanBuilder<
         'a,
         config_region_rule_if_account_newer_than_state::SetAccess<S>,
@@ -1677,7 +1680,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ConfigRegionRuleIfAccount
 #[serde(rename_all = "camelCase")]
 pub struct ConfigRegionRuleIfAccountOlderThan<'a> {
     #[serde(borrow)]
-    pub access: crate::app_bsky::ageassurance::Access<'a>,
+    pub access: crate::generated::app_bsky::ageassurance::Access<'a>,
     /// The date threshold as a datetime string.
     pub date: jacquard_common::types::string::Datetime,
 }
@@ -1733,7 +1736,7 @@ pub struct ConfigRegionRuleIfAccountOlderThanBuilder<
 > {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
-        ::core::option::Option<crate::app_bsky::ageassurance::Access<'a>>,
+        ::core::option::Option<crate::generated::app_bsky::ageassurance::Access<'a>>,
         ::core::option::Option<jacquard_common::types::string::Datetime>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
@@ -1773,7 +1776,7 @@ where
     /// Set the `access` field (required)
     pub fn access(
         mut self,
-        value: impl Into<crate::app_bsky::ageassurance::Access<'a>>,
+        value: impl Into<crate::generated::app_bsky::ageassurance::Access<'a>>,
     ) -> ConfigRegionRuleIfAccountOlderThanBuilder<
         'a,
         config_region_rule_if_account_older_than_state::SetAccess<S>,
@@ -1864,7 +1867,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ConfigRegionRuleIfAccount
 #[serde(rename_all = "camelCase")]
 pub struct ConfigRegionRuleIfAssuredOverAge<'a> {
     #[serde(borrow)]
-    pub access: crate::app_bsky::ageassurance::Access<'a>,
+    pub access: crate::generated::app_bsky::ageassurance::Access<'a>,
     /// The age threshold as a whole integer.
     pub age: i64,
 }
@@ -1920,7 +1923,7 @@ pub struct ConfigRegionRuleIfAssuredOverAgeBuilder<
 > {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
-        ::core::option::Option<crate::app_bsky::ageassurance::Access<'a>>,
+        ::core::option::Option<crate::generated::app_bsky::ageassurance::Access<'a>>,
         ::core::option::Option<i64>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
@@ -1957,7 +1960,7 @@ where
     /// Set the `access` field (required)
     pub fn access(
         mut self,
-        value: impl Into<crate::app_bsky::ageassurance::Access<'a>>,
+        value: impl Into<crate::generated::app_bsky::ageassurance::Access<'a>>,
     ) -> ConfigRegionRuleIfAssuredOverAgeBuilder<
         'a,
         config_region_rule_if_assured_over_age_state::SetAccess<S>,
@@ -2048,7 +2051,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ConfigRegionRuleIfAssured
 #[serde(rename_all = "camelCase")]
 pub struct ConfigRegionRuleIfAssuredUnderAge<'a> {
     #[serde(borrow)]
-    pub access: crate::app_bsky::ageassurance::Access<'a>,
+    pub access: crate::generated::app_bsky::ageassurance::Access<'a>,
     /// The age threshold as a whole integer.
     pub age: i64,
 }
@@ -2104,7 +2107,7 @@ pub struct ConfigRegionRuleIfAssuredUnderAgeBuilder<
 > {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
-        ::core::option::Option<crate::app_bsky::ageassurance::Access<'a>>,
+        ::core::option::Option<crate::generated::app_bsky::ageassurance::Access<'a>>,
         ::core::option::Option<i64>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
@@ -2144,7 +2147,7 @@ where
     /// Set the `access` field (required)
     pub fn access(
         mut self,
-        value: impl Into<crate::app_bsky::ageassurance::Access<'a>>,
+        value: impl Into<crate::generated::app_bsky::ageassurance::Access<'a>>,
     ) -> ConfigRegionRuleIfAssuredUnderAgeBuilder<
         'a,
         config_region_rule_if_assured_under_age_state::SetAccess<S>,
@@ -2235,7 +2238,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ConfigRegionRuleIfAssured
 #[serde(rename_all = "camelCase")]
 pub struct ConfigRegionRuleIfDeclaredOverAge<'a> {
     #[serde(borrow)]
-    pub access: crate::app_bsky::ageassurance::Access<'a>,
+    pub access: crate::generated::app_bsky::ageassurance::Access<'a>,
     /// The age threshold as a whole integer.
     pub age: i64,
 }
@@ -2291,7 +2294,7 @@ pub struct ConfigRegionRuleIfDeclaredOverAgeBuilder<
 > {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
-        ::core::option::Option<crate::app_bsky::ageassurance::Access<'a>>,
+        ::core::option::Option<crate::generated::app_bsky::ageassurance::Access<'a>>,
         ::core::option::Option<i64>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
@@ -2331,7 +2334,7 @@ where
     /// Set the `access` field (required)
     pub fn access(
         mut self,
-        value: impl Into<crate::app_bsky::ageassurance::Access<'a>>,
+        value: impl Into<crate::generated::app_bsky::ageassurance::Access<'a>>,
     ) -> ConfigRegionRuleIfDeclaredOverAgeBuilder<
         'a,
         config_region_rule_if_declared_over_age_state::SetAccess<S>,
@@ -2422,7 +2425,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ConfigRegionRuleIfDeclare
 #[serde(rename_all = "camelCase")]
 pub struct ConfigRegionRuleIfDeclaredUnderAge<'a> {
     #[serde(borrow)]
-    pub access: crate::app_bsky::ageassurance::Access<'a>,
+    pub access: crate::generated::app_bsky::ageassurance::Access<'a>,
     /// The age threshold as a whole integer.
     pub age: i64,
 }
@@ -2437,37 +2440,37 @@ pub mod config_region_rule_if_declared_under_age_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Age;
         type Access;
+        type Age;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Age = Unset;
         type Access = Unset;
-    }
-    ///State transition - sets the `age` field to Set
-    pub struct SetAge<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetAge<S> {}
-    impl<S: State> State for SetAge<S> {
-        type Age = Set<members::age>;
-        type Access = S::Access;
+        type Age = Unset;
     }
     ///State transition - sets the `access` field to Set
     pub struct SetAccess<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetAccess<S> {}
     impl<S: State> State for SetAccess<S> {
-        type Age = S::Age;
         type Access = Set<members::access>;
+        type Age = S::Age;
+    }
+    ///State transition - sets the `age` field to Set
+    pub struct SetAge<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetAge<S> {}
+    impl<S: State> State for SetAge<S> {
+        type Access = S::Access;
+        type Age = Set<members::age>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `age` field
-        pub struct age(());
         ///Marker type for the `access` field
         pub struct access(());
+        ///Marker type for the `age` field
+        pub struct age(());
     }
 }
 
@@ -2478,7 +2481,7 @@ pub struct ConfigRegionRuleIfDeclaredUnderAgeBuilder<
 > {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
-        ::core::option::Option<crate::app_bsky::ageassurance::Access<'a>>,
+        ::core::option::Option<crate::generated::app_bsky::ageassurance::Access<'a>>,
         ::core::option::Option<i64>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
@@ -2518,7 +2521,7 @@ where
     /// Set the `access` field (required)
     pub fn access(
         mut self,
-        value: impl Into<crate::app_bsky::ageassurance::Access<'a>>,
+        value: impl Into<crate::generated::app_bsky::ageassurance::Access<'a>>,
     ) -> ConfigRegionRuleIfDeclaredUnderAgeBuilder<
         'a,
         config_region_rule_if_declared_under_age_state::SetAccess<S>,
@@ -2557,8 +2560,8 @@ where
 impl<'a, S> ConfigRegionRuleIfDeclaredUnderAgeBuilder<'a, S>
 where
     S: config_region_rule_if_declared_under_age_state::State,
-    S::Age: config_region_rule_if_declared_under_age_state::IsSet,
     S::Access: config_region_rule_if_declared_under_age_state::IsSet,
+    S::Age: config_region_rule_if_declared_under_age_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> ConfigRegionRuleIfDeclaredUnderAge<'a> {
@@ -2658,9 +2661,9 @@ pub mod event_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Status;
-        type Access;
         type CreatedAt;
+        type Access;
+        type Status;
         type AttemptId;
         type CountryCode;
     }
@@ -2668,19 +2671,19 @@ pub mod event_state {
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Status = Unset;
-        type Access = Unset;
         type CreatedAt = Unset;
+        type Access = Unset;
+        type Status = Unset;
         type AttemptId = Unset;
         type CountryCode = Unset;
     }
-    ///State transition - sets the `status` field to Set
-    pub struct SetStatus<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetStatus<S> {}
-    impl<S: State> State for SetStatus<S> {
-        type Status = Set<members::status>;
+    ///State transition - sets the `created_at` field to Set
+    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
+    impl<S: State> State for SetCreatedAt<S> {
+        type CreatedAt = Set<members::created_at>;
         type Access = S::Access;
-        type CreatedAt = S::CreatedAt;
+        type Status = S::Status;
         type AttemptId = S::AttemptId;
         type CountryCode = S::CountryCode;
     }
@@ -2688,19 +2691,19 @@ pub mod event_state {
     pub struct SetAccess<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetAccess<S> {}
     impl<S: State> State for SetAccess<S> {
-        type Status = S::Status;
-        type Access = Set<members::access>;
         type CreatedAt = S::CreatedAt;
+        type Access = Set<members::access>;
+        type Status = S::Status;
         type AttemptId = S::AttemptId;
         type CountryCode = S::CountryCode;
     }
-    ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type Status = S::Status;
+    ///State transition - sets the `status` field to Set
+    pub struct SetStatus<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetStatus<S> {}
+    impl<S: State> State for SetStatus<S> {
+        type CreatedAt = S::CreatedAt;
         type Access = S::Access;
-        type CreatedAt = Set<members::created_at>;
+        type Status = Set<members::status>;
         type AttemptId = S::AttemptId;
         type CountryCode = S::CountryCode;
     }
@@ -2708,9 +2711,9 @@ pub mod event_state {
     pub struct SetAttemptId<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetAttemptId<S> {}
     impl<S: State> State for SetAttemptId<S> {
-        type Status = S::Status;
-        type Access = S::Access;
         type CreatedAt = S::CreatedAt;
+        type Access = S::Access;
+        type Status = S::Status;
         type AttemptId = Set<members::attempt_id>;
         type CountryCode = S::CountryCode;
     }
@@ -2718,21 +2721,21 @@ pub mod event_state {
     pub struct SetCountryCode<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCountryCode<S> {}
     impl<S: State> State for SetCountryCode<S> {
-        type Status = S::Status;
-        type Access = S::Access;
         type CreatedAt = S::CreatedAt;
+        type Access = S::Access;
+        type Status = S::Status;
         type AttemptId = S::AttemptId;
         type CountryCode = Set<members::country_code>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `status` field
-        pub struct status(());
-        ///Marker type for the `access` field
-        pub struct access(());
         ///Marker type for the `created_at` field
         pub struct created_at(());
+        ///Marker type for the `access` field
+        pub struct access(());
+        ///Marker type for the `status` field
+        pub struct status(());
         ///Marker type for the `attempt_id` field
         pub struct attempt_id(());
         ///Marker type for the `country_code` field
@@ -2955,9 +2958,9 @@ where
 impl<'a, S> EventBuilder<'a, S>
 where
     S: event_state::State,
-    S::Status: event_state::IsSet,
-    S::Access: event_state::IsSet,
     S::CreatedAt: event_state::IsSet,
+    S::Access: event_state::IsSet,
+    S::Status: event_state::IsSet,
     S::AttemptId: event_state::IsSet,
     S::CountryCode: event_state::IsSet,
 {
@@ -3028,12 +3031,12 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Event<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct State<'a> {
     #[serde(borrow)]
-    pub access: crate::app_bsky::ageassurance::Access<'a>,
+    pub access: crate::generated::app_bsky::ageassurance::Access<'a>,
     /// The timestamp when this state was last updated.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     pub last_initiated_at: std::option::Option<jacquard_common::types::string::Datetime>,
     #[serde(borrow)]
-    pub status: crate::app_bsky::ageassurance::Status<'a>,
+    pub status: crate::generated::app_bsky::ageassurance::Status<'a>,
 }
 
 pub mod state_state {
@@ -3046,37 +3049,37 @@ pub mod state_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Access;
         type Status;
+        type Access;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Access = Unset;
         type Status = Unset;
-    }
-    ///State transition - sets the `access` field to Set
-    pub struct SetAccess<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetAccess<S> {}
-    impl<S: State> State for SetAccess<S> {
-        type Access = Set<members::access>;
-        type Status = S::Status;
+        type Access = Unset;
     }
     ///State transition - sets the `status` field to Set
     pub struct SetStatus<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetStatus<S> {}
     impl<S: State> State for SetStatus<S> {
-        type Access = S::Access;
         type Status = Set<members::status>;
+        type Access = S::Access;
+    }
+    ///State transition - sets the `access` field to Set
+    pub struct SetAccess<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetAccess<S> {}
+    impl<S: State> State for SetAccess<S> {
+        type Status = S::Status;
+        type Access = Set<members::access>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `access` field
-        pub struct access(());
         ///Marker type for the `status` field
         pub struct status(());
+        ///Marker type for the `access` field
+        pub struct access(());
     }
 }
 
@@ -3084,9 +3087,9 @@ pub mod state_state {
 pub struct StateBuilder<'a, S: state_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
-        ::core::option::Option<crate::app_bsky::ageassurance::Access<'a>>,
+        ::core::option::Option<crate::generated::app_bsky::ageassurance::Access<'a>>,
         ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<crate::app_bsky::ageassurance::Status<'a>>,
+        ::core::option::Option<crate::generated::app_bsky::ageassurance::Status<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
@@ -3117,7 +3120,7 @@ where
     /// Set the `access` field (required)
     pub fn access(
         mut self,
-        value: impl Into<crate::app_bsky::ageassurance::Access<'a>>,
+        value: impl Into<crate::generated::app_bsky::ageassurance::Access<'a>>,
     ) -> StateBuilder<'a, state_state::SetAccess<S>> {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         StateBuilder {
@@ -3155,7 +3158,7 @@ where
     /// Set the `status` field (required)
     pub fn status(
         mut self,
-        value: impl Into<crate::app_bsky::ageassurance::Status<'a>>,
+        value: impl Into<crate::generated::app_bsky::ageassurance::Status<'a>>,
     ) -> StateBuilder<'a, state_state::SetStatus<S>> {
         self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
         StateBuilder {
@@ -3169,8 +3172,8 @@ where
 impl<'a, S> StateBuilder<'a, S>
 where
     S: state_state::State,
-    S::Access: state_state::IsSet,
     S::Status: state_state::IsSet,
+    S::Access: state_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> State<'a> {

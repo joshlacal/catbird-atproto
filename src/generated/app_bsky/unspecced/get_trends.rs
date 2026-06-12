@@ -89,7 +89,7 @@ where
 #[serde(rename_all = "camelCase")]
 pub struct GetTrendsOutput<'a> {
     #[serde(borrow)]
-    pub trends: Vec<crate::app_bsky::unspecced::TrendView<'a>>,
+    pub trends: Vec<crate::generated::app_bsky::unspecced::TrendView<'a>>,
 }
 
 /// Response type for

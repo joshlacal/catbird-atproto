@@ -32,7 +32,7 @@ pub struct DeleteMessageForSelf<'a> {
 pub struct DeleteMessageForSelfOutput<'a> {
     #[serde(flatten)]
     #[serde(borrow)]
-    pub value: crate::chat_bsky::convo::DeletedMessageView<'a>,
+    pub value: crate::generated::chat_bsky::convo::DeletedMessageView<'a>,
 }
 
 #[jacquard_derive::open_union]

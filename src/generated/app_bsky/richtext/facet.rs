@@ -548,7 +548,7 @@ pub struct Facet<'a> {
     #[serde(borrow)]
     pub features: Vec<FacetFeaturesItem<'a>>,
     #[serde(borrow)]
-    pub index: crate::app_bsky::richtext::facet::ByteSlice<'a>,
+    pub index: crate::generated::app_bsky::richtext::facet::ByteSlice<'a>,
 }
 
 pub mod facet_state {
@@ -561,37 +561,37 @@ pub mod facet_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Index;
         type Features;
+        type Index;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Index = Unset;
         type Features = Unset;
-    }
-    ///State transition - sets the `index` field to Set
-    pub struct SetIndex<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetIndex<S> {}
-    impl<S: State> State for SetIndex<S> {
-        type Index = Set<members::index>;
-        type Features = S::Features;
+        type Index = Unset;
     }
     ///State transition - sets the `features` field to Set
     pub struct SetFeatures<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetFeatures<S> {}
     impl<S: State> State for SetFeatures<S> {
-        type Index = S::Index;
         type Features = Set<members::features>;
+        type Index = S::Index;
+    }
+    ///State transition - sets the `index` field to Set
+    pub struct SetIndex<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetIndex<S> {}
+    impl<S: State> State for SetIndex<S> {
+        type Features = S::Features;
+        type Index = Set<members::index>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `index` field
-        pub struct index(());
         ///Marker type for the `features` field
         pub struct features(());
+        ///Marker type for the `index` field
+        pub struct index(());
     }
 }
 
@@ -600,7 +600,7 @@ pub struct FacetBuilder<'a, S: facet_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
         ::core::option::Option<Vec<FacetFeaturesItem<'a>>>,
-        ::core::option::Option<crate::app_bsky::richtext::facet::ByteSlice<'a>>,
+        ::core::option::Option<crate::generated::app_bsky::richtext::facet::ByteSlice<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
@@ -650,7 +650,7 @@ where
     /// Set the `index` field (required)
     pub fn index(
         mut self,
-        value: impl Into<crate::app_bsky::richtext::facet::ByteSlice<'a>>,
+        value: impl Into<crate::generated::app_bsky::richtext::facet::ByteSlice<'a>>,
     ) -> FacetBuilder<'a, facet_state::SetIndex<S>> {
         self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
         FacetBuilder {
@@ -664,8 +664,8 @@ where
 impl<'a, S> FacetBuilder<'a, S>
 where
     S: facet_state::State,
-    S::Index: facet_state::IsSet,
     S::Features: facet_state::IsSet,
+    S::Index: facet_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> Facet<'a> {
@@ -699,11 +699,11 @@ where
 #[serde(bound(deserialize = "'de: 'a"))]
 pub enum FacetFeaturesItem<'a> {
     #[serde(rename = "app.bsky.richtext.facet#mention")]
-    Mention(Box<crate::app_bsky::richtext::facet::Mention<'a>>),
+    Mention(Box<crate::generated::app_bsky::richtext::facet::Mention<'a>>),
     #[serde(rename = "app.bsky.richtext.facet#link")]
-    Link(Box<crate::app_bsky::richtext::facet::Link<'a>>),
+    Link(Box<crate::generated::app_bsky::richtext::facet::Link<'a>>),
     #[serde(rename = "app.bsky.richtext.facet#tag")]
-    Tag(Box<crate::app_bsky::richtext::facet::Tag<'a>>),
+    Tag(Box<crate::generated::app_bsky::richtext::facet::Tag<'a>>),
 }
 
 impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Facet<'a> {

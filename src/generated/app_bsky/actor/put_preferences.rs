@@ -12,7 +12,7 @@
 #[serde(rename_all = "camelCase")]
 pub struct PutPreferences<'a> {
     #[serde(borrow)]
-    pub preferences: crate::app_bsky::actor::Preferences<'a>,
+    pub preferences: crate::generated::app_bsky::actor::Preferences<'a>,
 }
 
 pub mod put_preferences_state {
@@ -50,7 +50,8 @@ pub mod put_preferences_state {
 /// Builder for constructing an instance of this type
 pub struct PutPreferencesBuilder<'a, S: put_preferences_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<crate::app_bsky::actor::Preferences<'a>>,),
+    __unsafe_private_named:
+        (::core::option::Option<crate::generated::app_bsky::actor::Preferences<'a>>,),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
 
@@ -80,7 +81,7 @@ where
     /// Set the `preferences` field (required)
     pub fn preferences(
         mut self,
-        value: impl Into<crate::app_bsky::actor::Preferences<'a>>,
+        value: impl Into<crate::generated::app_bsky::actor::Preferences<'a>>,
     ) -> PutPreferencesBuilder<'a, put_preferences_state::SetPreferences<S>> {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         PutPreferencesBuilder {

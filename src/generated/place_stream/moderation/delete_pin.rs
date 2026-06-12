@@ -29,37 +29,37 @@ pub mod delete_pin_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Streamer;
         type PinUri;
+        type Streamer;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Streamer = Unset;
         type PinUri = Unset;
-    }
-    ///State transition - sets the `streamer` field to Set
-    pub struct SetStreamer<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetStreamer<S> {}
-    impl<S: State> State for SetStreamer<S> {
-        type Streamer = Set<members::streamer>;
-        type PinUri = S::PinUri;
+        type Streamer = Unset;
     }
     ///State transition - sets the `pin_uri` field to Set
     pub struct SetPinUri<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetPinUri<S> {}
     impl<S: State> State for SetPinUri<S> {
-        type Streamer = S::Streamer;
         type PinUri = Set<members::pin_uri>;
+        type Streamer = S::Streamer;
+    }
+    ///State transition - sets the `streamer` field to Set
+    pub struct SetStreamer<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetStreamer<S> {}
+    impl<S: State> State for SetStreamer<S> {
+        type PinUri = S::PinUri;
+        type Streamer = Set<members::streamer>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `streamer` field
-        pub struct streamer(());
         ///Marker type for the `pin_uri` field
         pub struct pin_uri(());
+        ///Marker type for the `streamer` field
+        pub struct streamer(());
     }
 }
 
@@ -132,8 +132,8 @@ where
 impl<'a, S> DeletePinBuilder<'a, S>
 where
     S: delete_pin_state::State,
-    S::Streamer: delete_pin_state::IsSet,
     S::PinUri: delete_pin_state::IsSet,
+    S::Streamer: delete_pin_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> DeletePin<'a> {

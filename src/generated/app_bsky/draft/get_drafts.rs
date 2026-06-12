@@ -114,7 +114,7 @@ pub struct GetDraftsOutput<'a> {
     #[serde(borrow)]
     pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(borrow)]
-    pub drafts: Vec<crate::app_bsky::draft::DraftView<'a>>,
+    pub drafts: Vec<crate::generated::app_bsky::draft::DraftView<'a>>,
 }
 
 /// Response type for

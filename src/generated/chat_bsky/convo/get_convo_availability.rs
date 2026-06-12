@@ -112,7 +112,7 @@ pub struct GetConvoAvailabilityOutput<'a> {
     pub can_chat: bool,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub convo: std::option::Option<crate::chat_bsky::convo::ConvoView<'a>>,
+    pub convo: std::option::Option<crate::generated::chat_bsky::convo::ConvoView<'a>>,
 }
 
 /// Response type for

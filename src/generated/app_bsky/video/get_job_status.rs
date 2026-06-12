@@ -110,7 +110,7 @@ where
 #[serde(rename_all = "camelCase")]
 pub struct GetJobStatusOutput<'a> {
     #[serde(borrow)]
-    pub job_status: crate::app_bsky::video::JobStatus<'a>,
+    pub job_status: crate::generated::app_bsky::video::JobStatus<'a>,
 }
 
 /// Response type for

@@ -28,7 +28,7 @@ pub struct Host<'a> {
     pub seq: std::option::Option<i64>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub status: std::option::Option<crate::com_atproto::sync::HostStatus<'a>>,
+    pub status: std::option::Option<crate::generated::com_atproto::sync::HostStatus<'a>>,
 }
 
 fn lexicon_doc_com_atproto_sync_listHosts() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
@@ -289,7 +289,7 @@ pub struct ListHostsOutput<'a> {
     pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
     /// Sort order is not formally specified. Recommended order is by time host was first seen by the server, with oldest first.
     #[serde(borrow)]
-    pub hosts: Vec<crate::com_atproto::sync::list_hosts::Host<'a>>,
+    pub hosts: Vec<crate::generated::com_atproto::sync::list_hosts::Host<'a>>,
 }
 
 /// Response type for

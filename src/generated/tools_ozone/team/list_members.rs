@@ -167,7 +167,7 @@ pub struct ListMembersOutput<'a> {
     #[serde(borrow)]
     pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(borrow)]
-    pub members: Vec<crate::tools_ozone::team::Member<'a>>,
+    pub members: Vec<crate::generated::tools_ozone::team::Member<'a>>,
 }
 
 /// Response type for

@@ -22,7 +22,7 @@ pub struct EditJoinLink<'a> {
     pub convo_id: jacquard_common::CowStr<'a>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub join_rule: std::option::Option<crate::chat_bsky::group::JoinRule<'a>>,
+    pub join_rule: std::option::Option<crate::generated::chat_bsky::group::JoinRule<'a>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     pub require_approval: std::option::Option<bool>,
 }
@@ -34,7 +34,7 @@ pub struct EditJoinLink<'a> {
 #[serde(rename_all = "camelCase")]
 pub struct EditJoinLinkOutput<'a> {
     #[serde(borrow)]
-    pub join_link: crate::chat_bsky::group::JoinLinkView<'a>,
+    pub join_link: crate::generated::chat_bsky::group::JoinLinkView<'a>,
 }
 
 #[jacquard_derive::open_union]

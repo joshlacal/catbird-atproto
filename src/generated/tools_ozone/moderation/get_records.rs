@@ -122,9 +122,9 @@ pub struct GetRecordsOutput<'a> {
 #[serde(bound(deserialize = "'de: 'a"))]
 pub enum GetRecordsOutputRecordsItem<'a> {
     #[serde(rename = "tools.ozone.moderation.defs#recordViewDetail")]
-    RecordViewDetail(Box<crate::tools_ozone::moderation::RecordViewDetail<'a>>),
+    RecordViewDetail(Box<crate::generated::tools_ozone::moderation::RecordViewDetail<'a>>),
     #[serde(rename = "tools.ozone.moderation.defs#recordViewNotFound")]
-    RecordViewNotFound(Box<crate::tools_ozone::moderation::RecordViewNotFound<'a>>),
+    RecordViewNotFound(Box<crate::generated::tools_ozone::moderation::RecordViewNotFound<'a>>),
 }
 
 /// Response type for

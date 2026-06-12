@@ -326,7 +326,7 @@ where
 pub struct GetBrandingOutput<'a> {
     /// List of available branding assets
     #[serde(borrow)]
-    pub assets: Vec<crate::place_stream::branding::get_branding::BrandingAsset<'a>>,
+    pub assets: Vec<crate::generated::place_stream::branding::get_branding::BrandingAsset<'a>>,
 }
 
 #[jacquard_derive::open_union]

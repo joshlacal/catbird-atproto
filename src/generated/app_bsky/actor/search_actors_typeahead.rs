@@ -129,7 +129,7 @@ where
 #[serde(rename_all = "camelCase")]
 pub struct SearchActorsTypeaheadOutput<'a> {
     #[serde(borrow)]
-    pub actors: Vec<crate::app_bsky::actor::ProfileViewBasic<'a>>,
+    pub actors: Vec<crate::generated::app_bsky::actor::ProfileViewBasic<'a>>,
 }
 
 /// Response type for

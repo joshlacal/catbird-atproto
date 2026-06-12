@@ -17,7 +17,7 @@ pub struct GetPreferences;
 #[serde(rename_all = "camelCase")]
 pub struct GetPreferencesOutput<'a> {
     #[serde(borrow)]
-    pub preferences: crate::app_bsky::notification::Preferences<'a>,
+    pub preferences: crate::generated::app_bsky::notification::Preferences<'a>,
 }
 
 /// Response type for

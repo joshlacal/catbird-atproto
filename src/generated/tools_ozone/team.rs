@@ -27,7 +27,7 @@ pub struct Member<'a> {
     pub last_updated_by: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub profile: std::option::Option<crate::app_bsky::actor::ProfileViewDetailed<'a>>,
+    pub profile: std::option::Option<crate::generated::app_bsky::actor::ProfileViewDetailed<'a>>,
     #[serde(borrow)]
     pub role: jacquard_common::CowStr<'a>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
@@ -44,37 +44,37 @@ pub mod member_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Did;
         type Role;
+        type Did;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Did = Unset;
         type Role = Unset;
-    }
-    ///State transition - sets the `did` field to Set
-    pub struct SetDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDid<S> {}
-    impl<S: State> State for SetDid<S> {
-        type Did = Set<members::did>;
-        type Role = S::Role;
+        type Did = Unset;
     }
     ///State transition - sets the `role` field to Set
     pub struct SetRole<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetRole<S> {}
     impl<S: State> State for SetRole<S> {
-        type Did = S::Did;
         type Role = Set<members::role>;
+        type Did = S::Did;
+    }
+    ///State transition - sets the `did` field to Set
+    pub struct SetDid<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetDid<S> {}
+    impl<S: State> State for SetDid<S> {
+        type Role = S::Role;
+        type Did = Set<members::did>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `did` field
-        pub struct did(());
         ///Marker type for the `role` field
         pub struct role(());
+        ///Marker type for the `did` field
+        pub struct did(());
     }
 }
 
@@ -86,7 +86,7 @@ pub struct MemberBuilder<'a, S: member_state::State> {
         ::core::option::Option<jacquard_common::types::string::Did<'a>>,
         ::core::option::Option<bool>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<crate::app_bsky::actor::ProfileViewDetailed<'a>>,
+        ::core::option::Option<crate::generated::app_bsky::actor::ProfileViewDetailed<'a>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
         ::core::option::Option<jacquard_common::types::string::Datetime>,
     ),
@@ -182,7 +182,7 @@ impl<'a, S: member_state::State> MemberBuilder<'a, S> {
     /// Set the `profile` field (optional)
     pub fn profile(
         mut self,
-        value: impl Into<Option<crate::app_bsky::actor::ProfileViewDetailed<'a>>>,
+        value: impl Into<Option<crate::generated::app_bsky::actor::ProfileViewDetailed<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.4 = value.into();
         self
@@ -190,7 +190,7 @@ impl<'a, S: member_state::State> MemberBuilder<'a, S> {
     /// Set the `profile` field to an Option value (optional)
     pub fn maybe_profile(
         mut self,
-        value: Option<crate::app_bsky::actor::ProfileViewDetailed<'a>>,
+        value: Option<crate::generated::app_bsky::actor::ProfileViewDetailed<'a>>,
     ) -> Self {
         self.__unsafe_private_named.4 = value;
         self
@@ -238,8 +238,8 @@ impl<'a, S: member_state::State> MemberBuilder<'a, S> {
 impl<'a, S> MemberBuilder<'a, S>
 where
     S: member_state::State,
-    S::Did: member_state::IsSet,
     S::Role: member_state::IsSet,
+    S::Did: member_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> Member<'a> {

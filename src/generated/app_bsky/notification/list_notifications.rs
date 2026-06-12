@@ -172,7 +172,8 @@ pub struct ListNotificationsOutput<'a> {
     #[serde(borrow)]
     pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(borrow)]
-    pub notifications: Vec<crate::app_bsky::notification::list_notifications::Notification<'a>>,
+    pub notifications:
+        Vec<crate::generated::app_bsky::notification::list_notifications::Notification<'a>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     pub priority: std::option::Option<bool>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
@@ -212,14 +213,14 @@ impl jacquard_common::xrpc::XrpcEndpoint for ListNotificationsRequest {
 #[serde(rename_all = "camelCase")]
 pub struct Notification<'a> {
     #[serde(borrow)]
-    pub author: crate::app_bsky::actor::ProfileView<'a>,
+    pub author: crate::generated::app_bsky::actor::ProfileView<'a>,
     #[serde(borrow)]
     pub cid: jacquard_common::types::string::Cid<'a>,
     pub indexed_at: jacquard_common::types::string::Datetime,
     pub is_read: bool,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub labels: std::option::Option<Vec<crate::com_atproto::label::Label<'a>>>,
+    pub labels: std::option::Option<Vec<crate::generated::com_atproto::label::Label<'a>>>,
     /// The reason why this notification was delivered - e.g. your post was liked, or you received a new follower.
     #[serde(borrow)]
     pub reason: jacquard_common::CowStr<'a>,
@@ -242,127 +243,127 @@ pub mod notification_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Uri;
         type Author;
-        type Reason;
-        type Record;
         type IsRead;
         type IndexedAt;
+        type Uri;
+        type Reason;
         type Cid;
+        type Record;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Uri = Unset;
         type Author = Unset;
-        type Reason = Unset;
-        type Record = Unset;
         type IsRead = Unset;
         type IndexedAt = Unset;
+        type Uri = Unset;
+        type Reason = Unset;
         type Cid = Unset;
-    }
-    ///State transition - sets the `uri` field to Set
-    pub struct SetUri<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUri<S> {}
-    impl<S: State> State for SetUri<S> {
-        type Uri = Set<members::uri>;
-        type Author = S::Author;
-        type Reason = S::Reason;
-        type Record = S::Record;
-        type IsRead = S::IsRead;
-        type IndexedAt = S::IndexedAt;
-        type Cid = S::Cid;
+        type Record = Unset;
     }
     ///State transition - sets the `author` field to Set
     pub struct SetAuthor<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetAuthor<S> {}
     impl<S: State> State for SetAuthor<S> {
-        type Uri = S::Uri;
         type Author = Set<members::author>;
-        type Reason = S::Reason;
-        type Record = S::Record;
         type IsRead = S::IsRead;
         type IndexedAt = S::IndexedAt;
-        type Cid = S::Cid;
-    }
-    ///State transition - sets the `reason` field to Set
-    pub struct SetReason<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetReason<S> {}
-    impl<S: State> State for SetReason<S> {
         type Uri = S::Uri;
-        type Author = S::Author;
-        type Reason = Set<members::reason>;
-        type Record = S::Record;
-        type IsRead = S::IsRead;
-        type IndexedAt = S::IndexedAt;
-        type Cid = S::Cid;
-    }
-    ///State transition - sets the `record` field to Set
-    pub struct SetRecord<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRecord<S> {}
-    impl<S: State> State for SetRecord<S> {
-        type Uri = S::Uri;
-        type Author = S::Author;
         type Reason = S::Reason;
-        type Record = Set<members::record>;
-        type IsRead = S::IsRead;
-        type IndexedAt = S::IndexedAt;
         type Cid = S::Cid;
+        type Record = S::Record;
     }
     ///State transition - sets the `is_read` field to Set
     pub struct SetIsRead<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetIsRead<S> {}
     impl<S: State> State for SetIsRead<S> {
-        type Uri = S::Uri;
         type Author = S::Author;
-        type Reason = S::Reason;
-        type Record = S::Record;
         type IsRead = Set<members::is_read>;
         type IndexedAt = S::IndexedAt;
+        type Uri = S::Uri;
+        type Reason = S::Reason;
         type Cid = S::Cid;
+        type Record = S::Record;
     }
     ///State transition - sets the `indexed_at` field to Set
     pub struct SetIndexedAt<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetIndexedAt<S> {}
     impl<S: State> State for SetIndexedAt<S> {
-        type Uri = S::Uri;
         type Author = S::Author;
-        type Reason = S::Reason;
-        type Record = S::Record;
         type IsRead = S::IsRead;
         type IndexedAt = Set<members::indexed_at>;
+        type Uri = S::Uri;
+        type Reason = S::Reason;
         type Cid = S::Cid;
+        type Record = S::Record;
+    }
+    ///State transition - sets the `uri` field to Set
+    pub struct SetUri<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetUri<S> {}
+    impl<S: State> State for SetUri<S> {
+        type Author = S::Author;
+        type IsRead = S::IsRead;
+        type IndexedAt = S::IndexedAt;
+        type Uri = Set<members::uri>;
+        type Reason = S::Reason;
+        type Cid = S::Cid;
+        type Record = S::Record;
+    }
+    ///State transition - sets the `reason` field to Set
+    pub struct SetReason<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetReason<S> {}
+    impl<S: State> State for SetReason<S> {
+        type Author = S::Author;
+        type IsRead = S::IsRead;
+        type IndexedAt = S::IndexedAt;
+        type Uri = S::Uri;
+        type Reason = Set<members::reason>;
+        type Cid = S::Cid;
+        type Record = S::Record;
     }
     ///State transition - sets the `cid` field to Set
     pub struct SetCid<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCid<S> {}
     impl<S: State> State for SetCid<S> {
-        type Uri = S::Uri;
         type Author = S::Author;
-        type Reason = S::Reason;
-        type Record = S::Record;
         type IsRead = S::IsRead;
         type IndexedAt = S::IndexedAt;
+        type Uri = S::Uri;
+        type Reason = S::Reason;
         type Cid = Set<members::cid>;
+        type Record = S::Record;
+    }
+    ///State transition - sets the `record` field to Set
+    pub struct SetRecord<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetRecord<S> {}
+    impl<S: State> State for SetRecord<S> {
+        type Author = S::Author;
+        type IsRead = S::IsRead;
+        type IndexedAt = S::IndexedAt;
+        type Uri = S::Uri;
+        type Reason = S::Reason;
+        type Cid = S::Cid;
+        type Record = Set<members::record>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `uri` field
-        pub struct uri(());
         ///Marker type for the `author` field
         pub struct author(());
-        ///Marker type for the `reason` field
-        pub struct reason(());
-        ///Marker type for the `record` field
-        pub struct record(());
         ///Marker type for the `is_read` field
         pub struct is_read(());
         ///Marker type for the `indexed_at` field
         pub struct indexed_at(());
+        ///Marker type for the `uri` field
+        pub struct uri(());
+        ///Marker type for the `reason` field
+        pub struct reason(());
         ///Marker type for the `cid` field
         pub struct cid(());
+        ///Marker type for the `record` field
+        pub struct record(());
     }
 }
 
@@ -370,11 +371,11 @@ pub mod notification_state {
 pub struct NotificationBuilder<'a, S: notification_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
-        ::core::option::Option<crate::app_bsky::actor::ProfileView<'a>>,
+        ::core::option::Option<crate::generated::app_bsky::actor::ProfileView<'a>>,
         ::core::option::Option<jacquard_common::types::string::Cid<'a>>,
         ::core::option::Option<jacquard_common::types::string::Datetime>,
         ::core::option::Option<bool>,
-        ::core::option::Option<Vec<crate::com_atproto::label::Label<'a>>>,
+        ::core::option::Option<Vec<crate::generated::com_atproto::label::Label<'a>>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
         ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
         ::core::option::Option<jacquard_common::types::value::Data<'a>>,
@@ -409,7 +410,7 @@ where
     /// Set the `author` field (required)
     pub fn author(
         mut self,
-        value: impl Into<crate::app_bsky::actor::ProfileView<'a>>,
+        value: impl Into<crate::generated::app_bsky::actor::ProfileView<'a>>,
     ) -> NotificationBuilder<'a, notification_state::SetAuthor<S>> {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         NotificationBuilder {
@@ -481,7 +482,7 @@ impl<'a, S: notification_state::State> NotificationBuilder<'a, S> {
     /// Set the `labels` field (optional)
     pub fn labels(
         mut self,
-        value: impl Into<Option<Vec<crate::com_atproto::label::Label<'a>>>>,
+        value: impl Into<Option<Vec<crate::generated::com_atproto::label::Label<'a>>>>,
     ) -> Self {
         self.__unsafe_private_named.4 = value.into();
         self
@@ -489,7 +490,7 @@ impl<'a, S: notification_state::State> NotificationBuilder<'a, S> {
     /// Set the `labels` field to an Option value (optional)
     pub fn maybe_labels(
         mut self,
-        value: Option<Vec<crate::com_atproto::label::Label<'a>>>,
+        value: Option<Vec<crate::generated::com_atproto::label::Label<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.4 = value;
         self
@@ -575,13 +576,13 @@ where
 impl<'a, S> NotificationBuilder<'a, S>
 where
     S: notification_state::State,
-    S::Uri: notification_state::IsSet,
     S::Author: notification_state::IsSet,
-    S::Reason: notification_state::IsSet,
-    S::Record: notification_state::IsSet,
     S::IsRead: notification_state::IsSet,
     S::IndexedAt: notification_state::IsSet,
+    S::Uri: notification_state::IsSet,
+    S::Reason: notification_state::IsSet,
     S::Cid: notification_state::IsSet,
+    S::Record: notification_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> Notification<'a> {

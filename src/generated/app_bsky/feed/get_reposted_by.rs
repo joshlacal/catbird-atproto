@@ -175,7 +175,7 @@ pub struct GetRepostedByOutput<'a> {
     #[serde(borrow)]
     pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(borrow)]
-    pub reposted_by: Vec<crate::app_bsky::actor::ProfileView<'a>>,
+    pub reposted_by: Vec<crate::generated::app_bsky::actor::ProfileView<'a>>,
     #[serde(borrow)]
     pub uri: jacquard_common::types::string::AtUri<'a>,
 }

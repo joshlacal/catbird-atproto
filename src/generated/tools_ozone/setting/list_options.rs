@@ -175,7 +175,7 @@ pub struct ListOptionsOutput<'a> {
     #[serde(borrow)]
     pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(borrow)]
-    pub options: Vec<crate::tools_ozone::setting::DefsOption<'a>>,
+    pub options: Vec<crate::generated::tools_ozone::setting::DefsOption<'a>>,
 }
 
 /// Response type for

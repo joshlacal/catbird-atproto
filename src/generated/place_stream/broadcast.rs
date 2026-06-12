@@ -16,7 +16,7 @@ pub mod syndication;
 #[serde(rename_all = "camelCase")]
 pub struct BroadcastOriginView<'a> {
     #[serde(borrow)]
-    pub author: crate::app_bsky::actor::ProfileViewBasic<'a>,
+    pub author: crate::generated::app_bsky::actor::ProfileViewBasic<'a>,
     #[serde(borrow)]
     pub cid: jacquard_common::types::string::Cid<'a>,
     #[serde(borrow)]
@@ -103,7 +103,7 @@ pub mod broadcast_origin_view_state {
 pub struct BroadcastOriginViewBuilder<'a, S: broadcast_origin_view_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
-        ::core::option::Option<crate::app_bsky::actor::ProfileViewBasic<'a>>,
+        ::core::option::Option<crate::generated::app_bsky::actor::ProfileViewBasic<'a>>,
         ::core::option::Option<jacquard_common::types::string::Cid<'a>>,
         ::core::option::Option<jacquard_common::types::value::Data<'a>>,
         ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
@@ -137,7 +137,7 @@ where
     /// Set the `author` field (required)
     pub fn author(
         mut self,
-        value: impl Into<crate::app_bsky::actor::ProfileViewBasic<'a>>,
+        value: impl Into<crate::generated::app_bsky::actor::ProfileViewBasic<'a>>,
     ) -> BroadcastOriginViewBuilder<'a, broadcast_origin_view_state::SetAuthor<S>> {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         BroadcastOriginViewBuilder {

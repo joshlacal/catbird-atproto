@@ -328,10 +328,12 @@ pub struct Starterpack<'a> {
     pub description: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub description_facets: std::option::Option<Vec<crate::app_bsky::richtext::facet::Facet<'a>>>,
+    pub description_facets:
+        std::option::Option<Vec<crate::generated::app_bsky::richtext::facet::Facet<'a>>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub feeds: std::option::Option<Vec<crate::app_bsky::graph::starterpack::FeedItem<'a>>>,
+    pub feeds:
+        std::option::Option<Vec<crate::generated::app_bsky::graph::starterpack::FeedItem<'a>>>,
     /// Reference (AT-URI) to the list record.
     #[serde(borrow)]
     pub list: jacquard_common::types::string::AtUri<'a>,
@@ -404,8 +406,8 @@ pub struct StarterpackBuilder<'a, S: starterpack_state::State> {
     __unsafe_private_named: (
         ::core::option::Option<jacquard_common::types::string::Datetime>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<Vec<crate::app_bsky::richtext::facet::Facet<'a>>>,
-        ::core::option::Option<Vec<crate::app_bsky::graph::starterpack::FeedItem<'a>>>,
+        ::core::option::Option<Vec<crate::generated::app_bsky::richtext::facet::Facet<'a>>>,
+        ::core::option::Option<Vec<crate::generated::app_bsky::graph::starterpack::FeedItem<'a>>>,
         ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
     ),
@@ -466,7 +468,7 @@ impl<'a, S: starterpack_state::State> StarterpackBuilder<'a, S> {
     /// Set the `descriptionFacets` field (optional)
     pub fn description_facets(
         mut self,
-        value: impl Into<Option<Vec<crate::app_bsky::richtext::facet::Facet<'a>>>>,
+        value: impl Into<Option<Vec<crate::generated::app_bsky::richtext::facet::Facet<'a>>>>,
     ) -> Self {
         self.__unsafe_private_named.2 = value.into();
         self
@@ -474,7 +476,7 @@ impl<'a, S: starterpack_state::State> StarterpackBuilder<'a, S> {
     /// Set the `descriptionFacets` field to an Option value (optional)
     pub fn maybe_description_facets(
         mut self,
-        value: Option<Vec<crate::app_bsky::richtext::facet::Facet<'a>>>,
+        value: Option<Vec<crate::generated::app_bsky::richtext::facet::Facet<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.2 = value;
         self
@@ -485,7 +487,7 @@ impl<'a, S: starterpack_state::State> StarterpackBuilder<'a, S> {
     /// Set the `feeds` field (optional)
     pub fn feeds(
         mut self,
-        value: impl Into<Option<Vec<crate::app_bsky::graph::starterpack::FeedItem<'a>>>>,
+        value: impl Into<Option<Vec<crate::generated::app_bsky::graph::starterpack::FeedItem<'a>>>>,
     ) -> Self {
         self.__unsafe_private_named.3 = value.into();
         self
@@ -493,7 +495,7 @@ impl<'a, S: starterpack_state::State> StarterpackBuilder<'a, S> {
     /// Set the `feeds` field to an Option value (optional)
     pub fn maybe_feeds(
         mut self,
-        value: Option<Vec<crate::app_bsky::graph::starterpack::FeedItem<'a>>>,
+        value: Option<Vec<crate::generated::app_bsky::graph::starterpack::FeedItem<'a>>>,
     ) -> Self {
         self.__unsafe_private_named.3 = value;
         self
