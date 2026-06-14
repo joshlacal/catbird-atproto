@@ -32,51 +32,51 @@ pub mod reissue_welcome_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Reason;
         type ConvoId;
         type RecipientDeviceDid;
+        type Reason;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Reason = Unset;
         type ConvoId = Unset;
         type RecipientDeviceDid = Unset;
-    }
-    ///State transition - sets the `reason` field to Set
-    pub struct SetReason<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetReason<S> {}
-    impl<S: State> State for SetReason<S> {
-        type Reason = Set<members::reason>;
-        type ConvoId = S::ConvoId;
-        type RecipientDeviceDid = S::RecipientDeviceDid;
+        type Reason = Unset;
     }
     ///State transition - sets the `convo_id` field to Set
     pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetConvoId<S> {}
     impl<S: State> State for SetConvoId<S> {
-        type Reason = S::Reason;
         type ConvoId = Set<members::convo_id>;
         type RecipientDeviceDid = S::RecipientDeviceDid;
+        type Reason = S::Reason;
     }
     ///State transition - sets the `recipient_device_did` field to Set
     pub struct SetRecipientDeviceDid<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetRecipientDeviceDid<S> {}
     impl<S: State> State for SetRecipientDeviceDid<S> {
-        type Reason = S::Reason;
         type ConvoId = S::ConvoId;
         type RecipientDeviceDid = Set<members::recipient_device_did>;
+        type Reason = S::Reason;
+    }
+    ///State transition - sets the `reason` field to Set
+    pub struct SetReason<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetReason<S> {}
+    impl<S: State> State for SetReason<S> {
+        type ConvoId = S::ConvoId;
+        type RecipientDeviceDid = S::RecipientDeviceDid;
+        type Reason = Set<members::reason>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `reason` field
-        pub struct reason(());
         ///Marker type for the `convo_id` field
         pub struct convo_id(());
         ///Marker type for the `recipient_device_did` field
         pub struct recipient_device_did(());
+        ///Marker type for the `reason` field
+        pub struct reason(());
     }
 }
 
@@ -169,9 +169,9 @@ where
 impl<'a, S> ReissueWelcomeBuilder<'a, S>
 where
     S: reissue_welcome_state::State,
-    S::Reason: reissue_welcome_state::IsSet,
     S::ConvoId: reissue_welcome_state::IsSet,
     S::RecipientDeviceDid: reissue_welcome_state::IsSet,
+    S::Reason: reissue_welcome_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> ReissueWelcome<'a> {

@@ -5,12 +5,866 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
+/// RGB color definition, inspired by site.standard.theme.color#rgb
+#[jacquard_derive::lexicon]
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(rename_all = "camelCase")]
+pub struct ColorRgb<'a> {
+    pub b: i64,
+    pub g: i64,
+    pub r: i64,
+}
+
+pub mod color_rgb_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type R;
+        type G;
+        type B;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type R = Unset;
+        type G = Unset;
+        type B = Unset;
+    }
+    ///State transition - sets the `r` field to Set
+    pub struct SetR<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetR<S> {}
+    impl<S: State> State for SetR<S> {
+        type R = Set<members::r>;
+        type G = S::G;
+        type B = S::B;
+    }
+    ///State transition - sets the `g` field to Set
+    pub struct SetG<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetG<S> {}
+    impl<S: State> State for SetG<S> {
+        type R = S::R;
+        type G = Set<members::g>;
+        type B = S::B;
+    }
+    ///State transition - sets the `b` field to Set
+    pub struct SetB<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetB<S> {}
+    impl<S: State> State for SetB<S> {
+        type R = S::R;
+        type G = S::G;
+        type B = Set<members::b>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `r` field
+        pub struct r(());
+        ///Marker type for the `g` field
+        pub struct g(());
+        ///Marker type for the `b` field
+        pub struct b(());
+    }
+}
+
+/// Builder for constructing an instance of this type
+pub struct ColorRgbBuilder<'a, S: color_rgb_state::State> {
+    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
+    __unsafe_private_named: (
+        ::core::option::Option<i64>,
+        ::core::option::Option<i64>,
+        ::core::option::Option<i64>,
+    ),
+    _phantom: ::core::marker::PhantomData<&'a ()>,
+}
+
+impl<'a> ColorRgb<'a> {
+    /// Create a new builder for this type
+    pub fn new() -> ColorRgbBuilder<'a, color_rgb_state::Empty> {
+        ColorRgbBuilder::new()
+    }
+}
+
+impl<'a> ColorRgbBuilder<'a, color_rgb_state::Empty> {
+    /// Create a new builder with all fields unset
+    pub fn new() -> Self {
+        ColorRgbBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: (None, None, None),
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S> ColorRgbBuilder<'a, S>
+where
+    S: color_rgb_state::State,
+    S::B: color_rgb_state::IsUnset,
+{
+    /// Set the `b` field (required)
+    pub fn b(mut self, value: impl Into<i64>) -> ColorRgbBuilder<'a, color_rgb_state::SetB<S>> {
+        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        ColorRgbBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: self.__unsafe_private_named,
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S> ColorRgbBuilder<'a, S>
+where
+    S: color_rgb_state::State,
+    S::G: color_rgb_state::IsUnset,
+{
+    /// Set the `g` field (required)
+    pub fn g(mut self, value: impl Into<i64>) -> ColorRgbBuilder<'a, color_rgb_state::SetG<S>> {
+        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        ColorRgbBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: self.__unsafe_private_named,
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S> ColorRgbBuilder<'a, S>
+where
+    S: color_rgb_state::State,
+    S::R: color_rgb_state::IsUnset,
+{
+    /// Set the `r` field (required)
+    pub fn r(mut self, value: impl Into<i64>) -> ColorRgbBuilder<'a, color_rgb_state::SetR<S>> {
+        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        ColorRgbBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: self.__unsafe_private_named,
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S> ColorRgbBuilder<'a, S>
+where
+    S: color_rgb_state::State,
+    S::R: color_rgb_state::IsSet,
+    S::G: color_rgb_state::IsSet,
+    S::B: color_rgb_state::IsSet,
+{
+    /// Build the final struct
+    pub fn build(self) -> ColorRgb<'a> {
+        ColorRgb {
+            b: self.__unsafe_private_named.0.unwrap(),
+            g: self.__unsafe_private_named.1.unwrap(),
+            r: self.__unsafe_private_named.2.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data
+    pub fn build_with_data(
+        self,
+        extra_data: std::collections::BTreeMap<
+            jacquard_common::smol_str::SmolStr,
+            jacquard_common::types::value::Data<'a>,
+        >,
+    ) -> ColorRgb<'a> {
+        ColorRgb {
+            b: self.__unsafe_private_named.0.unwrap(),
+            g: self.__unsafe_private_named.1.unwrap(),
+            r: self.__unsafe_private_named.2.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
+}
+
+fn lexicon_doc_app_bsky_embed_external() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+    ::jacquard_lexicon::lexicon::LexiconDoc {
+        lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
+        id: ::jacquard_common::CowStr::new_static("app.bsky.embed.external"),
+        revision: None,
+        description: None,
+        defs: {
+            let mut map = ::std::collections::BTreeMap::new();
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("colorRGB"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        description: Some(::jacquard_common::CowStr::new_static(
+                            "RGB color definition, inspired by site.standard.theme.color#rgb",
+                        )),
+                        required: Some(vec![
+                            ::jacquard_common::smol_str::SmolStr::new_static("r"),
+                            ::jacquard_common::smol_str::SmolStr::new_static("g"),
+                            ::jacquard_common::smol_str::SmolStr::new_static("b"),
+                        ]),
+                        nullable: None,
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::std::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("b"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        description: None,
+                                        default: None,
+                                        minimum: Some(0i64),
+                                        maximum: Some(255i64),
+                                        r#enum: None,
+                                        r#const: None,
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("g"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        description: None,
+                                        default: None,
+                                        minimum: Some(0i64),
+                                        maximum: Some(255i64),
+                                        r#enum: None,
+                                        r#const: None,
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("r"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        description: None,
+                                        default: None,
+                                        minimum: Some(0i64),
+                                        maximum: Some(255i64),
+                                        r#enum: None,
+                                        r#const: None,
+                                    },
+                                ),
+                            );
+                            map
+                        },
+                    },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("external"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: None,
+                    required: Some(
+                        vec![
+                            ::jacquard_common::smol_str::SmolStr::new_static("uri"),
+                            ::jacquard_common::smol_str::SmolStr::new_static("title"),
+                            ::jacquard_common::smol_str::SmolStr::new_static("description")
+                        ],
+                    ),
+                    nullable: None,
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::std::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "associatedRefs",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "StrongRefs (uri+cid) of the Atmosphere records that backed this view.",
+                                    ),
+                                ),
+                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                    description: None,
+                                    r#ref: ::jacquard_common::CowStr::new_static(
+                                        "com.atproto.repo.strongRef",
+                                    ),
+                                }),
+                                min_length: None,
+                                max_length: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "description",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: None,
+                                format: None,
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("thumb"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Blob(::jacquard_lexicon::lexicon::LexBlob {
+                                description: None,
+                                accept: None,
+                                max_size: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("title"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: None,
+                                format: None,
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("uri"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: None,
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Uri,
+                                ),
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map
+                    },
+                }),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("main"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
+                            "A representation of some externally linked content (eg, a URL and 'card'), embedded in a Bluesky record (eg, a post).",
+                        ),
+                    ),
+                    required: Some(
+                        vec![
+                            ::jacquard_common::smol_str::SmolStr::new_static("external")
+                        ],
+                    ),
+                    nullable: None,
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::std::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("external"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                description: None,
+                                r#ref: ::jacquard_common::CowStr::new_static("#external"),
+                            }),
+                        );
+                        map
+                    },
+                }),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("view"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        description: None,
+                        required: Some(vec![::jacquard_common::smol_str::SmolStr::new_static(
+                            "external",
+                        )]),
+                        nullable: None,
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::std::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("external"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        description: None,
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "#viewExternal",
+                                        ),
+                                    },
+                                ),
+                            );
+                            map
+                        },
+                    },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("viewExternal"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: None,
+                    required: Some(
+                        vec![
+                            ::jacquard_common::smol_str::SmolStr::new_static("uri"),
+                            ::jacquard_common::smol_str::SmolStr::new_static("title"),
+                            ::jacquard_common::smol_str::SmolStr::new_static("description")
+                        ],
+                    ),
+                    nullable: None,
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::std::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "associatedProfiles",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Profiles of the owners of the Atmosphere records that backed this view.",
+                                    ),
+                                ),
+                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                    description: None,
+                                    r#ref: ::jacquard_common::CowStr::new_static(
+                                        "app.bsky.actor.defs#profileViewBasic",
+                                    ),
+                                }),
+                                min_length: None,
+                                max_length: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "associatedRefs",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "StrongRefs (uri+cid) of the Atmosphere records that backed this view.",
+                                    ),
+                                ),
+                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                    description: None,
+                                    r#ref: ::jacquard_common::CowStr::new_static(
+                                        "com.atproto.repo.strongRef",
+                                    ),
+                                }),
+                                min_length: None,
+                                max_length: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "createdAt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "When the external content was created, if available. Example: a publication date, for an article.",
+                                    ),
+                                ),
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                ),
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "description",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: None,
+                                format: None,
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("labels"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                description: None,
+                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                    description: None,
+                                    r#ref: ::jacquard_common::CowStr::new_static(
+                                        "com.atproto.label.defs#label",
+                                    ),
+                                }),
+                                min_length: None,
+                                max_length: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "readingTime",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                description: None,
+                                default: None,
+                                minimum: None,
+                                maximum: None,
+                                r#enum: None,
+                                r#const: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("source"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                description: None,
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#viewExternalSource",
+                                ),
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("thumb"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: None,
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Uri,
+                                ),
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("title"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: None,
+                                format: None,
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "updatedAt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "When the external content was updated, if available.",
+                                    ),
+                                ),
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                ),
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("uri"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: None,
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Uri,
+                                ),
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map
+                    },
+                }),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("viewExternalSource"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
+                            "The source of an external embed, such as a standard.site publication.",
+                        ),
+                    ),
+                    required: Some(
+                        vec![
+                            ::jacquard_common::smol_str::SmolStr::new_static("uri"),
+                            ::jacquard_common::smol_str::SmolStr::new_static("title")
+                        ],
+                    ),
+                    nullable: None,
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::std::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "description",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: None,
+                                format: None,
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("icon"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Fully-qualified URL where an icon representing the source can be fetched. For example, CDN location provided by the App View.",
+                                    ),
+                                ),
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Uri,
+                                ),
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("theme"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                description: None,
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#viewExternalSourceTheme",
+                                ),
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("title"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: None,
+                                format: None,
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("uri"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "URI of the source, if available. Example: the https:// URL of a site.standard.publication record.",
+                                    ),
+                                ),
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Uri,
+                                ),
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map
+                    },
+                }),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static(
+                    "viewExternalSourceTheme",
+                ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
+                            "The theme colors of an external source, such as a site.standard.publication. These colors may be used when rendering an embed from that source.",
+                        ),
+                    ),
+                    required: None,
+                    nullable: None,
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::std::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "accentForegroundRGB",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                description: None,
+                                r#ref: ::jacquard_common::CowStr::new_static("#colorRGB"),
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "accentRGB",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                description: None,
+                                r#ref: ::jacquard_common::CowStr::new_static("#colorRGB"),
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "backgroundRGB",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                description: None,
+                                r#ref: ::jacquard_common::CowStr::new_static("#colorRGB"),
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "foregroundRGB",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                description: None,
+                                r#ref: ::jacquard_common::CowStr::new_static("#colorRGB"),
+                            }),
+                        );
+                        map
+                    },
+                }),
+            );
+            map
+        },
+    }
+}
+
+impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ColorRgb<'a> {
+    fn nsid() -> &'static str {
+        "app.bsky.embed.external"
+    }
+    fn def_name() -> &'static str {
+        "colorRGB"
+    }
+    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_app_bsky_embed_external()
+    }
+    fn validate(
+        &self,
+    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.b;
+            if *value > 255i64 {
+                return Err(::jacquard_lexicon::validation::ConstraintError::Maximum {
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("b"),
+                    max: 255i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.b;
+            if *value < 0i64 {
+                return Err(::jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("b"),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.g;
+            if *value > 255i64 {
+                return Err(::jacquard_lexicon::validation::ConstraintError::Maximum {
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("g"),
+                    max: 255i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.g;
+            if *value < 0i64 {
+                return Err(::jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("g"),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.r;
+            if *value > 255i64 {
+                return Err(::jacquard_lexicon::validation::ConstraintError::Maximum {
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("r"),
+                    max: 255i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.r;
+            if *value < 0i64 {
+                return Err(::jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("r"),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
+        Ok(())
+    }
+}
+
 #[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct External<'a> {
+    /// StrongRefs (uri+cid) of the Atmosphere records that backed this view.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub associated_refs:
+        std::option::Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>>,
     #[serde(borrow)]
     pub description: jacquard_common::CowStr<'a>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
@@ -84,6 +938,7 @@ pub mod external_state {
 pub struct ExternalBuilder<'a, S: external_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
+        ::core::option::Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
         ::core::option::Option<jacquard_common::types::blob::BlobRef<'a>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
@@ -104,9 +959,28 @@ impl<'a> ExternalBuilder<'a, external_state::Empty> {
     pub fn new() -> Self {
         ExternalBuilder {
             _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None),
+            __unsafe_private_named: (None, None, None, None, None),
             _phantom: ::core::marker::PhantomData,
         }
+    }
+}
+
+impl<'a, S: external_state::State> ExternalBuilder<'a, S> {
+    /// Set the `associatedRefs` field (optional)
+    pub fn associated_refs(
+        mut self,
+        value: impl Into<Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>>>,
+    ) -> Self {
+        self.__unsafe_private_named.0 = value.into();
+        self
+    }
+    /// Set the `associatedRefs` field to an Option value (optional)
+    pub fn maybe_associated_refs(
+        mut self,
+        value: Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>>,
+    ) -> Self {
+        self.__unsafe_private_named.0 = value;
+        self
     }
 }
 
@@ -120,7 +994,7 @@ where
         mut self,
         value: impl Into<jacquard_common::CowStr<'a>>,
     ) -> ExternalBuilder<'a, external_state::SetDescription<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
         ExternalBuilder {
             _phantom_state: ::core::marker::PhantomData,
             __unsafe_private_named: self.__unsafe_private_named,
@@ -135,12 +1009,12 @@ impl<'a, S: external_state::State> ExternalBuilder<'a, S> {
         mut self,
         value: impl Into<Option<jacquard_common::types::blob::BlobRef<'a>>>,
     ) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self.__unsafe_private_named.2 = value.into();
         self
     }
     /// Set the `thumb` field to an Option value (optional)
     pub fn maybe_thumb(mut self, value: Option<jacquard_common::types::blob::BlobRef<'a>>) -> Self {
-        self.__unsafe_private_named.1 = value;
+        self.__unsafe_private_named.2 = value;
         self
     }
 }
@@ -155,7 +1029,7 @@ where
         mut self,
         value: impl Into<jacquard_common::CowStr<'a>>,
     ) -> ExternalBuilder<'a, external_state::SetTitle<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
         ExternalBuilder {
             _phantom_state: ::core::marker::PhantomData,
             __unsafe_private_named: self.__unsafe_private_named,
@@ -174,7 +1048,7 @@ where
         mut self,
         value: impl Into<jacquard_common::types::string::Uri<'a>>,
     ) -> ExternalBuilder<'a, external_state::SetUri<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        self.__unsafe_private_named.4 = ::core::option::Option::Some(value.into());
         ExternalBuilder {
             _phantom_state: ::core::marker::PhantomData,
             __unsafe_private_named: self.__unsafe_private_named,
@@ -193,10 +1067,11 @@ where
     /// Build the final struct
     pub fn build(self) -> External<'a> {
         External {
-            description: self.__unsafe_private_named.0.unwrap(),
-            thumb: self.__unsafe_private_named.1,
-            title: self.__unsafe_private_named.2.unwrap(),
-            uri: self.__unsafe_private_named.3.unwrap(),
+            associated_refs: self.__unsafe_private_named.0,
+            description: self.__unsafe_private_named.1.unwrap(),
+            thumb: self.__unsafe_private_named.2,
+            title: self.__unsafe_private_named.3.unwrap(),
+            uri: self.__unsafe_private_named.4.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -209,254 +1084,13 @@ where
         >,
     ) -> External<'a> {
         External {
-            description: self.__unsafe_private_named.0.unwrap(),
-            thumb: self.__unsafe_private_named.1,
-            title: self.__unsafe_private_named.2.unwrap(),
-            uri: self.__unsafe_private_named.3.unwrap(),
+            associated_refs: self.__unsafe_private_named.0,
+            description: self.__unsafe_private_named.1.unwrap(),
+            thumb: self.__unsafe_private_named.2,
+            title: self.__unsafe_private_named.3.unwrap(),
+            uri: self.__unsafe_private_named.4.unwrap(),
             extra_data: Some(extra_data),
         }
-    }
-}
-
-fn lexicon_doc_app_bsky_embed_external() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-    ::jacquard_lexicon::lexicon::LexiconDoc {
-        lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
-        id: ::jacquard_common::CowStr::new_static("app.bsky.embed.external"),
-        revision: None,
-        description: None,
-        defs: {
-            let mut map = ::std::collections::BTreeMap::new();
-            map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("external"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
-                        required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("uri"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("title"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("description"),
-                        ]),
-                        nullable: None,
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("description"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("thumb"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Blob(
-                                    ::jacquard_lexicon::lexicon::LexBlob {
-                                        description: None,
-                                        accept: None,
-                                        max_size: None,
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("title"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("uri"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Uri,
-                                        ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                    },
-                ),
-            );
-            map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: Some(
-                        ::jacquard_common::CowStr::new_static(
-                            "A representation of some externally linked content (eg, a URL and 'card'), embedded in a Bluesky record (eg, a post).",
-                        ),
-                    ),
-                    required: Some(
-                        vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("external")
-                        ],
-                    ),
-                    nullable: None,
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("external"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                description: None,
-                                r#ref: ::jacquard_common::CowStr::new_static("#external"),
-                            }),
-                        );
-                        map
-                    },
-                }),
-            );
-            map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("view"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
-                        required: Some(vec![::jacquard_common::smol_str::SmolStr::new_static(
-                            "external",
-                        )]),
-                        nullable: None,
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("external"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        description: None,
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#viewExternal",
-                                        ),
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                    },
-                ),
-            );
-            map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("viewExternal"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
-                        required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("uri"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("title"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("description"),
-                        ]),
-                        nullable: None,
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("description"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("thumb"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Uri,
-                                        ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("title"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("uri"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Uri,
-                                        ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                    },
-                ),
-            );
-            map
-        },
     }
 }
 
@@ -746,13 +1380,39 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for View<'a> {
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ViewExternal<'a> {
+    /// Profiles of the owners of the Atmosphere records that backed this view.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub associated_profiles:
+        std::option::Option<Vec<crate::generated::app_bsky::actor::ProfileViewBasic<'a>>>,
+    /// StrongRefs (uri+cid) of the Atmosphere records that backed this view.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub associated_refs:
+        std::option::Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>>,
+    /// When the external content was created, if available. Example: a publication date, for an article.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    pub created_at: std::option::Option<jacquard_common::types::string::Datetime>,
     #[serde(borrow)]
     pub description: jacquard_common::CowStr<'a>,
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub labels: std::option::Option<Vec<crate::generated::com_atproto::label::Label<'a>>>,
+    /// Estimated reading time in minutes, if applicable and available.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    pub reading_time: std::option::Option<i64>,
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub source:
+        std::option::Option<crate::generated::app_bsky::embed::external::ViewExternalSource<'a>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub thumb: std::option::Option<jacquard_common::types::string::Uri<'a>>,
     #[serde(borrow)]
     pub title: jacquard_common::CowStr<'a>,
+    /// When the external content was updated, if available.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    pub updated_at: std::option::Option<jacquard_common::types::string::Datetime>,
     #[serde(borrow)]
     pub uri: jacquard_common::types::string::Uri<'a>,
 }
@@ -767,51 +1427,51 @@ pub mod view_external_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Description;
         type Uri;
         type Title;
+        type Description;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Description = Unset;
         type Uri = Unset;
         type Title = Unset;
-    }
-    ///State transition - sets the `description` field to Set
-    pub struct SetDescription<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDescription<S> {}
-    impl<S: State> State for SetDescription<S> {
-        type Description = Set<members::description>;
-        type Uri = S::Uri;
-        type Title = S::Title;
+        type Description = Unset;
     }
     ///State transition - sets the `uri` field to Set
     pub struct SetUri<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetUri<S> {}
     impl<S: State> State for SetUri<S> {
-        type Description = S::Description;
         type Uri = Set<members::uri>;
         type Title = S::Title;
+        type Description = S::Description;
     }
     ///State transition - sets the `title` field to Set
     pub struct SetTitle<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetTitle<S> {}
     impl<S: State> State for SetTitle<S> {
-        type Description = S::Description;
         type Uri = S::Uri;
         type Title = Set<members::title>;
+        type Description = S::Description;
+    }
+    ///State transition - sets the `description` field to Set
+    pub struct SetDescription<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetDescription<S> {}
+    impl<S: State> State for SetDescription<S> {
+        type Uri = S::Uri;
+        type Title = S::Title;
+        type Description = Set<members::description>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `description` field
-        pub struct description(());
         ///Marker type for the `uri` field
         pub struct uri(());
         ///Marker type for the `title` field
         pub struct title(());
+        ///Marker type for the `description` field
+        pub struct description(());
     }
 }
 
@@ -819,9 +1479,16 @@ pub mod view_external_state {
 pub struct ViewExternalBuilder<'a, S: view_external_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
+        ::core::option::Option<Vec<crate::generated::app_bsky::actor::ProfileViewBasic<'a>>>,
+        ::core::option::Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>>,
+        ::core::option::Option<jacquard_common::types::string::Datetime>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
+        ::core::option::Option<Vec<crate::generated::com_atproto::label::Label<'a>>>,
+        ::core::option::Option<i64>,
+        ::core::option::Option<crate::generated::app_bsky::embed::external::ViewExternalSource<'a>>,
         ::core::option::Option<jacquard_common::types::string::Uri<'a>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
+        ::core::option::Option<jacquard_common::types::string::Datetime>,
         ::core::option::Option<jacquard_common::types::string::Uri<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
@@ -839,9 +1506,68 @@ impl<'a> ViewExternalBuilder<'a, view_external_state::Empty> {
     pub fn new() -> Self {
         ViewExternalBuilder {
             _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None),
+            __unsafe_private_named: (
+                None, None, None, None, None, None, None, None, None, None, None,
+            ),
             _phantom: ::core::marker::PhantomData,
         }
+    }
+}
+
+impl<'a, S: view_external_state::State> ViewExternalBuilder<'a, S> {
+    /// Set the `associatedProfiles` field (optional)
+    pub fn associated_profiles(
+        mut self,
+        value: impl Into<Option<Vec<crate::generated::app_bsky::actor::ProfileViewBasic<'a>>>>,
+    ) -> Self {
+        self.__unsafe_private_named.0 = value.into();
+        self
+    }
+    /// Set the `associatedProfiles` field to an Option value (optional)
+    pub fn maybe_associated_profiles(
+        mut self,
+        value: Option<Vec<crate::generated::app_bsky::actor::ProfileViewBasic<'a>>>,
+    ) -> Self {
+        self.__unsafe_private_named.0 = value;
+        self
+    }
+}
+
+impl<'a, S: view_external_state::State> ViewExternalBuilder<'a, S> {
+    /// Set the `associatedRefs` field (optional)
+    pub fn associated_refs(
+        mut self,
+        value: impl Into<Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>>>,
+    ) -> Self {
+        self.__unsafe_private_named.1 = value.into();
+        self
+    }
+    /// Set the `associatedRefs` field to an Option value (optional)
+    pub fn maybe_associated_refs(
+        mut self,
+        value: Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>>,
+    ) -> Self {
+        self.__unsafe_private_named.1 = value;
+        self
+    }
+}
+
+impl<'a, S: view_external_state::State> ViewExternalBuilder<'a, S> {
+    /// Set the `createdAt` field (optional)
+    pub fn created_at(
+        mut self,
+        value: impl Into<Option<jacquard_common::types::string::Datetime>>,
+    ) -> Self {
+        self.__unsafe_private_named.2 = value.into();
+        self
+    }
+    /// Set the `createdAt` field to an Option value (optional)
+    pub fn maybe_created_at(
+        mut self,
+        value: Option<jacquard_common::types::string::Datetime>,
+    ) -> Self {
+        self.__unsafe_private_named.2 = value;
+        self
     }
 }
 
@@ -855,7 +1581,7 @@ where
         mut self,
         value: impl Into<jacquard_common::CowStr<'a>>,
     ) -> ViewExternalBuilder<'a, view_external_state::SetDescription<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
         ViewExternalBuilder {
             _phantom_state: ::core::marker::PhantomData,
             __unsafe_private_named: self.__unsafe_private_named,
@@ -865,17 +1591,68 @@ where
 }
 
 impl<'a, S: view_external_state::State> ViewExternalBuilder<'a, S> {
+    /// Set the `labels` field (optional)
+    pub fn labels(
+        mut self,
+        value: impl Into<Option<Vec<crate::generated::com_atproto::label::Label<'a>>>>,
+    ) -> Self {
+        self.__unsafe_private_named.4 = value.into();
+        self
+    }
+    /// Set the `labels` field to an Option value (optional)
+    pub fn maybe_labels(
+        mut self,
+        value: Option<Vec<crate::generated::com_atproto::label::Label<'a>>>,
+    ) -> Self {
+        self.__unsafe_private_named.4 = value;
+        self
+    }
+}
+
+impl<'a, S: view_external_state::State> ViewExternalBuilder<'a, S> {
+    /// Set the `readingTime` field (optional)
+    pub fn reading_time(mut self, value: impl Into<Option<i64>>) -> Self {
+        self.__unsafe_private_named.5 = value.into();
+        self
+    }
+    /// Set the `readingTime` field to an Option value (optional)
+    pub fn maybe_reading_time(mut self, value: Option<i64>) -> Self {
+        self.__unsafe_private_named.5 = value;
+        self
+    }
+}
+
+impl<'a, S: view_external_state::State> ViewExternalBuilder<'a, S> {
+    /// Set the `source` field (optional)
+    pub fn source(
+        mut self,
+        value: impl Into<Option<crate::generated::app_bsky::embed::external::ViewExternalSource<'a>>>,
+    ) -> Self {
+        self.__unsafe_private_named.6 = value.into();
+        self
+    }
+    /// Set the `source` field to an Option value (optional)
+    pub fn maybe_source(
+        mut self,
+        value: Option<crate::generated::app_bsky::embed::external::ViewExternalSource<'a>>,
+    ) -> Self {
+        self.__unsafe_private_named.6 = value;
+        self
+    }
+}
+
+impl<'a, S: view_external_state::State> ViewExternalBuilder<'a, S> {
     /// Set the `thumb` field (optional)
     pub fn thumb(
         mut self,
         value: impl Into<Option<jacquard_common::types::string::Uri<'a>>>,
     ) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self.__unsafe_private_named.7 = value.into();
         self
     }
     /// Set the `thumb` field to an Option value (optional)
     pub fn maybe_thumb(mut self, value: Option<jacquard_common::types::string::Uri<'a>>) -> Self {
-        self.__unsafe_private_named.1 = value;
+        self.__unsafe_private_named.7 = value;
         self
     }
 }
@@ -890,12 +1667,31 @@ where
         mut self,
         value: impl Into<jacquard_common::CowStr<'a>>,
     ) -> ViewExternalBuilder<'a, view_external_state::SetTitle<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        self.__unsafe_private_named.8 = ::core::option::Option::Some(value.into());
         ViewExternalBuilder {
             _phantom_state: ::core::marker::PhantomData,
             __unsafe_private_named: self.__unsafe_private_named,
             _phantom: ::core::marker::PhantomData,
         }
+    }
+}
+
+impl<'a, S: view_external_state::State> ViewExternalBuilder<'a, S> {
+    /// Set the `updatedAt` field (optional)
+    pub fn updated_at(
+        mut self,
+        value: impl Into<Option<jacquard_common::types::string::Datetime>>,
+    ) -> Self {
+        self.__unsafe_private_named.9 = value.into();
+        self
+    }
+    /// Set the `updatedAt` field to an Option value (optional)
+    pub fn maybe_updated_at(
+        mut self,
+        value: Option<jacquard_common::types::string::Datetime>,
+    ) -> Self {
+        self.__unsafe_private_named.9 = value;
+        self
     }
 }
 
@@ -909,7 +1705,7 @@ where
         mut self,
         value: impl Into<jacquard_common::types::string::Uri<'a>>,
     ) -> ViewExternalBuilder<'a, view_external_state::SetUri<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        self.__unsafe_private_named.10 = ::core::option::Option::Some(value.into());
         ViewExternalBuilder {
             _phantom_state: ::core::marker::PhantomData,
             __unsafe_private_named: self.__unsafe_private_named,
@@ -921,17 +1717,24 @@ where
 impl<'a, S> ViewExternalBuilder<'a, S>
 where
     S: view_external_state::State,
-    S::Description: view_external_state::IsSet,
     S::Uri: view_external_state::IsSet,
     S::Title: view_external_state::IsSet,
+    S::Description: view_external_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> ViewExternal<'a> {
         ViewExternal {
-            description: self.__unsafe_private_named.0.unwrap(),
-            thumb: self.__unsafe_private_named.1,
-            title: self.__unsafe_private_named.2.unwrap(),
-            uri: self.__unsafe_private_named.3.unwrap(),
+            associated_profiles: self.__unsafe_private_named.0,
+            associated_refs: self.__unsafe_private_named.1,
+            created_at: self.__unsafe_private_named.2,
+            description: self.__unsafe_private_named.3.unwrap(),
+            labels: self.__unsafe_private_named.4,
+            reading_time: self.__unsafe_private_named.5,
+            source: self.__unsafe_private_named.6,
+            thumb: self.__unsafe_private_named.7,
+            title: self.__unsafe_private_named.8.unwrap(),
+            updated_at: self.__unsafe_private_named.9,
+            uri: self.__unsafe_private_named.10.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -944,10 +1747,17 @@ where
         >,
     ) -> ViewExternal<'a> {
         ViewExternal {
-            description: self.__unsafe_private_named.0.unwrap(),
-            thumb: self.__unsafe_private_named.1,
-            title: self.__unsafe_private_named.2.unwrap(),
-            uri: self.__unsafe_private_named.3.unwrap(),
+            associated_profiles: self.__unsafe_private_named.0,
+            associated_refs: self.__unsafe_private_named.1,
+            created_at: self.__unsafe_private_named.2,
+            description: self.__unsafe_private_named.3.unwrap(),
+            labels: self.__unsafe_private_named.4,
+            reading_time: self.__unsafe_private_named.5,
+            source: self.__unsafe_private_named.6,
+            thumb: self.__unsafe_private_named.7,
+            title: self.__unsafe_private_named.8.unwrap(),
+            updated_at: self.__unsafe_private_named.9,
+            uri: self.__unsafe_private_named.10.unwrap(),
             extra_data: Some(extra_data),
         }
     }
@@ -959,6 +1769,298 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ViewExternal<'a> {
     }
     fn def_name() -> &'static str {
         "viewExternal"
+    }
+    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_app_bsky_embed_external()
+    }
+    fn validate(
+        &self,
+    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+/// The source of an external embed, such as a standard.site publication.
+#[jacquard_derive::lexicon]
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(rename_all = "camelCase")]
+pub struct ViewExternalSource<'a> {
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub description: std::option::Option<jacquard_common::CowStr<'a>>,
+    /// Fully-qualified URL where an icon representing the source can be fetched. For example, CDN location provided by the App View.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub icon: std::option::Option<jacquard_common::types::string::Uri<'a>>,
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub theme: std::option::Option<
+        crate::generated::app_bsky::embed::external::ViewExternalSourceTheme<'a>,
+    >,
+    #[serde(borrow)]
+    pub title: jacquard_common::CowStr<'a>,
+    /// URI of the source, if available. Example: the https:// URL of a site.standard.publication record.
+    #[serde(borrow)]
+    pub uri: jacquard_common::types::string::Uri<'a>,
+}
+
+pub mod view_external_source_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type Uri;
+        type Title;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type Uri = Unset;
+        type Title = Unset;
+    }
+    ///State transition - sets the `uri` field to Set
+    pub struct SetUri<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetUri<S> {}
+    impl<S: State> State for SetUri<S> {
+        type Uri = Set<members::uri>;
+        type Title = S::Title;
+    }
+    ///State transition - sets the `title` field to Set
+    pub struct SetTitle<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetTitle<S> {}
+    impl<S: State> State for SetTitle<S> {
+        type Uri = S::Uri;
+        type Title = Set<members::title>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `uri` field
+        pub struct uri(());
+        ///Marker type for the `title` field
+        pub struct title(());
+    }
+}
+
+/// Builder for constructing an instance of this type
+pub struct ViewExternalSourceBuilder<'a, S: view_external_source_state::State> {
+    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
+    __unsafe_private_named: (
+        ::core::option::Option<jacquard_common::CowStr<'a>>,
+        ::core::option::Option<jacquard_common::types::string::Uri<'a>>,
+        ::core::option::Option<
+            crate::generated::app_bsky::embed::external::ViewExternalSourceTheme<'a>,
+        >,
+        ::core::option::Option<jacquard_common::CowStr<'a>>,
+        ::core::option::Option<jacquard_common::types::string::Uri<'a>>,
+    ),
+    _phantom: ::core::marker::PhantomData<&'a ()>,
+}
+
+impl<'a> ViewExternalSource<'a> {
+    /// Create a new builder for this type
+    pub fn new() -> ViewExternalSourceBuilder<'a, view_external_source_state::Empty> {
+        ViewExternalSourceBuilder::new()
+    }
+}
+
+impl<'a> ViewExternalSourceBuilder<'a, view_external_source_state::Empty> {
+    /// Create a new builder with all fields unset
+    pub fn new() -> Self {
+        ViewExternalSourceBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: (None, None, None, None, None),
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S: view_external_source_state::State> ViewExternalSourceBuilder<'a, S> {
+    /// Set the `description` field (optional)
+    pub fn description(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
+        self.__unsafe_private_named.0 = value.into();
+        self
+    }
+    /// Set the `description` field to an Option value (optional)
+    pub fn maybe_description(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
+        self.__unsafe_private_named.0 = value;
+        self
+    }
+}
+
+impl<'a, S: view_external_source_state::State> ViewExternalSourceBuilder<'a, S> {
+    /// Set the `icon` field (optional)
+    pub fn icon(
+        mut self,
+        value: impl Into<Option<jacquard_common::types::string::Uri<'a>>>,
+    ) -> Self {
+        self.__unsafe_private_named.1 = value.into();
+        self
+    }
+    /// Set the `icon` field to an Option value (optional)
+    pub fn maybe_icon(mut self, value: Option<jacquard_common::types::string::Uri<'a>>) -> Self {
+        self.__unsafe_private_named.1 = value;
+        self
+    }
+}
+
+impl<'a, S: view_external_source_state::State> ViewExternalSourceBuilder<'a, S> {
+    /// Set the `theme` field (optional)
+    pub fn theme(
+        mut self,
+        value: impl Into<
+            Option<crate::generated::app_bsky::embed::external::ViewExternalSourceTheme<'a>>,
+        >,
+    ) -> Self {
+        self.__unsafe_private_named.2 = value.into();
+        self
+    }
+    /// Set the `theme` field to an Option value (optional)
+    pub fn maybe_theme(
+        mut self,
+        value: Option<crate::generated::app_bsky::embed::external::ViewExternalSourceTheme<'a>>,
+    ) -> Self {
+        self.__unsafe_private_named.2 = value;
+        self
+    }
+}
+
+impl<'a, S> ViewExternalSourceBuilder<'a, S>
+where
+    S: view_external_source_state::State,
+    S::Title: view_external_source_state::IsUnset,
+{
+    /// Set the `title` field (required)
+    pub fn title(
+        mut self,
+        value: impl Into<jacquard_common::CowStr<'a>>,
+    ) -> ViewExternalSourceBuilder<'a, view_external_source_state::SetTitle<S>> {
+        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        ViewExternalSourceBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: self.__unsafe_private_named,
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S> ViewExternalSourceBuilder<'a, S>
+where
+    S: view_external_source_state::State,
+    S::Uri: view_external_source_state::IsUnset,
+{
+    /// Set the `uri` field (required)
+    pub fn uri(
+        mut self,
+        value: impl Into<jacquard_common::types::string::Uri<'a>>,
+    ) -> ViewExternalSourceBuilder<'a, view_external_source_state::SetUri<S>> {
+        self.__unsafe_private_named.4 = ::core::option::Option::Some(value.into());
+        ViewExternalSourceBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: self.__unsafe_private_named,
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S> ViewExternalSourceBuilder<'a, S>
+where
+    S: view_external_source_state::State,
+    S::Uri: view_external_source_state::IsSet,
+    S::Title: view_external_source_state::IsSet,
+{
+    /// Build the final struct
+    pub fn build(self) -> ViewExternalSource<'a> {
+        ViewExternalSource {
+            description: self.__unsafe_private_named.0,
+            icon: self.__unsafe_private_named.1,
+            theme: self.__unsafe_private_named.2,
+            title: self.__unsafe_private_named.3.unwrap(),
+            uri: self.__unsafe_private_named.4.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data
+    pub fn build_with_data(
+        self,
+        extra_data: std::collections::BTreeMap<
+            jacquard_common::smol_str::SmolStr,
+            jacquard_common::types::value::Data<'a>,
+        >,
+    ) -> ViewExternalSource<'a> {
+        ViewExternalSource {
+            description: self.__unsafe_private_named.0,
+            icon: self.__unsafe_private_named.1,
+            theme: self.__unsafe_private_named.2,
+            title: self.__unsafe_private_named.3.unwrap(),
+            uri: self.__unsafe_private_named.4.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
+}
+
+impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ViewExternalSource<'a> {
+    fn nsid() -> &'static str {
+        "app.bsky.embed.external"
+    }
+    fn def_name() -> &'static str {
+        "viewExternalSource"
+    }
+    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_app_bsky_embed_external()
+    }
+    fn validate(
+        &self,
+    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+/// The theme colors of an external source, such as a site.standard.publication. These colors may be used when rendering an embed from that source.
+#[jacquard_derive::lexicon]
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic,
+    Default,
+)]
+#[serde(rename_all = "camelCase")]
+pub struct ViewExternalSourceTheme<'a> {
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub accent_foreground_rgb:
+        std::option::Option<crate::generated::app_bsky::embed::external::ColorRgb<'a>>,
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub accent_rgb: std::option::Option<crate::generated::app_bsky::embed::external::ColorRgb<'a>>,
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub background_rgb:
+        std::option::Option<crate::generated::app_bsky::embed::external::ColorRgb<'a>>,
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub foreground_rgb:
+        std::option::Option<crate::generated::app_bsky::embed::external::ColorRgb<'a>>,
+}
+
+impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ViewExternalSourceTheme<'a> {
+    fn nsid() -> &'static str {
+        "app.bsky.embed.external"
+    }
+    fn def_name() -> &'static str {
+        "viewExternalSourceTheme"
     }
     fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
         lexicon_doc_app_bsky_embed_external()

@@ -5,24 +5,29 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-/// A delegate messaging id
+/// A declaration of a Germ Network account
 #[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Declaration<'a> {
+    /// Array of opaque values to allow for key rolling
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     pub continuity_proofs: std::option::Option<Vec<bytes::Bytes>>,
+    /// Opaque value, an ed25519 public key prefixed with a byte enum
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub current_key: bytes::Bytes,
+    /// Opaque value, contains MLS KeyPackage(s), and other signature data, and is signed by the currentKey
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(default, with = "jacquard_common::opt_serde_bytes_helper")]
     pub key_package: std::option::Option<bytes::Bytes>,
+    /// Controls who can message this account
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub message_me:
         std::option::Option<crate::generated::com_germnetwork::declaration::MessageMe<'a>>,
+    /// Semver version number, without pre-release or build information, for the format of opaque content
     #[serde(borrow)]
     pub version: jacquard_common::CowStr<'a>,
 }
@@ -289,6 +294,40 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Declaration<'a> {
     fn validate(
         &self,
     ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
+        if let Some(ref value) = self.continuity_proofs {
+            #[allow(unused_comparisons)]
+            if value.len() > 1000usize {
+                return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
+                        "continuity_proofs",
+                    ),
+                    max: 1000usize,
+                    actual: value.len(),
+                });
+            }
+        }
+        {
+            let value = &self.version;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 14usize {
+                return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("version"),
+                    max: 14usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.version;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 5usize {
+                return Err(::jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("version"),
+                    min: 5usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         Ok(())
     }
 }
@@ -305,7 +344,9 @@ fn lexicon_doc_com_germnetwork_declaration() -> ::jacquard_lexicon::lexicon::Lex
                 ::jacquard_common::smol_str::SmolStr::new_static("main"),
                 ::jacquard_lexicon::lexicon::LexUserType::Record(::jacquard_lexicon::lexicon::LexRecord {
                     description: Some(
-                        ::jacquard_common::CowStr::new_static("A delegate messaging id"),
+                        ::jacquard_common::CowStr::new_static(
+                            "A declaration of a Germ Network account",
+                        ),
                     ),
                     key: Some(::jacquard_common::CowStr::new_static("literal:self")),
                     record: ::jacquard_lexicon::lexicon::LexRecordRecord::Object(::jacquard_lexicon::lexicon::LexObject {
@@ -325,14 +366,18 @@ fn lexicon_doc_com_germnetwork_declaration() -> ::jacquard_lexicon::lexicon::Lex
                                     "continuityProofs",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
-                                    description: None,
+                                    description: Some(
+                                        ::jacquard_common::CowStr::new_static(
+                                            "Array of opaque values to allow for key rolling",
+                                        ),
+                                    ),
                                     items: ::jacquard_lexicon::lexicon::LexArrayItem::Bytes(::jacquard_lexicon::lexicon::LexBytes {
                                         description: None,
                                         max_length: None,
                                         min_length: None,
                                     }),
                                     min_length: None,
-                                    max_length: None,
+                                    max_length: Some(1000usize),
                                 }),
                             );
                             map.insert(
@@ -367,11 +412,15 @@ fn lexicon_doc_com_germnetwork_declaration() -> ::jacquard_lexicon::lexicon::Lex
                             map.insert(
                                 ::jacquard_common::smol_str::SmolStr::new_static("version"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                    description: None,
+                                    description: Some(
+                                        ::jacquard_common::CowStr::new_static(
+                                            "Semver version number, without pre-release or build information, for the format of opaque content",
+                                        ),
+                                    ),
                                     format: None,
                                     default: None,
-                                    min_length: None,
-                                    max_length: None,
+                                    min_length: Some(5usize),
+                                    max_length: Some(14usize),
                                     min_graphemes: None,
                                     max_graphemes: None,
                                     r#enum: None,
@@ -386,57 +435,65 @@ fn lexicon_doc_com_germnetwork_declaration() -> ::jacquard_lexicon::lexicon::Lex
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("messageMe"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
-                        required: Some(vec![
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: None,
+                    required: Some(
+                        vec![
                             ::jacquard_common::smol_str::SmolStr::new_static("showButtonTo"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("messageMeUrl"),
-                        ]),
-                        nullable: None,
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("messageMeUrl"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Uri,
-                                        ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
-                                    },
+                            ::jacquard_common::smol_str::SmolStr::new_static("messageMeUrl")
+                        ],
+                    ),
+                    nullable: None,
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::std::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "messageMeUrl",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "A URL to present to an account that does not have its own com.germnetwork.declaration record, must have an empty fragment component, where the app should fill in the fragment component with the DIDs of the two accounts who wish to message each other",
+                                    ),
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("showButtonTo"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
-                                    },
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Uri,
                                 ),
-                            );
-                            map
-                        },
+                                default: None,
+                                min_length: Some(1usize),
+                                max_length: Some(2047usize),
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "showButtonTo",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "The policy of who can message the account, this value is included in the keyPackage, but is duplicated here to allow applications to decide if they should show a 'Message on Germ' button to the viewer.",
+                                    ),
+                                ),
+                                format: None,
+                                default: None,
+                                min_length: Some(1usize),
+                                max_length: Some(100usize),
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map
                     },
-                ),
+                }),
             );
             map
         },
@@ -449,8 +506,10 @@ fn lexicon_doc_com_germnetwork_declaration() -> ::jacquard_lexicon::lexicon::Lex
 )]
 #[serde(rename_all = "camelCase")]
 pub struct MessageMe<'a> {
+    /// A URL to present to an account that does not have its own com.germnetwork.declaration record, must have an empty fragment component, where the app should fill in the fragment component with the DIDs of the two accounts who wish to message each other
     #[serde(borrow)]
     pub message_me_url: jacquard_common::types::string::Uri<'a>,
+    /// The policy of who can message the account, this value is included in the keyPackage, but is duplicated here to allow applications to decide if they should show a 'Message on Germ' button to the viewer.
     #[serde(borrow)]
     pub show_button_to: jacquard_common::CowStr<'a>,
 }
@@ -608,6 +667,58 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for MessageMe<'a> {
     fn validate(
         &self,
     ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.message_me_url;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 2047usize {
+                return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
+                        "message_me_url",
+                    ),
+                    max: 2047usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.message_me_url;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 1usize {
+                return Err(::jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
+                        "message_me_url",
+                    ),
+                    min: 1usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.show_button_to;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 100usize {
+                return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
+                        "show_button_to",
+                    ),
+                    max: 100usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.show_button_to;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 1usize {
+                return Err(::jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
+                        "show_button_to",
+                    ),
+                    min: 1usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
         Ok(())
     }
 }

@@ -1277,6 +1277,25 @@ fn lexicon_doc_app_bsky_actor_defs() -> ::jacquard_lexicon::lexicon::LexiconDoc<
                             #[allow(unused_mut)]
                             let mut map = ::std::collections::BTreeMap::new();
                             map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                    "allowGroupInvites",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: None,
+                                        format: None,
+                                        default: None,
+                                        min_length: None,
+                                        max_length: None,
+                                        min_graphemes: None,
+                                        max_graphemes: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                        known_values: None,
+                                    },
+                                ),
+                            );
+                            map.insert(
                                 ::jacquard_common::smol_str::SmolStr::new_static("allowIncoming"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
@@ -2385,6 +2404,20 @@ fn lexicon_doc_app_bsky_actor_defs() -> ::jacquard_lexicon::lexicon::LexiconDoc<
                             }),
                         );
                         map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("labels"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                description: None,
+                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                    description: None,
+                                    r#ref: ::jacquard_common::CowStr::new_static(
+                                        "com.atproto.label.defs#label",
+                                    ),
+                                }),
+                                min_length: None,
+                                max_length: None,
+                            }),
+                        );
+                        map.insert(
                             ::jacquard_common::smol_str::SmolStr::new_static("record"),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Unknown(::jacquard_lexicon::lexicon::LexUnknown {
                                 description: None,
@@ -2633,6 +2666,48 @@ fn lexicon_doc_app_bsky_actor_defs() -> ::jacquard_lexicon::lexicon::LexiconDoc<
                                         )),
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                        ),
+                                        default: None,
+                                        min_length: None,
+                                        max_length: None,
+                                        min_graphemes: None,
+                                        max_graphemes: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                        known_values: None,
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                    "issuerDisplayName",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "The display name of the issuer.",
+                                        )),
+                                        format: None,
+                                        default: None,
+                                        min_length: None,
+                                        max_length: None,
+                                        min_graphemes: None,
+                                        max_graphemes: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                        known_values: None,
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("issuerHandle"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "The handle of the issuer.",
+                                        )),
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Handle,
                                         ),
                                         default: None,
                                         min_length: None,
@@ -3368,37 +3443,37 @@ pub mod known_followers_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Followers;
         type Count;
+        type Followers;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Followers = Unset;
         type Count = Unset;
-    }
-    ///State transition - sets the `followers` field to Set
-    pub struct SetFollowers<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetFollowers<S> {}
-    impl<S: State> State for SetFollowers<S> {
-        type Followers = Set<members::followers>;
-        type Count = S::Count;
+        type Followers = Unset;
     }
     ///State transition - sets the `count` field to Set
     pub struct SetCount<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCount<S> {}
     impl<S: State> State for SetCount<S> {
-        type Followers = S::Followers;
         type Count = Set<members::count>;
+        type Followers = S::Followers;
+    }
+    ///State transition - sets the `followers` field to Set
+    pub struct SetFollowers<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetFollowers<S> {}
+    impl<S: State> State for SetFollowers<S> {
+        type Count = S::Count;
+        type Followers = Set<members::followers>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `followers` field
-        pub struct followers(());
         ///Marker type for the `count` field
         pub struct count(());
+        ///Marker type for the `followers` field
+        pub struct followers(());
     }
 }
 
@@ -3471,8 +3546,8 @@ where
 impl<'a, S> KnownFollowersBuilder<'a, S>
 where
     S: known_followers_state::State,
-    S::Followers: known_followers_state::IsSet,
     S::Count: known_followers_state::IsSet,
+    S::Followers: known_followers_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> KnownFollowers<'a> {
@@ -3873,37 +3948,37 @@ pub mod muted_word_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Targets;
         type Value;
+        type Targets;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Targets = Unset;
         type Value = Unset;
-    }
-    ///State transition - sets the `targets` field to Set
-    pub struct SetTargets<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetTargets<S> {}
-    impl<S: State> State for SetTargets<S> {
-        type Targets = Set<members::targets>;
-        type Value = S::Value;
+        type Targets = Unset;
     }
     ///State transition - sets the `value` field to Set
     pub struct SetValue<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetValue<S> {}
     impl<S: State> State for SetValue<S> {
-        type Targets = S::Targets;
         type Value = Set<members::value>;
+        type Targets = S::Targets;
+    }
+    ///State transition - sets the `targets` field to Set
+    pub struct SetTargets<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetTargets<S> {}
+    impl<S: State> State for SetTargets<S> {
+        type Value = S::Value;
+        type Targets = Set<members::targets>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `targets` field
-        pub struct targets(());
         ///Marker type for the `value` field
         pub struct value(());
+        ///Marker type for the `targets` field
+        pub struct targets(());
     }
 }
 
@@ -4024,8 +4099,8 @@ where
 impl<'a, S> MutedWordBuilder<'a, S>
 where
     S: muted_word_state::State,
-    S::Targets: muted_word_state::IsSet,
     S::Value: muted_word_state::IsSet,
+    S::Targets: muted_word_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> MutedWord<'a> {
@@ -4826,6 +4901,9 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ProfileAssociatedActivity
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ProfileAssociatedChat<'a> {
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub allow_group_invites: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(borrow)]
     pub allow_incoming: jacquard_common::CowStr<'a>,
 }
@@ -4869,37 +4947,37 @@ pub mod profile_associated_germ_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type MessageMeUrl;
         type ShowButtonTo;
+        type MessageMeUrl;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type MessageMeUrl = Unset;
         type ShowButtonTo = Unset;
-    }
-    ///State transition - sets the `message_me_url` field to Set
-    pub struct SetMessageMeUrl<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetMessageMeUrl<S> {}
-    impl<S: State> State for SetMessageMeUrl<S> {
-        type MessageMeUrl = Set<members::message_me_url>;
-        type ShowButtonTo = S::ShowButtonTo;
+        type MessageMeUrl = Unset;
     }
     ///State transition - sets the `show_button_to` field to Set
     pub struct SetShowButtonTo<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetShowButtonTo<S> {}
     impl<S: State> State for SetShowButtonTo<S> {
-        type MessageMeUrl = S::MessageMeUrl;
         type ShowButtonTo = Set<members::show_button_to>;
+        type MessageMeUrl = S::MessageMeUrl;
+    }
+    ///State transition - sets the `message_me_url` field to Set
+    pub struct SetMessageMeUrl<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetMessageMeUrl<S> {}
+    impl<S: State> State for SetMessageMeUrl<S> {
+        type ShowButtonTo = S::ShowButtonTo;
+        type MessageMeUrl = Set<members::message_me_url>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `message_me_url` field
-        pub struct message_me_url(());
         ///Marker type for the `show_button_to` field
         pub struct show_button_to(());
+        ///Marker type for the `message_me_url` field
+        pub struct message_me_url(());
     }
 }
 
@@ -4972,8 +5050,8 @@ where
 impl<'a, S> ProfileAssociatedGermBuilder<'a, S>
 where
     S: profile_associated_germ_state::State,
-    S::MessageMeUrl: profile_associated_germ_state::IsSet,
     S::ShowButtonTo: profile_associated_germ_state::IsSet,
+    S::MessageMeUrl: profile_associated_germ_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> ProfileAssociatedGerm<'a> {
@@ -6634,66 +6712,66 @@ pub mod saved_feed_state {
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
         type Id;
+        type Type;
         type Value;
         type Pinned;
-        type Type;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
         type Id = Unset;
+        type Type = Unset;
         type Value = Unset;
         type Pinned = Unset;
-        type Type = Unset;
     }
     ///State transition - sets the `id` field to Set
     pub struct SetId<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetId<S> {}
     impl<S: State> State for SetId<S> {
         type Id = Set<members::id>;
+        type Type = S::Type;
         type Value = S::Value;
         type Pinned = S::Pinned;
-        type Type = S::Type;
-    }
-    ///State transition - sets the `value` field to Set
-    pub struct SetValue<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetValue<S> {}
-    impl<S: State> State for SetValue<S> {
-        type Id = S::Id;
-        type Value = Set<members::value>;
-        type Pinned = S::Pinned;
-        type Type = S::Type;
-    }
-    ///State transition - sets the `pinned` field to Set
-    pub struct SetPinned<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetPinned<S> {}
-    impl<S: State> State for SetPinned<S> {
-        type Id = S::Id;
-        type Value = S::Value;
-        type Pinned = Set<members::pinned>;
-        type Type = S::Type;
     }
     ///State transition - sets the `type` field to Set
     pub struct SetType<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetType<S> {}
     impl<S: State> State for SetType<S> {
         type Id = S::Id;
+        type Type = Set<members::r#type>;
         type Value = S::Value;
         type Pinned = S::Pinned;
-        type Type = Set<members::r#type>;
+    }
+    ///State transition - sets the `value` field to Set
+    pub struct SetValue<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetValue<S> {}
+    impl<S: State> State for SetValue<S> {
+        type Id = S::Id;
+        type Type = S::Type;
+        type Value = Set<members::value>;
+        type Pinned = S::Pinned;
+    }
+    ///State transition - sets the `pinned` field to Set
+    pub struct SetPinned<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetPinned<S> {}
+    impl<S: State> State for SetPinned<S> {
+        type Id = S::Id;
+        type Type = S::Type;
+        type Value = S::Value;
+        type Pinned = Set<members::pinned>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
         ///Marker type for the `id` field
         pub struct id(());
+        ///Marker type for the `type` field
+        pub struct r#type(());
         ///Marker type for the `value` field
         pub struct value(());
         ///Marker type for the `pinned` field
         pub struct pinned(());
-        ///Marker type for the `type` field
-        pub struct r#type(());
     }
 }
 
@@ -6807,9 +6885,9 @@ impl<'a, S> SavedFeedBuilder<'a, S>
 where
     S: saved_feed_state::State,
     S::Id: saved_feed_state::IsSet,
+    S::Type: saved_feed_state::IsSet,
     S::Value: saved_feed_state::IsSet,
     S::Pinned: saved_feed_state::IsSet,
-    S::Type: saved_feed_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> SavedFeed<'a> {
@@ -6880,37 +6958,37 @@ pub mod saved_feeds_pref_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Saved;
         type Pinned;
+        type Saved;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Saved = Unset;
         type Pinned = Unset;
-    }
-    ///State transition - sets the `saved` field to Set
-    pub struct SetSaved<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetSaved<S> {}
-    impl<S: State> State for SetSaved<S> {
-        type Saved = Set<members::saved>;
-        type Pinned = S::Pinned;
+        type Saved = Unset;
     }
     ///State transition - sets the `pinned` field to Set
     pub struct SetPinned<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetPinned<S> {}
     impl<S: State> State for SetPinned<S> {
-        type Saved = S::Saved;
         type Pinned = Set<members::pinned>;
+        type Saved = S::Saved;
+    }
+    ///State transition - sets the `saved` field to Set
+    pub struct SetSaved<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetSaved<S> {}
+    impl<S: State> State for SetSaved<S> {
+        type Pinned = S::Pinned;
+        type Saved = Set<members::saved>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `saved` field
-        pub struct saved(());
         ///Marker type for the `pinned` field
         pub struct pinned(());
+        ///Marker type for the `saved` field
+        pub struct saved(());
     }
 }
 
@@ -6997,8 +7075,8 @@ impl<'a, S: saved_feeds_pref_state::State> SavedFeedsPrefBuilder<'a, S> {
 impl<'a, S> SavedFeedsPrefBuilder<'a, S>
 where
     S: saved_feeds_pref_state::State,
-    S::Saved: saved_feeds_pref_state::IsSet,
     S::Pinned: saved_feeds_pref_state::IsSet,
+    S::Saved: saved_feeds_pref_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> SavedFeedsPref<'a> {
@@ -7196,6 +7274,9 @@ pub struct StatusView<'a> {
     /// True if the user's go-live access has been disabled by a moderator, false otherwise.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     pub is_disabled: std::option::Option<bool>,
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub labels: std::option::Option<Vec<crate::generated::com_atproto::label::Label<'a>>>,
     #[serde(borrow)]
     pub record: jacquard_common::types::value::Data<'a>,
     /// The status for the account.
@@ -7216,37 +7297,37 @@ pub mod status_view_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Record;
         type Status;
+        type Record;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Record = Unset;
         type Status = Unset;
-    }
-    ///State transition - sets the `record` field to Set
-    pub struct SetRecord<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRecord<S> {}
-    impl<S: State> State for SetRecord<S> {
-        type Record = Set<members::record>;
-        type Status = S::Status;
+        type Record = Unset;
     }
     ///State transition - sets the `status` field to Set
     pub struct SetStatus<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetStatus<S> {}
     impl<S: State> State for SetStatus<S> {
-        type Record = S::Record;
         type Status = Set<members::status>;
+        type Record = S::Record;
+    }
+    ///State transition - sets the `record` field to Set
+    pub struct SetRecord<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetRecord<S> {}
+    impl<S: State> State for SetRecord<S> {
+        type Status = S::Status;
+        type Record = Set<members::record>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `record` field
-        pub struct record(());
         ///Marker type for the `status` field
         pub struct status(());
+        ///Marker type for the `record` field
+        pub struct record(());
     }
 }
 
@@ -7259,6 +7340,7 @@ pub struct StatusViewBuilder<'a, S: status_view_state::State> {
         ::core::option::Option<jacquard_common::types::string::Datetime>,
         ::core::option::Option<bool>,
         ::core::option::Option<bool>,
+        ::core::option::Option<Vec<crate::generated::com_atproto::label::Label<'a>>>,
         ::core::option::Option<jacquard_common::types::value::Data<'a>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
         ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
@@ -7278,7 +7360,7 @@ impl<'a> StatusViewBuilder<'a, status_view_state::Empty> {
     pub fn new() -> Self {
         StatusViewBuilder {
             _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None, None, None, None),
+            __unsafe_private_named: (None, None, None, None, None, None, None, None, None),
             _phantom: ::core::marker::PhantomData,
         }
     }
@@ -7364,6 +7446,25 @@ impl<'a, S: status_view_state::State> StatusViewBuilder<'a, S> {
     }
 }
 
+impl<'a, S: status_view_state::State> StatusViewBuilder<'a, S> {
+    /// Set the `labels` field (optional)
+    pub fn labels(
+        mut self,
+        value: impl Into<Option<Vec<crate::generated::com_atproto::label::Label<'a>>>>,
+    ) -> Self {
+        self.__unsafe_private_named.5 = value.into();
+        self
+    }
+    /// Set the `labels` field to an Option value (optional)
+    pub fn maybe_labels(
+        mut self,
+        value: Option<Vec<crate::generated::com_atproto::label::Label<'a>>>,
+    ) -> Self {
+        self.__unsafe_private_named.5 = value;
+        self
+    }
+}
+
 impl<'a, S> StatusViewBuilder<'a, S>
 where
     S: status_view_state::State,
@@ -7374,7 +7475,7 @@ where
         mut self,
         value: impl Into<jacquard_common::types::value::Data<'a>>,
     ) -> StatusViewBuilder<'a, status_view_state::SetRecord<S>> {
-        self.__unsafe_private_named.5 = ::core::option::Option::Some(value.into());
+        self.__unsafe_private_named.6 = ::core::option::Option::Some(value.into());
         StatusViewBuilder {
             _phantom_state: ::core::marker::PhantomData,
             __unsafe_private_named: self.__unsafe_private_named,
@@ -7393,7 +7494,7 @@ where
         mut self,
         value: impl Into<jacquard_common::CowStr<'a>>,
     ) -> StatusViewBuilder<'a, status_view_state::SetStatus<S>> {
-        self.__unsafe_private_named.6 = ::core::option::Option::Some(value.into());
+        self.__unsafe_private_named.7 = ::core::option::Option::Some(value.into());
         StatusViewBuilder {
             _phantom_state: ::core::marker::PhantomData,
             __unsafe_private_named: self.__unsafe_private_named,
@@ -7408,12 +7509,12 @@ impl<'a, S: status_view_state::State> StatusViewBuilder<'a, S> {
         mut self,
         value: impl Into<Option<jacquard_common::types::string::AtUri<'a>>>,
     ) -> Self {
-        self.__unsafe_private_named.7 = value.into();
+        self.__unsafe_private_named.8 = value.into();
         self
     }
     /// Set the `uri` field to an Option value (optional)
     pub fn maybe_uri(mut self, value: Option<jacquard_common::types::string::AtUri<'a>>) -> Self {
-        self.__unsafe_private_named.7 = value;
+        self.__unsafe_private_named.8 = value;
         self
     }
 }
@@ -7421,8 +7522,8 @@ impl<'a, S: status_view_state::State> StatusViewBuilder<'a, S> {
 impl<'a, S> StatusViewBuilder<'a, S>
 where
     S: status_view_state::State,
-    S::Record: status_view_state::IsSet,
     S::Status: status_view_state::IsSet,
+    S::Record: status_view_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> StatusView<'a> {
@@ -7432,9 +7533,10 @@ where
             expires_at: self.__unsafe_private_named.2,
             is_active: self.__unsafe_private_named.3,
             is_disabled: self.__unsafe_private_named.4,
-            record: self.__unsafe_private_named.5.unwrap(),
-            status: self.__unsafe_private_named.6.unwrap(),
-            uri: self.__unsafe_private_named.7,
+            labels: self.__unsafe_private_named.5,
+            record: self.__unsafe_private_named.6.unwrap(),
+            status: self.__unsafe_private_named.7.unwrap(),
+            uri: self.__unsafe_private_named.8,
             extra_data: Default::default(),
         }
     }
@@ -7452,9 +7554,10 @@ where
             expires_at: self.__unsafe_private_named.2,
             is_active: self.__unsafe_private_named.3,
             is_disabled: self.__unsafe_private_named.4,
-            record: self.__unsafe_private_named.5.unwrap(),
-            status: self.__unsafe_private_named.6.unwrap(),
-            uri: self.__unsafe_private_named.7,
+            labels: self.__unsafe_private_named.5,
+            record: self.__unsafe_private_named.6.unwrap(),
+            status: self.__unsafe_private_named.7.unwrap(),
+            uri: self.__unsafe_private_named.8,
             extra_data: Some(extra_data),
         }
     }
@@ -7775,6 +7878,14 @@ pub struct VerificationView<'a> {
     /// The user who issued this verification.
     #[serde(borrow)]
     pub issuer: jacquard_common::types::string::Did<'a>,
+    /// The display name of the issuer.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub issuer_display_name: std::option::Option<jacquard_common::CowStr<'a>>,
+    /// The handle of the issuer.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub issuer_handle: std::option::Option<jacquard_common::types::string::Handle<'a>>,
     /// The AT-URI of the verification record.
     #[serde(borrow)]
     pub uri: jacquard_common::types::string::AtUri<'a>,
@@ -7791,8 +7902,8 @@ pub mod verification_view_state {
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
         type Issuer;
-        type IsValid;
         type Uri;
+        type IsValid;
         type CreatedAt;
     }
     /// Empty state - all required fields are unset
@@ -7800,8 +7911,8 @@ pub mod verification_view_state {
     impl sealed::Sealed for Empty {}
     impl State for Empty {
         type Issuer = Unset;
-        type IsValid = Unset;
         type Uri = Unset;
+        type IsValid = Unset;
         type CreatedAt = Unset;
     }
     ///State transition - sets the `issuer` field to Set
@@ -7809,17 +7920,8 @@ pub mod verification_view_state {
     impl<S: State> sealed::Sealed for SetIssuer<S> {}
     impl<S: State> State for SetIssuer<S> {
         type Issuer = Set<members::issuer>;
+        type Uri = S::Uri;
         type IsValid = S::IsValid;
-        type Uri = S::Uri;
-        type CreatedAt = S::CreatedAt;
-    }
-    ///State transition - sets the `is_valid` field to Set
-    pub struct SetIsValid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetIsValid<S> {}
-    impl<S: State> State for SetIsValid<S> {
-        type Issuer = S::Issuer;
-        type IsValid = Set<members::is_valid>;
-        type Uri = S::Uri;
         type CreatedAt = S::CreatedAt;
     }
     ///State transition - sets the `uri` field to Set
@@ -7827,8 +7929,17 @@ pub mod verification_view_state {
     impl<S: State> sealed::Sealed for SetUri<S> {}
     impl<S: State> State for SetUri<S> {
         type Issuer = S::Issuer;
-        type IsValid = S::IsValid;
         type Uri = Set<members::uri>;
+        type IsValid = S::IsValid;
+        type CreatedAt = S::CreatedAt;
+    }
+    ///State transition - sets the `is_valid` field to Set
+    pub struct SetIsValid<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetIsValid<S> {}
+    impl<S: State> State for SetIsValid<S> {
+        type Issuer = S::Issuer;
+        type Uri = S::Uri;
+        type IsValid = Set<members::is_valid>;
         type CreatedAt = S::CreatedAt;
     }
     ///State transition - sets the `created_at` field to Set
@@ -7836,8 +7947,8 @@ pub mod verification_view_state {
     impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
     impl<S: State> State for SetCreatedAt<S> {
         type Issuer = S::Issuer;
-        type IsValid = S::IsValid;
         type Uri = S::Uri;
+        type IsValid = S::IsValid;
         type CreatedAt = Set<members::created_at>;
     }
     /// Marker types for field names
@@ -7845,10 +7956,10 @@ pub mod verification_view_state {
     pub mod members {
         ///Marker type for the `issuer` field
         pub struct issuer(());
-        ///Marker type for the `is_valid` field
-        pub struct is_valid(());
         ///Marker type for the `uri` field
         pub struct uri(());
+        ///Marker type for the `is_valid` field
+        pub struct is_valid(());
         ///Marker type for the `created_at` field
         pub struct created_at(());
     }
@@ -7861,6 +7972,8 @@ pub struct VerificationViewBuilder<'a, S: verification_view_state::State> {
         ::core::option::Option<jacquard_common::types::string::Datetime>,
         ::core::option::Option<bool>,
         ::core::option::Option<jacquard_common::types::string::Did<'a>>,
+        ::core::option::Option<jacquard_common::CowStr<'a>>,
+        ::core::option::Option<jacquard_common::types::string::Handle<'a>>,
         ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
@@ -7878,7 +7991,7 @@ impl<'a> VerificationViewBuilder<'a, verification_view_state::Empty> {
     pub fn new() -> Self {
         VerificationViewBuilder {
             _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None),
+            __unsafe_private_named: (None, None, None, None, None, None),
             _phantom: ::core::marker::PhantomData,
         }
     }
@@ -7941,6 +8054,41 @@ where
     }
 }
 
+impl<'a, S: verification_view_state::State> VerificationViewBuilder<'a, S> {
+    /// Set the `issuerDisplayName` field (optional)
+    pub fn issuer_display_name(
+        mut self,
+        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
+    ) -> Self {
+        self.__unsafe_private_named.3 = value.into();
+        self
+    }
+    /// Set the `issuerDisplayName` field to an Option value (optional)
+    pub fn maybe_issuer_display_name(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
+        self.__unsafe_private_named.3 = value;
+        self
+    }
+}
+
+impl<'a, S: verification_view_state::State> VerificationViewBuilder<'a, S> {
+    /// Set the `issuerHandle` field (optional)
+    pub fn issuer_handle(
+        mut self,
+        value: impl Into<Option<jacquard_common::types::string::Handle<'a>>>,
+    ) -> Self {
+        self.__unsafe_private_named.4 = value.into();
+        self
+    }
+    /// Set the `issuerHandle` field to an Option value (optional)
+    pub fn maybe_issuer_handle(
+        mut self,
+        value: Option<jacquard_common::types::string::Handle<'a>>,
+    ) -> Self {
+        self.__unsafe_private_named.4 = value;
+        self
+    }
+}
+
 impl<'a, S> VerificationViewBuilder<'a, S>
 where
     S: verification_view_state::State,
@@ -7951,7 +8099,7 @@ where
         mut self,
         value: impl Into<jacquard_common::types::string::AtUri<'a>>,
     ) -> VerificationViewBuilder<'a, verification_view_state::SetUri<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        self.__unsafe_private_named.5 = ::core::option::Option::Some(value.into());
         VerificationViewBuilder {
             _phantom_state: ::core::marker::PhantomData,
             __unsafe_private_named: self.__unsafe_private_named,
@@ -7964,8 +8112,8 @@ impl<'a, S> VerificationViewBuilder<'a, S>
 where
     S: verification_view_state::State,
     S::Issuer: verification_view_state::IsSet,
-    S::IsValid: verification_view_state::IsSet,
     S::Uri: verification_view_state::IsSet,
+    S::IsValid: verification_view_state::IsSet,
     S::CreatedAt: verification_view_state::IsSet,
 {
     /// Build the final struct
@@ -7974,7 +8122,9 @@ where
             created_at: self.__unsafe_private_named.0.unwrap(),
             is_valid: self.__unsafe_private_named.1.unwrap(),
             issuer: self.__unsafe_private_named.2.unwrap(),
-            uri: self.__unsafe_private_named.3.unwrap(),
+            issuer_display_name: self.__unsafe_private_named.3,
+            issuer_handle: self.__unsafe_private_named.4,
+            uri: self.__unsafe_private_named.5.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -7990,7 +8140,9 @@ where
             created_at: self.__unsafe_private_named.0.unwrap(),
             is_valid: self.__unsafe_private_named.1.unwrap(),
             issuer: self.__unsafe_private_named.2.unwrap(),
-            uri: self.__unsafe_private_named.3.unwrap(),
+            issuer_display_name: self.__unsafe_private_named.3,
+            issuer_handle: self.__unsafe_private_named.4,
+            uri: self.__unsafe_private_named.5.unwrap(),
             extra_data: Some(extra_data),
         }
     }

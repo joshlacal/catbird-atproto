@@ -53,9 +53,9 @@ pub mod block_view_state {
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
         type Uri;
-        type Record;
         type Cid;
         type Blocker;
+        type Record;
         type IndexedAt;
     }
     /// Empty state - all required fields are unset
@@ -63,9 +63,9 @@ pub mod block_view_state {
     impl sealed::Sealed for Empty {}
     impl State for Empty {
         type Uri = Unset;
-        type Record = Unset;
         type Cid = Unset;
         type Blocker = Unset;
+        type Record = Unset;
         type IndexedAt = Unset;
     }
     ///State transition - sets the `uri` field to Set
@@ -73,19 +73,9 @@ pub mod block_view_state {
     impl<S: State> sealed::Sealed for SetUri<S> {}
     impl<S: State> State for SetUri<S> {
         type Uri = Set<members::uri>;
+        type Cid = S::Cid;
+        type Blocker = S::Blocker;
         type Record = S::Record;
-        type Cid = S::Cid;
-        type Blocker = S::Blocker;
-        type IndexedAt = S::IndexedAt;
-    }
-    ///State transition - sets the `record` field to Set
-    pub struct SetRecord<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRecord<S> {}
-    impl<S: State> State for SetRecord<S> {
-        type Uri = S::Uri;
-        type Record = Set<members::record>;
-        type Cid = S::Cid;
-        type Blocker = S::Blocker;
         type IndexedAt = S::IndexedAt;
     }
     ///State transition - sets the `cid` field to Set
@@ -93,9 +83,9 @@ pub mod block_view_state {
     impl<S: State> sealed::Sealed for SetCid<S> {}
     impl<S: State> State for SetCid<S> {
         type Uri = S::Uri;
-        type Record = S::Record;
         type Cid = Set<members::cid>;
         type Blocker = S::Blocker;
+        type Record = S::Record;
         type IndexedAt = S::IndexedAt;
     }
     ///State transition - sets the `blocker` field to Set
@@ -103,9 +93,19 @@ pub mod block_view_state {
     impl<S: State> sealed::Sealed for SetBlocker<S> {}
     impl<S: State> State for SetBlocker<S> {
         type Uri = S::Uri;
-        type Record = S::Record;
         type Cid = S::Cid;
         type Blocker = Set<members::blocker>;
+        type Record = S::Record;
+        type IndexedAt = S::IndexedAt;
+    }
+    ///State transition - sets the `record` field to Set
+    pub struct SetRecord<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetRecord<S> {}
+    impl<S: State> State for SetRecord<S> {
+        type Uri = S::Uri;
+        type Cid = S::Cid;
+        type Blocker = S::Blocker;
+        type Record = Set<members::record>;
         type IndexedAt = S::IndexedAt;
     }
     ///State transition - sets the `indexed_at` field to Set
@@ -113,9 +113,9 @@ pub mod block_view_state {
     impl<S: State> sealed::Sealed for SetIndexedAt<S> {}
     impl<S: State> State for SetIndexedAt<S> {
         type Uri = S::Uri;
-        type Record = S::Record;
         type Cid = S::Cid;
         type Blocker = S::Blocker;
+        type Record = S::Record;
         type IndexedAt = Set<members::indexed_at>;
     }
     /// Marker types for field names
@@ -123,12 +123,12 @@ pub mod block_view_state {
     pub mod members {
         ///Marker type for the `uri` field
         pub struct uri(());
-        ///Marker type for the `record` field
-        pub struct record(());
         ///Marker type for the `cid` field
         pub struct cid(());
         ///Marker type for the `blocker` field
         pub struct blocker(());
+        ///Marker type for the `record` field
+        pub struct record(());
         ///Marker type for the `indexed_at` field
         pub struct indexed_at(());
     }
@@ -264,9 +264,9 @@ impl<'a, S> BlockViewBuilder<'a, S>
 where
     S: block_view_state::State,
     S::Uri: block_view_state::IsSet,
-    S::Record: block_view_state::IsSet,
     S::Cid: block_view_state::IsSet,
     S::Blocker: block_view_state::IsSet,
+    S::Record: block_view_state::IsSet,
     S::IndexedAt: block_view_state::IsSet,
 {
     /// Build the final struct

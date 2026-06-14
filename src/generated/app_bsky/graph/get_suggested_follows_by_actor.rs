@@ -112,12 +112,16 @@ where
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetSuggestedFollowsByActorOutput<'a> {
-    /// If true, response has fallen-back to generic results, and is not scoped using relativeToDid
+    /// DEPRECATED, unused. Previously: if true, response has fallen-back to generic results, and is not scoped using relativeToDid
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     pub is_fallback: std::option::Option<bool>,
-    /// Snowflake for this recommendation, use when submitting recommendation events.
+    /// DEPRECATED: use recIdStr instead.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     pub rec_id: std::option::Option<i64>,
+    /// Snowflake for this recommendation, use when submitting recommendation events.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub rec_id_str: std::option::Option<jacquard_common::CowStr<'a>>,
     #[serde(borrow)]
     pub suggestions: Vec<crate::generated::app_bsky::actor::ProfileView<'a>>,
 }

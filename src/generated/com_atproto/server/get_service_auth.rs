@@ -11,7 +11,7 @@
 #[serde(rename_all = "camelCase")]
 pub struct GetServiceAuth<'a> {
     #[serde(borrow)]
-    pub aud: jacquard_common::types::string::Did<'a>,
+    pub aud: jacquard_common::CowStr<'a>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     pub exp: std::option::Option<i64>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
@@ -55,7 +55,7 @@ pub mod get_service_auth_state {
 pub struct GetServiceAuthBuilder<'a, S: get_service_auth_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
+        ::core::option::Option<jacquard_common::CowStr<'a>>,
         ::core::option::Option<i64>,
         ::core::option::Option<jacquard_common::types::string::Nsid<'a>>,
     ),
@@ -88,7 +88,7 @@ where
     /// Set the `aud` field (required)
     pub fn aud(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
+        value: impl Into<jacquard_common::CowStr<'a>>,
     ) -> GetServiceAuthBuilder<'a, get_service_auth_state::SetAud<S>> {
         self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
         GetServiceAuthBuilder {

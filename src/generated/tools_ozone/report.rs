@@ -5,6 +5,2057 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
+pub mod assign_moderator;
+pub mod create_activity;
+pub mod get_assignments;
+pub mod get_historical_stats;
+pub mod get_latest_report;
+pub mod get_live_stats;
+pub mod get_report;
+pub mod list_activities;
+pub mod query_reports;
+pub mod reassign_queue;
+pub mod refresh_stats;
+pub mod unassign_moderator;
+
+/// Activity recording a moderator being assigned to a report.
+#[jacquard_derive::lexicon]
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic,
+    Default,
+)]
+#[serde(rename_all = "camelCase")]
+pub struct AssignmentActivity<'a> {
+    /// The report's status before this activity. Populated automatically from the report row; not required in input.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub previous_status: std::option::Option<jacquard_common::CowStr<'a>>,
+}
+
+fn lexicon_doc_tools_ozone_report_defs() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+    ::jacquard_lexicon::lexicon::LexiconDoc {
+        lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
+        id: ::jacquard_common::CowStr::new_static("tools.ozone.report.defs"),
+        revision: None,
+        description: None,
+        defs: {
+            let mut map = ::std::collections::BTreeMap::new();
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("assignmentActivity"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
+                            "Activity recording a moderator being assigned to a report.",
+                        ),
+                    ),
+                    required: None,
+                    nullable: None,
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::std::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "previousStatus",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "The report's status before this activity. Populated automatically from the report row; not required in input.",
+                                    ),
+                                ),
+                                format: None,
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map
+                    },
+                }),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("assignmentView"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        description: None,
+                        required: Some(vec![
+                            ::jacquard_common::smol_str::SmolStr::new_static("id"),
+                            ::jacquard_common::smol_str::SmolStr::new_static("did"),
+                            ::jacquard_common::smol_str::SmolStr::new_static("reportId"),
+                            ::jacquard_common::smol_str::SmolStr::new_static("startAt"),
+                        ]),
+                        nullable: None,
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::std::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("did"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: None,
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                        ),
+                                        default: None,
+                                        min_length: None,
+                                        max_length: None,
+                                        min_graphemes: None,
+                                        max_graphemes: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                        known_values: None,
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("endAt"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: None,
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                        ),
+                                        default: None,
+                                        min_length: None,
+                                        max_length: None,
+                                        min_graphemes: None,
+                                        max_graphemes: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                        known_values: None,
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("id"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        description: None,
+                                        default: None,
+                                        minimum: None,
+                                        maximum: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("moderator"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        description: None,
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "tools.ozone.team.defs#member",
+                                        ),
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("queue"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        description: None,
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "tools.ozone.queue.defs#queueView",
+                                        ),
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("reportId"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        description: None,
+                                        default: None,
+                                        minimum: None,
+                                        maximum: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("startAt"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: None,
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                        ),
+                                        default: None,
+                                        min_length: None,
+                                        max_length: None,
+                                        min_graphemes: None,
+                                        max_graphemes: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                        known_values: None,
+                                    },
+                                ),
+                            );
+                            map
+                        },
+                    },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("closeActivity"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
+                            "Activity recording a report being closed.",
+                        ),
+                    ),
+                    required: None,
+                    nullable: None,
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::std::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "previousStatus",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "The report's status before this activity. Populated automatically from the report row; not required in input.",
+                                    ),
+                                ),
+                                format: None,
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map
+                    },
+                }),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("escalationActivity"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
+                            "Activity recording a report being escalated.",
+                        ),
+                    ),
+                    required: None,
+                    nullable: None,
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::std::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "previousStatus",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "The report's status before this activity. Populated automatically from the report row; not required in input.",
+                                    ),
+                                ),
+                                format: None,
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map
+                    },
+                }),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("historicalStats"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        description: Some(::jacquard_common::CowStr::new_static(
+                            "A single daily snapshot of report statistics for a calendar date.",
+                        )),
+                        required: Some(vec![::jacquard_common::smol_str::SmolStr::new_static(
+                            "date",
+                        )]),
+                        nullable: None,
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::std::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("actionRate"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        description: None,
+                                        default: None,
+                                        minimum: None,
+                                        maximum: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("actionedCount"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        description: None,
+                                        default: None,
+                                        minimum: None,
+                                        maximum: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                    "avgHandlingTimeSec",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        description: None,
+                                        default: None,
+                                        minimum: None,
+                                        maximum: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("computedAt"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "When this snapshot was last computed.",
+                                        )),
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                        ),
+                                        default: None,
+                                        min_length: None,
+                                        max_length: None,
+                                        min_graphemes: None,
+                                        max_graphemes: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                        known_values: None,
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("date"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "The calendar date this snapshot covers (YYYY-MM-DD).",
+                                        )),
+                                        format: None,
+                                        default: None,
+                                        min_length: None,
+                                        max_length: None,
+                                        min_graphemes: None,
+                                        max_graphemes: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                        known_values: None,
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("escalatedCount"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        description: None,
+                                        default: None,
+                                        minimum: None,
+                                        maximum: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("inboundCount"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        description: None,
+                                        default: None,
+                                        minimum: None,
+                                        maximum: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("pendingCount"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        description: None,
+                                        default: None,
+                                        minimum: None,
+                                        maximum: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                    },
+                                ),
+                            );
+                            map
+                        },
+                    },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("liveStats"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
+                            "Live statistics for reports for the current calendar day, filterable by queue, moderator, or report type.",
+                        ),
+                    ),
+                    required: None,
+                    nullable: None,
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::std::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "actionRate",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                description: None,
+                                default: None,
+                                minimum: None,
+                                maximum: None,
+                                r#enum: None,
+                                r#const: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "actionedCount",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                description: None,
+                                default: None,
+                                minimum: None,
+                                maximum: None,
+                                r#enum: None,
+                                r#const: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "avgHandlingTimeSec",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                description: None,
+                                default: None,
+                                minimum: None,
+                                maximum: None,
+                                r#enum: None,
+                                r#const: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "escalatedCount",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                description: None,
+                                default: None,
+                                minimum: None,
+                                maximum: None,
+                                r#enum: None,
+                                r#const: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "inboundCount",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                description: None,
+                                default: None,
+                                minimum: None,
+                                maximum: None,
+                                r#enum: None,
+                                r#const: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "lastUpdated",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "When these statistics were last computed.",
+                                    ),
+                                ),
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                ),
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "pendingCount",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                description: None,
+                                default: None,
+                                minimum: None,
+                                maximum: None,
+                                r#enum: None,
+                                r#const: None,
+                            }),
+                        );
+                        map
+                    },
+                }),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("noteActivity"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
+                            "Activity recording a note on a report. Use internalNote for moderator-only notes or publicNote for reporter-visible notes (or both).",
+                        ),
+                    ),
+                    required: None,
+                    nullable: None,
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::std::collections::BTreeMap::new();
+                        map
+                    },
+                }),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("queueActivity"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
+                            "Activity recording a report being routed to a queue.",
+                        ),
+                    ),
+                    required: None,
+                    nullable: None,
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::std::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "previousStatus",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "The report's status before this activity. Populated automatically from the report row; not required in input.",
+                                    ),
+                                ),
+                                format: None,
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map
+                    },
+                }),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("reasonAppeal"),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken { description: None },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("reasonChildSafetyCSAM"),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken { description: None },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("reasonChildSafetyGroom"),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken { description: None },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("reasonChildSafetyHarassment"),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken { description: None },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("reasonChildSafetyOther"),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken { description: None },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("reasonChildSafetyPrivacy"),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken { description: None },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("reasonHarassmentDoxxing"),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken { description: None },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("reasonHarassmentHateSpeech"),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken { description: None },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("reasonHarassmentOther"),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken { description: None },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("reasonHarassmentTargeted"),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken { description: None },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("reasonHarassmentTroll"),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken { description: None },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("reasonMisleadingBot"),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken { description: None },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("reasonMisleadingElections"),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken { description: None },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("reasonMisleadingImpersonation"),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken { description: None },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("reasonMisleadingOther"),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken { description: None },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("reasonMisleadingScam"),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken { description: None },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("reasonMisleadingSpam"),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken { description: None },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("reasonOther"),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken { description: None },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("reasonRuleBanEvasion"),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken { description: None },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("reasonRuleOther"),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken { description: None },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("reasonRuleProhibitedSales"),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken { description: None },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("reasonRuleSiteSecurity"),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken { description: None },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("reasonSelfHarmContent"),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken { description: None },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("reasonSelfHarmED"),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken { description: None },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("reasonSelfHarmOther"),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken { description: None },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("reasonSelfHarmStunts"),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken { description: None },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("reasonSelfHarmSubstances"),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken { description: None },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("reasonSexualAbuseContent"),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken { description: None },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("reasonSexualAnimal"),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken { description: None },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("reasonSexualDeepfake"),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken { description: None },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("reasonSexualNCII"),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken { description: None },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("reasonSexualOther"),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken { description: None },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("reasonSexualUnlabeled"),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken { description: None },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("reasonType"),
+                ::jacquard_lexicon::lexicon::LexUserType::String(
+                    ::jacquard_lexicon::lexicon::LexString {
+                        description: None,
+                        format: None,
+                        default: None,
+                        min_length: None,
+                        max_length: None,
+                        min_graphemes: None,
+                        max_graphemes: None,
+                        r#enum: None,
+                        r#const: None,
+                        known_values: None,
+                    },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("reasonViolenceAnimal"),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken { description: None },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("reasonViolenceExtremistContent"),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken { description: None },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("reasonViolenceGlorification"),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken { description: None },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("reasonViolenceGraphicContent"),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken { description: None },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("reasonViolenceOther"),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken { description: None },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("reasonViolenceThreats"),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken { description: None },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("reasonViolenceTrafficking"),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(
+                    ::jacquard_lexicon::lexicon::LexToken { description: None },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("reopenActivity"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
+                            "Activity recording a closed report being reopened. Only valid when the report is in 'closed' status.",
+                        ),
+                    ),
+                    required: None,
+                    nullable: None,
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::std::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "previousStatus",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "The report's status before this activity. Populated automatically from the report row; not required in input.",
+                                    ),
+                                ),
+                                format: None,
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map
+                    },
+                }),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("reportActivityView"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
+                            "A single activity entry on a report.",
+                        ),
+                    ),
+                    required: Some(
+                        vec![
+                            ::jacquard_common::smol_str::SmolStr::new_static("id"),
+                            ::jacquard_common::smol_str::SmolStr::new_static("reportId"),
+                            ::jacquard_common::smol_str::SmolStr::new_static("activity"),
+                            ::jacquard_common::smol_str::SmolStr::new_static("isAutomated"),
+                            ::jacquard_common::smol_str::SmolStr::new_static("createdBy"),
+                            ::jacquard_common::smol_str::SmolStr::new_static("createdAt")
+                        ],
+                    ),
+                    nullable: None,
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::std::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("activity"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Union(::jacquard_lexicon::lexicon::LexRefUnion {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "The typed activity object describing what occurred.",
+                                    ),
+                                ),
+                                refs: vec![
+                                    ::jacquard_common::CowStr::new_static("#queueActivity"),
+                                    ::jacquard_common::CowStr::new_static("#assignmentActivity"),
+                                    ::jacquard_common::CowStr::new_static("#escalationActivity"),
+                                    ::jacquard_common::CowStr::new_static("#closeActivity"),
+                                    ::jacquard_common::CowStr::new_static("#reopenActivity"),
+                                    ::jacquard_common::CowStr::new_static("#noteActivity")
+                                ],
+                                closed: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "createdAt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "When this activity was created",
+                                    ),
+                                ),
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                ),
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "createdBy",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "DID of the actor who created this activity, or the service DID for automated activities.",
+                                    ),
+                                ),
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                ),
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("id"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                description: None,
+                                default: None,
+                                minimum: None,
+                                maximum: None,
+                                r#enum: None,
+                                r#const: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "internalNote",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Optional moderator-only note. Not visible to reporters.",
+                                    ),
+                                ),
+                                format: None,
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "isAutomated",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
+                                description: None,
+                                default: None,
+                                r#const: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("meta"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Unknown(::jacquard_lexicon::lexicon::LexUnknown {
+                                description: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "moderator",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                description: None,
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "tools.ozone.team.defs#member",
+                                ),
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "publicNote",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Optional public note, potentially visible to the reporter.",
+                                    ),
+                                ),
+                                format: None,
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("reportId"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                description: None,
+                                default: None,
+                                minimum: None,
+                                maximum: None,
+                                r#enum: None,
+                                r#const: None,
+                            }),
+                        );
+                        map
+                    },
+                }),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("reportAssignment"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        description: Some(::jacquard_common::CowStr::new_static(
+                            "Information about the moderator currently assigned to a report.",
+                        )),
+                        required: Some(vec![
+                            ::jacquard_common::smol_str::SmolStr::new_static("did"),
+                            ::jacquard_common::smol_str::SmolStr::new_static("assignedAt"),
+                        ]),
+                        nullable: None,
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::std::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("assignedAt"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "When the report was assigned",
+                                        )),
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                        ),
+                                        default: None,
+                                        min_length: None,
+                                        max_length: None,
+                                        min_graphemes: None,
+                                        max_graphemes: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                        known_values: None,
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("did"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "DID of the assigned moderator",
+                                        )),
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                        ),
+                                        default: None,
+                                        min_length: None,
+                                        max_length: None,
+                                        min_graphemes: None,
+                                        max_graphemes: None,
+                                        r#enum: None,
+                                        r#const: None,
+                                        known_values: None,
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("moderator"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        description: None,
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "tools.ozone.team.defs#member",
+                                        ),
+                                    },
+                                ),
+                            );
+                            map
+                        },
+                    },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("reportView"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: None,
+                    required: Some(
+                        vec![
+                            ::jacquard_common::smol_str::SmolStr::new_static("id"),
+                            ::jacquard_common::smol_str::SmolStr::new_static("eventId"),
+                            ::jacquard_common::smol_str::SmolStr::new_static("status"),
+                            ::jacquard_common::smol_str::SmolStr::new_static("subject"),
+                            ::jacquard_common::smol_str::SmolStr::new_static("reportType"),
+                            ::jacquard_common::smol_str::SmolStr::new_static("reportedBy"),
+                            ::jacquard_common::smol_str::SmolStr::new_static("reporter"),
+                            ::jacquard_common::smol_str::SmolStr::new_static("createdAt")
+                        ],
+                    ),
+                    nullable: None,
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::std::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "actionEventIds",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Array of moderation event IDs representing actions taken on this report (sorted DESC, most recent first)",
+                                    ),
+                                ),
+                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                    description: None,
+                                    default: None,
+                                    minimum: None,
+                                    maximum: None,
+                                    r#enum: None,
+                                    r#const: None,
+                                }),
+                                min_length: None,
+                                max_length: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "actionNote",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Note sent to reporter when report was actioned",
+                                    ),
+                                ),
+                                format: None,
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("actions"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Optional: expanded action events",
+                                    ),
+                                ),
+                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                    description: None,
+                                    r#ref: ::jacquard_common::CowStr::new_static(
+                                        "tools.ozone.moderation.defs#modEventView",
+                                    ),
+                                }),
+                                min_length: None,
+                                max_length: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "assignment",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                description: None,
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#reportAssignment",
+                                ),
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("comment"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Comment provided by the reporter",
+                                    ),
+                                ),
+                                format: None,
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "createdAt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "When the report was created",
+                                    ),
+                                ),
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                ),
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("eventId"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                description: None,
+                                default: None,
+                                minimum: None,
+                                maximum: None,
+                                r#enum: None,
+                                r#const: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("id"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                description: None,
+                                default: None,
+                                minimum: None,
+                                maximum: None,
+                                r#enum: None,
+                                r#const: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("isMuted"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
+                                description: None,
+                                default: None,
+                                r#const: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("queue"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                description: None,
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "tools.ozone.queue.defs#queueView",
+                                ),
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("queuedAt"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "When the report was assigned to its current queue",
+                                    ),
+                                ),
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                ),
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "relatedReportCount",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                description: None,
+                                default: None,
+                                minimum: None,
+                                maximum: None,
+                                r#enum: None,
+                                r#const: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "reportType",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                description: None,
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "com.atproto.moderation.defs#reasonType",
+                                ),
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "reportedBy",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "DID of the user who made the report",
+                                    ),
+                                ),
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                ),
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("reporter"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                description: None,
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "tools.ozone.moderation.defs#subjectView",
+                                ),
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("status"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Current status of the report",
+                                    ),
+                                ),
+                                format: None,
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("subject"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                description: None,
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "tools.ozone.moderation.defs#subjectView",
+                                ),
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "subjectStatus",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                description: None,
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "tools.ozone.moderation.defs#subjectStatusView",
+                                ),
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "updatedAt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "When the report was last updated",
+                                    ),
+                                ),
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                ),
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map
+                    },
+                }),
+            );
+            map
+        },
+    }
+}
+
+impl<'a> ::jacquard_lexicon::schema::LexiconSchema for AssignmentActivity<'a> {
+    fn nsid() -> &'static str {
+        "tools.ozone.report.defs"
+    }
+    fn def_name() -> &'static str {
+        "assignmentActivity"
+    }
+    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_tools_ozone_report_defs()
+    }
+    fn validate(
+        &self,
+    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+#[jacquard_derive::lexicon]
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(rename_all = "camelCase")]
+pub struct AssignmentView<'a> {
+    #[serde(borrow)]
+    pub did: jacquard_common::types::string::Did<'a>,
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    pub end_at: std::option::Option<jacquard_common::types::string::Datetime>,
+    pub id: i64,
+    /// The moderator assigned to this report
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub moderator: std::option::Option<crate::generated::tools_ozone::team::Member<'a>>,
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub queue: std::option::Option<crate::generated::tools_ozone::queue::QueueView<'a>>,
+    pub report_id: i64,
+    pub start_at: jacquard_common::types::string::Datetime,
+}
+
+pub mod assignment_view_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type Id;
+        type Did;
+        type ReportId;
+        type StartAt;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type Id = Unset;
+        type Did = Unset;
+        type ReportId = Unset;
+        type StartAt = Unset;
+    }
+    ///State transition - sets the `id` field to Set
+    pub struct SetId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetId<S> {}
+    impl<S: State> State for SetId<S> {
+        type Id = Set<members::id>;
+        type Did = S::Did;
+        type ReportId = S::ReportId;
+        type StartAt = S::StartAt;
+    }
+    ///State transition - sets the `did` field to Set
+    pub struct SetDid<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetDid<S> {}
+    impl<S: State> State for SetDid<S> {
+        type Id = S::Id;
+        type Did = Set<members::did>;
+        type ReportId = S::ReportId;
+        type StartAt = S::StartAt;
+    }
+    ///State transition - sets the `report_id` field to Set
+    pub struct SetReportId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetReportId<S> {}
+    impl<S: State> State for SetReportId<S> {
+        type Id = S::Id;
+        type Did = S::Did;
+        type ReportId = Set<members::report_id>;
+        type StartAt = S::StartAt;
+    }
+    ///State transition - sets the `start_at` field to Set
+    pub struct SetStartAt<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetStartAt<S> {}
+    impl<S: State> State for SetStartAt<S> {
+        type Id = S::Id;
+        type Did = S::Did;
+        type ReportId = S::ReportId;
+        type StartAt = Set<members::start_at>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `id` field
+        pub struct id(());
+        ///Marker type for the `did` field
+        pub struct did(());
+        ///Marker type for the `report_id` field
+        pub struct report_id(());
+        ///Marker type for the `start_at` field
+        pub struct start_at(());
+    }
+}
+
+/// Builder for constructing an instance of this type
+pub struct AssignmentViewBuilder<'a, S: assignment_view_state::State> {
+    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
+    __unsafe_private_named: (
+        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
+        ::core::option::Option<jacquard_common::types::string::Datetime>,
+        ::core::option::Option<i64>,
+        ::core::option::Option<crate::generated::tools_ozone::team::Member<'a>>,
+        ::core::option::Option<crate::generated::tools_ozone::queue::QueueView<'a>>,
+        ::core::option::Option<i64>,
+        ::core::option::Option<jacquard_common::types::string::Datetime>,
+    ),
+    _phantom: ::core::marker::PhantomData<&'a ()>,
+}
+
+impl<'a> AssignmentView<'a> {
+    /// Create a new builder for this type
+    pub fn new() -> AssignmentViewBuilder<'a, assignment_view_state::Empty> {
+        AssignmentViewBuilder::new()
+    }
+}
+
+impl<'a> AssignmentViewBuilder<'a, assignment_view_state::Empty> {
+    /// Create a new builder with all fields unset
+    pub fn new() -> Self {
+        AssignmentViewBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: (None, None, None, None, None, None, None),
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S> AssignmentViewBuilder<'a, S>
+where
+    S: assignment_view_state::State,
+    S::Did: assignment_view_state::IsUnset,
+{
+    /// Set the `did` field (required)
+    pub fn did(
+        mut self,
+        value: impl Into<jacquard_common::types::string::Did<'a>>,
+    ) -> AssignmentViewBuilder<'a, assignment_view_state::SetDid<S>> {
+        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        AssignmentViewBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: self.__unsafe_private_named,
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S: assignment_view_state::State> AssignmentViewBuilder<'a, S> {
+    /// Set the `endAt` field (optional)
+    pub fn end_at(
+        mut self,
+        value: impl Into<Option<jacquard_common::types::string::Datetime>>,
+    ) -> Self {
+        self.__unsafe_private_named.1 = value.into();
+        self
+    }
+    /// Set the `endAt` field to an Option value (optional)
+    pub fn maybe_end_at(mut self, value: Option<jacquard_common::types::string::Datetime>) -> Self {
+        self.__unsafe_private_named.1 = value;
+        self
+    }
+}
+
+impl<'a, S> AssignmentViewBuilder<'a, S>
+where
+    S: assignment_view_state::State,
+    S::Id: assignment_view_state::IsUnset,
+{
+    /// Set the `id` field (required)
+    pub fn id(
+        mut self,
+        value: impl Into<i64>,
+    ) -> AssignmentViewBuilder<'a, assignment_view_state::SetId<S>> {
+        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        AssignmentViewBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: self.__unsafe_private_named,
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S: assignment_view_state::State> AssignmentViewBuilder<'a, S> {
+    /// Set the `moderator` field (optional)
+    pub fn moderator(
+        mut self,
+        value: impl Into<Option<crate::generated::tools_ozone::team::Member<'a>>>,
+    ) -> Self {
+        self.__unsafe_private_named.3 = value.into();
+        self
+    }
+    /// Set the `moderator` field to an Option value (optional)
+    pub fn maybe_moderator(
+        mut self,
+        value: Option<crate::generated::tools_ozone::team::Member<'a>>,
+    ) -> Self {
+        self.__unsafe_private_named.3 = value;
+        self
+    }
+}
+
+impl<'a, S: assignment_view_state::State> AssignmentViewBuilder<'a, S> {
+    /// Set the `queue` field (optional)
+    pub fn queue(
+        mut self,
+        value: impl Into<Option<crate::generated::tools_ozone::queue::QueueView<'a>>>,
+    ) -> Self {
+        self.__unsafe_private_named.4 = value.into();
+        self
+    }
+    /// Set the `queue` field to an Option value (optional)
+    pub fn maybe_queue(
+        mut self,
+        value: Option<crate::generated::tools_ozone::queue::QueueView<'a>>,
+    ) -> Self {
+        self.__unsafe_private_named.4 = value;
+        self
+    }
+}
+
+impl<'a, S> AssignmentViewBuilder<'a, S>
+where
+    S: assignment_view_state::State,
+    S::ReportId: assignment_view_state::IsUnset,
+{
+    /// Set the `reportId` field (required)
+    pub fn report_id(
+        mut self,
+        value: impl Into<i64>,
+    ) -> AssignmentViewBuilder<'a, assignment_view_state::SetReportId<S>> {
+        self.__unsafe_private_named.5 = ::core::option::Option::Some(value.into());
+        AssignmentViewBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: self.__unsafe_private_named,
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S> AssignmentViewBuilder<'a, S>
+where
+    S: assignment_view_state::State,
+    S::StartAt: assignment_view_state::IsUnset,
+{
+    /// Set the `startAt` field (required)
+    pub fn start_at(
+        mut self,
+        value: impl Into<jacquard_common::types::string::Datetime>,
+    ) -> AssignmentViewBuilder<'a, assignment_view_state::SetStartAt<S>> {
+        self.__unsafe_private_named.6 = ::core::option::Option::Some(value.into());
+        AssignmentViewBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: self.__unsafe_private_named,
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S> AssignmentViewBuilder<'a, S>
+where
+    S: assignment_view_state::State,
+    S::Id: assignment_view_state::IsSet,
+    S::Did: assignment_view_state::IsSet,
+    S::ReportId: assignment_view_state::IsSet,
+    S::StartAt: assignment_view_state::IsSet,
+{
+    /// Build the final struct
+    pub fn build(self) -> AssignmentView<'a> {
+        AssignmentView {
+            did: self.__unsafe_private_named.0.unwrap(),
+            end_at: self.__unsafe_private_named.1,
+            id: self.__unsafe_private_named.2.unwrap(),
+            moderator: self.__unsafe_private_named.3,
+            queue: self.__unsafe_private_named.4,
+            report_id: self.__unsafe_private_named.5.unwrap(),
+            start_at: self.__unsafe_private_named.6.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data
+    pub fn build_with_data(
+        self,
+        extra_data: std::collections::BTreeMap<
+            jacquard_common::smol_str::SmolStr,
+            jacquard_common::types::value::Data<'a>,
+        >,
+    ) -> AssignmentView<'a> {
+        AssignmentView {
+            did: self.__unsafe_private_named.0.unwrap(),
+            end_at: self.__unsafe_private_named.1,
+            id: self.__unsafe_private_named.2.unwrap(),
+            moderator: self.__unsafe_private_named.3,
+            queue: self.__unsafe_private_named.4,
+            report_id: self.__unsafe_private_named.5.unwrap(),
+            start_at: self.__unsafe_private_named.6.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
+}
+
+impl<'a> ::jacquard_lexicon::schema::LexiconSchema for AssignmentView<'a> {
+    fn nsid() -> &'static str {
+        "tools.ozone.report.defs"
+    }
+    fn def_name() -> &'static str {
+        "assignmentView"
+    }
+    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_tools_ozone_report_defs()
+    }
+    fn validate(
+        &self,
+    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+/// Activity recording a report being closed.
+#[jacquard_derive::lexicon]
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic,
+    Default,
+)]
+#[serde(rename_all = "camelCase")]
+pub struct CloseActivity<'a> {
+    /// The report's status before this activity. Populated automatically from the report row; not required in input.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub previous_status: std::option::Option<jacquard_common::CowStr<'a>>,
+}
+
+impl<'a> ::jacquard_lexicon::schema::LexiconSchema for CloseActivity<'a> {
+    fn nsid() -> &'static str {
+        "tools.ozone.report.defs"
+    }
+    fn def_name() -> &'static str {
+        "closeActivity"
+    }
+    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_tools_ozone_report_defs()
+    }
+    fn validate(
+        &self,
+    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+/// Activity recording a report being escalated.
+#[jacquard_derive::lexicon]
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic,
+    Default,
+)]
+#[serde(rename_all = "camelCase")]
+pub struct EscalationActivity<'a> {
+    /// The report's status before this activity. Populated automatically from the report row; not required in input.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub previous_status: std::option::Option<jacquard_common::CowStr<'a>>,
+}
+
+impl<'a> ::jacquard_lexicon::schema::LexiconSchema for EscalationActivity<'a> {
+    fn nsid() -> &'static str {
+        "tools.ozone.report.defs"
+    }
+    fn def_name() -> &'static str {
+        "escalationActivity"
+    }
+    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_tools_ozone_report_defs()
+    }
+    fn validate(
+        &self,
+    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+/// A single daily snapshot of report statistics for a calendar date.
+#[jacquard_derive::lexicon]
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic,
+    Default,
+)]
+#[serde(rename_all = "camelCase")]
+pub struct HistoricalStats<'a> {
+    /// Percentage of reports actioned (actionedCount / inboundCount * 100), rounded to nearest integer.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    pub action_rate: std::option::Option<i64>,
+    /// Number of reports closed during this day.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    pub actioned_count: std::option::Option<i64>,
+    /// Average time in seconds from report creation (or moderator assignment) to close.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    pub avg_handling_time_sec: std::option::Option<i64>,
+    /// When this snapshot was last computed.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    pub computed_at: std::option::Option<jacquard_common::types::string::Datetime>,
+    /// The calendar date this snapshot covers (YYYY-MM-DD).
+    #[serde(borrow)]
+    pub date: jacquard_common::CowStr<'a>,
+    /// Number of reports escalated during this day.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    pub escalated_count: std::option::Option<i64>,
+    /// Reports received during this day.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    pub inbound_count: std::option::Option<i64>,
+    /// Number of reports not closed at time of computation.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    pub pending_count: std::option::Option<i64>,
+}
+
+impl<'a> ::jacquard_lexicon::schema::LexiconSchema for HistoricalStats<'a> {
+    fn nsid() -> &'static str {
+        "tools.ozone.report.defs"
+    }
+    fn def_name() -> &'static str {
+        "historicalStats"
+    }
+    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_tools_ozone_report_defs()
+    }
+    fn validate(
+        &self,
+    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+/// Live statistics for reports for the current calendar day, filterable by queue, moderator, or report type.
+#[jacquard_derive::lexicon]
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic,
+    Default,
+)]
+#[serde(rename_all = "camelCase")]
+pub struct LiveStats<'a> {
+    /// Percentage of reports actioned (actionedCount / inboundCount * 100), rounded to nearest integer.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    pub action_rate: std::option::Option<i64>,
+    /// Number of reports closed today.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    pub actioned_count: std::option::Option<i64>,
+    /// Average time in seconds from report creation (or moderator assignment) to close.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    pub avg_handling_time_sec: std::option::Option<i64>,
+    /// Number of reports escalated today.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    pub escalated_count: std::option::Option<i64>,
+    /// Reports received today.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    pub inbound_count: std::option::Option<i64>,
+    /// When these statistics were last computed.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    pub last_updated: std::option::Option<jacquard_common::types::string::Datetime>,
+    /// Number of reports currently not closed.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    pub pending_count: std::option::Option<i64>,
+}
+
+impl<'a> ::jacquard_lexicon::schema::LexiconSchema for LiveStats<'a> {
+    fn nsid() -> &'static str {
+        "tools.ozone.report.defs"
+    }
+    fn def_name() -> &'static str {
+        "liveStats"
+    }
+    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_tools_ozone_report_defs()
+    }
+    fn validate(
+        &self,
+    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+/// Activity recording a note on a report. Use internalNote for moderator-only notes or publicNote for reporter-visible notes (or both).
+#[jacquard_derive::lexicon]
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic,
+    Default,
+)]
+#[serde(rename_all = "camelCase")]
+pub struct NoteActivity<'a> {}
+impl<'a> ::jacquard_lexicon::schema::LexiconSchema for NoteActivity<'a> {
+    fn nsid() -> &'static str {
+        "tools.ozone.report.defs"
+    }
+    fn def_name() -> &'static str {
+        "noteActivity"
+    }
+    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_tools_ozone_report_defs()
+    }
+    fn validate(
+        &self,
+    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+/// Activity recording a report being routed to a queue.
+#[jacquard_derive::lexicon]
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic,
+    Default,
+)]
+#[serde(rename_all = "camelCase")]
+pub struct QueueActivity<'a> {
+    /// The report's status before this activity. Populated automatically from the report row; not required in input.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub previous_status: std::option::Option<jacquard_common::CowStr<'a>>,
+}
+
+impl<'a> ::jacquard_lexicon::schema::LexiconSchema for QueueActivity<'a> {
+    fn nsid() -> &'static str {
+        "tools.ozone.report.defs"
+    }
+    fn def_name() -> &'static str {
+        "queueActivity"
+    }
+    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_tools_ozone_report_defs()
+    }
+    fn validate(
+        &self,
+    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
 /// Appeal a previously taken moderation action
 #[derive(
     serde::Serialize,
@@ -1290,5 +3341,1384 @@ pub struct ReasonViolenceTrafficking;
 impl std::fmt::Display for ReasonViolenceTrafficking {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "reasonViolenceTrafficking")
+    }
+}
+
+/// Activity recording a closed report being reopened. Only valid when the report is in 'closed' status.
+#[jacquard_derive::lexicon]
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic,
+    Default,
+)]
+#[serde(rename_all = "camelCase")]
+pub struct ReopenActivity<'a> {
+    /// The report's status before this activity. Populated automatically from the report row; not required in input.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub previous_status: std::option::Option<jacquard_common::CowStr<'a>>,
+}
+
+impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ReopenActivity<'a> {
+    fn nsid() -> &'static str {
+        "tools.ozone.report.defs"
+    }
+    fn def_name() -> &'static str {
+        "reopenActivity"
+    }
+    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_tools_ozone_report_defs()
+    }
+    fn validate(
+        &self,
+    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+/// A single activity entry on a report.
+#[jacquard_derive::lexicon]
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(rename_all = "camelCase")]
+pub struct ReportActivityView<'a> {
+    /// The typed activity object describing what occurred.
+    #[serde(borrow)]
+    pub activity: ReportActivityViewActivity<'a>,
+    /// When this activity was created
+    pub created_at: jacquard_common::types::string::Datetime,
+    /// DID of the actor who created this activity, or the service DID for automated activities.
+    #[serde(borrow)]
+    pub created_by: jacquard_common::types::string::Did<'a>,
+    /// Activity ID
+    pub id: i64,
+    /// Optional moderator-only note. Not visible to reporters.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub internal_note: std::option::Option<jacquard_common::CowStr<'a>>,
+    /// True if this activity was created by an automated process (e.g. queue router) rather than a direct human action.
+    pub is_automated: bool,
+    /// Extensible JSON payload for loose activity-specific metadata (e.g. assignmentId).
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub meta: std::option::Option<jacquard_common::types::value::Data<'a>>,
+    /// Full member record of the moderator who created this activity
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub moderator: std::option::Option<crate::generated::tools_ozone::team::Member<'a>>,
+    /// Optional public note, potentially visible to the reporter.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub public_note: std::option::Option<jacquard_common::CowStr<'a>>,
+    /// ID of the report this activity belongs to
+    pub report_id: i64,
+}
+
+pub mod report_activity_view_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type Id;
+        type ReportId;
+        type Activity;
+        type IsAutomated;
+        type CreatedBy;
+        type CreatedAt;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type Id = Unset;
+        type ReportId = Unset;
+        type Activity = Unset;
+        type IsAutomated = Unset;
+        type CreatedBy = Unset;
+        type CreatedAt = Unset;
+    }
+    ///State transition - sets the `id` field to Set
+    pub struct SetId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetId<S> {}
+    impl<S: State> State for SetId<S> {
+        type Id = Set<members::id>;
+        type ReportId = S::ReportId;
+        type Activity = S::Activity;
+        type IsAutomated = S::IsAutomated;
+        type CreatedBy = S::CreatedBy;
+        type CreatedAt = S::CreatedAt;
+    }
+    ///State transition - sets the `report_id` field to Set
+    pub struct SetReportId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetReportId<S> {}
+    impl<S: State> State for SetReportId<S> {
+        type Id = S::Id;
+        type ReportId = Set<members::report_id>;
+        type Activity = S::Activity;
+        type IsAutomated = S::IsAutomated;
+        type CreatedBy = S::CreatedBy;
+        type CreatedAt = S::CreatedAt;
+    }
+    ///State transition - sets the `activity` field to Set
+    pub struct SetActivity<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetActivity<S> {}
+    impl<S: State> State for SetActivity<S> {
+        type Id = S::Id;
+        type ReportId = S::ReportId;
+        type Activity = Set<members::activity>;
+        type IsAutomated = S::IsAutomated;
+        type CreatedBy = S::CreatedBy;
+        type CreatedAt = S::CreatedAt;
+    }
+    ///State transition - sets the `is_automated` field to Set
+    pub struct SetIsAutomated<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetIsAutomated<S> {}
+    impl<S: State> State for SetIsAutomated<S> {
+        type Id = S::Id;
+        type ReportId = S::ReportId;
+        type Activity = S::Activity;
+        type IsAutomated = Set<members::is_automated>;
+        type CreatedBy = S::CreatedBy;
+        type CreatedAt = S::CreatedAt;
+    }
+    ///State transition - sets the `created_by` field to Set
+    pub struct SetCreatedBy<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCreatedBy<S> {}
+    impl<S: State> State for SetCreatedBy<S> {
+        type Id = S::Id;
+        type ReportId = S::ReportId;
+        type Activity = S::Activity;
+        type IsAutomated = S::IsAutomated;
+        type CreatedBy = Set<members::created_by>;
+        type CreatedAt = S::CreatedAt;
+    }
+    ///State transition - sets the `created_at` field to Set
+    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
+    impl<S: State> State for SetCreatedAt<S> {
+        type Id = S::Id;
+        type ReportId = S::ReportId;
+        type Activity = S::Activity;
+        type IsAutomated = S::IsAutomated;
+        type CreatedBy = S::CreatedBy;
+        type CreatedAt = Set<members::created_at>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `id` field
+        pub struct id(());
+        ///Marker type for the `report_id` field
+        pub struct report_id(());
+        ///Marker type for the `activity` field
+        pub struct activity(());
+        ///Marker type for the `is_automated` field
+        pub struct is_automated(());
+        ///Marker type for the `created_by` field
+        pub struct created_by(());
+        ///Marker type for the `created_at` field
+        pub struct created_at(());
+    }
+}
+
+/// Builder for constructing an instance of this type
+pub struct ReportActivityViewBuilder<'a, S: report_activity_view_state::State> {
+    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
+    __unsafe_private_named: (
+        ::core::option::Option<ReportActivityViewActivity<'a>>,
+        ::core::option::Option<jacquard_common::types::string::Datetime>,
+        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
+        ::core::option::Option<i64>,
+        ::core::option::Option<jacquard_common::CowStr<'a>>,
+        ::core::option::Option<bool>,
+        ::core::option::Option<jacquard_common::types::value::Data<'a>>,
+        ::core::option::Option<crate::generated::tools_ozone::team::Member<'a>>,
+        ::core::option::Option<jacquard_common::CowStr<'a>>,
+        ::core::option::Option<i64>,
+    ),
+    _phantom: ::core::marker::PhantomData<&'a ()>,
+}
+
+impl<'a> ReportActivityView<'a> {
+    /// Create a new builder for this type
+    pub fn new() -> ReportActivityViewBuilder<'a, report_activity_view_state::Empty> {
+        ReportActivityViewBuilder::new()
+    }
+}
+
+impl<'a> ReportActivityViewBuilder<'a, report_activity_view_state::Empty> {
+    /// Create a new builder with all fields unset
+    pub fn new() -> Self {
+        ReportActivityViewBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: (None, None, None, None, None, None, None, None, None, None),
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S> ReportActivityViewBuilder<'a, S>
+where
+    S: report_activity_view_state::State,
+    S::Activity: report_activity_view_state::IsUnset,
+{
+    /// Set the `activity` field (required)
+    pub fn activity(
+        mut self,
+        value: impl Into<ReportActivityViewActivity<'a>>,
+    ) -> ReportActivityViewBuilder<'a, report_activity_view_state::SetActivity<S>> {
+        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        ReportActivityViewBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: self.__unsafe_private_named,
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S> ReportActivityViewBuilder<'a, S>
+where
+    S: report_activity_view_state::State,
+    S::CreatedAt: report_activity_view_state::IsUnset,
+{
+    /// Set the `createdAt` field (required)
+    pub fn created_at(
+        mut self,
+        value: impl Into<jacquard_common::types::string::Datetime>,
+    ) -> ReportActivityViewBuilder<'a, report_activity_view_state::SetCreatedAt<S>> {
+        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        ReportActivityViewBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: self.__unsafe_private_named,
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S> ReportActivityViewBuilder<'a, S>
+where
+    S: report_activity_view_state::State,
+    S::CreatedBy: report_activity_view_state::IsUnset,
+{
+    /// Set the `createdBy` field (required)
+    pub fn created_by(
+        mut self,
+        value: impl Into<jacquard_common::types::string::Did<'a>>,
+    ) -> ReportActivityViewBuilder<'a, report_activity_view_state::SetCreatedBy<S>> {
+        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        ReportActivityViewBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: self.__unsafe_private_named,
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S> ReportActivityViewBuilder<'a, S>
+where
+    S: report_activity_view_state::State,
+    S::Id: report_activity_view_state::IsUnset,
+{
+    /// Set the `id` field (required)
+    pub fn id(
+        mut self,
+        value: impl Into<i64>,
+    ) -> ReportActivityViewBuilder<'a, report_activity_view_state::SetId<S>> {
+        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        ReportActivityViewBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: self.__unsafe_private_named,
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S: report_activity_view_state::State> ReportActivityViewBuilder<'a, S> {
+    /// Set the `internalNote` field (optional)
+    pub fn internal_note(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
+        self.__unsafe_private_named.4 = value.into();
+        self
+    }
+    /// Set the `internalNote` field to an Option value (optional)
+    pub fn maybe_internal_note(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
+        self.__unsafe_private_named.4 = value;
+        self
+    }
+}
+
+impl<'a, S> ReportActivityViewBuilder<'a, S>
+where
+    S: report_activity_view_state::State,
+    S::IsAutomated: report_activity_view_state::IsUnset,
+{
+    /// Set the `isAutomated` field (required)
+    pub fn is_automated(
+        mut self,
+        value: impl Into<bool>,
+    ) -> ReportActivityViewBuilder<'a, report_activity_view_state::SetIsAutomated<S>> {
+        self.__unsafe_private_named.5 = ::core::option::Option::Some(value.into());
+        ReportActivityViewBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: self.__unsafe_private_named,
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S: report_activity_view_state::State> ReportActivityViewBuilder<'a, S> {
+    /// Set the `meta` field (optional)
+    pub fn meta(
+        mut self,
+        value: impl Into<Option<jacquard_common::types::value::Data<'a>>>,
+    ) -> Self {
+        self.__unsafe_private_named.6 = value.into();
+        self
+    }
+    /// Set the `meta` field to an Option value (optional)
+    pub fn maybe_meta(mut self, value: Option<jacquard_common::types::value::Data<'a>>) -> Self {
+        self.__unsafe_private_named.6 = value;
+        self
+    }
+}
+
+impl<'a, S: report_activity_view_state::State> ReportActivityViewBuilder<'a, S> {
+    /// Set the `moderator` field (optional)
+    pub fn moderator(
+        mut self,
+        value: impl Into<Option<crate::generated::tools_ozone::team::Member<'a>>>,
+    ) -> Self {
+        self.__unsafe_private_named.7 = value.into();
+        self
+    }
+    /// Set the `moderator` field to an Option value (optional)
+    pub fn maybe_moderator(
+        mut self,
+        value: Option<crate::generated::tools_ozone::team::Member<'a>>,
+    ) -> Self {
+        self.__unsafe_private_named.7 = value;
+        self
+    }
+}
+
+impl<'a, S: report_activity_view_state::State> ReportActivityViewBuilder<'a, S> {
+    /// Set the `publicNote` field (optional)
+    pub fn public_note(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
+        self.__unsafe_private_named.8 = value.into();
+        self
+    }
+    /// Set the `publicNote` field to an Option value (optional)
+    pub fn maybe_public_note(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
+        self.__unsafe_private_named.8 = value;
+        self
+    }
+}
+
+impl<'a, S> ReportActivityViewBuilder<'a, S>
+where
+    S: report_activity_view_state::State,
+    S::ReportId: report_activity_view_state::IsUnset,
+{
+    /// Set the `reportId` field (required)
+    pub fn report_id(
+        mut self,
+        value: impl Into<i64>,
+    ) -> ReportActivityViewBuilder<'a, report_activity_view_state::SetReportId<S>> {
+        self.__unsafe_private_named.9 = ::core::option::Option::Some(value.into());
+        ReportActivityViewBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: self.__unsafe_private_named,
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S> ReportActivityViewBuilder<'a, S>
+where
+    S: report_activity_view_state::State,
+    S::Id: report_activity_view_state::IsSet,
+    S::ReportId: report_activity_view_state::IsSet,
+    S::Activity: report_activity_view_state::IsSet,
+    S::IsAutomated: report_activity_view_state::IsSet,
+    S::CreatedBy: report_activity_view_state::IsSet,
+    S::CreatedAt: report_activity_view_state::IsSet,
+{
+    /// Build the final struct
+    pub fn build(self) -> ReportActivityView<'a> {
+        ReportActivityView {
+            activity: self.__unsafe_private_named.0.unwrap(),
+            created_at: self.__unsafe_private_named.1.unwrap(),
+            created_by: self.__unsafe_private_named.2.unwrap(),
+            id: self.__unsafe_private_named.3.unwrap(),
+            internal_note: self.__unsafe_private_named.4,
+            is_automated: self.__unsafe_private_named.5.unwrap(),
+            meta: self.__unsafe_private_named.6,
+            moderator: self.__unsafe_private_named.7,
+            public_note: self.__unsafe_private_named.8,
+            report_id: self.__unsafe_private_named.9.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data
+    pub fn build_with_data(
+        self,
+        extra_data: std::collections::BTreeMap<
+            jacquard_common::smol_str::SmolStr,
+            jacquard_common::types::value::Data<'a>,
+        >,
+    ) -> ReportActivityView<'a> {
+        ReportActivityView {
+            activity: self.__unsafe_private_named.0.unwrap(),
+            created_at: self.__unsafe_private_named.1.unwrap(),
+            created_by: self.__unsafe_private_named.2.unwrap(),
+            id: self.__unsafe_private_named.3.unwrap(),
+            internal_note: self.__unsafe_private_named.4,
+            is_automated: self.__unsafe_private_named.5.unwrap(),
+            meta: self.__unsafe_private_named.6,
+            moderator: self.__unsafe_private_named.7,
+            public_note: self.__unsafe_private_named.8,
+            report_id: self.__unsafe_private_named.9.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
+}
+
+#[jacquard_derive::open_union]
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(tag = "$type")]
+#[serde(bound(deserialize = "'de: 'a"))]
+pub enum ReportActivityViewActivity<'a> {
+    #[serde(rename = "tools.ozone.report.defs#queueActivity")]
+    QueueActivity(Box<crate::generated::tools_ozone::report::QueueActivity<'a>>),
+    #[serde(rename = "tools.ozone.report.defs#assignmentActivity")]
+    AssignmentActivity(Box<crate::generated::tools_ozone::report::AssignmentActivity<'a>>),
+    #[serde(rename = "tools.ozone.report.defs#escalationActivity")]
+    EscalationActivity(Box<crate::generated::tools_ozone::report::EscalationActivity<'a>>),
+    #[serde(rename = "tools.ozone.report.defs#closeActivity")]
+    CloseActivity(Box<crate::generated::tools_ozone::report::CloseActivity<'a>>),
+    #[serde(rename = "tools.ozone.report.defs#reopenActivity")]
+    ReopenActivity(Box<crate::generated::tools_ozone::report::ReopenActivity<'a>>),
+    #[serde(rename = "tools.ozone.report.defs#noteActivity")]
+    NoteActivity(Box<crate::generated::tools_ozone::report::NoteActivity<'a>>),
+}
+
+impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ReportActivityView<'a> {
+    fn nsid() -> &'static str {
+        "tools.ozone.report.defs"
+    }
+    fn def_name() -> &'static str {
+        "reportActivityView"
+    }
+    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_tools_ozone_report_defs()
+    }
+    fn validate(
+        &self,
+    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+/// Information about the moderator currently assigned to a report.
+#[jacquard_derive::lexicon]
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(rename_all = "camelCase")]
+pub struct ReportAssignment<'a> {
+    /// When the report was assigned
+    pub assigned_at: jacquard_common::types::string::Datetime,
+    /// DID of the assigned moderator
+    #[serde(borrow)]
+    pub did: jacquard_common::types::string::Did<'a>,
+    /// Full member record of the assigned moderator
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub moderator: std::option::Option<crate::generated::tools_ozone::team::Member<'a>>,
+}
+
+pub mod report_assignment_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type Did;
+        type AssignedAt;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type Did = Unset;
+        type AssignedAt = Unset;
+    }
+    ///State transition - sets the `did` field to Set
+    pub struct SetDid<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetDid<S> {}
+    impl<S: State> State for SetDid<S> {
+        type Did = Set<members::did>;
+        type AssignedAt = S::AssignedAt;
+    }
+    ///State transition - sets the `assigned_at` field to Set
+    pub struct SetAssignedAt<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetAssignedAt<S> {}
+    impl<S: State> State for SetAssignedAt<S> {
+        type Did = S::Did;
+        type AssignedAt = Set<members::assigned_at>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `did` field
+        pub struct did(());
+        ///Marker type for the `assigned_at` field
+        pub struct assigned_at(());
+    }
+}
+
+/// Builder for constructing an instance of this type
+pub struct ReportAssignmentBuilder<'a, S: report_assignment_state::State> {
+    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
+    __unsafe_private_named: (
+        ::core::option::Option<jacquard_common::types::string::Datetime>,
+        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
+        ::core::option::Option<crate::generated::tools_ozone::team::Member<'a>>,
+    ),
+    _phantom: ::core::marker::PhantomData<&'a ()>,
+}
+
+impl<'a> ReportAssignment<'a> {
+    /// Create a new builder for this type
+    pub fn new() -> ReportAssignmentBuilder<'a, report_assignment_state::Empty> {
+        ReportAssignmentBuilder::new()
+    }
+}
+
+impl<'a> ReportAssignmentBuilder<'a, report_assignment_state::Empty> {
+    /// Create a new builder with all fields unset
+    pub fn new() -> Self {
+        ReportAssignmentBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: (None, None, None),
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S> ReportAssignmentBuilder<'a, S>
+where
+    S: report_assignment_state::State,
+    S::AssignedAt: report_assignment_state::IsUnset,
+{
+    /// Set the `assignedAt` field (required)
+    pub fn assigned_at(
+        mut self,
+        value: impl Into<jacquard_common::types::string::Datetime>,
+    ) -> ReportAssignmentBuilder<'a, report_assignment_state::SetAssignedAt<S>> {
+        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        ReportAssignmentBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: self.__unsafe_private_named,
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S> ReportAssignmentBuilder<'a, S>
+where
+    S: report_assignment_state::State,
+    S::Did: report_assignment_state::IsUnset,
+{
+    /// Set the `did` field (required)
+    pub fn did(
+        mut self,
+        value: impl Into<jacquard_common::types::string::Did<'a>>,
+    ) -> ReportAssignmentBuilder<'a, report_assignment_state::SetDid<S>> {
+        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        ReportAssignmentBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: self.__unsafe_private_named,
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S: report_assignment_state::State> ReportAssignmentBuilder<'a, S> {
+    /// Set the `moderator` field (optional)
+    pub fn moderator(
+        mut self,
+        value: impl Into<Option<crate::generated::tools_ozone::team::Member<'a>>>,
+    ) -> Self {
+        self.__unsafe_private_named.2 = value.into();
+        self
+    }
+    /// Set the `moderator` field to an Option value (optional)
+    pub fn maybe_moderator(
+        mut self,
+        value: Option<crate::generated::tools_ozone::team::Member<'a>>,
+    ) -> Self {
+        self.__unsafe_private_named.2 = value;
+        self
+    }
+}
+
+impl<'a, S> ReportAssignmentBuilder<'a, S>
+where
+    S: report_assignment_state::State,
+    S::Did: report_assignment_state::IsSet,
+    S::AssignedAt: report_assignment_state::IsSet,
+{
+    /// Build the final struct
+    pub fn build(self) -> ReportAssignment<'a> {
+        ReportAssignment {
+            assigned_at: self.__unsafe_private_named.0.unwrap(),
+            did: self.__unsafe_private_named.1.unwrap(),
+            moderator: self.__unsafe_private_named.2,
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data
+    pub fn build_with_data(
+        self,
+        extra_data: std::collections::BTreeMap<
+            jacquard_common::smol_str::SmolStr,
+            jacquard_common::types::value::Data<'a>,
+        >,
+    ) -> ReportAssignment<'a> {
+        ReportAssignment {
+            assigned_at: self.__unsafe_private_named.0.unwrap(),
+            did: self.__unsafe_private_named.1.unwrap(),
+            moderator: self.__unsafe_private_named.2,
+            extra_data: Some(extra_data),
+        }
+    }
+}
+
+impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ReportAssignment<'a> {
+    fn nsid() -> &'static str {
+        "tools.ozone.report.defs"
+    }
+    fn def_name() -> &'static str {
+        "reportAssignment"
+    }
+    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_tools_ozone_report_defs()
+    }
+    fn validate(
+        &self,
+    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+#[jacquard_derive::lexicon]
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(rename_all = "camelCase")]
+pub struct ReportView<'a> {
+    /// Array of moderation event IDs representing actions taken on this report (sorted DESC, most recent first)
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    pub action_event_ids: std::option::Option<Vec<i64>>,
+    /// Note sent to reporter when report was actioned
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub action_note: std::option::Option<jacquard_common::CowStr<'a>>,
+    /// Optional: expanded action events
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub actions:
+        std::option::Option<Vec<crate::generated::tools_ozone::moderation::ModEventView<'a>>>,
+    /// Information about moderator currently assigned to this report (if any)
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub assignment:
+        std::option::Option<crate::generated::tools_ozone::report::ReportAssignment<'a>>,
+    /// Comment provided by the reporter
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub comment: std::option::Option<jacquard_common::CowStr<'a>>,
+    /// When the report was created
+    pub created_at: jacquard_common::types::string::Datetime,
+    /// ID of the moderation event that created this report
+    pub event_id: i64,
+    /// Report ID
+    pub id: i64,
+    /// Whether this report is muted. A report is muted if the reporter was muted or the subject was muted at the time the report was created.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    pub is_muted: std::option::Option<bool>,
+    /// The queue this report is assigned to (if any)
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub queue: std::option::Option<crate::generated::tools_ozone::queue::QueueView<'a>>,
+    /// When the report was assigned to its current queue
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    pub queued_at: std::option::Option<jacquard_common::types::string::Datetime>,
+    /// Number of other pending reports on the same subject
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    pub related_report_count: std::option::Option<i64>,
+    /// Type of report
+    #[serde(borrow)]
+    pub report_type: crate::generated::com_atproto::moderation::ReasonType<'a>,
+    /// DID of the user who made the report
+    #[serde(borrow)]
+    pub reported_by: jacquard_common::types::string::Did<'a>,
+    /// Full subject view of the reporter account
+    #[serde(borrow)]
+    pub reporter: crate::generated::tools_ozone::moderation::SubjectView<'a>,
+    /// Current status of the report
+    #[serde(borrow)]
+    pub status: jacquard_common::CowStr<'a>,
+    /// The subject that was reported with full details
+    #[serde(borrow)]
+    pub subject: crate::generated::tools_ozone::moderation::SubjectView<'a>,
+    /// Current status of the reported subject
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub subject_status:
+        std::option::Option<crate::generated::tools_ozone::moderation::SubjectStatusView<'a>>,
+    /// When the report was last updated
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    pub updated_at: std::option::Option<jacquard_common::types::string::Datetime>,
+}
+
+pub mod report_view_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type Id;
+        type EventId;
+        type Status;
+        type Subject;
+        type ReportType;
+        type ReportedBy;
+        type Reporter;
+        type CreatedAt;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type Id = Unset;
+        type EventId = Unset;
+        type Status = Unset;
+        type Subject = Unset;
+        type ReportType = Unset;
+        type ReportedBy = Unset;
+        type Reporter = Unset;
+        type CreatedAt = Unset;
+    }
+    ///State transition - sets the `id` field to Set
+    pub struct SetId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetId<S> {}
+    impl<S: State> State for SetId<S> {
+        type Id = Set<members::id>;
+        type EventId = S::EventId;
+        type Status = S::Status;
+        type Subject = S::Subject;
+        type ReportType = S::ReportType;
+        type ReportedBy = S::ReportedBy;
+        type Reporter = S::Reporter;
+        type CreatedAt = S::CreatedAt;
+    }
+    ///State transition - sets the `event_id` field to Set
+    pub struct SetEventId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetEventId<S> {}
+    impl<S: State> State for SetEventId<S> {
+        type Id = S::Id;
+        type EventId = Set<members::event_id>;
+        type Status = S::Status;
+        type Subject = S::Subject;
+        type ReportType = S::ReportType;
+        type ReportedBy = S::ReportedBy;
+        type Reporter = S::Reporter;
+        type CreatedAt = S::CreatedAt;
+    }
+    ///State transition - sets the `status` field to Set
+    pub struct SetStatus<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetStatus<S> {}
+    impl<S: State> State for SetStatus<S> {
+        type Id = S::Id;
+        type EventId = S::EventId;
+        type Status = Set<members::status>;
+        type Subject = S::Subject;
+        type ReportType = S::ReportType;
+        type ReportedBy = S::ReportedBy;
+        type Reporter = S::Reporter;
+        type CreatedAt = S::CreatedAt;
+    }
+    ///State transition - sets the `subject` field to Set
+    pub struct SetSubject<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetSubject<S> {}
+    impl<S: State> State for SetSubject<S> {
+        type Id = S::Id;
+        type EventId = S::EventId;
+        type Status = S::Status;
+        type Subject = Set<members::subject>;
+        type ReportType = S::ReportType;
+        type ReportedBy = S::ReportedBy;
+        type Reporter = S::Reporter;
+        type CreatedAt = S::CreatedAt;
+    }
+    ///State transition - sets the `report_type` field to Set
+    pub struct SetReportType<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetReportType<S> {}
+    impl<S: State> State for SetReportType<S> {
+        type Id = S::Id;
+        type EventId = S::EventId;
+        type Status = S::Status;
+        type Subject = S::Subject;
+        type ReportType = Set<members::report_type>;
+        type ReportedBy = S::ReportedBy;
+        type Reporter = S::Reporter;
+        type CreatedAt = S::CreatedAt;
+    }
+    ///State transition - sets the `reported_by` field to Set
+    pub struct SetReportedBy<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetReportedBy<S> {}
+    impl<S: State> State for SetReportedBy<S> {
+        type Id = S::Id;
+        type EventId = S::EventId;
+        type Status = S::Status;
+        type Subject = S::Subject;
+        type ReportType = S::ReportType;
+        type ReportedBy = Set<members::reported_by>;
+        type Reporter = S::Reporter;
+        type CreatedAt = S::CreatedAt;
+    }
+    ///State transition - sets the `reporter` field to Set
+    pub struct SetReporter<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetReporter<S> {}
+    impl<S: State> State for SetReporter<S> {
+        type Id = S::Id;
+        type EventId = S::EventId;
+        type Status = S::Status;
+        type Subject = S::Subject;
+        type ReportType = S::ReportType;
+        type ReportedBy = S::ReportedBy;
+        type Reporter = Set<members::reporter>;
+        type CreatedAt = S::CreatedAt;
+    }
+    ///State transition - sets the `created_at` field to Set
+    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
+    impl<S: State> State for SetCreatedAt<S> {
+        type Id = S::Id;
+        type EventId = S::EventId;
+        type Status = S::Status;
+        type Subject = S::Subject;
+        type ReportType = S::ReportType;
+        type ReportedBy = S::ReportedBy;
+        type Reporter = S::Reporter;
+        type CreatedAt = Set<members::created_at>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `id` field
+        pub struct id(());
+        ///Marker type for the `event_id` field
+        pub struct event_id(());
+        ///Marker type for the `status` field
+        pub struct status(());
+        ///Marker type for the `subject` field
+        pub struct subject(());
+        ///Marker type for the `report_type` field
+        pub struct report_type(());
+        ///Marker type for the `reported_by` field
+        pub struct reported_by(());
+        ///Marker type for the `reporter` field
+        pub struct reporter(());
+        ///Marker type for the `created_at` field
+        pub struct created_at(());
+    }
+}
+
+/// Builder for constructing an instance of this type
+pub struct ReportViewBuilder<'a, S: report_view_state::State> {
+    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
+    __unsafe_private_named: (
+        ::core::option::Option<Vec<i64>>,
+        ::core::option::Option<jacquard_common::CowStr<'a>>,
+        ::core::option::Option<Vec<crate::generated::tools_ozone::moderation::ModEventView<'a>>>,
+        ::core::option::Option<crate::generated::tools_ozone::report::ReportAssignment<'a>>,
+        ::core::option::Option<jacquard_common::CowStr<'a>>,
+        ::core::option::Option<jacquard_common::types::string::Datetime>,
+        ::core::option::Option<i64>,
+        ::core::option::Option<i64>,
+        ::core::option::Option<bool>,
+        ::core::option::Option<crate::generated::tools_ozone::queue::QueueView<'a>>,
+        ::core::option::Option<jacquard_common::types::string::Datetime>,
+        ::core::option::Option<i64>,
+        ::core::option::Option<crate::generated::com_atproto::moderation::ReasonType<'a>>,
+        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
+        ::core::option::Option<crate::generated::tools_ozone::moderation::SubjectView<'a>>,
+        ::core::option::Option<jacquard_common::CowStr<'a>>,
+        ::core::option::Option<crate::generated::tools_ozone::moderation::SubjectView<'a>>,
+        ::core::option::Option<crate::generated::tools_ozone::moderation::SubjectStatusView<'a>>,
+        ::core::option::Option<jacquard_common::types::string::Datetime>,
+    ),
+    _phantom: ::core::marker::PhantomData<&'a ()>,
+}
+
+impl<'a> ReportView<'a> {
+    /// Create a new builder for this type
+    pub fn new() -> ReportViewBuilder<'a, report_view_state::Empty> {
+        ReportViewBuilder::new()
+    }
+}
+
+impl<'a> ReportViewBuilder<'a, report_view_state::Empty> {
+    /// Create a new builder with all fields unset
+    pub fn new() -> Self {
+        ReportViewBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: (
+                None, None, None, None, None, None, None, None, None, None, None, None, None, None,
+                None, None, None, None, None,
+            ),
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S: report_view_state::State> ReportViewBuilder<'a, S> {
+    /// Set the `actionEventIds` field (optional)
+    pub fn action_event_ids(mut self, value: impl Into<Option<Vec<i64>>>) -> Self {
+        self.__unsafe_private_named.0 = value.into();
+        self
+    }
+    /// Set the `actionEventIds` field to an Option value (optional)
+    pub fn maybe_action_event_ids(mut self, value: Option<Vec<i64>>) -> Self {
+        self.__unsafe_private_named.0 = value;
+        self
+    }
+}
+
+impl<'a, S: report_view_state::State> ReportViewBuilder<'a, S> {
+    /// Set the `actionNote` field (optional)
+    pub fn action_note(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
+        self.__unsafe_private_named.1 = value.into();
+        self
+    }
+    /// Set the `actionNote` field to an Option value (optional)
+    pub fn maybe_action_note(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
+        self.__unsafe_private_named.1 = value;
+        self
+    }
+}
+
+impl<'a, S: report_view_state::State> ReportViewBuilder<'a, S> {
+    /// Set the `actions` field (optional)
+    pub fn actions(
+        mut self,
+        value: impl Into<Option<Vec<crate::generated::tools_ozone::moderation::ModEventView<'a>>>>,
+    ) -> Self {
+        self.__unsafe_private_named.2 = value.into();
+        self
+    }
+    /// Set the `actions` field to an Option value (optional)
+    pub fn maybe_actions(
+        mut self,
+        value: Option<Vec<crate::generated::tools_ozone::moderation::ModEventView<'a>>>,
+    ) -> Self {
+        self.__unsafe_private_named.2 = value;
+        self
+    }
+}
+
+impl<'a, S: report_view_state::State> ReportViewBuilder<'a, S> {
+    /// Set the `assignment` field (optional)
+    pub fn assignment(
+        mut self,
+        value: impl Into<Option<crate::generated::tools_ozone::report::ReportAssignment<'a>>>,
+    ) -> Self {
+        self.__unsafe_private_named.3 = value.into();
+        self
+    }
+    /// Set the `assignment` field to an Option value (optional)
+    pub fn maybe_assignment(
+        mut self,
+        value: Option<crate::generated::tools_ozone::report::ReportAssignment<'a>>,
+    ) -> Self {
+        self.__unsafe_private_named.3 = value;
+        self
+    }
+}
+
+impl<'a, S: report_view_state::State> ReportViewBuilder<'a, S> {
+    /// Set the `comment` field (optional)
+    pub fn comment(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
+        self.__unsafe_private_named.4 = value.into();
+        self
+    }
+    /// Set the `comment` field to an Option value (optional)
+    pub fn maybe_comment(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
+        self.__unsafe_private_named.4 = value;
+        self
+    }
+}
+
+impl<'a, S> ReportViewBuilder<'a, S>
+where
+    S: report_view_state::State,
+    S::CreatedAt: report_view_state::IsUnset,
+{
+    /// Set the `createdAt` field (required)
+    pub fn created_at(
+        mut self,
+        value: impl Into<jacquard_common::types::string::Datetime>,
+    ) -> ReportViewBuilder<'a, report_view_state::SetCreatedAt<S>> {
+        self.__unsafe_private_named.5 = ::core::option::Option::Some(value.into());
+        ReportViewBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: self.__unsafe_private_named,
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S> ReportViewBuilder<'a, S>
+where
+    S: report_view_state::State,
+    S::EventId: report_view_state::IsUnset,
+{
+    /// Set the `eventId` field (required)
+    pub fn event_id(
+        mut self,
+        value: impl Into<i64>,
+    ) -> ReportViewBuilder<'a, report_view_state::SetEventId<S>> {
+        self.__unsafe_private_named.6 = ::core::option::Option::Some(value.into());
+        ReportViewBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: self.__unsafe_private_named,
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S> ReportViewBuilder<'a, S>
+where
+    S: report_view_state::State,
+    S::Id: report_view_state::IsUnset,
+{
+    /// Set the `id` field (required)
+    pub fn id(
+        mut self,
+        value: impl Into<i64>,
+    ) -> ReportViewBuilder<'a, report_view_state::SetId<S>> {
+        self.__unsafe_private_named.7 = ::core::option::Option::Some(value.into());
+        ReportViewBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: self.__unsafe_private_named,
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S: report_view_state::State> ReportViewBuilder<'a, S> {
+    /// Set the `isMuted` field (optional)
+    pub fn is_muted(mut self, value: impl Into<Option<bool>>) -> Self {
+        self.__unsafe_private_named.8 = value.into();
+        self
+    }
+    /// Set the `isMuted` field to an Option value (optional)
+    pub fn maybe_is_muted(mut self, value: Option<bool>) -> Self {
+        self.__unsafe_private_named.8 = value;
+        self
+    }
+}
+
+impl<'a, S: report_view_state::State> ReportViewBuilder<'a, S> {
+    /// Set the `queue` field (optional)
+    pub fn queue(
+        mut self,
+        value: impl Into<Option<crate::generated::tools_ozone::queue::QueueView<'a>>>,
+    ) -> Self {
+        self.__unsafe_private_named.9 = value.into();
+        self
+    }
+    /// Set the `queue` field to an Option value (optional)
+    pub fn maybe_queue(
+        mut self,
+        value: Option<crate::generated::tools_ozone::queue::QueueView<'a>>,
+    ) -> Self {
+        self.__unsafe_private_named.9 = value;
+        self
+    }
+}
+
+impl<'a, S: report_view_state::State> ReportViewBuilder<'a, S> {
+    /// Set the `queuedAt` field (optional)
+    pub fn queued_at(
+        mut self,
+        value: impl Into<Option<jacquard_common::types::string::Datetime>>,
+    ) -> Self {
+        self.__unsafe_private_named.10 = value.into();
+        self
+    }
+    /// Set the `queuedAt` field to an Option value (optional)
+    pub fn maybe_queued_at(
+        mut self,
+        value: Option<jacquard_common::types::string::Datetime>,
+    ) -> Self {
+        self.__unsafe_private_named.10 = value;
+        self
+    }
+}
+
+impl<'a, S: report_view_state::State> ReportViewBuilder<'a, S> {
+    /// Set the `relatedReportCount` field (optional)
+    pub fn related_report_count(mut self, value: impl Into<Option<i64>>) -> Self {
+        self.__unsafe_private_named.11 = value.into();
+        self
+    }
+    /// Set the `relatedReportCount` field to an Option value (optional)
+    pub fn maybe_related_report_count(mut self, value: Option<i64>) -> Self {
+        self.__unsafe_private_named.11 = value;
+        self
+    }
+}
+
+impl<'a, S> ReportViewBuilder<'a, S>
+where
+    S: report_view_state::State,
+    S::ReportType: report_view_state::IsUnset,
+{
+    /// Set the `reportType` field (required)
+    pub fn report_type(
+        mut self,
+        value: impl Into<crate::generated::com_atproto::moderation::ReasonType<'a>>,
+    ) -> ReportViewBuilder<'a, report_view_state::SetReportType<S>> {
+        self.__unsafe_private_named.12 = ::core::option::Option::Some(value.into());
+        ReportViewBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: self.__unsafe_private_named,
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S> ReportViewBuilder<'a, S>
+where
+    S: report_view_state::State,
+    S::ReportedBy: report_view_state::IsUnset,
+{
+    /// Set the `reportedBy` field (required)
+    pub fn reported_by(
+        mut self,
+        value: impl Into<jacquard_common::types::string::Did<'a>>,
+    ) -> ReportViewBuilder<'a, report_view_state::SetReportedBy<S>> {
+        self.__unsafe_private_named.13 = ::core::option::Option::Some(value.into());
+        ReportViewBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: self.__unsafe_private_named,
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S> ReportViewBuilder<'a, S>
+where
+    S: report_view_state::State,
+    S::Reporter: report_view_state::IsUnset,
+{
+    /// Set the `reporter` field (required)
+    pub fn reporter(
+        mut self,
+        value: impl Into<crate::generated::tools_ozone::moderation::SubjectView<'a>>,
+    ) -> ReportViewBuilder<'a, report_view_state::SetReporter<S>> {
+        self.__unsafe_private_named.14 = ::core::option::Option::Some(value.into());
+        ReportViewBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: self.__unsafe_private_named,
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S> ReportViewBuilder<'a, S>
+where
+    S: report_view_state::State,
+    S::Status: report_view_state::IsUnset,
+{
+    /// Set the `status` field (required)
+    pub fn status(
+        mut self,
+        value: impl Into<jacquard_common::CowStr<'a>>,
+    ) -> ReportViewBuilder<'a, report_view_state::SetStatus<S>> {
+        self.__unsafe_private_named.15 = ::core::option::Option::Some(value.into());
+        ReportViewBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: self.__unsafe_private_named,
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S> ReportViewBuilder<'a, S>
+where
+    S: report_view_state::State,
+    S::Subject: report_view_state::IsUnset,
+{
+    /// Set the `subject` field (required)
+    pub fn subject(
+        mut self,
+        value: impl Into<crate::generated::tools_ozone::moderation::SubjectView<'a>>,
+    ) -> ReportViewBuilder<'a, report_view_state::SetSubject<S>> {
+        self.__unsafe_private_named.16 = ::core::option::Option::Some(value.into());
+        ReportViewBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: self.__unsafe_private_named,
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S: report_view_state::State> ReportViewBuilder<'a, S> {
+    /// Set the `subjectStatus` field (optional)
+    pub fn subject_status(
+        mut self,
+        value: impl Into<Option<crate::generated::tools_ozone::moderation::SubjectStatusView<'a>>>,
+    ) -> Self {
+        self.__unsafe_private_named.17 = value.into();
+        self
+    }
+    /// Set the `subjectStatus` field to an Option value (optional)
+    pub fn maybe_subject_status(
+        mut self,
+        value: Option<crate::generated::tools_ozone::moderation::SubjectStatusView<'a>>,
+    ) -> Self {
+        self.__unsafe_private_named.17 = value;
+        self
+    }
+}
+
+impl<'a, S: report_view_state::State> ReportViewBuilder<'a, S> {
+    /// Set the `updatedAt` field (optional)
+    pub fn updated_at(
+        mut self,
+        value: impl Into<Option<jacquard_common::types::string::Datetime>>,
+    ) -> Self {
+        self.__unsafe_private_named.18 = value.into();
+        self
+    }
+    /// Set the `updatedAt` field to an Option value (optional)
+    pub fn maybe_updated_at(
+        mut self,
+        value: Option<jacquard_common::types::string::Datetime>,
+    ) -> Self {
+        self.__unsafe_private_named.18 = value;
+        self
+    }
+}
+
+impl<'a, S> ReportViewBuilder<'a, S>
+where
+    S: report_view_state::State,
+    S::Id: report_view_state::IsSet,
+    S::EventId: report_view_state::IsSet,
+    S::Status: report_view_state::IsSet,
+    S::Subject: report_view_state::IsSet,
+    S::ReportType: report_view_state::IsSet,
+    S::ReportedBy: report_view_state::IsSet,
+    S::Reporter: report_view_state::IsSet,
+    S::CreatedAt: report_view_state::IsSet,
+{
+    /// Build the final struct
+    pub fn build(self) -> ReportView<'a> {
+        ReportView {
+            action_event_ids: self.__unsafe_private_named.0,
+            action_note: self.__unsafe_private_named.1,
+            actions: self.__unsafe_private_named.2,
+            assignment: self.__unsafe_private_named.3,
+            comment: self.__unsafe_private_named.4,
+            created_at: self.__unsafe_private_named.5.unwrap(),
+            event_id: self.__unsafe_private_named.6.unwrap(),
+            id: self.__unsafe_private_named.7.unwrap(),
+            is_muted: self.__unsafe_private_named.8,
+            queue: self.__unsafe_private_named.9,
+            queued_at: self.__unsafe_private_named.10,
+            related_report_count: self.__unsafe_private_named.11,
+            report_type: self.__unsafe_private_named.12.unwrap(),
+            reported_by: self.__unsafe_private_named.13.unwrap(),
+            reporter: self.__unsafe_private_named.14.unwrap(),
+            status: self.__unsafe_private_named.15.unwrap(),
+            subject: self.__unsafe_private_named.16.unwrap(),
+            subject_status: self.__unsafe_private_named.17,
+            updated_at: self.__unsafe_private_named.18,
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data
+    pub fn build_with_data(
+        self,
+        extra_data: std::collections::BTreeMap<
+            jacquard_common::smol_str::SmolStr,
+            jacquard_common::types::value::Data<'a>,
+        >,
+    ) -> ReportView<'a> {
+        ReportView {
+            action_event_ids: self.__unsafe_private_named.0,
+            action_note: self.__unsafe_private_named.1,
+            actions: self.__unsafe_private_named.2,
+            assignment: self.__unsafe_private_named.3,
+            comment: self.__unsafe_private_named.4,
+            created_at: self.__unsafe_private_named.5.unwrap(),
+            event_id: self.__unsafe_private_named.6.unwrap(),
+            id: self.__unsafe_private_named.7.unwrap(),
+            is_muted: self.__unsafe_private_named.8,
+            queue: self.__unsafe_private_named.9,
+            queued_at: self.__unsafe_private_named.10,
+            related_report_count: self.__unsafe_private_named.11,
+            report_type: self.__unsafe_private_named.12.unwrap(),
+            reported_by: self.__unsafe_private_named.13.unwrap(),
+            reporter: self.__unsafe_private_named.14.unwrap(),
+            status: self.__unsafe_private_named.15.unwrap(),
+            subject: self.__unsafe_private_named.16.unwrap(),
+            subject_status: self.__unsafe_private_named.17,
+            updated_at: self.__unsafe_private_named.18,
+            extra_data: Some(extra_data),
+        }
+    }
+}
+
+impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ReportView<'a> {
+    fn nsid() -> &'static str {
+        "tools.ozone.report.defs"
+    }
+    fn def_name() -> &'static str {
+        "reportView"
+    }
+    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_tools_ozone_report_defs()
+    }
+    fn validate(
+        &self,
+    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
     }
 }

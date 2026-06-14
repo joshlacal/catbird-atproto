@@ -27,51 +27,51 @@ pub mod audio_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Channels;
         type Codec;
         type Rate;
+        type Channels;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Channels = Unset;
         type Codec = Unset;
         type Rate = Unset;
-    }
-    ///State transition - sets the `channels` field to Set
-    pub struct SetChannels<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetChannels<S> {}
-    impl<S: State> State for SetChannels<S> {
-        type Channels = Set<members::channels>;
-        type Codec = S::Codec;
-        type Rate = S::Rate;
+        type Channels = Unset;
     }
     ///State transition - sets the `codec` field to Set
     pub struct SetCodec<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCodec<S> {}
     impl<S: State> State for SetCodec<S> {
-        type Channels = S::Channels;
         type Codec = Set<members::codec>;
         type Rate = S::Rate;
+        type Channels = S::Channels;
     }
     ///State transition - sets the `rate` field to Set
     pub struct SetRate<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetRate<S> {}
     impl<S: State> State for SetRate<S> {
-        type Channels = S::Channels;
         type Codec = S::Codec;
         type Rate = Set<members::rate>;
+        type Channels = S::Channels;
+    }
+    ///State transition - sets the `channels` field to Set
+    pub struct SetChannels<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetChannels<S> {}
+    impl<S: State> State for SetChannels<S> {
+        type Codec = S::Codec;
+        type Rate = S::Rate;
+        type Channels = Set<members::channels>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `channels` field
-        pub struct channels(());
         ///Marker type for the `codec` field
         pub struct codec(());
         ///Marker type for the `rate` field
         pub struct rate(());
+        ///Marker type for the `channels` field
+        pub struct channels(());
     }
 }
 
@@ -161,9 +161,9 @@ where
 impl<'a, S> AudioBuilder<'a, S>
 where
     S: audio_state::State,
-    S::Channels: audio_state::IsSet,
     S::Codec: audio_state::IsSet,
     S::Rate: audio_state::IsSet,
+    S::Channels: audio_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> Audio<'a> {

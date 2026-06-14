@@ -5,21 +5,24 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
+/// Structured 423 response body for GroupFrozen epoch-storm circuit-breaker rejections. Sent when the conversation is temporarily frozen and epoch-advancing operations should back off.
 #[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
-pub struct KeyPackageHashEntry<'a> {
-    /// DID of the member
+pub struct GroupFrozenBody<'a> {
+    /// Always 'GroupFrozen'.
     #[serde(borrow)]
-    pub did: jacquard_common::types::string::Did<'a>,
-    /// Hex-encoded SHA-256 hash of the key package used
+    pub error: jacquard_common::CowStr<'a>,
+    /// Human-readable explanation.
     #[serde(borrow)]
-    pub hash: jacquard_common::CowStr<'a>,
+    pub message: jacquard_common::CowStr<'a>,
+    /// Seconds the client should wait before retrying. Mirrors the HTTP Retry-After header.
+    pub retry_after_seconds: i64,
 }
 
-pub mod key_package_hash_entry_state {
+pub mod group_frozen_body_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
@@ -29,99 +32,95 @@ pub mod key_package_hash_entry_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Did;
-        type Hash;
+        type Error;
+        type Message;
+        type RetryAfterSeconds;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Did = Unset;
-        type Hash = Unset;
+        type Error = Unset;
+        type Message = Unset;
+        type RetryAfterSeconds = Unset;
     }
-    ///State transition - sets the `did` field to Set
-    pub struct SetDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDid<S> {}
-    impl<S: State> State for SetDid<S> {
-        type Did = Set<members::did>;
-        type Hash = S::Hash;
+    ///State transition - sets the `error` field to Set
+    pub struct SetError<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetError<S> {}
+    impl<S: State> State for SetError<S> {
+        type Error = Set<members::error>;
+        type Message = S::Message;
+        type RetryAfterSeconds = S::RetryAfterSeconds;
     }
-    ///State transition - sets the `hash` field to Set
-    pub struct SetHash<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetHash<S> {}
-    impl<S: State> State for SetHash<S> {
-        type Did = S::Did;
-        type Hash = Set<members::hash>;
+    ///State transition - sets the `message` field to Set
+    pub struct SetMessage<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetMessage<S> {}
+    impl<S: State> State for SetMessage<S> {
+        type Error = S::Error;
+        type Message = Set<members::message>;
+        type RetryAfterSeconds = S::RetryAfterSeconds;
+    }
+    ///State transition - sets the `retry_after_seconds` field to Set
+    pub struct SetRetryAfterSeconds<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetRetryAfterSeconds<S> {}
+    impl<S: State> State for SetRetryAfterSeconds<S> {
+        type Error = S::Error;
+        type Message = S::Message;
+        type RetryAfterSeconds = Set<members::retry_after_seconds>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `did` field
-        pub struct did(());
-        ///Marker type for the `hash` field
-        pub struct hash(());
+        ///Marker type for the `error` field
+        pub struct error(());
+        ///Marker type for the `message` field
+        pub struct message(());
+        ///Marker type for the `retry_after_seconds` field
+        pub struct retry_after_seconds(());
     }
 }
 
 /// Builder for constructing an instance of this type
-pub struct KeyPackageHashEntryBuilder<'a, S: key_package_hash_entry_state::State> {
+pub struct GroupFrozenBodyBuilder<'a, S: group_frozen_body_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
+        ::core::option::Option<jacquard_common::CowStr<'a>>,
+        ::core::option::Option<i64>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
 
-impl<'a> KeyPackageHashEntry<'a> {
+impl<'a> GroupFrozenBody<'a> {
     /// Create a new builder for this type
-    pub fn new() -> KeyPackageHashEntryBuilder<'a, key_package_hash_entry_state::Empty> {
-        KeyPackageHashEntryBuilder::new()
+    pub fn new() -> GroupFrozenBodyBuilder<'a, group_frozen_body_state::Empty> {
+        GroupFrozenBodyBuilder::new()
     }
 }
 
-impl<'a> KeyPackageHashEntryBuilder<'a, key_package_hash_entry_state::Empty> {
+impl<'a> GroupFrozenBodyBuilder<'a, group_frozen_body_state::Empty> {
     /// Create a new builder with all fields unset
     pub fn new() -> Self {
-        KeyPackageHashEntryBuilder {
+        GroupFrozenBodyBuilder {
             _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
+            __unsafe_private_named: (None, None, None),
             _phantom: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> KeyPackageHashEntryBuilder<'a, S>
+impl<'a, S> GroupFrozenBodyBuilder<'a, S>
 where
-    S: key_package_hash_entry_state::State,
-    S::Did: key_package_hash_entry_state::IsUnset,
+    S: group_frozen_body_state::State,
+    S::Error: group_frozen_body_state::IsUnset,
 {
-    /// Set the `did` field (required)
-    pub fn did(
-        mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> KeyPackageHashEntryBuilder<'a, key_package_hash_entry_state::SetDid<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
-        KeyPackageHashEntryBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> KeyPackageHashEntryBuilder<'a, S>
-where
-    S: key_package_hash_entry_state::State,
-    S::Hash: key_package_hash_entry_state::IsUnset,
-{
-    /// Set the `hash` field (required)
-    pub fn hash(
+    /// Set the `error` field (required)
+    pub fn error(
         mut self,
         value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> KeyPackageHashEntryBuilder<'a, key_package_hash_entry_state::SetHash<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
-        KeyPackageHashEntryBuilder {
+    ) -> GroupFrozenBodyBuilder<'a, group_frozen_body_state::SetError<S>> {
+        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        GroupFrozenBodyBuilder {
             _phantom_state: ::core::marker::PhantomData,
             __unsafe_private_named: self.__unsafe_private_named,
             _phantom: ::core::marker::PhantomData,
@@ -129,17 +128,57 @@ where
     }
 }
 
-impl<'a, S> KeyPackageHashEntryBuilder<'a, S>
+impl<'a, S> GroupFrozenBodyBuilder<'a, S>
 where
-    S: key_package_hash_entry_state::State,
-    S::Did: key_package_hash_entry_state::IsSet,
-    S::Hash: key_package_hash_entry_state::IsSet,
+    S: group_frozen_body_state::State,
+    S::Message: group_frozen_body_state::IsUnset,
+{
+    /// Set the `message` field (required)
+    pub fn message(
+        mut self,
+        value: impl Into<jacquard_common::CowStr<'a>>,
+    ) -> GroupFrozenBodyBuilder<'a, group_frozen_body_state::SetMessage<S>> {
+        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        GroupFrozenBodyBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: self.__unsafe_private_named,
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S> GroupFrozenBodyBuilder<'a, S>
+where
+    S: group_frozen_body_state::State,
+    S::RetryAfterSeconds: group_frozen_body_state::IsUnset,
+{
+    /// Set the `retryAfterSeconds` field (required)
+    pub fn retry_after_seconds(
+        mut self,
+        value: impl Into<i64>,
+    ) -> GroupFrozenBodyBuilder<'a, group_frozen_body_state::SetRetryAfterSeconds<S>> {
+        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        GroupFrozenBodyBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: self.__unsafe_private_named,
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S> GroupFrozenBodyBuilder<'a, S>
+where
+    S: group_frozen_body_state::State,
+    S::Error: group_frozen_body_state::IsSet,
+    S::Message: group_frozen_body_state::IsSet,
+    S::RetryAfterSeconds: group_frozen_body_state::IsSet,
 {
     /// Build the final struct
-    pub fn build(self) -> KeyPackageHashEntry<'a> {
-        KeyPackageHashEntry {
-            did: self.__unsafe_private_named.0.unwrap(),
-            hash: self.__unsafe_private_named.1.unwrap(),
+    pub fn build(self) -> GroupFrozenBody<'a> {
+        GroupFrozenBody {
+            error: self.__unsafe_private_named.0.unwrap(),
+            message: self.__unsafe_private_named.1.unwrap(),
+            retry_after_seconds: self.__unsafe_private_named.2.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -150,10 +189,11 @@ where
             jacquard_common::smol_str::SmolStr,
             jacquard_common::types::value::Data<'a>,
         >,
-    ) -> KeyPackageHashEntry<'a> {
-        KeyPackageHashEntry {
-            did: self.__unsafe_private_named.0.unwrap(),
-            hash: self.__unsafe_private_named.1.unwrap(),
+    ) -> GroupFrozenBody<'a> {
+        GroupFrozenBody {
+            error: self.__unsafe_private_named.0.unwrap(),
+            message: self.__unsafe_private_named.1.unwrap(),
+            retry_after_seconds: self.__unsafe_private_named.2.unwrap(),
             extra_data: Some(extra_data),
         }
     }
@@ -168,6 +208,80 @@ fn lexicon_doc_blue_catbird_mlsChat_commitGroupChange(
         description: None,
         defs: {
             let mut map = ::std::collections::BTreeMap::new();
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("groupFrozenBody"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
+                            "Structured 423 response body for GroupFrozen epoch-storm circuit-breaker rejections. Sent when the conversation is temporarily frozen and epoch-advancing operations should back off.",
+                        ),
+                    ),
+                    required: Some(
+                        vec![
+                            ::jacquard_common::smol_str::SmolStr::new_static("error"),
+                            ::jacquard_common::smol_str::SmolStr::new_static("message"),
+                            ::jacquard_common::smol_str::SmolStr::new_static("retryAfterSeconds")
+                        ],
+                    ),
+                    nullable: None,
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::std::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("error"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Always 'GroupFrozen'.",
+                                    ),
+                                ),
+                                format: None,
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("message"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Human-readable explanation.",
+                                    ),
+                                ),
+                                format: None,
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "retryAfterSeconds",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                description: None,
+                                default: None,
+                                minimum: Some(0i64),
+                                maximum: None,
+                                r#enum: None,
+                                r#const: None,
+                            }),
+                        );
+                        map
+                    },
+                }),
+            );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("keyPackageHashEntry"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
@@ -771,6 +885,189 @@ fn lexicon_doc_blue_catbird_mlsChat_commitGroupChange(
     }
 }
 
+impl<'a> ::jacquard_lexicon::schema::LexiconSchema for GroupFrozenBody<'a> {
+    fn nsid() -> &'static str {
+        "blue.catbird.mlsChat.commitGroupChange"
+    }
+    fn def_name() -> &'static str {
+        "groupFrozenBody"
+    }
+    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_blue_catbird_mlsChat_commitGroupChange()
+    }
+    fn validate(
+        &self,
+    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.retry_after_seconds;
+            if *value < 0i64 {
+                return Err(::jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
+                        "retry_after_seconds",
+                    ),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
+        Ok(())
+    }
+}
+
+#[jacquard_derive::lexicon]
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(rename_all = "camelCase")]
+pub struct KeyPackageHashEntry<'a> {
+    /// DID of the member
+    #[serde(borrow)]
+    pub did: jacquard_common::types::string::Did<'a>,
+    /// Hex-encoded SHA-256 hash of the key package used
+    #[serde(borrow)]
+    pub hash: jacquard_common::CowStr<'a>,
+}
+
+pub mod key_package_hash_entry_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type Did;
+        type Hash;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type Did = Unset;
+        type Hash = Unset;
+    }
+    ///State transition - sets the `did` field to Set
+    pub struct SetDid<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetDid<S> {}
+    impl<S: State> State for SetDid<S> {
+        type Did = Set<members::did>;
+        type Hash = S::Hash;
+    }
+    ///State transition - sets the `hash` field to Set
+    pub struct SetHash<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetHash<S> {}
+    impl<S: State> State for SetHash<S> {
+        type Did = S::Did;
+        type Hash = Set<members::hash>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `did` field
+        pub struct did(());
+        ///Marker type for the `hash` field
+        pub struct hash(());
+    }
+}
+
+/// Builder for constructing an instance of this type
+pub struct KeyPackageHashEntryBuilder<'a, S: key_package_hash_entry_state::State> {
+    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
+    __unsafe_private_named: (
+        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
+        ::core::option::Option<jacquard_common::CowStr<'a>>,
+    ),
+    _phantom: ::core::marker::PhantomData<&'a ()>,
+}
+
+impl<'a> KeyPackageHashEntry<'a> {
+    /// Create a new builder for this type
+    pub fn new() -> KeyPackageHashEntryBuilder<'a, key_package_hash_entry_state::Empty> {
+        KeyPackageHashEntryBuilder::new()
+    }
+}
+
+impl<'a> KeyPackageHashEntryBuilder<'a, key_package_hash_entry_state::Empty> {
+    /// Create a new builder with all fields unset
+    pub fn new() -> Self {
+        KeyPackageHashEntryBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: (None, None),
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S> KeyPackageHashEntryBuilder<'a, S>
+where
+    S: key_package_hash_entry_state::State,
+    S::Did: key_package_hash_entry_state::IsUnset,
+{
+    /// Set the `did` field (required)
+    pub fn did(
+        mut self,
+        value: impl Into<jacquard_common::types::string::Did<'a>>,
+    ) -> KeyPackageHashEntryBuilder<'a, key_package_hash_entry_state::SetDid<S>> {
+        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        KeyPackageHashEntryBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: self.__unsafe_private_named,
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S> KeyPackageHashEntryBuilder<'a, S>
+where
+    S: key_package_hash_entry_state::State,
+    S::Hash: key_package_hash_entry_state::IsUnset,
+{
+    /// Set the `hash` field (required)
+    pub fn hash(
+        mut self,
+        value: impl Into<jacquard_common::CowStr<'a>>,
+    ) -> KeyPackageHashEntryBuilder<'a, key_package_hash_entry_state::SetHash<S>> {
+        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        KeyPackageHashEntryBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: self.__unsafe_private_named,
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S> KeyPackageHashEntryBuilder<'a, S>
+where
+    S: key_package_hash_entry_state::State,
+    S::Did: key_package_hash_entry_state::IsSet,
+    S::Hash: key_package_hash_entry_state::IsSet,
+{
+    /// Build the final struct
+    pub fn build(self) -> KeyPackageHashEntry<'a> {
+        KeyPackageHashEntry {
+            did: self.__unsafe_private_named.0.unwrap(),
+            hash: self.__unsafe_private_named.1.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data
+    pub fn build_with_data(
+        self,
+        extra_data: std::collections::BTreeMap<
+            jacquard_common::smol_str::SmolStr,
+            jacquard_common::types::value::Data<'a>,
+        >,
+    ) -> KeyPackageHashEntry<'a> {
+        KeyPackageHashEntry {
+            did: self.__unsafe_private_named.0.unwrap(),
+            hash: self.__unsafe_private_named.1.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
+}
+
 impl<'a> ::jacquard_lexicon::schema::LexiconSchema for KeyPackageHashEntry<'a> {
     fn nsid() -> &'static str {
         "blue.catbird.mlsChat.commitGroupChange"
@@ -939,7 +1236,7 @@ pub enum CommitGroupChangeError<'a> {
     /// Layer 1 robustness gate: the calling device has zero published key packages and is therefore not eligible to issue an External Commit. The device must call publishKeyPackages and successfully publish at least one available, non-expired key package before retrying. Returned as HTTP 412 Precondition Failed.
     #[serde(rename = "NoKeyPackagesPublished")]
     NoKeyPackagesPublished(std::option::Option<jacquard_common::CowStr<'a>>),
-    /// Layer 1 robustness circuit breaker: the conversation has been temporarily frozen because the server detected an epoch-storm pattern (too many epoch advances within a short window). All epoch-advancing commits are rejected until the freeze auto-thaws. Returned as HTTP 423 Locked.
+    /// Layer 1 robustness circuit breaker: the conversation has been temporarily frozen because the server detected an epoch-storm pattern (too many epoch advances within a short window). All epoch-advancing commits are rejected until the freeze auto-thaws. Returned as HTTP 423 Locked with body shaped per #groupFrozenBody (retryAfterSeconds).
     #[serde(rename = "GroupFrozen")]
     GroupFrozen(std::option::Option<jacquard_common::CowStr<'a>>),
     /// Rate limit exceeded. Two cases: (a) per-conversation 30s External-Commit limit (existing). (b) per-(device, group) 60s External-Commit cooldown (Layer 1 §1.2). Both return HTTP 429 with body shaped per #rateLimitedBody (retryAfterSeconds + scope discriminator).
@@ -1134,127 +1431,127 @@ pub mod pending_device_addition_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type DeviceCredentialDid;
         type Id;
-        type CreatedAt;
-        type Status;
         type ConvoId;
         type UserDid;
         type DeviceId;
+        type DeviceCredentialDid;
+        type Status;
+        type CreatedAt;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type DeviceCredentialDid = Unset;
         type Id = Unset;
-        type CreatedAt = Unset;
-        type Status = Unset;
         type ConvoId = Unset;
         type UserDid = Unset;
         type DeviceId = Unset;
-    }
-    ///State transition - sets the `device_credential_did` field to Set
-    pub struct SetDeviceCredentialDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDeviceCredentialDid<S> {}
-    impl<S: State> State for SetDeviceCredentialDid<S> {
-        type DeviceCredentialDid = Set<members::device_credential_did>;
-        type Id = S::Id;
-        type CreatedAt = S::CreatedAt;
-        type Status = S::Status;
-        type ConvoId = S::ConvoId;
-        type UserDid = S::UserDid;
-        type DeviceId = S::DeviceId;
+        type DeviceCredentialDid = Unset;
+        type Status = Unset;
+        type CreatedAt = Unset;
     }
     ///State transition - sets the `id` field to Set
     pub struct SetId<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetId<S> {}
     impl<S: State> State for SetId<S> {
-        type DeviceCredentialDid = S::DeviceCredentialDid;
         type Id = Set<members::id>;
-        type CreatedAt = S::CreatedAt;
-        type Status = S::Status;
         type ConvoId = S::ConvoId;
         type UserDid = S::UserDid;
         type DeviceId = S::DeviceId;
-    }
-    ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
         type DeviceCredentialDid = S::DeviceCredentialDid;
-        type Id = S::Id;
-        type CreatedAt = Set<members::created_at>;
         type Status = S::Status;
-        type ConvoId = S::ConvoId;
-        type UserDid = S::UserDid;
-        type DeviceId = S::DeviceId;
-    }
-    ///State transition - sets the `status` field to Set
-    pub struct SetStatus<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetStatus<S> {}
-    impl<S: State> State for SetStatus<S> {
-        type DeviceCredentialDid = S::DeviceCredentialDid;
-        type Id = S::Id;
         type CreatedAt = S::CreatedAt;
-        type Status = Set<members::status>;
-        type ConvoId = S::ConvoId;
-        type UserDid = S::UserDid;
-        type DeviceId = S::DeviceId;
     }
     ///State transition - sets the `convo_id` field to Set
     pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetConvoId<S> {}
     impl<S: State> State for SetConvoId<S> {
-        type DeviceCredentialDid = S::DeviceCredentialDid;
         type Id = S::Id;
-        type CreatedAt = S::CreatedAt;
-        type Status = S::Status;
         type ConvoId = Set<members::convo_id>;
         type UserDid = S::UserDid;
         type DeviceId = S::DeviceId;
+        type DeviceCredentialDid = S::DeviceCredentialDid;
+        type Status = S::Status;
+        type CreatedAt = S::CreatedAt;
     }
     ///State transition - sets the `user_did` field to Set
     pub struct SetUserDid<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetUserDid<S> {}
     impl<S: State> State for SetUserDid<S> {
-        type DeviceCredentialDid = S::DeviceCredentialDid;
         type Id = S::Id;
-        type CreatedAt = S::CreatedAt;
-        type Status = S::Status;
         type ConvoId = S::ConvoId;
         type UserDid = Set<members::user_did>;
         type DeviceId = S::DeviceId;
+        type DeviceCredentialDid = S::DeviceCredentialDid;
+        type Status = S::Status;
+        type CreatedAt = S::CreatedAt;
     }
     ///State transition - sets the `device_id` field to Set
     pub struct SetDeviceId<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetDeviceId<S> {}
     impl<S: State> State for SetDeviceId<S> {
-        type DeviceCredentialDid = S::DeviceCredentialDid;
         type Id = S::Id;
-        type CreatedAt = S::CreatedAt;
-        type Status = S::Status;
         type ConvoId = S::ConvoId;
         type UserDid = S::UserDid;
         type DeviceId = Set<members::device_id>;
+        type DeviceCredentialDid = S::DeviceCredentialDid;
+        type Status = S::Status;
+        type CreatedAt = S::CreatedAt;
+    }
+    ///State transition - sets the `device_credential_did` field to Set
+    pub struct SetDeviceCredentialDid<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetDeviceCredentialDid<S> {}
+    impl<S: State> State for SetDeviceCredentialDid<S> {
+        type Id = S::Id;
+        type ConvoId = S::ConvoId;
+        type UserDid = S::UserDid;
+        type DeviceId = S::DeviceId;
+        type DeviceCredentialDid = Set<members::device_credential_did>;
+        type Status = S::Status;
+        type CreatedAt = S::CreatedAt;
+    }
+    ///State transition - sets the `status` field to Set
+    pub struct SetStatus<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetStatus<S> {}
+    impl<S: State> State for SetStatus<S> {
+        type Id = S::Id;
+        type ConvoId = S::ConvoId;
+        type UserDid = S::UserDid;
+        type DeviceId = S::DeviceId;
+        type DeviceCredentialDid = S::DeviceCredentialDid;
+        type Status = Set<members::status>;
+        type CreatedAt = S::CreatedAt;
+    }
+    ///State transition - sets the `created_at` field to Set
+    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
+    impl<S: State> State for SetCreatedAt<S> {
+        type Id = S::Id;
+        type ConvoId = S::ConvoId;
+        type UserDid = S::UserDid;
+        type DeviceId = S::DeviceId;
+        type DeviceCredentialDid = S::DeviceCredentialDid;
+        type Status = S::Status;
+        type CreatedAt = Set<members::created_at>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `device_credential_did` field
-        pub struct device_credential_did(());
         ///Marker type for the `id` field
         pub struct id(());
-        ///Marker type for the `created_at` field
-        pub struct created_at(());
-        ///Marker type for the `status` field
-        pub struct status(());
         ///Marker type for the `convo_id` field
         pub struct convo_id(());
         ///Marker type for the `user_did` field
         pub struct user_did(());
         ///Marker type for the `device_id` field
         pub struct device_id(());
+        ///Marker type for the `device_credential_did` field
+        pub struct device_credential_did(());
+        ///Marker type for the `status` field
+        pub struct status(());
+        ///Marker type for the `created_at` field
+        pub struct created_at(());
     }
 }
 
@@ -1462,13 +1759,13 @@ where
 impl<'a, S> PendingDeviceAdditionBuilder<'a, S>
 where
     S: pending_device_addition_state::State,
-    S::DeviceCredentialDid: pending_device_addition_state::IsSet,
     S::Id: pending_device_addition_state::IsSet,
-    S::CreatedAt: pending_device_addition_state::IsSet,
-    S::Status: pending_device_addition_state::IsSet,
     S::ConvoId: pending_device_addition_state::IsSet,
     S::UserDid: pending_device_addition_state::IsSet,
     S::DeviceId: pending_device_addition_state::IsSet,
+    S::DeviceCredentialDid: pending_device_addition_state::IsSet,
+    S::Status: pending_device_addition_state::IsSet,
+    S::CreatedAt: pending_device_addition_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> PendingDeviceAddition<'a> {
@@ -1556,66 +1853,66 @@ pub mod rate_limited_body_state {
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
         type Error;
-        type Scope;
         type Message;
         type RetryAfterSeconds;
+        type Scope;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
         type Error = Unset;
-        type Scope = Unset;
         type Message = Unset;
         type RetryAfterSeconds = Unset;
+        type Scope = Unset;
     }
     ///State transition - sets the `error` field to Set
     pub struct SetError<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetError<S> {}
     impl<S: State> State for SetError<S> {
         type Error = Set<members::error>;
+        type Message = S::Message;
+        type RetryAfterSeconds = S::RetryAfterSeconds;
         type Scope = S::Scope;
-        type Message = S::Message;
-        type RetryAfterSeconds = S::RetryAfterSeconds;
-    }
-    ///State transition - sets the `scope` field to Set
-    pub struct SetScope<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetScope<S> {}
-    impl<S: State> State for SetScope<S> {
-        type Error = S::Error;
-        type Scope = Set<members::scope>;
-        type Message = S::Message;
-        type RetryAfterSeconds = S::RetryAfterSeconds;
     }
     ///State transition - sets the `message` field to Set
     pub struct SetMessage<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetMessage<S> {}
     impl<S: State> State for SetMessage<S> {
         type Error = S::Error;
-        type Scope = S::Scope;
         type Message = Set<members::message>;
         type RetryAfterSeconds = S::RetryAfterSeconds;
+        type Scope = S::Scope;
     }
     ///State transition - sets the `retry_after_seconds` field to Set
     pub struct SetRetryAfterSeconds<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetRetryAfterSeconds<S> {}
     impl<S: State> State for SetRetryAfterSeconds<S> {
         type Error = S::Error;
-        type Scope = S::Scope;
         type Message = S::Message;
         type RetryAfterSeconds = Set<members::retry_after_seconds>;
+        type Scope = S::Scope;
+    }
+    ///State transition - sets the `scope` field to Set
+    pub struct SetScope<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetScope<S> {}
+    impl<S: State> State for SetScope<S> {
+        type Error = S::Error;
+        type Message = S::Message;
+        type RetryAfterSeconds = S::RetryAfterSeconds;
+        type Scope = Set<members::scope>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
         ///Marker type for the `error` field
         pub struct error(());
-        ///Marker type for the `scope` field
-        pub struct scope(());
         ///Marker type for the `message` field
         pub struct message(());
         ///Marker type for the `retry_after_seconds` field
         pub struct retry_after_seconds(());
+        ///Marker type for the `scope` field
+        pub struct scope(());
     }
 }
 
@@ -1729,9 +2026,9 @@ impl<'a, S> RateLimitedBodyBuilder<'a, S>
 where
     S: rate_limited_body_state::State,
     S::Error: rate_limited_body_state::IsSet,
-    S::Scope: rate_limited_body_state::IsSet,
     S::Message: rate_limited_body_state::IsSet,
     S::RetryAfterSeconds: rate_limited_body_state::IsSet,
+    S::Scope: rate_limited_body_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> RateLimitedBody<'a> {

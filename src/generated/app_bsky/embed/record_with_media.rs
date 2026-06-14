@@ -168,6 +168,8 @@ pub enum RecordWithMediaMedia<'a> {
     Images(Box<crate::generated::app_bsky::embed::images::Images<'a>>),
     #[serde(rename = "app.bsky.embed.video")]
     Video(Box<crate::generated::app_bsky::embed::video::Video<'a>>),
+    #[serde(rename = "app.bsky.embed.gallery")]
+    Gallery(Box<crate::generated::app_bsky::embed::gallery::Gallery<'a>>),
     #[serde(rename = "app.bsky.embed.external")]
     External(Box<crate::generated::app_bsky::embed::external::ExternalRecord<'a>>),
 }
@@ -205,6 +207,9 @@ fn lexicon_doc_app_bsky_embed_recordWithMedia() -> ::jacquard_lexicon::lexicon::
                                             ),
                                             ::jacquard_common::CowStr::new_static(
                                                 "app.bsky.embed.video",
+                                            ),
+                                            ::jacquard_common::CowStr::new_static(
+                                                "app.bsky.embed.gallery",
                                             ),
                                             ::jacquard_common::CowStr::new_static(
                                                 "app.bsky.embed.external",
@@ -254,6 +259,9 @@ fn lexicon_doc_app_bsky_embed_recordWithMedia() -> ::jacquard_lexicon::lexicon::
                                             ),
                                             ::jacquard_common::CowStr::new_static(
                                                 "app.bsky.embed.video#view",
+                                            ),
+                                            ::jacquard_common::CowStr::new_static(
+                                                "app.bsky.embed.gallery#view",
                                             ),
                                             ::jacquard_common::CowStr::new_static(
                                                 "app.bsky.embed.external#view",
@@ -323,37 +331,37 @@ pub mod view_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Media;
         type Record;
+        type Media;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Media = Unset;
         type Record = Unset;
-    }
-    ///State transition - sets the `media` field to Set
-    pub struct SetMedia<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetMedia<S> {}
-    impl<S: State> State for SetMedia<S> {
-        type Media = Set<members::media>;
-        type Record = S::Record;
+        type Media = Unset;
     }
     ///State transition - sets the `record` field to Set
     pub struct SetRecord<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetRecord<S> {}
     impl<S: State> State for SetRecord<S> {
-        type Media = S::Media;
         type Record = Set<members::record>;
+        type Media = S::Media;
+    }
+    ///State transition - sets the `media` field to Set
+    pub struct SetMedia<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetMedia<S> {}
+    impl<S: State> State for SetMedia<S> {
+        type Record = S::Record;
+        type Media = Set<members::media>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `media` field
-        pub struct media(());
         ///Marker type for the `record` field
         pub struct record(());
+        ///Marker type for the `media` field
+        pub struct media(());
     }
 }
 
@@ -426,8 +434,8 @@ where
 impl<'a, S> ViewBuilder<'a, S>
 where
     S: view_state::State,
-    S::Media: view_state::IsSet,
     S::Record: view_state::IsSet,
+    S::Media: view_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> View<'a> {
@@ -464,6 +472,8 @@ pub enum ViewMedia<'a> {
     ImagesView(Box<crate::generated::app_bsky::embed::images::View<'a>>),
     #[serde(rename = "app.bsky.embed.video#view")]
     VideoView(Box<crate::generated::app_bsky::embed::video::View<'a>>),
+    #[serde(rename = "app.bsky.embed.gallery#view")]
+    GalleryView(Box<crate::generated::app_bsky::embed::gallery::View<'a>>),
     #[serde(rename = "app.bsky.embed.external#view")]
     ExternalView(Box<crate::generated::app_bsky::embed::external::View<'a>>),
 }

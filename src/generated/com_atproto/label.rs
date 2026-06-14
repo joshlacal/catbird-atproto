@@ -57,67 +57,67 @@ pub mod label_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Val;
-        type Uri;
-        type Cts;
         type Src;
+        type Uri;
+        type Val;
+        type Cts;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Val = Unset;
-        type Uri = Unset;
-        type Cts = Unset;
         type Src = Unset;
-    }
-    ///State transition - sets the `val` field to Set
-    pub struct SetVal<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetVal<S> {}
-    impl<S: State> State for SetVal<S> {
-        type Val = Set<members::val>;
-        type Uri = S::Uri;
-        type Cts = S::Cts;
-        type Src = S::Src;
-    }
-    ///State transition - sets the `uri` field to Set
-    pub struct SetUri<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUri<S> {}
-    impl<S: State> State for SetUri<S> {
-        type Val = S::Val;
-        type Uri = Set<members::uri>;
-        type Cts = S::Cts;
-        type Src = S::Src;
-    }
-    ///State transition - sets the `cts` field to Set
-    pub struct SetCts<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCts<S> {}
-    impl<S: State> State for SetCts<S> {
-        type Val = S::Val;
-        type Uri = S::Uri;
-        type Cts = Set<members::cts>;
-        type Src = S::Src;
+        type Uri = Unset;
+        type Val = Unset;
+        type Cts = Unset;
     }
     ///State transition - sets the `src` field to Set
     pub struct SetSrc<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetSrc<S> {}
     impl<S: State> State for SetSrc<S> {
-        type Val = S::Val;
-        type Uri = S::Uri;
-        type Cts = S::Cts;
         type Src = Set<members::src>;
+        type Uri = S::Uri;
+        type Val = S::Val;
+        type Cts = S::Cts;
+    }
+    ///State transition - sets the `uri` field to Set
+    pub struct SetUri<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetUri<S> {}
+    impl<S: State> State for SetUri<S> {
+        type Src = S::Src;
+        type Uri = Set<members::uri>;
+        type Val = S::Val;
+        type Cts = S::Cts;
+    }
+    ///State transition - sets the `val` field to Set
+    pub struct SetVal<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetVal<S> {}
+    impl<S: State> State for SetVal<S> {
+        type Src = S::Src;
+        type Uri = S::Uri;
+        type Val = Set<members::val>;
+        type Cts = S::Cts;
+    }
+    ///State transition - sets the `cts` field to Set
+    pub struct SetCts<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCts<S> {}
+    impl<S: State> State for SetCts<S> {
+        type Src = S::Src;
+        type Uri = S::Uri;
+        type Val = S::Val;
+        type Cts = Set<members::cts>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `val` field
-        pub struct val(());
-        ///Marker type for the `uri` field
-        pub struct uri(());
-        ///Marker type for the `cts` field
-        pub struct cts(());
         ///Marker type for the `src` field
         pub struct src(());
+        ///Marker type for the `uri` field
+        pub struct uri(());
+        ///Marker type for the `val` field
+        pub struct val(());
+        ///Marker type for the `cts` field
+        pub struct cts(());
     }
 }
 
@@ -306,10 +306,10 @@ impl<'a, S: label_state::State> LabelBuilder<'a, S> {
 impl<'a, S> LabelBuilder<'a, S>
 where
     S: label_state::State,
-    S::Val: label_state::IsSet,
-    S::Uri: label_state::IsSet,
-    S::Cts: label_state::IsSet,
     S::Src: label_state::IsSet,
+    S::Uri: label_state::IsSet,
+    S::Val: label_state::IsSet,
+    S::Cts: label_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> Label<'a> {
@@ -868,16 +868,13 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Label<'a> {
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum LabelValue<'a> {
     Hide,
-    NoPromote,
     Warn,
     NoUnauthenticated,
-    DmcaViolation,
-    Doxxing,
     Porn,
     Sexual,
     Nudity,
-    Nsfl,
-    Gore,
+    GraphicMedia,
+    Bot,
     Other(jacquard_common::CowStr<'a>),
 }
 
@@ -885,16 +882,13 @@ impl<'a> LabelValue<'a> {
     pub fn as_str(&self) -> &str {
         match self {
             Self::Hide => "!hide",
-            Self::NoPromote => "!no-promote",
             Self::Warn => "!warn",
             Self::NoUnauthenticated => "!no-unauthenticated",
-            Self::DmcaViolation => "dmca-violation",
-            Self::Doxxing => "doxxing",
             Self::Porn => "porn",
             Self::Sexual => "sexual",
             Self::Nudity => "nudity",
-            Self::Nsfl => "nsfl",
-            Self::Gore => "gore",
+            Self::GraphicMedia => "graphic-media",
+            Self::Bot => "bot",
             Self::Other(s) => s.as_ref(),
         }
     }
@@ -904,16 +898,13 @@ impl<'a> From<&'a str> for LabelValue<'a> {
     fn from(s: &'a str) -> Self {
         match s {
             "!hide" => Self::Hide,
-            "!no-promote" => Self::NoPromote,
             "!warn" => Self::Warn,
             "!no-unauthenticated" => Self::NoUnauthenticated,
-            "dmca-violation" => Self::DmcaViolation,
-            "doxxing" => Self::Doxxing,
             "porn" => Self::Porn,
             "sexual" => Self::Sexual,
             "nudity" => Self::Nudity,
-            "nsfl" => Self::Nsfl,
-            "gore" => Self::Gore,
+            "graphic-media" => Self::GraphicMedia,
+            "bot" => Self::Bot,
             _ => Self::Other(jacquard_common::CowStr::from(s)),
         }
     }
@@ -923,16 +914,13 @@ impl<'a> From<String> for LabelValue<'a> {
     fn from(s: String) -> Self {
         match s.as_str() {
             "!hide" => Self::Hide,
-            "!no-promote" => Self::NoPromote,
             "!warn" => Self::Warn,
             "!no-unauthenticated" => Self::NoUnauthenticated,
-            "dmca-violation" => Self::DmcaViolation,
-            "doxxing" => Self::Doxxing,
             "porn" => Self::Porn,
             "sexual" => Self::Sexual,
             "nudity" => Self::Nudity,
-            "nsfl" => Self::Nsfl,
-            "gore" => Self::Gore,
+            "graphic-media" => Self::GraphicMedia,
+            "bot" => Self::Bot,
             _ => Self::Other(jacquard_common::CowStr::from(s)),
         }
     }
@@ -971,16 +959,13 @@ impl jacquard_common::IntoStatic for LabelValue<'_> {
     fn into_static(self) -> Self::Output {
         match self {
             LabelValue::Hide => LabelValue::Hide,
-            LabelValue::NoPromote => LabelValue::NoPromote,
             LabelValue::Warn => LabelValue::Warn,
             LabelValue::NoUnauthenticated => LabelValue::NoUnauthenticated,
-            LabelValue::DmcaViolation => LabelValue::DmcaViolation,
-            LabelValue::Doxxing => LabelValue::Doxxing,
             LabelValue::Porn => LabelValue::Porn,
             LabelValue::Sexual => LabelValue::Sexual,
             LabelValue::Nudity => LabelValue::Nudity,
-            LabelValue::Nsfl => LabelValue::Nsfl,
-            LabelValue::Gore => LabelValue::Gore,
+            LabelValue::GraphicMedia => LabelValue::GraphicMedia,
+            LabelValue::Bot => LabelValue::Bot,
             LabelValue::Other(v) => LabelValue::Other(v.into_static()),
         }
     }
@@ -1025,8 +1010,8 @@ pub mod label_value_definition_state {
     pub trait State: sealed::Sealed {
         type Identifier;
         type Severity;
-        type Locales;
         type Blurs;
+        type Locales;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
@@ -1034,8 +1019,8 @@ pub mod label_value_definition_state {
     impl State for Empty {
         type Identifier = Unset;
         type Severity = Unset;
-        type Locales = Unset;
         type Blurs = Unset;
+        type Locales = Unset;
     }
     ///State transition - sets the `identifier` field to Set
     pub struct SetIdentifier<S: State = Empty>(PhantomData<fn() -> S>);
@@ -1043,8 +1028,8 @@ pub mod label_value_definition_state {
     impl<S: State> State for SetIdentifier<S> {
         type Identifier = Set<members::identifier>;
         type Severity = S::Severity;
-        type Locales = S::Locales;
         type Blurs = S::Blurs;
+        type Locales = S::Locales;
     }
     ///State transition - sets the `severity` field to Set
     pub struct SetSeverity<S: State = Empty>(PhantomData<fn() -> S>);
@@ -1052,17 +1037,8 @@ pub mod label_value_definition_state {
     impl<S: State> State for SetSeverity<S> {
         type Identifier = S::Identifier;
         type Severity = Set<members::severity>;
+        type Blurs = S::Blurs;
         type Locales = S::Locales;
-        type Blurs = S::Blurs;
-    }
-    ///State transition - sets the `locales` field to Set
-    pub struct SetLocales<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetLocales<S> {}
-    impl<S: State> State for SetLocales<S> {
-        type Identifier = S::Identifier;
-        type Severity = S::Severity;
-        type Locales = Set<members::locales>;
-        type Blurs = S::Blurs;
     }
     ///State transition - sets the `blurs` field to Set
     pub struct SetBlurs<S: State = Empty>(PhantomData<fn() -> S>);
@@ -1070,8 +1046,17 @@ pub mod label_value_definition_state {
     impl<S: State> State for SetBlurs<S> {
         type Identifier = S::Identifier;
         type Severity = S::Severity;
-        type Locales = S::Locales;
         type Blurs = Set<members::blurs>;
+        type Locales = S::Locales;
+    }
+    ///State transition - sets the `locales` field to Set
+    pub struct SetLocales<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetLocales<S> {}
+    impl<S: State> State for SetLocales<S> {
+        type Identifier = S::Identifier;
+        type Severity = S::Severity;
+        type Blurs = S::Blurs;
+        type Locales = Set<members::locales>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
@@ -1080,10 +1065,10 @@ pub mod label_value_definition_state {
         pub struct identifier(());
         ///Marker type for the `severity` field
         pub struct severity(());
-        ///Marker type for the `locales` field
-        pub struct locales(());
         ///Marker type for the `blurs` field
         pub struct blurs(());
+        ///Marker type for the `locales` field
+        pub struct locales(());
     }
 }
 
@@ -1231,8 +1216,8 @@ where
     S: label_value_definition_state::State,
     S::Identifier: label_value_definition_state::IsSet,
     S::Severity: label_value_definition_state::IsSet,
-    S::Locales: label_value_definition_state::IsSet,
     S::Blurs: label_value_definition_state::IsSet,
+    S::Locales: label_value_definition_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> LabelValueDefinition<'a> {
@@ -1340,49 +1325,49 @@ pub mod label_value_definition_strings_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Name;
         type Lang;
+        type Name;
         type Description;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Name = Unset;
         type Lang = Unset;
+        type Name = Unset;
         type Description = Unset;
-    }
-    ///State transition - sets the `name` field to Set
-    pub struct SetName<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetName<S> {}
-    impl<S: State> State for SetName<S> {
-        type Name = Set<members::name>;
-        type Lang = S::Lang;
-        type Description = S::Description;
     }
     ///State transition - sets the `lang` field to Set
     pub struct SetLang<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetLang<S> {}
     impl<S: State> State for SetLang<S> {
-        type Name = S::Name;
         type Lang = Set<members::lang>;
+        type Name = S::Name;
+        type Description = S::Description;
+    }
+    ///State transition - sets the `name` field to Set
+    pub struct SetName<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetName<S> {}
+    impl<S: State> State for SetName<S> {
+        type Lang = S::Lang;
+        type Name = Set<members::name>;
         type Description = S::Description;
     }
     ///State transition - sets the `description` field to Set
     pub struct SetDescription<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetDescription<S> {}
     impl<S: State> State for SetDescription<S> {
-        type Name = S::Name;
         type Lang = S::Lang;
+        type Name = S::Name;
         type Description = Set<members::description>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `name` field
-        pub struct name(());
         ///Marker type for the `lang` field
         pub struct lang(());
+        ///Marker type for the `name` field
+        pub struct name(());
         ///Marker type for the `description` field
         pub struct description(());
     }
@@ -1483,8 +1468,8 @@ where
 impl<'a, S> LabelValueDefinitionStringsBuilder<'a, S>
 where
     S: label_value_definition_strings_state::State,
-    S::Name: label_value_definition_strings_state::IsSet,
     S::Lang: label_value_definition_strings_state::IsSet,
+    S::Name: label_value_definition_strings_state::IsSet,
     S::Description: label_value_definition_strings_state::IsSet,
 {
     /// Build the final struct

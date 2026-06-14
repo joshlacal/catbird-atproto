@@ -11,6 +11,9 @@
 )]
 #[serde(rename_all = "camelCase")]
 pub struct SendInteractions<'a> {
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub feed: std::option::Option<jacquard_common::types::string::AtUri<'a>>,
     #[serde(borrow)]
     pub interactions: Vec<crate::generated::app_bsky::feed::Interaction<'a>>,
 }
@@ -50,8 +53,10 @@ pub mod send_interactions_state {
 /// Builder for constructing an instance of this type
 pub struct SendInteractionsBuilder<'a, S: send_interactions_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named:
-        (::core::option::Option<Vec<crate::generated::app_bsky::feed::Interaction<'a>>>,),
+    __unsafe_private_named: (
+        ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
+        ::core::option::Option<Vec<crate::generated::app_bsky::feed::Interaction<'a>>>,
+    ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
 
@@ -67,9 +72,25 @@ impl<'a> SendInteractionsBuilder<'a, send_interactions_state::Empty> {
     pub fn new() -> Self {
         SendInteractionsBuilder {
             _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
+            __unsafe_private_named: (None, None),
             _phantom: ::core::marker::PhantomData,
         }
+    }
+}
+
+impl<'a, S: send_interactions_state::State> SendInteractionsBuilder<'a, S> {
+    /// Set the `feed` field (optional)
+    pub fn feed(
+        mut self,
+        value: impl Into<Option<jacquard_common::types::string::AtUri<'a>>>,
+    ) -> Self {
+        self.__unsafe_private_named.0 = value.into();
+        self
+    }
+    /// Set the `feed` field to an Option value (optional)
+    pub fn maybe_feed(mut self, value: Option<jacquard_common::types::string::AtUri<'a>>) -> Self {
+        self.__unsafe_private_named.0 = value;
+        self
     }
 }
 
@@ -83,7 +104,7 @@ where
         mut self,
         value: impl Into<Vec<crate::generated::app_bsky::feed::Interaction<'a>>>,
     ) -> SendInteractionsBuilder<'a, send_interactions_state::SetInteractions<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
         SendInteractionsBuilder {
             _phantom_state: ::core::marker::PhantomData,
             __unsafe_private_named: self.__unsafe_private_named,
@@ -100,7 +121,8 @@ where
     /// Build the final struct
     pub fn build(self) -> SendInteractions<'a> {
         SendInteractions {
-            interactions: self.__unsafe_private_named.0.unwrap(),
+            feed: self.__unsafe_private_named.0,
+            interactions: self.__unsafe_private_named.1.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -113,7 +135,8 @@ where
         >,
     ) -> SendInteractions<'a> {
         SendInteractions {
-            interactions: self.__unsafe_private_named.0.unwrap(),
+            feed: self.__unsafe_private_named.0,
+            interactions: self.__unsafe_private_named.1.unwrap(),
             extra_data: Some(extra_data),
         }
     }

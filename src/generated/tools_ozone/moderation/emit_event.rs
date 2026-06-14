@@ -22,6 +22,12 @@ pub struct EmitEvent<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub mod_tool: std::option::Option<crate::generated::tools_ozone::moderation::ModTool<'a>>,
+    /// Optional report-level targeting. If provided, this event will be linked to specific reports and reporters may be notified.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub report_action: std::option::Option<
+        crate::generated::tools_ozone::moderation::emit_event::ReportAction<'a>,
+    >,
     #[serde(borrow)]
     pub subject: EmitEventSubject<'a>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
@@ -39,51 +45,51 @@ pub mod emit_event_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type CreatedBy;
-        type Subject;
         type Event;
+        type Subject;
+        type CreatedBy;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type CreatedBy = Unset;
-        type Subject = Unset;
         type Event = Unset;
-    }
-    ///State transition - sets the `created_by` field to Set
-    pub struct SetCreatedBy<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedBy<S> {}
-    impl<S: State> State for SetCreatedBy<S> {
-        type CreatedBy = Set<members::created_by>;
-        type Subject = S::Subject;
-        type Event = S::Event;
-    }
-    ///State transition - sets the `subject` field to Set
-    pub struct SetSubject<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetSubject<S> {}
-    impl<S: State> State for SetSubject<S> {
-        type CreatedBy = S::CreatedBy;
-        type Subject = Set<members::subject>;
-        type Event = S::Event;
+        type Subject = Unset;
+        type CreatedBy = Unset;
     }
     ///State transition - sets the `event` field to Set
     pub struct SetEvent<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetEvent<S> {}
     impl<S: State> State for SetEvent<S> {
-        type CreatedBy = S::CreatedBy;
-        type Subject = S::Subject;
         type Event = Set<members::event>;
+        type Subject = S::Subject;
+        type CreatedBy = S::CreatedBy;
+    }
+    ///State transition - sets the `subject` field to Set
+    pub struct SetSubject<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetSubject<S> {}
+    impl<S: State> State for SetSubject<S> {
+        type Event = S::Event;
+        type Subject = Set<members::subject>;
+        type CreatedBy = S::CreatedBy;
+    }
+    ///State transition - sets the `created_by` field to Set
+    pub struct SetCreatedBy<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCreatedBy<S> {}
+    impl<S: State> State for SetCreatedBy<S> {
+        type Event = S::Event;
+        type Subject = S::Subject;
+        type CreatedBy = Set<members::created_by>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `created_by` field
-        pub struct created_by(());
-        ///Marker type for the `subject` field
-        pub struct subject(());
         ///Marker type for the `event` field
         pub struct event(());
+        ///Marker type for the `subject` field
+        pub struct subject(());
+        ///Marker type for the `created_by` field
+        pub struct created_by(());
     }
 }
 
@@ -95,6 +101,9 @@ pub struct EmitEventBuilder<'a, S: emit_event_state::State> {
         ::core::option::Option<EmitEventEvent<'a>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
         ::core::option::Option<crate::generated::tools_ozone::moderation::ModTool<'a>>,
+        ::core::option::Option<
+            crate::generated::tools_ozone::moderation::emit_event::ReportAction<'a>,
+        >,
         ::core::option::Option<EmitEventSubject<'a>>,
         ::core::option::Option<Vec<jacquard_common::types::string::Cid<'a>>>,
     ),
@@ -113,7 +122,7 @@ impl<'a> EmitEventBuilder<'a, emit_event_state::Empty> {
     pub fn new() -> Self {
         EmitEventBuilder {
             _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None, None),
+            __unsafe_private_named: (None, None, None, None, None, None, None),
             _phantom: ::core::marker::PhantomData,
         }
     }
@@ -189,6 +198,27 @@ impl<'a, S: emit_event_state::State> EmitEventBuilder<'a, S> {
     }
 }
 
+impl<'a, S: emit_event_state::State> EmitEventBuilder<'a, S> {
+    /// Set the `reportAction` field (optional)
+    pub fn report_action(
+        mut self,
+        value: impl Into<
+            Option<crate::generated::tools_ozone::moderation::emit_event::ReportAction<'a>>,
+        >,
+    ) -> Self {
+        self.__unsafe_private_named.4 = value.into();
+        self
+    }
+    /// Set the `reportAction` field to an Option value (optional)
+    pub fn maybe_report_action(
+        mut self,
+        value: Option<crate::generated::tools_ozone::moderation::emit_event::ReportAction<'a>>,
+    ) -> Self {
+        self.__unsafe_private_named.4 = value;
+        self
+    }
+}
+
 impl<'a, S> EmitEventBuilder<'a, S>
 where
     S: emit_event_state::State,
@@ -199,7 +229,7 @@ where
         mut self,
         value: impl Into<EmitEventSubject<'a>>,
     ) -> EmitEventBuilder<'a, emit_event_state::SetSubject<S>> {
-        self.__unsafe_private_named.4 = ::core::option::Option::Some(value.into());
+        self.__unsafe_private_named.5 = ::core::option::Option::Some(value.into());
         EmitEventBuilder {
             _phantom_state: ::core::marker::PhantomData,
             __unsafe_private_named: self.__unsafe_private_named,
@@ -214,7 +244,7 @@ impl<'a, S: emit_event_state::State> EmitEventBuilder<'a, S> {
         mut self,
         value: impl Into<Option<Vec<jacquard_common::types::string::Cid<'a>>>>,
     ) -> Self {
-        self.__unsafe_private_named.5 = value.into();
+        self.__unsafe_private_named.6 = value.into();
         self
     }
     /// Set the `subjectBlobCids` field to an Option value (optional)
@@ -222,7 +252,7 @@ impl<'a, S: emit_event_state::State> EmitEventBuilder<'a, S> {
         mut self,
         value: Option<Vec<jacquard_common::types::string::Cid<'a>>>,
     ) -> Self {
-        self.__unsafe_private_named.5 = value;
+        self.__unsafe_private_named.6 = value;
         self
     }
 }
@@ -230,9 +260,9 @@ impl<'a, S: emit_event_state::State> EmitEventBuilder<'a, S> {
 impl<'a, S> EmitEventBuilder<'a, S>
 where
     S: emit_event_state::State,
-    S::CreatedBy: emit_event_state::IsSet,
-    S::Subject: emit_event_state::IsSet,
     S::Event: emit_event_state::IsSet,
+    S::Subject: emit_event_state::IsSet,
+    S::CreatedBy: emit_event_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> EmitEvent<'a> {
@@ -241,8 +271,9 @@ where
             event: self.__unsafe_private_named.1.unwrap(),
             external_id: self.__unsafe_private_named.2,
             mod_tool: self.__unsafe_private_named.3,
-            subject: self.__unsafe_private_named.4.unwrap(),
-            subject_blob_cids: self.__unsafe_private_named.5,
+            report_action: self.__unsafe_private_named.4,
+            subject: self.__unsafe_private_named.5.unwrap(),
+            subject_blob_cids: self.__unsafe_private_named.6,
             extra_data: Default::default(),
         }
     }
@@ -259,8 +290,9 @@ where
             event: self.__unsafe_private_named.1.unwrap(),
             external_id: self.__unsafe_private_named.2,
             mod_tool: self.__unsafe_private_named.3,
-            subject: self.__unsafe_private_named.4.unwrap(),
-            subject_blob_cids: self.__unsafe_private_named.5,
+            report_action: self.__unsafe_private_named.4,
+            subject: self.__unsafe_private_named.5.unwrap(),
+            subject_blob_cids: self.__unsafe_private_named.6,
             extra_data: Some(extra_data),
         }
     }
@@ -324,6 +356,10 @@ pub enum EmitEventEvent<'a> {
     #[serde(rename = "tools.ozone.moderation.defs#ageAssuranceOverrideEvent")]
     AgeAssuranceOverrideEvent(
         Box<crate::generated::tools_ozone::moderation::AgeAssuranceOverrideEvent<'a>>,
+    ),
+    #[serde(rename = "tools.ozone.moderation.defs#ageAssurancePurgeEvent")]
+    AgeAssurancePurgeEvent(
+        Box<crate::generated::tools_ozone::moderation::AgeAssurancePurgeEvent<'a>>,
     ),
     #[serde(rename = "tools.ozone.moderation.defs#revokeAccountCredentialsEvent")]
     RevokeAccountCredentialsEvent(
@@ -433,4 +469,315 @@ impl jacquard_common::xrpc::XrpcEndpoint for EmitEventRequest {
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Request<'de> = EmitEvent<'de>;
     type Response = EmitEventResponse;
+}
+
+/// Target specific reports when emitting a moderation event
+#[jacquard_derive::lexicon]
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic,
+    Default,
+)]
+#[serde(rename_all = "camelCase")]
+pub struct ReportAction<'a> {
+    /// Target ALL reports on the subject
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    pub all: std::option::Option<bool>,
+    /// Target specific report IDs
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    pub ids: std::option::Option<Vec<i64>>,
+    /// Note to send to reporter(s) when actioning their report
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub note: std::option::Option<jacquard_common::CowStr<'a>>,
+    /// Target reports matching these report types on the subject (fully qualified NSIDs)
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub types: std::option::Option<Vec<jacquard_common::CowStr<'a>>>,
+}
+
+fn lexicon_doc_tools_ozone_moderation_emitEvent() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static>
+{
+    ::jacquard_lexicon::lexicon::LexiconDoc {
+        lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
+        id: ::jacquard_common::CowStr::new_static("tools.ozone.moderation.emitEvent"),
+        revision: None,
+        description: None,
+        defs: {
+            let mut map = ::std::collections::BTreeMap::new();
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("main"),
+                ::jacquard_lexicon::lexicon::LexUserType::XrpcProcedure(::jacquard_lexicon::lexicon::LexXrpcProcedure {
+                    description: None,
+                    parameters: None,
+                    input: Some(::jacquard_lexicon::lexicon::LexXrpcBody {
+                        description: None,
+                        encoding: ::jacquard_common::CowStr::new_static(
+                            "application/json",
+                        ),
+                        schema: Some(
+                            ::jacquard_lexicon::lexicon::LexXrpcBodySchema::Object(::jacquard_lexicon::lexicon::LexObject {
+                                description: None,
+                                required: Some(
+                                    vec![
+                                        ::jacquard_common::smol_str::SmolStr::new_static("event"),
+                                        ::jacquard_common::smol_str::SmolStr::new_static("subject"),
+                                        ::jacquard_common::smol_str::SmolStr::new_static("createdBy")
+                                    ],
+                                ),
+                                nullable: None,
+                                properties: {
+                                    #[allow(unused_mut)]
+                                    let mut map = ::std::collections::BTreeMap::new();
+                                    map.insert(
+                                        ::jacquard_common::smol_str::SmolStr::new_static(
+                                            "createdBy",
+                                        ),
+                                        ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                            description: None,
+                                            format: Some(
+                                                ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                            ),
+                                            default: None,
+                                            min_length: None,
+                                            max_length: None,
+                                            min_graphemes: None,
+                                            max_graphemes: None,
+                                            r#enum: None,
+                                            r#const: None,
+                                            known_values: None,
+                                        }),
+                                    );
+                                    map.insert(
+                                        ::jacquard_common::smol_str::SmolStr::new_static("event"),
+                                        ::jacquard_lexicon::lexicon::LexObjectProperty::Union(::jacquard_lexicon::lexicon::LexRefUnion {
+                                            description: None,
+                                            refs: vec![
+                                                ::jacquard_common::CowStr::new_static("tools.ozone.moderation.defs#modEventTakedown"),
+                                                ::jacquard_common::CowStr::new_static("tools.ozone.moderation.defs#modEventAcknowledge"),
+                                                ::jacquard_common::CowStr::new_static("tools.ozone.moderation.defs#modEventEscalate"),
+                                                ::jacquard_common::CowStr::new_static("tools.ozone.moderation.defs#modEventComment"),
+                                                ::jacquard_common::CowStr::new_static("tools.ozone.moderation.defs#modEventLabel"),
+                                                ::jacquard_common::CowStr::new_static("tools.ozone.moderation.defs#modEventReport"),
+                                                ::jacquard_common::CowStr::new_static("tools.ozone.moderation.defs#modEventMute"),
+                                                ::jacquard_common::CowStr::new_static("tools.ozone.moderation.defs#modEventUnmute"),
+                                                ::jacquard_common::CowStr::new_static("tools.ozone.moderation.defs#modEventMuteReporter"),
+                                                ::jacquard_common::CowStr::new_static("tools.ozone.moderation.defs#modEventUnmuteReporter"),
+                                                ::jacquard_common::CowStr::new_static("tools.ozone.moderation.defs#modEventReverseTakedown"),
+                                                ::jacquard_common::CowStr::new_static("tools.ozone.moderation.defs#modEventResolveAppeal"),
+                                                ::jacquard_common::CowStr::new_static("tools.ozone.moderation.defs#modEventEmail"),
+                                                ::jacquard_common::CowStr::new_static("tools.ozone.moderation.defs#modEventDivert"),
+                                                ::jacquard_common::CowStr::new_static("tools.ozone.moderation.defs#modEventTag"),
+                                                ::jacquard_common::CowStr::new_static("tools.ozone.moderation.defs#accountEvent"),
+                                                ::jacquard_common::CowStr::new_static("tools.ozone.moderation.defs#identityEvent"),
+                                                ::jacquard_common::CowStr::new_static("tools.ozone.moderation.defs#recordEvent"),
+                                                ::jacquard_common::CowStr::new_static("tools.ozone.moderation.defs#modEventPriorityScore"),
+                                                ::jacquard_common::CowStr::new_static("tools.ozone.moderation.defs#ageAssuranceEvent"),
+                                                ::jacquard_common::CowStr::new_static("tools.ozone.moderation.defs#ageAssuranceOverrideEvent"),
+                                                ::jacquard_common::CowStr::new_static("tools.ozone.moderation.defs#ageAssurancePurgeEvent"),
+                                                ::jacquard_common::CowStr::new_static("tools.ozone.moderation.defs#revokeAccountCredentialsEvent"),
+                                                ::jacquard_common::CowStr::new_static("tools.ozone.moderation.defs#scheduleTakedownEvent"),
+                                                ::jacquard_common::CowStr::new_static("tools.ozone.moderation.defs#cancelScheduledTakedownEvent")
+                                            ],
+                                            closed: None,
+                                        }),
+                                    );
+                                    map.insert(
+                                        ::jacquard_common::smol_str::SmolStr::new_static(
+                                            "externalId",
+                                        ),
+                                        ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                            description: Some(
+                                                ::jacquard_common::CowStr::new_static(
+                                                    "An optional external ID for the event, used to deduplicate events from external systems. Fails when an event of same type with the same external ID exists for the same subject.",
+                                                ),
+                                            ),
+                                            format: None,
+                                            default: None,
+                                            min_length: None,
+                                            max_length: None,
+                                            min_graphemes: None,
+                                            max_graphemes: None,
+                                            r#enum: None,
+                                            r#const: None,
+                                            known_values: None,
+                                        }),
+                                    );
+                                    map.insert(
+                                        ::jacquard_common::smol_str::SmolStr::new_static("modTool"),
+                                        ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                            description: None,
+                                            r#ref: ::jacquard_common::CowStr::new_static(
+                                                "tools.ozone.moderation.defs#modTool",
+                                            ),
+                                        }),
+                                    );
+                                    map.insert(
+                                        ::jacquard_common::smol_str::SmolStr::new_static(
+                                            "reportAction",
+                                        ),
+                                        ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                            description: None,
+                                            r#ref: ::jacquard_common::CowStr::new_static(
+                                                "#reportAction",
+                                            ),
+                                        }),
+                                    );
+                                    map.insert(
+                                        ::jacquard_common::smol_str::SmolStr::new_static("subject"),
+                                        ::jacquard_lexicon::lexicon::LexObjectProperty::Union(::jacquard_lexicon::lexicon::LexRefUnion {
+                                            description: None,
+                                            refs: vec![
+                                                ::jacquard_common::CowStr::new_static("com.atproto.admin.defs#repoRef"),
+                                                ::jacquard_common::CowStr::new_static("com.atproto.repo.strongRef")
+                                            ],
+                                            closed: None,
+                                        }),
+                                    );
+                                    map.insert(
+                                        ::jacquard_common::smol_str::SmolStr::new_static(
+                                            "subjectBlobCids",
+                                        ),
+                                        ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                            description: None,
+                                            items: ::jacquard_lexicon::lexicon::LexArrayItem::String(::jacquard_lexicon::lexicon::LexString {
+                                                description: None,
+                                                format: Some(
+                                                    ::jacquard_lexicon::lexicon::LexStringFormat::Cid,
+                                                ),
+                                                default: None,
+                                                min_length: None,
+                                                max_length: None,
+                                                min_graphemes: None,
+                                                max_graphemes: None,
+                                                r#enum: None,
+                                                r#const: None,
+                                                known_values: None,
+                                            }),
+                                            min_length: None,
+                                            max_length: None,
+                                        }),
+                                    );
+                                    map
+                                },
+                            }),
+                        ),
+                    }),
+                    output: None,
+                    errors: None,
+                }),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("reportAction"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
+                            "Target specific reports when emitting a moderation event",
+                        ),
+                    ),
+                    required: None,
+                    nullable: None,
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::std::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("all"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
+                                description: None,
+                                default: None,
+                                r#const: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("ids"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Target specific report IDs",
+                                    ),
+                                ),
+                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                    description: None,
+                                    default: None,
+                                    minimum: None,
+                                    maximum: None,
+                                    r#enum: None,
+                                    r#const: None,
+                                }),
+                                min_length: None,
+                                max_length: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("note"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Note to send to reporter(s) when actioning their report",
+                                    ),
+                                ),
+                                format: None,
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("types"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Target reports matching these report types on the subject (fully qualified NSIDs)",
+                                    ),
+                                ),
+                                items: ::jacquard_lexicon::lexicon::LexArrayItem::String(::jacquard_lexicon::lexicon::LexString {
+                                    description: None,
+                                    format: None,
+                                    default: None,
+                                    min_length: None,
+                                    max_length: None,
+                                    min_graphemes: None,
+                                    max_graphemes: None,
+                                    r#enum: None,
+                                    r#const: None,
+                                    known_values: None,
+                                }),
+                                min_length: None,
+                                max_length: None,
+                            }),
+                        );
+                        map
+                    },
+                }),
+            );
+            map
+        },
+    }
+}
+
+impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ReportAction<'a> {
+    fn nsid() -> &'static str {
+        "tools.ozone.moderation.emitEvent"
+    }
+    fn def_name() -> &'static str {
+        "reportAction"
+    }
+    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_tools_ozone_moderation_emitEvent()
+    }
+    fn validate(
+        &self,
+    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
 }

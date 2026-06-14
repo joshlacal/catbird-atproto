@@ -36,7 +36,12 @@ Features (`Cargo.toml`):
 
 ### Lexicon source
 
-The canonical Rust codegen reads from **`mls-ds/lexicon/`** (flat-filename convention, e.g. `blue/catbird/mlsChat/blue.catbird.mlsChat.sendMessage.json`). These schemas are kept in lock-step with Petrel's lexicons in `Petrel/Generator/lexicons/` — treat both as the same contract and update them together when a lexicon changes.
+The canonical Rust codegen reads the same split corpus as the Swift/Kotlin generator after the Petrel restructure:
+
+1. **Petrel core/reference**: `Petrel/generator/lexicons/`
+2. **Catbird overlay**: `PetrelCatbird/lexicons/`
+
+`mls-codegen` stages those directories in order, so later overlay files shadow earlier core files with the same relative path. `mls-ds/lexicon/` is legacy input for scoped server-era regeneration and must not be used as the canonical catbird-atproto regeneration source.
 
 ### Regenerate
 
@@ -49,11 +54,13 @@ cd catbird-atproto && jj new && cd ..
 ./scripts/regenerate-atproto-types.sh
 ```
 
-The script runs the `mls-codegen` crate (`gen-lexicons` binary, `mls-ds/codegen/`) against `mls-ds/lexicon`, writes into `catbird-atproto/src/generated/`, then `rustfmt`s the output:
+The script runs the `mls-codegen` crate (`gen-lexicons` binary, `mls-ds/codegen/`) against Petrel core plus PetrelCatbird overlay lexicons, writes into `catbird-atproto/src/generated/`, then `rustfmt`s the output:
 
 ```bash
 cargo run --manifest-path mls-ds/Cargo.toml -p mls-codegen -- \
-    --lexdir mls-ds/lexicon --outdir catbird-atproto/src/generated
+    --lexdir Petrel/generator/lexicons \
+    --lexdir PetrelCatbird/lexicons \
+    --outdir catbird-atproto/src/generated
 ```
 
 After regenerating: `cd catbird-atproto && jj diff` to verify, then rebuild this crate **and every consumer** ([Consumers](#consumers)) and reconcile breakage. If output is wrong, `jj op undo` and fix the **lexicon or the generator** — never patch generated files. For the cross-language path (Swift/Kotlin too), use the `/regen-lexicons` skill.
@@ -94,7 +101,7 @@ When a lexicon contract changes, the reconcile loop is: edit lexicon → `regene
 
 - **Jacquard struct evolution breaks downstream literal init.** Adding **any** field to a generated struct — even `Option<T>` — breaks every consumer that uses `Foo { ... }` struct-literal initialization, because Rust requires all fields. A lexicon change that "just adds an optional field" is a breaking change for consumers. Prefer constructing via the `catbird::` `InputData` builders / `From` impls in `lib.rs` rather than naming generated structs directly, and expect to touch consumer call sites after a regen. (Long-term fix is upstream `#[non_exhaustive]` / `#[derive(Default)]` on generated types.)
 - **`chat_bsky` is generated but not fully wired.** The `chat.bsky.*` types exist under `src/generated/chat_bsky/` but the module declaration is deferred. Wire it in (module decl + feature gate, mirroring `blue_catbird`) only when the first Rust consumer — BIRDaemon, nest chat-poll, a mod tool — actually needs it.
-- **Dual-sourced lexicons must stay in sync.** `mls-ds/lexicon/` (Rust codegen input) and `Petrel/Generator/lexicons/` (Swift/Kotlin input) define the same contract in different file layouts. Editing one without the other silently diverges the type surface across languages.
+- **PetrelCatbird is the Catbird-private overlay.** Update `PetrelCatbird/lexicons/` for `blue.catbird.*` and `place.stream.*`; update `Petrel/generator/lexicons/` for public ATProto/Bluesky lexicons. The Rust script consumes both, matching the Swift/Kotlin manifest.
 - **Always checkpoint before regenerating.** Generators have overwritten uncommitted work. `jj new` (or commit/stash) first; `jj diff` after; `jj op undo` to roll back.
 
 ## Coding Style

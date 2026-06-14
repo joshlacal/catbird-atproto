@@ -355,8 +355,8 @@ pub mod group_convo_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type JoinRequestCount;
         type CreatedAt;
+        type JoinRequestCount;
         type LockStatus;
         type MemberCount;
         type MemberLimit;
@@ -366,30 +366,30 @@ pub mod group_convo_state {
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type JoinRequestCount = Unset;
         type CreatedAt = Unset;
+        type JoinRequestCount = Unset;
         type LockStatus = Unset;
         type MemberCount = Unset;
         type MemberLimit = Unset;
         type Name = Unset;
     }
-    ///State transition - sets the `join_request_count` field to Set
-    pub struct SetJoinRequestCount<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetJoinRequestCount<S> {}
-    impl<S: State> State for SetJoinRequestCount<S> {
-        type JoinRequestCount = Set<members::join_request_count>;
-        type CreatedAt = S::CreatedAt;
+    ///State transition - sets the `created_at` field to Set
+    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
+    impl<S: State> State for SetCreatedAt<S> {
+        type CreatedAt = Set<members::created_at>;
+        type JoinRequestCount = S::JoinRequestCount;
         type LockStatus = S::LockStatus;
         type MemberCount = S::MemberCount;
         type MemberLimit = S::MemberLimit;
         type Name = S::Name;
     }
-    ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type JoinRequestCount = S::JoinRequestCount;
-        type CreatedAt = Set<members::created_at>;
+    ///State transition - sets the `join_request_count` field to Set
+    pub struct SetJoinRequestCount<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetJoinRequestCount<S> {}
+    impl<S: State> State for SetJoinRequestCount<S> {
+        type CreatedAt = S::CreatedAt;
+        type JoinRequestCount = Set<members::join_request_count>;
         type LockStatus = S::LockStatus;
         type MemberCount = S::MemberCount;
         type MemberLimit = S::MemberLimit;
@@ -399,8 +399,8 @@ pub mod group_convo_state {
     pub struct SetLockStatus<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetLockStatus<S> {}
     impl<S: State> State for SetLockStatus<S> {
-        type JoinRequestCount = S::JoinRequestCount;
         type CreatedAt = S::CreatedAt;
+        type JoinRequestCount = S::JoinRequestCount;
         type LockStatus = Set<members::lock_status>;
         type MemberCount = S::MemberCount;
         type MemberLimit = S::MemberLimit;
@@ -410,8 +410,8 @@ pub mod group_convo_state {
     pub struct SetMemberCount<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetMemberCount<S> {}
     impl<S: State> State for SetMemberCount<S> {
-        type JoinRequestCount = S::JoinRequestCount;
         type CreatedAt = S::CreatedAt;
+        type JoinRequestCount = S::JoinRequestCount;
         type LockStatus = S::LockStatus;
         type MemberCount = Set<members::member_count>;
         type MemberLimit = S::MemberLimit;
@@ -421,8 +421,8 @@ pub mod group_convo_state {
     pub struct SetMemberLimit<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetMemberLimit<S> {}
     impl<S: State> State for SetMemberLimit<S> {
-        type JoinRequestCount = S::JoinRequestCount;
         type CreatedAt = S::CreatedAt;
+        type JoinRequestCount = S::JoinRequestCount;
         type LockStatus = S::LockStatus;
         type MemberCount = S::MemberCount;
         type MemberLimit = Set<members::member_limit>;
@@ -432,8 +432,8 @@ pub mod group_convo_state {
     pub struct SetName<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetName<S> {}
     impl<S: State> State for SetName<S> {
-        type JoinRequestCount = S::JoinRequestCount;
         type CreatedAt = S::CreatedAt;
+        type JoinRequestCount = S::JoinRequestCount;
         type LockStatus = S::LockStatus;
         type MemberCount = S::MemberCount;
         type MemberLimit = S::MemberLimit;
@@ -442,10 +442,10 @@ pub mod group_convo_state {
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `join_request_count` field
-        pub struct join_request_count(());
         ///Marker type for the `created_at` field
         pub struct created_at(());
+        ///Marker type for the `join_request_count` field
+        pub struct join_request_count(());
         ///Marker type for the `lock_status` field
         pub struct lock_status(());
         ///Marker type for the `member_count` field
@@ -626,8 +626,8 @@ where
 impl<'a, S> GroupConvoBuilder<'a, S>
 where
     S: group_convo_state::State,
-    S::JoinRequestCount: group_convo_state::IsSet,
     S::CreatedAt: group_convo_state::IsSet,
+    S::JoinRequestCount: group_convo_state::IsSet,
     S::LockStatus: group_convo_state::IsSet,
     S::MemberCount: group_convo_state::IsSet,
     S::MemberLimit: group_convo_state::IsSet,

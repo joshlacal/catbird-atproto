@@ -36,50 +36,50 @@ pub mod viewer_count_state {
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
         type Streamer;
-        type Count;
         type Server;
+        type Count;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
         type Streamer = Unset;
-        type Count = Unset;
         type Server = Unset;
+        type Count = Unset;
     }
     ///State transition - sets the `streamer` field to Set
     pub struct SetStreamer<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetStreamer<S> {}
     impl<S: State> State for SetStreamer<S> {
         type Streamer = Set<members::streamer>;
+        type Server = S::Server;
         type Count = S::Count;
-        type Server = S::Server;
-    }
-    ///State transition - sets the `count` field to Set
-    pub struct SetCount<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCount<S> {}
-    impl<S: State> State for SetCount<S> {
-        type Streamer = S::Streamer;
-        type Count = Set<members::count>;
-        type Server = S::Server;
     }
     ///State transition - sets the `server` field to Set
     pub struct SetServer<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetServer<S> {}
     impl<S: State> State for SetServer<S> {
         type Streamer = S::Streamer;
-        type Count = S::Count;
         type Server = Set<members::server>;
+        type Count = S::Count;
+    }
+    ///State transition - sets the `count` field to Set
+    pub struct SetCount<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCount<S> {}
+    impl<S: State> State for SetCount<S> {
+        type Streamer = S::Streamer;
+        type Server = S::Server;
+        type Count = Set<members::count>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
         ///Marker type for the `streamer` field
         pub struct streamer(());
-        ///Marker type for the `count` field
-        pub struct count(());
         ///Marker type for the `server` field
         pub struct server(());
+        ///Marker type for the `count` field
+        pub struct count(());
     }
 }
 
@@ -193,8 +193,8 @@ impl<'a, S> ViewerCountBuilder<'a, S>
 where
     S: viewer_count_state::State,
     S::Streamer: viewer_count_state::IsSet,
-    S::Count: viewer_count_state::IsSet,
     S::Server: viewer_count_state::IsSet,
+    S::Count: viewer_count_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> ViewerCount<'a> {

@@ -507,6 +507,53 @@ fn lexicon_doc_app_bsky_draft_defs() -> ::jacquard_lexicon::lexicon::LexiconDoc<
                 ),
             );
             map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("draftEmbedGallery"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        description: None,
+                        required: Some(vec![::jacquard_common::smol_str::SmolStr::new_static(
+                            "items",
+                        )]),
+                        nullable: None,
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::std::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("items"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        description: None,
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "#draftEmbedGalleryItems",
+                                        ),
+                                    },
+                                ),
+                            );
+                            map
+                        },
+                    },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("draftEmbedGalleryItems"),
+                ::jacquard_lexicon::lexicon::LexUserType::Array(
+                    ::jacquard_lexicon::lexicon::LexArray {
+                        description: None,
+                        items: ::jacquard_lexicon::lexicon::LexArrayItem::Union(
+                            ::jacquard_lexicon::lexicon::LexRefUnion {
+                                description: None,
+                                refs: vec![::jacquard_common::CowStr::new_static(
+                                    "#draftEmbedImage",
+                                )],
+                                closed: None,
+                            },
+                        ),
+                        min_length: None,
+                        max_length: Some(20usize),
+                    },
+                ),
+            );
+            map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("draftEmbedImage"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
@@ -709,6 +756,17 @@ fn lexicon_doc_app_bsky_draft_defs() -> ::jacquard_lexicon::lexicon::LexiconDoc<
                         );
                         map.insert(
                             ::jacquard_common::smol_str::SmolStr::new_static(
+                                "embedGallery",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                description: None,
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#draftEmbedGallery",
+                                ),
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
                                 "embedImages",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
@@ -774,15 +832,15 @@ fn lexicon_doc_app_bsky_draft_defs() -> ::jacquard_lexicon::lexicon::LexiconDoc<
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
-                                        "The primary post content.",
+                                        "The primary post content. It has a higher limit than post contents to allow storing a larger text that can later be refined into smaller posts.",
                                     ),
                                 ),
                                 format: None,
                                 default: None,
                                 min_length: None,
-                                max_length: Some(3000usize),
+                                max_length: Some(10000usize),
                                 min_graphemes: None,
-                                max_graphemes: Some(300usize),
+                                max_graphemes: Some(1000usize),
                                 r#enum: None,
                                 r#const: None,
                                 known_values: None,
@@ -1343,6 +1401,150 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for DraftEmbedExternal<'a> {
     }
 }
 
+#[jacquard_derive::lexicon]
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(rename_all = "camelCase")]
+pub struct DraftEmbedGallery<'a> {
+    #[serde(borrow)]
+    pub items: crate::generated::app_bsky::draft::DraftEmbedGalleryItems<'a>,
+}
+
+pub mod draft_embed_gallery_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type Items;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type Items = Unset;
+    }
+    ///State transition - sets the `items` field to Set
+    pub struct SetItems<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetItems<S> {}
+    impl<S: State> State for SetItems<S> {
+        type Items = Set<members::items>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `items` field
+        pub struct items(());
+    }
+}
+
+/// Builder for constructing an instance of this type
+pub struct DraftEmbedGalleryBuilder<'a, S: draft_embed_gallery_state::State> {
+    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
+    __unsafe_private_named:
+        (::core::option::Option<crate::generated::app_bsky::draft::DraftEmbedGalleryItems<'a>>,),
+    _phantom: ::core::marker::PhantomData<&'a ()>,
+}
+
+impl<'a> DraftEmbedGallery<'a> {
+    /// Create a new builder for this type
+    pub fn new() -> DraftEmbedGalleryBuilder<'a, draft_embed_gallery_state::Empty> {
+        DraftEmbedGalleryBuilder::new()
+    }
+}
+
+impl<'a> DraftEmbedGalleryBuilder<'a, draft_embed_gallery_state::Empty> {
+    /// Create a new builder with all fields unset
+    pub fn new() -> Self {
+        DraftEmbedGalleryBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: (None,),
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S> DraftEmbedGalleryBuilder<'a, S>
+where
+    S: draft_embed_gallery_state::State,
+    S::Items: draft_embed_gallery_state::IsUnset,
+{
+    /// Set the `items` field (required)
+    pub fn items(
+        mut self,
+        value: impl Into<crate::generated::app_bsky::draft::DraftEmbedGalleryItems<'a>>,
+    ) -> DraftEmbedGalleryBuilder<'a, draft_embed_gallery_state::SetItems<S>> {
+        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        DraftEmbedGalleryBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: self.__unsafe_private_named,
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S> DraftEmbedGalleryBuilder<'a, S>
+where
+    S: draft_embed_gallery_state::State,
+    S::Items: draft_embed_gallery_state::IsSet,
+{
+    /// Build the final struct
+    pub fn build(self) -> DraftEmbedGallery<'a> {
+        DraftEmbedGallery {
+            items: self.__unsafe_private_named.0.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data
+    pub fn build_with_data(
+        self,
+        extra_data: std::collections::BTreeMap<
+            jacquard_common::smol_str::SmolStr,
+            jacquard_common::types::value::Data<'a>,
+        >,
+    ) -> DraftEmbedGallery<'a> {
+        DraftEmbedGallery {
+            items: self.__unsafe_private_named.0.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
+}
+
+impl<'a> ::jacquard_lexicon::schema::LexiconSchema for DraftEmbedGallery<'a> {
+    fn nsid() -> &'static str {
+        "app.bsky.draft.defs"
+    }
+    fn def_name() -> &'static str {
+        "draftEmbedGallery"
+    }
+    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_app_bsky_draft_defs()
+    }
+    fn validate(
+        &self,
+    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+#[jacquard_derive::open_union]
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(tag = "$type")]
+#[serde(bound(deserialize = "'de: 'a"))]
+pub enum DraftEmbedGalleryItemsItem<'a> {
+    #[serde(rename = "app.bsky.draft.defs#draftEmbedImage")]
+    DraftEmbedImage(Box<crate::generated::app_bsky::draft::DraftEmbedImage<'a>>),
+}
+
+/// The schema-level maxLength of 20 is a future-proof ceiling. Clients should currently enforce a soft limit of 10 items in authoring UIs.
+pub type DraftEmbedGalleryItems<'a> = Vec<DraftEmbedGalleryItemsItem<'a>>;
 #[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
@@ -1921,6 +2123,10 @@ pub struct DraftPost<'a> {
         std::option::Option<Vec<crate::generated::app_bsky::draft::DraftEmbedExternal<'a>>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
+    pub embed_gallery:
+        std::option::Option<crate::generated::app_bsky::draft::DraftEmbedGallery<'a>>,
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
     pub embed_images:
         std::option::Option<Vec<crate::generated::app_bsky::draft::DraftEmbedImage<'a>>>,
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
@@ -1935,7 +2141,7 @@ pub struct DraftPost<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub labels: std::option::Option<crate::generated::com_atproto::label::SelfLabels<'a>>,
-    /// The primary post content.
+    /// The primary post content. It has a higher limit than post contents to allow storing a larger text that can later be refined into smaller posts.
     #[serde(borrow)]
     pub text: jacquard_common::CowStr<'a>,
 }
@@ -2004,10 +2210,10 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for DraftPost<'a> {
         {
             let value = &self.text;
             #[allow(unused_comparisons)]
-            if <str>::len(value.as_ref()) > 3000usize {
+            if <str>::len(value.as_ref()) > 10000usize {
                 return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
                     path: ::jacquard_lexicon::validation::ValidationPath::from_field("text"),
-                    max: 3000usize,
+                    max: 10000usize,
                     actual: <str>::len(value.as_ref()),
                 });
             }
@@ -2018,13 +2224,13 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for DraftPost<'a> {
                 let count =
                     ::unicode_segmentation::UnicodeSegmentation::graphemes(value.as_ref(), true)
                         .count();
-                if count > 300usize {
+                if count > 1000usize {
                     return Err(
                         ::jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
                             path: ::jacquard_lexicon::validation::ValidationPath::from_field(
                                 "text",
                             ),
-                            max: 300usize,
+                            max: 1000usize,
                             actual: count,
                         },
                     );
@@ -2062,67 +2268,67 @@ pub mod draft_view_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type CreatedAt;
-        type Draft;
-        type UpdatedAt;
         type Id;
+        type Draft;
+        type CreatedAt;
+        type UpdatedAt;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type CreatedAt = Unset;
-        type Draft = Unset;
-        type UpdatedAt = Unset;
         type Id = Unset;
-    }
-    ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type CreatedAt = Set<members::created_at>;
-        type Draft = S::Draft;
-        type UpdatedAt = S::UpdatedAt;
-        type Id = S::Id;
-    }
-    ///State transition - sets the `draft` field to Set
-    pub struct SetDraft<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDraft<S> {}
-    impl<S: State> State for SetDraft<S> {
-        type CreatedAt = S::CreatedAt;
-        type Draft = Set<members::draft>;
-        type UpdatedAt = S::UpdatedAt;
-        type Id = S::Id;
-    }
-    ///State transition - sets the `updated_at` field to Set
-    pub struct SetUpdatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUpdatedAt<S> {}
-    impl<S: State> State for SetUpdatedAt<S> {
-        type CreatedAt = S::CreatedAt;
-        type Draft = S::Draft;
-        type UpdatedAt = Set<members::updated_at>;
-        type Id = S::Id;
+        type Draft = Unset;
+        type CreatedAt = Unset;
+        type UpdatedAt = Unset;
     }
     ///State transition - sets the `id` field to Set
     pub struct SetId<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetId<S> {}
     impl<S: State> State for SetId<S> {
-        type CreatedAt = S::CreatedAt;
-        type Draft = S::Draft;
-        type UpdatedAt = S::UpdatedAt;
         type Id = Set<members::id>;
+        type Draft = S::Draft;
+        type CreatedAt = S::CreatedAt;
+        type UpdatedAt = S::UpdatedAt;
+    }
+    ///State transition - sets the `draft` field to Set
+    pub struct SetDraft<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetDraft<S> {}
+    impl<S: State> State for SetDraft<S> {
+        type Id = S::Id;
+        type Draft = Set<members::draft>;
+        type CreatedAt = S::CreatedAt;
+        type UpdatedAt = S::UpdatedAt;
+    }
+    ///State transition - sets the `created_at` field to Set
+    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
+    impl<S: State> State for SetCreatedAt<S> {
+        type Id = S::Id;
+        type Draft = S::Draft;
+        type CreatedAt = Set<members::created_at>;
+        type UpdatedAt = S::UpdatedAt;
+    }
+    ///State transition - sets the `updated_at` field to Set
+    pub struct SetUpdatedAt<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetUpdatedAt<S> {}
+    impl<S: State> State for SetUpdatedAt<S> {
+        type Id = S::Id;
+        type Draft = S::Draft;
+        type CreatedAt = S::CreatedAt;
+        type UpdatedAt = Set<members::updated_at>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `created_at` field
-        pub struct created_at(());
-        ///Marker type for the `draft` field
-        pub struct draft(());
-        ///Marker type for the `updated_at` field
-        pub struct updated_at(());
         ///Marker type for the `id` field
         pub struct id(());
+        ///Marker type for the `draft` field
+        pub struct draft(());
+        ///Marker type for the `created_at` field
+        pub struct created_at(());
+        ///Marker type for the `updated_at` field
+        pub struct updated_at(());
     }
 }
 
@@ -2235,10 +2441,10 @@ where
 impl<'a, S> DraftViewBuilder<'a, S>
 where
     S: draft_view_state::State,
-    S::CreatedAt: draft_view_state::IsSet,
-    S::Draft: draft_view_state::IsSet,
-    S::UpdatedAt: draft_view_state::IsSet,
     S::Id: draft_view_state::IsSet,
+    S::Draft: draft_view_state::IsSet,
+    S::CreatedAt: draft_view_state::IsSet,
+    S::UpdatedAt: draft_view_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> DraftView<'a> {
@@ -2308,37 +2514,37 @@ pub mod draft_with_id_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Draft;
         type Id;
+        type Draft;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Draft = Unset;
         type Id = Unset;
-    }
-    ///State transition - sets the `draft` field to Set
-    pub struct SetDraft<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDraft<S> {}
-    impl<S: State> State for SetDraft<S> {
-        type Draft = Set<members::draft>;
-        type Id = S::Id;
+        type Draft = Unset;
     }
     ///State transition - sets the `id` field to Set
     pub struct SetId<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetId<S> {}
     impl<S: State> State for SetId<S> {
-        type Draft = S::Draft;
         type Id = Set<members::id>;
+        type Draft = S::Draft;
+    }
+    ///State transition - sets the `draft` field to Set
+    pub struct SetDraft<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetDraft<S> {}
+    impl<S: State> State for SetDraft<S> {
+        type Id = S::Id;
+        type Draft = Set<members::draft>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `draft` field
-        pub struct draft(());
         ///Marker type for the `id` field
         pub struct id(());
+        ///Marker type for the `draft` field
+        pub struct draft(());
     }
 }
 
@@ -2411,8 +2617,8 @@ where
 impl<'a, S> DraftWithIdBuilder<'a, S>
 where
     S: draft_with_id_state::State,
-    S::Draft: draft_with_id_state::IsSet,
     S::Id: draft_with_id_state::IsSet,
+    S::Draft: draft_with_id_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> DraftWithId<'a> {

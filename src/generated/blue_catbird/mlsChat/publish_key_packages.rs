@@ -28,37 +28,37 @@ pub mod batch_error_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Error;
         type Index;
+        type Error;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Error = Unset;
         type Index = Unset;
-    }
-    ///State transition - sets the `error` field to Set
-    pub struct SetError<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetError<S> {}
-    impl<S: State> State for SetError<S> {
-        type Error = Set<members::error>;
-        type Index = S::Index;
+        type Error = Unset;
     }
     ///State transition - sets the `index` field to Set
     pub struct SetIndex<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetIndex<S> {}
     impl<S: State> State for SetIndex<S> {
-        type Error = S::Error;
         type Index = Set<members::index>;
+        type Error = S::Error;
+    }
+    ///State transition - sets the `error` field to Set
+    pub struct SetError<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetError<S> {}
+    impl<S: State> State for SetError<S> {
+        type Index = S::Index;
+        type Error = Set<members::error>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `error` field
-        pub struct error(());
         ///Marker type for the `index` field
         pub struct index(());
+        ///Marker type for the `error` field
+        pub struct error(());
     }
 }
 
@@ -131,8 +131,8 @@ where
 impl<'a, S> BatchErrorBuilder<'a, S>
 where
     S: batch_error_state::State,
-    S::Error: batch_error_state::IsSet,
     S::Index: batch_error_state::IsSet,
+    S::Error: batch_error_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> BatchError<'a> {
@@ -1717,67 +1717,67 @@ pub mod replenish_result_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type DeliveredCount;
-        type DeviceCount;
         type Requested;
         type TargetCount;
+        type DeviceCount;
+        type DeliveredCount;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type DeliveredCount = Unset;
-        type DeviceCount = Unset;
         type Requested = Unset;
         type TargetCount = Unset;
-    }
-    ///State transition - sets the `delivered_count` field to Set
-    pub struct SetDeliveredCount<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDeliveredCount<S> {}
-    impl<S: State> State for SetDeliveredCount<S> {
-        type DeliveredCount = Set<members::delivered_count>;
-        type DeviceCount = S::DeviceCount;
-        type Requested = S::Requested;
-        type TargetCount = S::TargetCount;
-    }
-    ///State transition - sets the `device_count` field to Set
-    pub struct SetDeviceCount<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDeviceCount<S> {}
-    impl<S: State> State for SetDeviceCount<S> {
-        type DeliveredCount = S::DeliveredCount;
-        type DeviceCount = Set<members::device_count>;
-        type Requested = S::Requested;
-        type TargetCount = S::TargetCount;
+        type DeviceCount = Unset;
+        type DeliveredCount = Unset;
     }
     ///State transition - sets the `requested` field to Set
     pub struct SetRequested<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetRequested<S> {}
     impl<S: State> State for SetRequested<S> {
-        type DeliveredCount = S::DeliveredCount;
-        type DeviceCount = S::DeviceCount;
         type Requested = Set<members::requested>;
         type TargetCount = S::TargetCount;
+        type DeviceCount = S::DeviceCount;
+        type DeliveredCount = S::DeliveredCount;
     }
     ///State transition - sets the `target_count` field to Set
     pub struct SetTargetCount<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetTargetCount<S> {}
     impl<S: State> State for SetTargetCount<S> {
-        type DeliveredCount = S::DeliveredCount;
-        type DeviceCount = S::DeviceCount;
         type Requested = S::Requested;
         type TargetCount = Set<members::target_count>;
+        type DeviceCount = S::DeviceCount;
+        type DeliveredCount = S::DeliveredCount;
+    }
+    ///State transition - sets the `device_count` field to Set
+    pub struct SetDeviceCount<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetDeviceCount<S> {}
+    impl<S: State> State for SetDeviceCount<S> {
+        type Requested = S::Requested;
+        type TargetCount = S::TargetCount;
+        type DeviceCount = Set<members::device_count>;
+        type DeliveredCount = S::DeliveredCount;
+    }
+    ///State transition - sets the `delivered_count` field to Set
+    pub struct SetDeliveredCount<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetDeliveredCount<S> {}
+    impl<S: State> State for SetDeliveredCount<S> {
+        type Requested = S::Requested;
+        type TargetCount = S::TargetCount;
+        type DeviceCount = S::DeviceCount;
+        type DeliveredCount = Set<members::delivered_count>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `delivered_count` field
-        pub struct delivered_count(());
-        ///Marker type for the `device_count` field
-        pub struct device_count(());
         ///Marker type for the `requested` field
         pub struct requested(());
         ///Marker type for the `target_count` field
         pub struct target_count(());
+        ///Marker type for the `device_count` field
+        pub struct device_count(());
+        ///Marker type for the `delivered_count` field
+        pub struct delivered_count(());
     }
 }
 
@@ -1890,10 +1890,10 @@ where
 impl<'a, S> ReplenishResultBuilder<'a, S>
 where
     S: replenish_result_state::State,
-    S::DeliveredCount: replenish_result_state::IsSet,
-    S::DeviceCount: replenish_result_state::IsSet,
     S::Requested: replenish_result_state::IsSet,
     S::TargetCount: replenish_result_state::IsSet,
+    S::DeviceCount: replenish_result_state::IsSet,
+    S::DeliveredCount: replenish_result_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> ReplenishResult<'a> {

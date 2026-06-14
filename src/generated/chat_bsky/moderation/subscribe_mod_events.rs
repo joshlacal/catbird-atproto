@@ -48,105 +48,105 @@ pub mod event_chat_accepted_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Method;
+        type ActorDid;
+        type ConvoCreatedAt;
         type ConvoId;
         type CreatedAt;
-        type ConvoCreatedAt;
+        type Method;
         type Rev;
-        type ActorDid;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Method = Unset;
+        type ActorDid = Unset;
+        type ConvoCreatedAt = Unset;
         type ConvoId = Unset;
         type CreatedAt = Unset;
-        type ConvoCreatedAt = Unset;
+        type Method = Unset;
         type Rev = Unset;
-        type ActorDid = Unset;
-    }
-    ///State transition - sets the `method` field to Set
-    pub struct SetMethod<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetMethod<S> {}
-    impl<S: State> State for SetMethod<S> {
-        type Method = Set<members::method>;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type Rev = S::Rev;
-        type ActorDid = S::ActorDid;
-    }
-    ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type Method = S::Method;
-        type ConvoId = Set<members::convo_id>;
-        type CreatedAt = S::CreatedAt;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type Rev = S::Rev;
-        type ActorDid = S::ActorDid;
-    }
-    ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type Method = S::Method;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = Set<members::created_at>;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type Rev = S::Rev;
-        type ActorDid = S::ActorDid;
-    }
-    ///State transition - sets the `convo_created_at` field to Set
-    pub struct SetConvoCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoCreatedAt<S> {}
-    impl<S: State> State for SetConvoCreatedAt<S> {
-        type Method = S::Method;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type ConvoCreatedAt = Set<members::convo_created_at>;
-        type Rev = S::Rev;
-        type ActorDid = S::ActorDid;
-    }
-    ///State transition - sets the `rev` field to Set
-    pub struct SetRev<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRev<S> {}
-    impl<S: State> State for SetRev<S> {
-        type Method = S::Method;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type Rev = Set<members::rev>;
-        type ActorDid = S::ActorDid;
     }
     ///State transition - sets the `actor_did` field to Set
     pub struct SetActorDid<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetActorDid<S> {}
     impl<S: State> State for SetActorDid<S> {
-        type Method = S::Method;
+        type ActorDid = Set<members::actor_did>;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
         type ConvoId = S::ConvoId;
         type CreatedAt = S::CreatedAt;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type Method = S::Method;
         type Rev = S::Rev;
-        type ActorDid = Set<members::actor_did>;
+    }
+    ///State transition - sets the `convo_created_at` field to Set
+    pub struct SetConvoCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetConvoCreatedAt<S> {}
+    impl<S: State> State for SetConvoCreatedAt<S> {
+        type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = Set<members::convo_created_at>;
+        type ConvoId = S::ConvoId;
+        type CreatedAt = S::CreatedAt;
+        type Method = S::Method;
+        type Rev = S::Rev;
+    }
+    ///State transition - sets the `convo_id` field to Set
+    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetConvoId<S> {}
+    impl<S: State> State for SetConvoId<S> {
+        type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = Set<members::convo_id>;
+        type CreatedAt = S::CreatedAt;
+        type Method = S::Method;
+        type Rev = S::Rev;
+    }
+    ///State transition - sets the `created_at` field to Set
+    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
+    impl<S: State> State for SetCreatedAt<S> {
+        type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = S::ConvoId;
+        type CreatedAt = Set<members::created_at>;
+        type Method = S::Method;
+        type Rev = S::Rev;
+    }
+    ///State transition - sets the `method` field to Set
+    pub struct SetMethod<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetMethod<S> {}
+    impl<S: State> State for SetMethod<S> {
+        type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = S::ConvoId;
+        type CreatedAt = S::CreatedAt;
+        type Method = Set<members::method>;
+        type Rev = S::Rev;
+    }
+    ///State transition - sets the `rev` field to Set
+    pub struct SetRev<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetRev<S> {}
+    impl<S: State> State for SetRev<S> {
+        type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = S::ConvoId;
+        type CreatedAt = S::CreatedAt;
+        type Method = S::Method;
+        type Rev = Set<members::rev>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `method` field
-        pub struct method(());
+        ///Marker type for the `actor_did` field
+        pub struct actor_did(());
+        ///Marker type for the `convo_created_at` field
+        pub struct convo_created_at(());
         ///Marker type for the `convo_id` field
         pub struct convo_id(());
         ///Marker type for the `created_at` field
         pub struct created_at(());
-        ///Marker type for the `convo_created_at` field
-        pub struct convo_created_at(());
+        ///Marker type for the `method` field
+        pub struct method(());
         ///Marker type for the `rev` field
         pub struct rev(());
-        ///Marker type for the `actor_did` field
-        pub struct actor_did(());
     }
 }
 
@@ -347,12 +347,12 @@ where
 impl<'a, S> EventChatAcceptedBuilder<'a, S>
 where
     S: event_chat_accepted_state::State,
-    S::Method: event_chat_accepted_state::IsSet,
+    S::ActorDid: event_chat_accepted_state::IsSet,
+    S::ConvoCreatedAt: event_chat_accepted_state::IsSet,
     S::ConvoId: event_chat_accepted_state::IsSet,
     S::CreatedAt: event_chat_accepted_state::IsSet,
-    S::ConvoCreatedAt: event_chat_accepted_state::IsSet,
+    S::Method: event_chat_accepted_state::IsSet,
     S::Rev: event_chat_accepted_state::IsSet,
-    S::ActorDid: event_chat_accepted_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> EventChatAccepted<'a> {
@@ -2684,85 +2684,85 @@ pub mod event_convo_first_message_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Rev;
-        type Recipients;
-        type ConvoId;
         type CreatedAt;
+        type Rev;
+        type ConvoId;
         type User;
+        type Recipients;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Rev = Unset;
-        type Recipients = Unset;
-        type ConvoId = Unset;
         type CreatedAt = Unset;
+        type Rev = Unset;
+        type ConvoId = Unset;
         type User = Unset;
-    }
-    ///State transition - sets the `rev` field to Set
-    pub struct SetRev<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRev<S> {}
-    impl<S: State> State for SetRev<S> {
-        type Rev = Set<members::rev>;
-        type Recipients = S::Recipients;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type User = S::User;
-    }
-    ///State transition - sets the `recipients` field to Set
-    pub struct SetRecipients<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRecipients<S> {}
-    impl<S: State> State for SetRecipients<S> {
-        type Rev = S::Rev;
-        type Recipients = Set<members::recipients>;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type User = S::User;
-    }
-    ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type Rev = S::Rev;
-        type Recipients = S::Recipients;
-        type ConvoId = Set<members::convo_id>;
-        type CreatedAt = S::CreatedAt;
-        type User = S::User;
+        type Recipients = Unset;
     }
     ///State transition - sets the `created_at` field to Set
     pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
     impl<S: State> State for SetCreatedAt<S> {
-        type Rev = S::Rev;
-        type Recipients = S::Recipients;
-        type ConvoId = S::ConvoId;
         type CreatedAt = Set<members::created_at>;
+        type Rev = S::Rev;
+        type ConvoId = S::ConvoId;
         type User = S::User;
+        type Recipients = S::Recipients;
+    }
+    ///State transition - sets the `rev` field to Set
+    pub struct SetRev<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetRev<S> {}
+    impl<S: State> State for SetRev<S> {
+        type CreatedAt = S::CreatedAt;
+        type Rev = Set<members::rev>;
+        type ConvoId = S::ConvoId;
+        type User = S::User;
+        type Recipients = S::Recipients;
+    }
+    ///State transition - sets the `convo_id` field to Set
+    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetConvoId<S> {}
+    impl<S: State> State for SetConvoId<S> {
+        type CreatedAt = S::CreatedAt;
+        type Rev = S::Rev;
+        type ConvoId = Set<members::convo_id>;
+        type User = S::User;
+        type Recipients = S::Recipients;
     }
     ///State transition - sets the `user` field to Set
     pub struct SetUser<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetUser<S> {}
     impl<S: State> State for SetUser<S> {
-        type Rev = S::Rev;
-        type Recipients = S::Recipients;
-        type ConvoId = S::ConvoId;
         type CreatedAt = S::CreatedAt;
+        type Rev = S::Rev;
+        type ConvoId = S::ConvoId;
         type User = Set<members::user>;
+        type Recipients = S::Recipients;
+    }
+    ///State transition - sets the `recipients` field to Set
+    pub struct SetRecipients<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetRecipients<S> {}
+    impl<S: State> State for SetRecipients<S> {
+        type CreatedAt = S::CreatedAt;
+        type Rev = S::Rev;
+        type ConvoId = S::ConvoId;
+        type User = S::User;
+        type Recipients = Set<members::recipients>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `rev` field
-        pub struct rev(());
-        ///Marker type for the `recipients` field
-        pub struct recipients(());
-        ///Marker type for the `convo_id` field
-        pub struct convo_id(());
         ///Marker type for the `created_at` field
         pub struct created_at(());
+        ///Marker type for the `rev` field
+        pub struct rev(());
+        ///Marker type for the `convo_id` field
+        pub struct convo_id(());
         ///Marker type for the `user` field
         pub struct user(());
+        ///Marker type for the `recipients` field
+        pub struct recipients(());
     }
 }
 
@@ -2909,11 +2909,11 @@ where
 impl<'a, S> EventConvoFirstMessageBuilder<'a, S>
 where
     S: event_convo_first_message_state::State,
-    S::Rev: event_convo_first_message_state::IsSet,
-    S::Recipients: event_convo_first_message_state::IsSet,
-    S::ConvoId: event_convo_first_message_state::IsSet,
     S::CreatedAt: event_convo_first_message_state::IsSet,
+    S::Rev: event_convo_first_message_state::IsSet,
+    S::ConvoId: event_convo_first_message_state::IsSet,
     S::User: event_convo_first_message_state::IsSet,
+    S::Recipients: event_convo_first_message_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> EventConvoFirstMessage<'a> {
@@ -3004,177 +3004,177 @@ pub mod event_group_chat_created_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type InitialMemberDids;
-        type GroupName;
-        type Rev;
         type ActorDid;
-        type CreatedAt;
-        type OwnerDid;
         type ConvoCreatedAt;
         type ConvoId;
+        type CreatedAt;
         type GroupMemberCount;
+        type GroupName;
+        type InitialMemberDids;
+        type OwnerDid;
+        type Rev;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type InitialMemberDids = Unset;
-        type GroupName = Unset;
-        type Rev = Unset;
         type ActorDid = Unset;
-        type CreatedAt = Unset;
-        type OwnerDid = Unset;
         type ConvoCreatedAt = Unset;
         type ConvoId = Unset;
+        type CreatedAt = Unset;
         type GroupMemberCount = Unset;
-    }
-    ///State transition - sets the `initial_member_dids` field to Set
-    pub struct SetInitialMemberDids<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetInitialMemberDids<S> {}
-    impl<S: State> State for SetInitialMemberDids<S> {
-        type InitialMemberDids = Set<members::initial_member_dids>;
-        type GroupName = S::GroupName;
-        type Rev = S::Rev;
-        type ActorDid = S::ActorDid;
-        type CreatedAt = S::CreatedAt;
-        type OwnerDid = S::OwnerDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type GroupMemberCount = S::GroupMemberCount;
-    }
-    ///State transition - sets the `group_name` field to Set
-    pub struct SetGroupName<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetGroupName<S> {}
-    impl<S: State> State for SetGroupName<S> {
-        type InitialMemberDids = S::InitialMemberDids;
-        type GroupName = Set<members::group_name>;
-        type Rev = S::Rev;
-        type ActorDid = S::ActorDid;
-        type CreatedAt = S::CreatedAt;
-        type OwnerDid = S::OwnerDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type GroupMemberCount = S::GroupMemberCount;
-    }
-    ///State transition - sets the `rev` field to Set
-    pub struct SetRev<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRev<S> {}
-    impl<S: State> State for SetRev<S> {
-        type InitialMemberDids = S::InitialMemberDids;
-        type GroupName = S::GroupName;
-        type Rev = Set<members::rev>;
-        type ActorDid = S::ActorDid;
-        type CreatedAt = S::CreatedAt;
-        type OwnerDid = S::OwnerDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type GroupMemberCount = S::GroupMemberCount;
+        type GroupName = Unset;
+        type InitialMemberDids = Unset;
+        type OwnerDid = Unset;
+        type Rev = Unset;
     }
     ///State transition - sets the `actor_did` field to Set
     pub struct SetActorDid<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetActorDid<S> {}
     impl<S: State> State for SetActorDid<S> {
-        type InitialMemberDids = S::InitialMemberDids;
-        type GroupName = S::GroupName;
-        type Rev = S::Rev;
         type ActorDid = Set<members::actor_did>;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = S::ConvoId;
         type CreatedAt = S::CreatedAt;
-        type OwnerDid = S::OwnerDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
         type GroupMemberCount = S::GroupMemberCount;
-    }
-    ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type InitialMemberDids = S::InitialMemberDids;
         type GroupName = S::GroupName;
-        type Rev = S::Rev;
-        type ActorDid = S::ActorDid;
-        type CreatedAt = Set<members::created_at>;
-        type OwnerDid = S::OwnerDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type GroupMemberCount = S::GroupMemberCount;
-    }
-    ///State transition - sets the `owner_did` field to Set
-    pub struct SetOwnerDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetOwnerDid<S> {}
-    impl<S: State> State for SetOwnerDid<S> {
         type InitialMemberDids = S::InitialMemberDids;
-        type GroupName = S::GroupName;
+        type OwnerDid = S::OwnerDid;
         type Rev = S::Rev;
-        type ActorDid = S::ActorDid;
-        type CreatedAt = S::CreatedAt;
-        type OwnerDid = Set<members::owner_did>;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type GroupMemberCount = S::GroupMemberCount;
     }
     ///State transition - sets the `convo_created_at` field to Set
     pub struct SetConvoCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetConvoCreatedAt<S> {}
     impl<S: State> State for SetConvoCreatedAt<S> {
-        type InitialMemberDids = S::InitialMemberDids;
-        type GroupName = S::GroupName;
-        type Rev = S::Rev;
         type ActorDid = S::ActorDid;
-        type CreatedAt = S::CreatedAt;
-        type OwnerDid = S::OwnerDid;
         type ConvoCreatedAt = Set<members::convo_created_at>;
         type ConvoId = S::ConvoId;
+        type CreatedAt = S::CreatedAt;
         type GroupMemberCount = S::GroupMemberCount;
+        type GroupName = S::GroupName;
+        type InitialMemberDids = S::InitialMemberDids;
+        type OwnerDid = S::OwnerDid;
+        type Rev = S::Rev;
     }
     ///State transition - sets the `convo_id` field to Set
     pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetConvoId<S> {}
     impl<S: State> State for SetConvoId<S> {
-        type InitialMemberDids = S::InitialMemberDids;
-        type GroupName = S::GroupName;
-        type Rev = S::Rev;
         type ActorDid = S::ActorDid;
-        type CreatedAt = S::CreatedAt;
-        type OwnerDid = S::OwnerDid;
         type ConvoCreatedAt = S::ConvoCreatedAt;
         type ConvoId = Set<members::convo_id>;
+        type CreatedAt = S::CreatedAt;
         type GroupMemberCount = S::GroupMemberCount;
+        type GroupName = S::GroupName;
+        type InitialMemberDids = S::InitialMemberDids;
+        type OwnerDid = S::OwnerDid;
+        type Rev = S::Rev;
+    }
+    ///State transition - sets the `created_at` field to Set
+    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
+    impl<S: State> State for SetCreatedAt<S> {
+        type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = S::ConvoId;
+        type CreatedAt = Set<members::created_at>;
+        type GroupMemberCount = S::GroupMemberCount;
+        type GroupName = S::GroupName;
+        type InitialMemberDids = S::InitialMemberDids;
+        type OwnerDid = S::OwnerDid;
+        type Rev = S::Rev;
     }
     ///State transition - sets the `group_member_count` field to Set
     pub struct SetGroupMemberCount<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetGroupMemberCount<S> {}
     impl<S: State> State for SetGroupMemberCount<S> {
-        type InitialMemberDids = S::InitialMemberDids;
-        type GroupName = S::GroupName;
-        type Rev = S::Rev;
         type ActorDid = S::ActorDid;
-        type CreatedAt = S::CreatedAt;
-        type OwnerDid = S::OwnerDid;
         type ConvoCreatedAt = S::ConvoCreatedAt;
         type ConvoId = S::ConvoId;
+        type CreatedAt = S::CreatedAt;
         type GroupMemberCount = Set<members::group_member_count>;
+        type GroupName = S::GroupName;
+        type InitialMemberDids = S::InitialMemberDids;
+        type OwnerDid = S::OwnerDid;
+        type Rev = S::Rev;
+    }
+    ///State transition - sets the `group_name` field to Set
+    pub struct SetGroupName<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetGroupName<S> {}
+    impl<S: State> State for SetGroupName<S> {
+        type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = S::ConvoId;
+        type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = S::GroupMemberCount;
+        type GroupName = Set<members::group_name>;
+        type InitialMemberDids = S::InitialMemberDids;
+        type OwnerDid = S::OwnerDid;
+        type Rev = S::Rev;
+    }
+    ///State transition - sets the `initial_member_dids` field to Set
+    pub struct SetInitialMemberDids<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetInitialMemberDids<S> {}
+    impl<S: State> State for SetInitialMemberDids<S> {
+        type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = S::ConvoId;
+        type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = S::GroupMemberCount;
+        type GroupName = S::GroupName;
+        type InitialMemberDids = Set<members::initial_member_dids>;
+        type OwnerDid = S::OwnerDid;
+        type Rev = S::Rev;
+    }
+    ///State transition - sets the `owner_did` field to Set
+    pub struct SetOwnerDid<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetOwnerDid<S> {}
+    impl<S: State> State for SetOwnerDid<S> {
+        type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = S::ConvoId;
+        type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = S::GroupMemberCount;
+        type GroupName = S::GroupName;
+        type InitialMemberDids = S::InitialMemberDids;
+        type OwnerDid = Set<members::owner_did>;
+        type Rev = S::Rev;
+    }
+    ///State transition - sets the `rev` field to Set
+    pub struct SetRev<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetRev<S> {}
+    impl<S: State> State for SetRev<S> {
+        type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = S::ConvoId;
+        type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = S::GroupMemberCount;
+        type GroupName = S::GroupName;
+        type InitialMemberDids = S::InitialMemberDids;
+        type OwnerDid = S::OwnerDid;
+        type Rev = Set<members::rev>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `initial_member_dids` field
-        pub struct initial_member_dids(());
-        ///Marker type for the `group_name` field
-        pub struct group_name(());
-        ///Marker type for the `rev` field
-        pub struct rev(());
         ///Marker type for the `actor_did` field
         pub struct actor_did(());
-        ///Marker type for the `created_at` field
-        pub struct created_at(());
-        ///Marker type for the `owner_did` field
-        pub struct owner_did(());
         ///Marker type for the `convo_created_at` field
         pub struct convo_created_at(());
         ///Marker type for the `convo_id` field
         pub struct convo_id(());
+        ///Marker type for the `created_at` field
+        pub struct created_at(());
         ///Marker type for the `group_member_count` field
         pub struct group_member_count(());
+        ///Marker type for the `group_name` field
+        pub struct group_name(());
+        ///Marker type for the `initial_member_dids` field
+        pub struct initial_member_dids(());
+        ///Marker type for the `owner_did` field
+        pub struct owner_did(());
+        ///Marker type for the `rev` field
+        pub struct rev(());
     }
 }
 
@@ -3390,15 +3390,15 @@ where
 impl<'a, S> EventGroupChatCreatedBuilder<'a, S>
 where
     S: event_group_chat_created_state::State,
-    S::InitialMemberDids: event_group_chat_created_state::IsSet,
-    S::GroupName: event_group_chat_created_state::IsSet,
-    S::Rev: event_group_chat_created_state::IsSet,
     S::ActorDid: event_group_chat_created_state::IsSet,
-    S::CreatedAt: event_group_chat_created_state::IsSet,
-    S::OwnerDid: event_group_chat_created_state::IsSet,
     S::ConvoCreatedAt: event_group_chat_created_state::IsSet,
     S::ConvoId: event_group_chat_created_state::IsSet,
+    S::CreatedAt: event_group_chat_created_state::IsSet,
     S::GroupMemberCount: event_group_chat_created_state::IsSet,
+    S::GroupName: event_group_chat_created_state::IsSet,
+    S::InitialMemberDids: event_group_chat_created_state::IsSet,
+    S::OwnerDid: event_group_chat_created_state::IsSet,
+    S::Rev: event_group_chat_created_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> EventGroupChatCreated<'a> {
@@ -3496,205 +3496,205 @@ pub mod event_group_chat_join_request_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type ConvoId;
-        type SubjectFollowsOwner;
         type ActorDid;
         type ConvoCreatedAt;
-        type GroupMemberCount;
+        type ConvoId;
         type CreatedAt;
+        type GroupMemberCount;
         type GroupName;
+        type JoinLinkCode;
         type OwnerDid;
         type Rev;
-        type JoinLinkCode;
+        type SubjectFollowsOwner;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type ConvoId = Unset;
-        type SubjectFollowsOwner = Unset;
         type ActorDid = Unset;
         type ConvoCreatedAt = Unset;
-        type GroupMemberCount = Unset;
+        type ConvoId = Unset;
         type CreatedAt = Unset;
+        type GroupMemberCount = Unset;
         type GroupName = Unset;
+        type JoinLinkCode = Unset;
         type OwnerDid = Unset;
         type Rev = Unset;
-        type JoinLinkCode = Unset;
-    }
-    ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type ConvoId = Set<members::convo_id>;
-        type SubjectFollowsOwner = S::SubjectFollowsOwner;
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type CreatedAt = S::CreatedAt;
-        type GroupName = S::GroupName;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
-        type JoinLinkCode = S::JoinLinkCode;
-    }
-    ///State transition - sets the `subject_follows_owner` field to Set
-    pub struct SetSubjectFollowsOwner<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetSubjectFollowsOwner<S> {}
-    impl<S: State> State for SetSubjectFollowsOwner<S> {
-        type ConvoId = S::ConvoId;
-        type SubjectFollowsOwner = Set<members::subject_follows_owner>;
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type CreatedAt = S::CreatedAt;
-        type GroupName = S::GroupName;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
-        type JoinLinkCode = S::JoinLinkCode;
+        type SubjectFollowsOwner = Unset;
     }
     ///State transition - sets the `actor_did` field to Set
     pub struct SetActorDid<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetActorDid<S> {}
     impl<S: State> State for SetActorDid<S> {
-        type ConvoId = S::ConvoId;
-        type SubjectFollowsOwner = S::SubjectFollowsOwner;
         type ActorDid = Set<members::actor_did>;
         type ConvoCreatedAt = S::ConvoCreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
+        type ConvoId = S::ConvoId;
         type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = S::GroupMemberCount;
         type GroupName = S::GroupName;
+        type JoinLinkCode = S::JoinLinkCode;
         type OwnerDid = S::OwnerDid;
         type Rev = S::Rev;
-        type JoinLinkCode = S::JoinLinkCode;
+        type SubjectFollowsOwner = S::SubjectFollowsOwner;
     }
     ///State transition - sets the `convo_created_at` field to Set
     pub struct SetConvoCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetConvoCreatedAt<S> {}
     impl<S: State> State for SetConvoCreatedAt<S> {
-        type ConvoId = S::ConvoId;
-        type SubjectFollowsOwner = S::SubjectFollowsOwner;
         type ActorDid = S::ActorDid;
         type ConvoCreatedAt = Set<members::convo_created_at>;
-        type GroupMemberCount = S::GroupMemberCount;
+        type ConvoId = S::ConvoId;
         type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = S::GroupMemberCount;
         type GroupName = S::GroupName;
+        type JoinLinkCode = S::JoinLinkCode;
         type OwnerDid = S::OwnerDid;
         type Rev = S::Rev;
-        type JoinLinkCode = S::JoinLinkCode;
-    }
-    ///State transition - sets the `group_member_count` field to Set
-    pub struct SetGroupMemberCount<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetGroupMemberCount<S> {}
-    impl<S: State> State for SetGroupMemberCount<S> {
-        type ConvoId = S::ConvoId;
         type SubjectFollowsOwner = S::SubjectFollowsOwner;
+    }
+    ///State transition - sets the `convo_id` field to Set
+    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetConvoId<S> {}
+    impl<S: State> State for SetConvoId<S> {
         type ActorDid = S::ActorDid;
         type ConvoCreatedAt = S::ConvoCreatedAt;
-        type GroupMemberCount = Set<members::group_member_count>;
+        type ConvoId = Set<members::convo_id>;
         type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = S::GroupMemberCount;
         type GroupName = S::GroupName;
+        type JoinLinkCode = S::JoinLinkCode;
         type OwnerDid = S::OwnerDid;
         type Rev = S::Rev;
-        type JoinLinkCode = S::JoinLinkCode;
+        type SubjectFollowsOwner = S::SubjectFollowsOwner;
     }
     ///State transition - sets the `created_at` field to Set
     pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
     impl<S: State> State for SetCreatedAt<S> {
-        type ConvoId = S::ConvoId;
-        type SubjectFollowsOwner = S::SubjectFollowsOwner;
         type ActorDid = S::ActorDid;
         type ConvoCreatedAt = S::ConvoCreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
+        type ConvoId = S::ConvoId;
         type CreatedAt = Set<members::created_at>;
+        type GroupMemberCount = S::GroupMemberCount;
         type GroupName = S::GroupName;
+        type JoinLinkCode = S::JoinLinkCode;
         type OwnerDid = S::OwnerDid;
         type Rev = S::Rev;
+        type SubjectFollowsOwner = S::SubjectFollowsOwner;
+    }
+    ///State transition - sets the `group_member_count` field to Set
+    pub struct SetGroupMemberCount<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetGroupMemberCount<S> {}
+    impl<S: State> State for SetGroupMemberCount<S> {
+        type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = S::ConvoId;
+        type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = Set<members::group_member_count>;
+        type GroupName = S::GroupName;
         type JoinLinkCode = S::JoinLinkCode;
+        type OwnerDid = S::OwnerDid;
+        type Rev = S::Rev;
+        type SubjectFollowsOwner = S::SubjectFollowsOwner;
     }
     ///State transition - sets the `group_name` field to Set
     pub struct SetGroupName<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetGroupName<S> {}
     impl<S: State> State for SetGroupName<S> {
-        type ConvoId = S::ConvoId;
-        type SubjectFollowsOwner = S::SubjectFollowsOwner;
         type ActorDid = S::ActorDid;
         type ConvoCreatedAt = S::ConvoCreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
+        type ConvoId = S::ConvoId;
         type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = S::GroupMemberCount;
         type GroupName = Set<members::group_name>;
+        type JoinLinkCode = S::JoinLinkCode;
         type OwnerDid = S::OwnerDid;
         type Rev = S::Rev;
-        type JoinLinkCode = S::JoinLinkCode;
-    }
-    ///State transition - sets the `owner_did` field to Set
-    pub struct SetOwnerDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetOwnerDid<S> {}
-    impl<S: State> State for SetOwnerDid<S> {
-        type ConvoId = S::ConvoId;
         type SubjectFollowsOwner = S::SubjectFollowsOwner;
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type CreatedAt = S::CreatedAt;
-        type GroupName = S::GroupName;
-        type OwnerDid = Set<members::owner_did>;
-        type Rev = S::Rev;
-        type JoinLinkCode = S::JoinLinkCode;
-    }
-    ///State transition - sets the `rev` field to Set
-    pub struct SetRev<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRev<S> {}
-    impl<S: State> State for SetRev<S> {
-        type ConvoId = S::ConvoId;
-        type SubjectFollowsOwner = S::SubjectFollowsOwner;
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type CreatedAt = S::CreatedAt;
-        type GroupName = S::GroupName;
-        type OwnerDid = S::OwnerDid;
-        type Rev = Set<members::rev>;
-        type JoinLinkCode = S::JoinLinkCode;
     }
     ///State transition - sets the `join_link_code` field to Set
     pub struct SetJoinLinkCode<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetJoinLinkCode<S> {}
     impl<S: State> State for SetJoinLinkCode<S> {
-        type ConvoId = S::ConvoId;
-        type SubjectFollowsOwner = S::SubjectFollowsOwner;
         type ActorDid = S::ActorDid;
         type ConvoCreatedAt = S::ConvoCreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
+        type ConvoId = S::ConvoId;
         type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = S::GroupMemberCount;
         type GroupName = S::GroupName;
+        type JoinLinkCode = Set<members::join_link_code>;
         type OwnerDid = S::OwnerDid;
         type Rev = S::Rev;
-        type JoinLinkCode = Set<members::join_link_code>;
+        type SubjectFollowsOwner = S::SubjectFollowsOwner;
+    }
+    ///State transition - sets the `owner_did` field to Set
+    pub struct SetOwnerDid<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetOwnerDid<S> {}
+    impl<S: State> State for SetOwnerDid<S> {
+        type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = S::ConvoId;
+        type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = S::GroupMemberCount;
+        type GroupName = S::GroupName;
+        type JoinLinkCode = S::JoinLinkCode;
+        type OwnerDid = Set<members::owner_did>;
+        type Rev = S::Rev;
+        type SubjectFollowsOwner = S::SubjectFollowsOwner;
+    }
+    ///State transition - sets the `rev` field to Set
+    pub struct SetRev<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetRev<S> {}
+    impl<S: State> State for SetRev<S> {
+        type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = S::ConvoId;
+        type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = S::GroupMemberCount;
+        type GroupName = S::GroupName;
+        type JoinLinkCode = S::JoinLinkCode;
+        type OwnerDid = S::OwnerDid;
+        type Rev = Set<members::rev>;
+        type SubjectFollowsOwner = S::SubjectFollowsOwner;
+    }
+    ///State transition - sets the `subject_follows_owner` field to Set
+    pub struct SetSubjectFollowsOwner<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetSubjectFollowsOwner<S> {}
+    impl<S: State> State for SetSubjectFollowsOwner<S> {
+        type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = S::ConvoId;
+        type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = S::GroupMemberCount;
+        type GroupName = S::GroupName;
+        type JoinLinkCode = S::JoinLinkCode;
+        type OwnerDid = S::OwnerDid;
+        type Rev = S::Rev;
+        type SubjectFollowsOwner = Set<members::subject_follows_owner>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `convo_id` field
-        pub struct convo_id(());
-        ///Marker type for the `subject_follows_owner` field
-        pub struct subject_follows_owner(());
         ///Marker type for the `actor_did` field
         pub struct actor_did(());
         ///Marker type for the `convo_created_at` field
         pub struct convo_created_at(());
-        ///Marker type for the `group_member_count` field
-        pub struct group_member_count(());
+        ///Marker type for the `convo_id` field
+        pub struct convo_id(());
         ///Marker type for the `created_at` field
         pub struct created_at(());
+        ///Marker type for the `group_member_count` field
+        pub struct group_member_count(());
         ///Marker type for the `group_name` field
         pub struct group_name(());
+        ///Marker type for the `join_link_code` field
+        pub struct join_link_code(());
         ///Marker type for the `owner_did` field
         pub struct owner_did(());
         ///Marker type for the `rev` field
         pub struct rev(());
-        ///Marker type for the `join_link_code` field
-        pub struct join_link_code(());
+        ///Marker type for the `subject_follows_owner` field
+        pub struct subject_follows_owner(());
     }
 }
 
@@ -3943,16 +3943,16 @@ where
 impl<'a, S> EventGroupChatJoinRequestBuilder<'a, S>
 where
     S: event_group_chat_join_request_state::State,
-    S::ConvoId: event_group_chat_join_request_state::IsSet,
-    S::SubjectFollowsOwner: event_group_chat_join_request_state::IsSet,
     S::ActorDid: event_group_chat_join_request_state::IsSet,
     S::ConvoCreatedAt: event_group_chat_join_request_state::IsSet,
-    S::GroupMemberCount: event_group_chat_join_request_state::IsSet,
+    S::ConvoId: event_group_chat_join_request_state::IsSet,
     S::CreatedAt: event_group_chat_join_request_state::IsSet,
+    S::GroupMemberCount: event_group_chat_join_request_state::IsSet,
     S::GroupName: event_group_chat_join_request_state::IsSet,
+    S::JoinLinkCode: event_group_chat_join_request_state::IsSet,
     S::OwnerDid: event_group_chat_join_request_state::IsSet,
     S::Rev: event_group_chat_join_request_state::IsSet,
-    S::JoinLinkCode: event_group_chat_join_request_state::IsSet,
+    S::SubjectFollowsOwner: event_group_chat_join_request_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> EventGroupChatJoinRequest<'a> {
@@ -4050,177 +4050,177 @@ pub mod event_group_chat_join_request_approved_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
+        type ActorDid;
         type ConvoCreatedAt;
         type ConvoId;
-        type SubjectDid;
-        type OwnerDid;
-        type GroupMemberCount;
         type CreatedAt;
-        type ActorDid;
-        type Rev;
+        type GroupMemberCount;
         type GroupName;
+        type OwnerDid;
+        type Rev;
+        type SubjectDid;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
+        type ActorDid = Unset;
         type ConvoCreatedAt = Unset;
         type ConvoId = Unset;
-        type SubjectDid = Unset;
-        type OwnerDid = Unset;
-        type GroupMemberCount = Unset;
         type CreatedAt = Unset;
-        type ActorDid = Unset;
-        type Rev = Unset;
+        type GroupMemberCount = Unset;
         type GroupName = Unset;
-    }
-    ///State transition - sets the `convo_created_at` field to Set
-    pub struct SetConvoCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoCreatedAt<S> {}
-    impl<S: State> State for SetConvoCreatedAt<S> {
-        type ConvoCreatedAt = Set<members::convo_created_at>;
-        type ConvoId = S::ConvoId;
-        type SubjectDid = S::SubjectDid;
-        type OwnerDid = S::OwnerDid;
-        type GroupMemberCount = S::GroupMemberCount;
-        type CreatedAt = S::CreatedAt;
-        type ActorDid = S::ActorDid;
-        type Rev = S::Rev;
-        type GroupName = S::GroupName;
-    }
-    ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = Set<members::convo_id>;
-        type SubjectDid = S::SubjectDid;
-        type OwnerDid = S::OwnerDid;
-        type GroupMemberCount = S::GroupMemberCount;
-        type CreatedAt = S::CreatedAt;
-        type ActorDid = S::ActorDid;
-        type Rev = S::Rev;
-        type GroupName = S::GroupName;
-    }
-    ///State transition - sets the `subject_did` field to Set
-    pub struct SetSubjectDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetSubjectDid<S> {}
-    impl<S: State> State for SetSubjectDid<S> {
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type SubjectDid = Set<members::subject_did>;
-        type OwnerDid = S::OwnerDid;
-        type GroupMemberCount = S::GroupMemberCount;
-        type CreatedAt = S::CreatedAt;
-        type ActorDid = S::ActorDid;
-        type Rev = S::Rev;
-        type GroupName = S::GroupName;
-    }
-    ///State transition - sets the `owner_did` field to Set
-    pub struct SetOwnerDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetOwnerDid<S> {}
-    impl<S: State> State for SetOwnerDid<S> {
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type SubjectDid = S::SubjectDid;
-        type OwnerDid = Set<members::owner_did>;
-        type GroupMemberCount = S::GroupMemberCount;
-        type CreatedAt = S::CreatedAt;
-        type ActorDid = S::ActorDid;
-        type Rev = S::Rev;
-        type GroupName = S::GroupName;
-    }
-    ///State transition - sets the `group_member_count` field to Set
-    pub struct SetGroupMemberCount<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetGroupMemberCount<S> {}
-    impl<S: State> State for SetGroupMemberCount<S> {
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type SubjectDid = S::SubjectDid;
-        type OwnerDid = S::OwnerDid;
-        type GroupMemberCount = Set<members::group_member_count>;
-        type CreatedAt = S::CreatedAt;
-        type ActorDid = S::ActorDid;
-        type Rev = S::Rev;
-        type GroupName = S::GroupName;
-    }
-    ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type SubjectDid = S::SubjectDid;
-        type OwnerDid = S::OwnerDid;
-        type GroupMemberCount = S::GroupMemberCount;
-        type CreatedAt = Set<members::created_at>;
-        type ActorDid = S::ActorDid;
-        type Rev = S::Rev;
-        type GroupName = S::GroupName;
+        type OwnerDid = Unset;
+        type Rev = Unset;
+        type SubjectDid = Unset;
     }
     ///State transition - sets the `actor_did` field to Set
     pub struct SetActorDid<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetActorDid<S> {}
     impl<S: State> State for SetActorDid<S> {
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type SubjectDid = S::SubjectDid;
-        type OwnerDid = S::OwnerDid;
-        type GroupMemberCount = S::GroupMemberCount;
-        type CreatedAt = S::CreatedAt;
         type ActorDid = Set<members::actor_did>;
-        type Rev = S::Rev;
-        type GroupName = S::GroupName;
-    }
-    ///State transition - sets the `rev` field to Set
-    pub struct SetRev<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRev<S> {}
-    impl<S: State> State for SetRev<S> {
         type ConvoCreatedAt = S::ConvoCreatedAt;
         type ConvoId = S::ConvoId;
-        type SubjectDid = S::SubjectDid;
-        type OwnerDid = S::OwnerDid;
-        type GroupMemberCount = S::GroupMemberCount;
         type CreatedAt = S::CreatedAt;
-        type ActorDid = S::ActorDid;
-        type Rev = Set<members::rev>;
+        type GroupMemberCount = S::GroupMemberCount;
         type GroupName = S::GroupName;
+        type OwnerDid = S::OwnerDid;
+        type Rev = S::Rev;
+        type SubjectDid = S::SubjectDid;
+    }
+    ///State transition - sets the `convo_created_at` field to Set
+    pub struct SetConvoCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetConvoCreatedAt<S> {}
+    impl<S: State> State for SetConvoCreatedAt<S> {
+        type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = Set<members::convo_created_at>;
+        type ConvoId = S::ConvoId;
+        type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = S::GroupMemberCount;
+        type GroupName = S::GroupName;
+        type OwnerDid = S::OwnerDid;
+        type Rev = S::Rev;
+        type SubjectDid = S::SubjectDid;
+    }
+    ///State transition - sets the `convo_id` field to Set
+    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetConvoId<S> {}
+    impl<S: State> State for SetConvoId<S> {
+        type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = Set<members::convo_id>;
+        type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = S::GroupMemberCount;
+        type GroupName = S::GroupName;
+        type OwnerDid = S::OwnerDid;
+        type Rev = S::Rev;
+        type SubjectDid = S::SubjectDid;
+    }
+    ///State transition - sets the `created_at` field to Set
+    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
+    impl<S: State> State for SetCreatedAt<S> {
+        type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = S::ConvoId;
+        type CreatedAt = Set<members::created_at>;
+        type GroupMemberCount = S::GroupMemberCount;
+        type GroupName = S::GroupName;
+        type OwnerDid = S::OwnerDid;
+        type Rev = S::Rev;
+        type SubjectDid = S::SubjectDid;
+    }
+    ///State transition - sets the `group_member_count` field to Set
+    pub struct SetGroupMemberCount<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetGroupMemberCount<S> {}
+    impl<S: State> State for SetGroupMemberCount<S> {
+        type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = S::ConvoId;
+        type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = Set<members::group_member_count>;
+        type GroupName = S::GroupName;
+        type OwnerDid = S::OwnerDid;
+        type Rev = S::Rev;
+        type SubjectDid = S::SubjectDid;
     }
     ///State transition - sets the `group_name` field to Set
     pub struct SetGroupName<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetGroupName<S> {}
     impl<S: State> State for SetGroupName<S> {
+        type ActorDid = S::ActorDid;
         type ConvoCreatedAt = S::ConvoCreatedAt;
         type ConvoId = S::ConvoId;
-        type SubjectDid = S::SubjectDid;
-        type OwnerDid = S::OwnerDid;
-        type GroupMemberCount = S::GroupMemberCount;
         type CreatedAt = S::CreatedAt;
-        type ActorDid = S::ActorDid;
-        type Rev = S::Rev;
+        type GroupMemberCount = S::GroupMemberCount;
         type GroupName = Set<members::group_name>;
+        type OwnerDid = S::OwnerDid;
+        type Rev = S::Rev;
+        type SubjectDid = S::SubjectDid;
+    }
+    ///State transition - sets the `owner_did` field to Set
+    pub struct SetOwnerDid<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetOwnerDid<S> {}
+    impl<S: State> State for SetOwnerDid<S> {
+        type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = S::ConvoId;
+        type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = S::GroupMemberCount;
+        type GroupName = S::GroupName;
+        type OwnerDid = Set<members::owner_did>;
+        type Rev = S::Rev;
+        type SubjectDid = S::SubjectDid;
+    }
+    ///State transition - sets the `rev` field to Set
+    pub struct SetRev<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetRev<S> {}
+    impl<S: State> State for SetRev<S> {
+        type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = S::ConvoId;
+        type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = S::GroupMemberCount;
+        type GroupName = S::GroupName;
+        type OwnerDid = S::OwnerDid;
+        type Rev = Set<members::rev>;
+        type SubjectDid = S::SubjectDid;
+    }
+    ///State transition - sets the `subject_did` field to Set
+    pub struct SetSubjectDid<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetSubjectDid<S> {}
+    impl<S: State> State for SetSubjectDid<S> {
+        type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = S::ConvoId;
+        type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = S::GroupMemberCount;
+        type GroupName = S::GroupName;
+        type OwnerDid = S::OwnerDid;
+        type Rev = S::Rev;
+        type SubjectDid = Set<members::subject_did>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
+        ///Marker type for the `actor_did` field
+        pub struct actor_did(());
         ///Marker type for the `convo_created_at` field
         pub struct convo_created_at(());
         ///Marker type for the `convo_id` field
         pub struct convo_id(());
-        ///Marker type for the `subject_did` field
-        pub struct subject_did(());
-        ///Marker type for the `owner_did` field
-        pub struct owner_did(());
-        ///Marker type for the `group_member_count` field
-        pub struct group_member_count(());
         ///Marker type for the `created_at` field
         pub struct created_at(());
-        ///Marker type for the `actor_did` field
-        pub struct actor_did(());
-        ///Marker type for the `rev` field
-        pub struct rev(());
+        ///Marker type for the `group_member_count` field
+        pub struct group_member_count(());
         ///Marker type for the `group_name` field
         pub struct group_name(());
+        ///Marker type for the `owner_did` field
+        pub struct owner_did(());
+        ///Marker type for the `rev` field
+        pub struct rev(());
+        ///Marker type for the `subject_did` field
+        pub struct subject_did(());
     }
 }
 
@@ -4471,15 +4471,15 @@ where
 impl<'a, S> EventGroupChatJoinRequestApprovedBuilder<'a, S>
 where
     S: event_group_chat_join_request_approved_state::State,
+    S::ActorDid: event_group_chat_join_request_approved_state::IsSet,
     S::ConvoCreatedAt: event_group_chat_join_request_approved_state::IsSet,
     S::ConvoId: event_group_chat_join_request_approved_state::IsSet,
-    S::SubjectDid: event_group_chat_join_request_approved_state::IsSet,
-    S::OwnerDid: event_group_chat_join_request_approved_state::IsSet,
-    S::GroupMemberCount: event_group_chat_join_request_approved_state::IsSet,
     S::CreatedAt: event_group_chat_join_request_approved_state::IsSet,
-    S::ActorDid: event_group_chat_join_request_approved_state::IsSet,
-    S::Rev: event_group_chat_join_request_approved_state::IsSet,
+    S::GroupMemberCount: event_group_chat_join_request_approved_state::IsSet,
     S::GroupName: event_group_chat_join_request_approved_state::IsSet,
+    S::OwnerDid: event_group_chat_join_request_approved_state::IsSet,
+    S::Rev: event_group_chat_join_request_approved_state::IsSet,
+    S::SubjectDid: event_group_chat_join_request_approved_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> EventGroupChatJoinRequestApproved<'a> {
@@ -4575,177 +4575,177 @@ pub mod event_group_chat_join_request_rejected_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type SubjectDid;
+        type ActorDid;
+        type ConvoCreatedAt;
         type ConvoId;
+        type CreatedAt;
         type GroupMemberCount;
         type GroupName;
-        type Rev;
-        type ConvoCreatedAt;
-        type CreatedAt;
-        type ActorDid;
         type OwnerDid;
+        type Rev;
+        type SubjectDid;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type SubjectDid = Unset;
+        type ActorDid = Unset;
+        type ConvoCreatedAt = Unset;
         type ConvoId = Unset;
+        type CreatedAt = Unset;
         type GroupMemberCount = Unset;
         type GroupName = Unset;
-        type Rev = Unset;
-        type ConvoCreatedAt = Unset;
-        type CreatedAt = Unset;
-        type ActorDid = Unset;
         type OwnerDid = Unset;
-    }
-    ///State transition - sets the `subject_did` field to Set
-    pub struct SetSubjectDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetSubjectDid<S> {}
-    impl<S: State> State for SetSubjectDid<S> {
-        type SubjectDid = Set<members::subject_did>;
-        type ConvoId = S::ConvoId;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type Rev = S::Rev;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type CreatedAt = S::CreatedAt;
-        type ActorDid = S::ActorDid;
-        type OwnerDid = S::OwnerDid;
-    }
-    ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type SubjectDid = S::SubjectDid;
-        type ConvoId = Set<members::convo_id>;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type Rev = S::Rev;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type CreatedAt = S::CreatedAt;
-        type ActorDid = S::ActorDid;
-        type OwnerDid = S::OwnerDid;
-    }
-    ///State transition - sets the `group_member_count` field to Set
-    pub struct SetGroupMemberCount<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetGroupMemberCount<S> {}
-    impl<S: State> State for SetGroupMemberCount<S> {
-        type SubjectDid = S::SubjectDid;
-        type ConvoId = S::ConvoId;
-        type GroupMemberCount = Set<members::group_member_count>;
-        type GroupName = S::GroupName;
-        type Rev = S::Rev;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type CreatedAt = S::CreatedAt;
-        type ActorDid = S::ActorDid;
-        type OwnerDid = S::OwnerDid;
-    }
-    ///State transition - sets the `group_name` field to Set
-    pub struct SetGroupName<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetGroupName<S> {}
-    impl<S: State> State for SetGroupName<S> {
-        type SubjectDid = S::SubjectDid;
-        type ConvoId = S::ConvoId;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = Set<members::group_name>;
-        type Rev = S::Rev;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type CreatedAt = S::CreatedAt;
-        type ActorDid = S::ActorDid;
-        type OwnerDid = S::OwnerDid;
-    }
-    ///State transition - sets the `rev` field to Set
-    pub struct SetRev<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRev<S> {}
-    impl<S: State> State for SetRev<S> {
-        type SubjectDid = S::SubjectDid;
-        type ConvoId = S::ConvoId;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type Rev = Set<members::rev>;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type CreatedAt = S::CreatedAt;
-        type ActorDid = S::ActorDid;
-        type OwnerDid = S::OwnerDid;
-    }
-    ///State transition - sets the `convo_created_at` field to Set
-    pub struct SetConvoCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoCreatedAt<S> {}
-    impl<S: State> State for SetConvoCreatedAt<S> {
-        type SubjectDid = S::SubjectDid;
-        type ConvoId = S::ConvoId;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type Rev = S::Rev;
-        type ConvoCreatedAt = Set<members::convo_created_at>;
-        type CreatedAt = S::CreatedAt;
-        type ActorDid = S::ActorDid;
-        type OwnerDid = S::OwnerDid;
-    }
-    ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type SubjectDid = S::SubjectDid;
-        type ConvoId = S::ConvoId;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type Rev = S::Rev;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type CreatedAt = Set<members::created_at>;
-        type ActorDid = S::ActorDid;
-        type OwnerDid = S::OwnerDid;
+        type Rev = Unset;
+        type SubjectDid = Unset;
     }
     ///State transition - sets the `actor_did` field to Set
     pub struct SetActorDid<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetActorDid<S> {}
     impl<S: State> State for SetActorDid<S> {
-        type SubjectDid = S::SubjectDid;
+        type ActorDid = Set<members::actor_did>;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
         type ConvoId = S::ConvoId;
+        type CreatedAt = S::CreatedAt;
         type GroupMemberCount = S::GroupMemberCount;
         type GroupName = S::GroupName;
-        type Rev = S::Rev;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type CreatedAt = S::CreatedAt;
-        type ActorDid = Set<members::actor_did>;
         type OwnerDid = S::OwnerDid;
+        type Rev = S::Rev;
+        type SubjectDid = S::SubjectDid;
+    }
+    ///State transition - sets the `convo_created_at` field to Set
+    pub struct SetConvoCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetConvoCreatedAt<S> {}
+    impl<S: State> State for SetConvoCreatedAt<S> {
+        type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = Set<members::convo_created_at>;
+        type ConvoId = S::ConvoId;
+        type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = S::GroupMemberCount;
+        type GroupName = S::GroupName;
+        type OwnerDid = S::OwnerDid;
+        type Rev = S::Rev;
+        type SubjectDid = S::SubjectDid;
+    }
+    ///State transition - sets the `convo_id` field to Set
+    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetConvoId<S> {}
+    impl<S: State> State for SetConvoId<S> {
+        type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = Set<members::convo_id>;
+        type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = S::GroupMemberCount;
+        type GroupName = S::GroupName;
+        type OwnerDid = S::OwnerDid;
+        type Rev = S::Rev;
+        type SubjectDid = S::SubjectDid;
+    }
+    ///State transition - sets the `created_at` field to Set
+    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
+    impl<S: State> State for SetCreatedAt<S> {
+        type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = S::ConvoId;
+        type CreatedAt = Set<members::created_at>;
+        type GroupMemberCount = S::GroupMemberCount;
+        type GroupName = S::GroupName;
+        type OwnerDid = S::OwnerDid;
+        type Rev = S::Rev;
+        type SubjectDid = S::SubjectDid;
+    }
+    ///State transition - sets the `group_member_count` field to Set
+    pub struct SetGroupMemberCount<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetGroupMemberCount<S> {}
+    impl<S: State> State for SetGroupMemberCount<S> {
+        type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = S::ConvoId;
+        type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = Set<members::group_member_count>;
+        type GroupName = S::GroupName;
+        type OwnerDid = S::OwnerDid;
+        type Rev = S::Rev;
+        type SubjectDid = S::SubjectDid;
+    }
+    ///State transition - sets the `group_name` field to Set
+    pub struct SetGroupName<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetGroupName<S> {}
+    impl<S: State> State for SetGroupName<S> {
+        type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = S::ConvoId;
+        type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = S::GroupMemberCount;
+        type GroupName = Set<members::group_name>;
+        type OwnerDid = S::OwnerDid;
+        type Rev = S::Rev;
+        type SubjectDid = S::SubjectDid;
     }
     ///State transition - sets the `owner_did` field to Set
     pub struct SetOwnerDid<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetOwnerDid<S> {}
     impl<S: State> State for SetOwnerDid<S> {
-        type SubjectDid = S::SubjectDid;
+        type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
         type ConvoId = S::ConvoId;
+        type CreatedAt = S::CreatedAt;
         type GroupMemberCount = S::GroupMemberCount;
         type GroupName = S::GroupName;
-        type Rev = S::Rev;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type CreatedAt = S::CreatedAt;
-        type ActorDid = S::ActorDid;
         type OwnerDid = Set<members::owner_did>;
+        type Rev = S::Rev;
+        type SubjectDid = S::SubjectDid;
+    }
+    ///State transition - sets the `rev` field to Set
+    pub struct SetRev<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetRev<S> {}
+    impl<S: State> State for SetRev<S> {
+        type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = S::ConvoId;
+        type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = S::GroupMemberCount;
+        type GroupName = S::GroupName;
+        type OwnerDid = S::OwnerDid;
+        type Rev = Set<members::rev>;
+        type SubjectDid = S::SubjectDid;
+    }
+    ///State transition - sets the `subject_did` field to Set
+    pub struct SetSubjectDid<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetSubjectDid<S> {}
+    impl<S: State> State for SetSubjectDid<S> {
+        type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = S::ConvoId;
+        type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = S::GroupMemberCount;
+        type GroupName = S::GroupName;
+        type OwnerDid = S::OwnerDid;
+        type Rev = S::Rev;
+        type SubjectDid = Set<members::subject_did>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `subject_did` field
-        pub struct subject_did(());
+        ///Marker type for the `actor_did` field
+        pub struct actor_did(());
+        ///Marker type for the `convo_created_at` field
+        pub struct convo_created_at(());
         ///Marker type for the `convo_id` field
         pub struct convo_id(());
+        ///Marker type for the `created_at` field
+        pub struct created_at(());
         ///Marker type for the `group_member_count` field
         pub struct group_member_count(());
         ///Marker type for the `group_name` field
         pub struct group_name(());
-        ///Marker type for the `rev` field
-        pub struct rev(());
-        ///Marker type for the `convo_created_at` field
-        pub struct convo_created_at(());
-        ///Marker type for the `created_at` field
-        pub struct created_at(());
-        ///Marker type for the `actor_did` field
-        pub struct actor_did(());
         ///Marker type for the `owner_did` field
         pub struct owner_did(());
+        ///Marker type for the `rev` field
+        pub struct rev(());
+        ///Marker type for the `subject_did` field
+        pub struct subject_did(());
     }
 }
 
@@ -4996,15 +4996,15 @@ where
 impl<'a, S> EventGroupChatJoinRequestRejectedBuilder<'a, S>
 where
     S: event_group_chat_join_request_rejected_state::State,
-    S::SubjectDid: event_group_chat_join_request_rejected_state::IsSet,
+    S::ActorDid: event_group_chat_join_request_rejected_state::IsSet,
+    S::ConvoCreatedAt: event_group_chat_join_request_rejected_state::IsSet,
     S::ConvoId: event_group_chat_join_request_rejected_state::IsSet,
+    S::CreatedAt: event_group_chat_join_request_rejected_state::IsSet,
     S::GroupMemberCount: event_group_chat_join_request_rejected_state::IsSet,
     S::GroupName: event_group_chat_join_request_rejected_state::IsSet,
-    S::Rev: event_group_chat_join_request_rejected_state::IsSet,
-    S::ConvoCreatedAt: event_group_chat_join_request_rejected_state::IsSet,
-    S::CreatedAt: event_group_chat_join_request_rejected_state::IsSet,
-    S::ActorDid: event_group_chat_join_request_rejected_state::IsSet,
     S::OwnerDid: event_group_chat_join_request_rejected_state::IsSet,
+    S::Rev: event_group_chat_join_request_rejected_state::IsSet,
+    S::SubjectDid: event_group_chat_join_request_rejected_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> EventGroupChatJoinRequestRejected<'a> {
@@ -5104,235 +5104,235 @@ pub mod event_group_chat_member_added_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type OwnerDid;
-        type GroupMemberCount;
         type ActorDid;
-        type ConvoId;
-        type GroupName;
-        type SubjectFollowsOwner;
-        type Rev;
-        type CreatedAt;
-        type SubjectDid;
-        type RequestMembersCount;
         type ConvoCreatedAt;
+        type ConvoId;
+        type CreatedAt;
+        type GroupMemberCount;
+        type GroupName;
+        type OwnerDid;
+        type RequestMembersCount;
+        type Rev;
+        type SubjectDid;
+        type SubjectFollowsOwner;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type OwnerDid = Unset;
-        type GroupMemberCount = Unset;
         type ActorDid = Unset;
-        type ConvoId = Unset;
-        type GroupName = Unset;
-        type SubjectFollowsOwner = Unset;
-        type Rev = Unset;
-        type CreatedAt = Unset;
-        type SubjectDid = Unset;
-        type RequestMembersCount = Unset;
         type ConvoCreatedAt = Unset;
-    }
-    ///State transition - sets the `owner_did` field to Set
-    pub struct SetOwnerDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetOwnerDid<S> {}
-    impl<S: State> State for SetOwnerDid<S> {
-        type OwnerDid = Set<members::owner_did>;
-        type GroupMemberCount = S::GroupMemberCount;
-        type ActorDid = S::ActorDid;
-        type ConvoId = S::ConvoId;
-        type GroupName = S::GroupName;
-        type SubjectFollowsOwner = S::SubjectFollowsOwner;
-        type Rev = S::Rev;
-        type CreatedAt = S::CreatedAt;
-        type SubjectDid = S::SubjectDid;
-        type RequestMembersCount = S::RequestMembersCount;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-    }
-    ///State transition - sets the `group_member_count` field to Set
-    pub struct SetGroupMemberCount<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetGroupMemberCount<S> {}
-    impl<S: State> State for SetGroupMemberCount<S> {
-        type OwnerDid = S::OwnerDid;
-        type GroupMemberCount = Set<members::group_member_count>;
-        type ActorDid = S::ActorDid;
-        type ConvoId = S::ConvoId;
-        type GroupName = S::GroupName;
-        type SubjectFollowsOwner = S::SubjectFollowsOwner;
-        type Rev = S::Rev;
-        type CreatedAt = S::CreatedAt;
-        type SubjectDid = S::SubjectDid;
-        type RequestMembersCount = S::RequestMembersCount;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = Unset;
+        type CreatedAt = Unset;
+        type GroupMemberCount = Unset;
+        type GroupName = Unset;
+        type OwnerDid = Unset;
+        type RequestMembersCount = Unset;
+        type Rev = Unset;
+        type SubjectDid = Unset;
+        type SubjectFollowsOwner = Unset;
     }
     ///State transition - sets the `actor_did` field to Set
     pub struct SetActorDid<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetActorDid<S> {}
     impl<S: State> State for SetActorDid<S> {
-        type OwnerDid = S::OwnerDid;
-        type GroupMemberCount = S::GroupMemberCount;
         type ActorDid = Set<members::actor_did>;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
         type ConvoId = S::ConvoId;
-        type GroupName = S::GroupName;
-        type SubjectFollowsOwner = S::SubjectFollowsOwner;
-        type Rev = S::Rev;
         type CreatedAt = S::CreatedAt;
-        type SubjectDid = S::SubjectDid;
-        type RequestMembersCount = S::RequestMembersCount;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-    }
-    ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type OwnerDid = S::OwnerDid;
         type GroupMemberCount = S::GroupMemberCount;
-        type ActorDid = S::ActorDid;
-        type ConvoId = Set<members::convo_id>;
         type GroupName = S::GroupName;
-        type SubjectFollowsOwner = S::SubjectFollowsOwner;
-        type Rev = S::Rev;
-        type CreatedAt = S::CreatedAt;
-        type SubjectDid = S::SubjectDid;
-        type RequestMembersCount = S::RequestMembersCount;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-    }
-    ///State transition - sets the `group_name` field to Set
-    pub struct SetGroupName<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetGroupName<S> {}
-    impl<S: State> State for SetGroupName<S> {
         type OwnerDid = S::OwnerDid;
-        type GroupMemberCount = S::GroupMemberCount;
-        type ActorDid = S::ActorDid;
-        type ConvoId = S::ConvoId;
-        type GroupName = Set<members::group_name>;
-        type SubjectFollowsOwner = S::SubjectFollowsOwner;
-        type Rev = S::Rev;
-        type CreatedAt = S::CreatedAt;
-        type SubjectDid = S::SubjectDid;
         type RequestMembersCount = S::RequestMembersCount;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-    }
-    ///State transition - sets the `subject_follows_owner` field to Set
-    pub struct SetSubjectFollowsOwner<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetSubjectFollowsOwner<S> {}
-    impl<S: State> State for SetSubjectFollowsOwner<S> {
-        type OwnerDid = S::OwnerDid;
-        type GroupMemberCount = S::GroupMemberCount;
-        type ActorDid = S::ActorDid;
-        type ConvoId = S::ConvoId;
-        type GroupName = S::GroupName;
-        type SubjectFollowsOwner = Set<members::subject_follows_owner>;
         type Rev = S::Rev;
-        type CreatedAt = S::CreatedAt;
         type SubjectDid = S::SubjectDid;
-        type RequestMembersCount = S::RequestMembersCount;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-    }
-    ///State transition - sets the `rev` field to Set
-    pub struct SetRev<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRev<S> {}
-    impl<S: State> State for SetRev<S> {
-        type OwnerDid = S::OwnerDid;
-        type GroupMemberCount = S::GroupMemberCount;
-        type ActorDid = S::ActorDid;
-        type ConvoId = S::ConvoId;
-        type GroupName = S::GroupName;
         type SubjectFollowsOwner = S::SubjectFollowsOwner;
-        type Rev = Set<members::rev>;
-        type CreatedAt = S::CreatedAt;
-        type SubjectDid = S::SubjectDid;
-        type RequestMembersCount = S::RequestMembersCount;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-    }
-    ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type OwnerDid = S::OwnerDid;
-        type GroupMemberCount = S::GroupMemberCount;
-        type ActorDid = S::ActorDid;
-        type ConvoId = S::ConvoId;
-        type GroupName = S::GroupName;
-        type SubjectFollowsOwner = S::SubjectFollowsOwner;
-        type Rev = S::Rev;
-        type CreatedAt = Set<members::created_at>;
-        type SubjectDid = S::SubjectDid;
-        type RequestMembersCount = S::RequestMembersCount;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-    }
-    ///State transition - sets the `subject_did` field to Set
-    pub struct SetSubjectDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetSubjectDid<S> {}
-    impl<S: State> State for SetSubjectDid<S> {
-        type OwnerDid = S::OwnerDid;
-        type GroupMemberCount = S::GroupMemberCount;
-        type ActorDid = S::ActorDid;
-        type ConvoId = S::ConvoId;
-        type GroupName = S::GroupName;
-        type SubjectFollowsOwner = S::SubjectFollowsOwner;
-        type Rev = S::Rev;
-        type CreatedAt = S::CreatedAt;
-        type SubjectDid = Set<members::subject_did>;
-        type RequestMembersCount = S::RequestMembersCount;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-    }
-    ///State transition - sets the `request_members_count` field to Set
-    pub struct SetRequestMembersCount<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRequestMembersCount<S> {}
-    impl<S: State> State for SetRequestMembersCount<S> {
-        type OwnerDid = S::OwnerDid;
-        type GroupMemberCount = S::GroupMemberCount;
-        type ActorDid = S::ActorDid;
-        type ConvoId = S::ConvoId;
-        type GroupName = S::GroupName;
-        type SubjectFollowsOwner = S::SubjectFollowsOwner;
-        type Rev = S::Rev;
-        type CreatedAt = S::CreatedAt;
-        type SubjectDid = S::SubjectDid;
-        type RequestMembersCount = Set<members::request_members_count>;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
     }
     ///State transition - sets the `convo_created_at` field to Set
     pub struct SetConvoCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetConvoCreatedAt<S> {}
     impl<S: State> State for SetConvoCreatedAt<S> {
-        type OwnerDid = S::OwnerDid;
-        type GroupMemberCount = S::GroupMemberCount;
         type ActorDid = S::ActorDid;
-        type ConvoId = S::ConvoId;
-        type GroupName = S::GroupName;
-        type SubjectFollowsOwner = S::SubjectFollowsOwner;
-        type Rev = S::Rev;
-        type CreatedAt = S::CreatedAt;
-        type SubjectDid = S::SubjectDid;
-        type RequestMembersCount = S::RequestMembersCount;
         type ConvoCreatedAt = Set<members::convo_created_at>;
+        type ConvoId = S::ConvoId;
+        type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = S::GroupMemberCount;
+        type GroupName = S::GroupName;
+        type OwnerDid = S::OwnerDid;
+        type RequestMembersCount = S::RequestMembersCount;
+        type Rev = S::Rev;
+        type SubjectDid = S::SubjectDid;
+        type SubjectFollowsOwner = S::SubjectFollowsOwner;
+    }
+    ///State transition - sets the `convo_id` field to Set
+    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetConvoId<S> {}
+    impl<S: State> State for SetConvoId<S> {
+        type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = Set<members::convo_id>;
+        type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = S::GroupMemberCount;
+        type GroupName = S::GroupName;
+        type OwnerDid = S::OwnerDid;
+        type RequestMembersCount = S::RequestMembersCount;
+        type Rev = S::Rev;
+        type SubjectDid = S::SubjectDid;
+        type SubjectFollowsOwner = S::SubjectFollowsOwner;
+    }
+    ///State transition - sets the `created_at` field to Set
+    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
+    impl<S: State> State for SetCreatedAt<S> {
+        type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = S::ConvoId;
+        type CreatedAt = Set<members::created_at>;
+        type GroupMemberCount = S::GroupMemberCount;
+        type GroupName = S::GroupName;
+        type OwnerDid = S::OwnerDid;
+        type RequestMembersCount = S::RequestMembersCount;
+        type Rev = S::Rev;
+        type SubjectDid = S::SubjectDid;
+        type SubjectFollowsOwner = S::SubjectFollowsOwner;
+    }
+    ///State transition - sets the `group_member_count` field to Set
+    pub struct SetGroupMemberCount<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetGroupMemberCount<S> {}
+    impl<S: State> State for SetGroupMemberCount<S> {
+        type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = S::ConvoId;
+        type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = Set<members::group_member_count>;
+        type GroupName = S::GroupName;
+        type OwnerDid = S::OwnerDid;
+        type RequestMembersCount = S::RequestMembersCount;
+        type Rev = S::Rev;
+        type SubjectDid = S::SubjectDid;
+        type SubjectFollowsOwner = S::SubjectFollowsOwner;
+    }
+    ///State transition - sets the `group_name` field to Set
+    pub struct SetGroupName<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetGroupName<S> {}
+    impl<S: State> State for SetGroupName<S> {
+        type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = S::ConvoId;
+        type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = S::GroupMemberCount;
+        type GroupName = Set<members::group_name>;
+        type OwnerDid = S::OwnerDid;
+        type RequestMembersCount = S::RequestMembersCount;
+        type Rev = S::Rev;
+        type SubjectDid = S::SubjectDid;
+        type SubjectFollowsOwner = S::SubjectFollowsOwner;
+    }
+    ///State transition - sets the `owner_did` field to Set
+    pub struct SetOwnerDid<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetOwnerDid<S> {}
+    impl<S: State> State for SetOwnerDid<S> {
+        type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = S::ConvoId;
+        type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = S::GroupMemberCount;
+        type GroupName = S::GroupName;
+        type OwnerDid = Set<members::owner_did>;
+        type RequestMembersCount = S::RequestMembersCount;
+        type Rev = S::Rev;
+        type SubjectDid = S::SubjectDid;
+        type SubjectFollowsOwner = S::SubjectFollowsOwner;
+    }
+    ///State transition - sets the `request_members_count` field to Set
+    pub struct SetRequestMembersCount<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetRequestMembersCount<S> {}
+    impl<S: State> State for SetRequestMembersCount<S> {
+        type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = S::ConvoId;
+        type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = S::GroupMemberCount;
+        type GroupName = S::GroupName;
+        type OwnerDid = S::OwnerDid;
+        type RequestMembersCount = Set<members::request_members_count>;
+        type Rev = S::Rev;
+        type SubjectDid = S::SubjectDid;
+        type SubjectFollowsOwner = S::SubjectFollowsOwner;
+    }
+    ///State transition - sets the `rev` field to Set
+    pub struct SetRev<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetRev<S> {}
+    impl<S: State> State for SetRev<S> {
+        type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = S::ConvoId;
+        type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = S::GroupMemberCount;
+        type GroupName = S::GroupName;
+        type OwnerDid = S::OwnerDid;
+        type RequestMembersCount = S::RequestMembersCount;
+        type Rev = Set<members::rev>;
+        type SubjectDid = S::SubjectDid;
+        type SubjectFollowsOwner = S::SubjectFollowsOwner;
+    }
+    ///State transition - sets the `subject_did` field to Set
+    pub struct SetSubjectDid<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetSubjectDid<S> {}
+    impl<S: State> State for SetSubjectDid<S> {
+        type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = S::ConvoId;
+        type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = S::GroupMemberCount;
+        type GroupName = S::GroupName;
+        type OwnerDid = S::OwnerDid;
+        type RequestMembersCount = S::RequestMembersCount;
+        type Rev = S::Rev;
+        type SubjectDid = Set<members::subject_did>;
+        type SubjectFollowsOwner = S::SubjectFollowsOwner;
+    }
+    ///State transition - sets the `subject_follows_owner` field to Set
+    pub struct SetSubjectFollowsOwner<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetSubjectFollowsOwner<S> {}
+    impl<S: State> State for SetSubjectFollowsOwner<S> {
+        type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = S::ConvoId;
+        type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = S::GroupMemberCount;
+        type GroupName = S::GroupName;
+        type OwnerDid = S::OwnerDid;
+        type RequestMembersCount = S::RequestMembersCount;
+        type Rev = S::Rev;
+        type SubjectDid = S::SubjectDid;
+        type SubjectFollowsOwner = Set<members::subject_follows_owner>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `owner_did` field
-        pub struct owner_did(());
-        ///Marker type for the `group_member_count` field
-        pub struct group_member_count(());
         ///Marker type for the `actor_did` field
         pub struct actor_did(());
-        ///Marker type for the `convo_id` field
-        pub struct convo_id(());
-        ///Marker type for the `group_name` field
-        pub struct group_name(());
-        ///Marker type for the `subject_follows_owner` field
-        pub struct subject_follows_owner(());
-        ///Marker type for the `rev` field
-        pub struct rev(());
-        ///Marker type for the `created_at` field
-        pub struct created_at(());
-        ///Marker type for the `subject_did` field
-        pub struct subject_did(());
-        ///Marker type for the `request_members_count` field
-        pub struct request_members_count(());
         ///Marker type for the `convo_created_at` field
         pub struct convo_created_at(());
+        ///Marker type for the `convo_id` field
+        pub struct convo_id(());
+        ///Marker type for the `created_at` field
+        pub struct created_at(());
+        ///Marker type for the `group_member_count` field
+        pub struct group_member_count(());
+        ///Marker type for the `group_name` field
+        pub struct group_name(());
+        ///Marker type for the `owner_did` field
+        pub struct owner_did(());
+        ///Marker type for the `request_members_count` field
+        pub struct request_members_count(());
+        ///Marker type for the `rev` field
+        pub struct rev(());
+        ///Marker type for the `subject_did` field
+        pub struct subject_did(());
+        ///Marker type for the `subject_follows_owner` field
+        pub struct subject_follows_owner(());
     }
 }
 
@@ -5606,17 +5606,17 @@ where
 impl<'a, S> EventGroupChatMemberAddedBuilder<'a, S>
 where
     S: event_group_chat_member_added_state::State,
-    S::OwnerDid: event_group_chat_member_added_state::IsSet,
-    S::GroupMemberCount: event_group_chat_member_added_state::IsSet,
     S::ActorDid: event_group_chat_member_added_state::IsSet,
-    S::ConvoId: event_group_chat_member_added_state::IsSet,
-    S::GroupName: event_group_chat_member_added_state::IsSet,
-    S::SubjectFollowsOwner: event_group_chat_member_added_state::IsSet,
-    S::Rev: event_group_chat_member_added_state::IsSet,
-    S::CreatedAt: event_group_chat_member_added_state::IsSet,
-    S::SubjectDid: event_group_chat_member_added_state::IsSet,
-    S::RequestMembersCount: event_group_chat_member_added_state::IsSet,
     S::ConvoCreatedAt: event_group_chat_member_added_state::IsSet,
+    S::ConvoId: event_group_chat_member_added_state::IsSet,
+    S::CreatedAt: event_group_chat_member_added_state::IsSet,
+    S::GroupMemberCount: event_group_chat_member_added_state::IsSet,
+    S::GroupName: event_group_chat_member_added_state::IsSet,
+    S::OwnerDid: event_group_chat_member_added_state::IsSet,
+    S::RequestMembersCount: event_group_chat_member_added_state::IsSet,
+    S::Rev: event_group_chat_member_added_state::IsSet,
+    S::SubjectDid: event_group_chat_member_added_state::IsSet,
+    S::SubjectFollowsOwner: event_group_chat_member_added_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> EventGroupChatMemberAdded<'a> {
@@ -5720,14 +5720,14 @@ pub mod event_group_chat_member_joined_state {
     pub trait State: sealed::Sealed {
         type ActorDid;
         type ConvoCreatedAt;
-        type GroupMemberCount;
         type ConvoId;
         type CreatedAt;
+        type GroupMemberCount;
         type GroupName;
+        type JoinLinkCode;
         type OwnerDid;
         type Rev;
         type SubjectFollowsOwner;
-        type JoinLinkCode;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
@@ -5735,14 +5735,14 @@ pub mod event_group_chat_member_joined_state {
     impl State for Empty {
         type ActorDid = Unset;
         type ConvoCreatedAt = Unset;
-        type GroupMemberCount = Unset;
         type ConvoId = Unset;
         type CreatedAt = Unset;
+        type GroupMemberCount = Unset;
         type GroupName = Unset;
+        type JoinLinkCode = Unset;
         type OwnerDid = Unset;
         type Rev = Unset;
         type SubjectFollowsOwner = Unset;
-        type JoinLinkCode = Unset;
     }
     ///State transition - sets the `actor_did` field to Set
     pub struct SetActorDid<S: State = Empty>(PhantomData<fn() -> S>);
@@ -5750,14 +5750,14 @@ pub mod event_group_chat_member_joined_state {
     impl<S: State> State for SetActorDid<S> {
         type ActorDid = Set<members::actor_did>;
         type ConvoCreatedAt = S::ConvoCreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
         type ConvoId = S::ConvoId;
         type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = S::GroupMemberCount;
         type GroupName = S::GroupName;
+        type JoinLinkCode = S::JoinLinkCode;
         type OwnerDid = S::OwnerDid;
         type Rev = S::Rev;
         type SubjectFollowsOwner = S::SubjectFollowsOwner;
-        type JoinLinkCode = S::JoinLinkCode;
     }
     ///State transition - sets the `convo_created_at` field to Set
     pub struct SetConvoCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
@@ -5765,29 +5765,14 @@ pub mod event_group_chat_member_joined_state {
     impl<S: State> State for SetConvoCreatedAt<S> {
         type ActorDid = S::ActorDid;
         type ConvoCreatedAt = Set<members::convo_created_at>;
+        type ConvoId = S::ConvoId;
+        type CreatedAt = S::CreatedAt;
         type GroupMemberCount = S::GroupMemberCount;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
         type GroupName = S::GroupName;
+        type JoinLinkCode = S::JoinLinkCode;
         type OwnerDid = S::OwnerDid;
         type Rev = S::Rev;
         type SubjectFollowsOwner = S::SubjectFollowsOwner;
-        type JoinLinkCode = S::JoinLinkCode;
-    }
-    ///State transition - sets the `group_member_count` field to Set
-    pub struct SetGroupMemberCount<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetGroupMemberCount<S> {}
-    impl<S: State> State for SetGroupMemberCount<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type GroupMemberCount = Set<members::group_member_count>;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupName = S::GroupName;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
-        type SubjectFollowsOwner = S::SubjectFollowsOwner;
-        type JoinLinkCode = S::JoinLinkCode;
     }
     ///State transition - sets the `convo_id` field to Set
     pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
@@ -5795,14 +5780,14 @@ pub mod event_group_chat_member_joined_state {
     impl<S: State> State for SetConvoId<S> {
         type ActorDid = S::ActorDid;
         type ConvoCreatedAt = S::ConvoCreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
         type ConvoId = Set<members::convo_id>;
         type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = S::GroupMemberCount;
         type GroupName = S::GroupName;
+        type JoinLinkCode = S::JoinLinkCode;
         type OwnerDid = S::OwnerDid;
         type Rev = S::Rev;
         type SubjectFollowsOwner = S::SubjectFollowsOwner;
-        type JoinLinkCode = S::JoinLinkCode;
     }
     ///State transition - sets the `created_at` field to Set
     pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
@@ -5810,14 +5795,29 @@ pub mod event_group_chat_member_joined_state {
     impl<S: State> State for SetCreatedAt<S> {
         type ActorDid = S::ActorDid;
         type ConvoCreatedAt = S::ConvoCreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
         type ConvoId = S::ConvoId;
         type CreatedAt = Set<members::created_at>;
+        type GroupMemberCount = S::GroupMemberCount;
         type GroupName = S::GroupName;
+        type JoinLinkCode = S::JoinLinkCode;
         type OwnerDid = S::OwnerDid;
         type Rev = S::Rev;
         type SubjectFollowsOwner = S::SubjectFollowsOwner;
+    }
+    ///State transition - sets the `group_member_count` field to Set
+    pub struct SetGroupMemberCount<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetGroupMemberCount<S> {}
+    impl<S: State> State for SetGroupMemberCount<S> {
+        type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = S::ConvoId;
+        type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = Set<members::group_member_count>;
+        type GroupName = S::GroupName;
         type JoinLinkCode = S::JoinLinkCode;
+        type OwnerDid = S::OwnerDid;
+        type Rev = S::Rev;
+        type SubjectFollowsOwner = S::SubjectFollowsOwner;
     }
     ///State transition - sets the `group_name` field to Set
     pub struct SetGroupName<S: State = Empty>(PhantomData<fn() -> S>);
@@ -5825,59 +5825,14 @@ pub mod event_group_chat_member_joined_state {
     impl<S: State> State for SetGroupName<S> {
         type ActorDid = S::ActorDid;
         type ConvoCreatedAt = S::ConvoCreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
         type ConvoId = S::ConvoId;
         type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = S::GroupMemberCount;
         type GroupName = Set<members::group_name>;
+        type JoinLinkCode = S::JoinLinkCode;
         type OwnerDid = S::OwnerDid;
         type Rev = S::Rev;
         type SubjectFollowsOwner = S::SubjectFollowsOwner;
-        type JoinLinkCode = S::JoinLinkCode;
-    }
-    ///State transition - sets the `owner_did` field to Set
-    pub struct SetOwnerDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetOwnerDid<S> {}
-    impl<S: State> State for SetOwnerDid<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupName = S::GroupName;
-        type OwnerDid = Set<members::owner_did>;
-        type Rev = S::Rev;
-        type SubjectFollowsOwner = S::SubjectFollowsOwner;
-        type JoinLinkCode = S::JoinLinkCode;
-    }
-    ///State transition - sets the `rev` field to Set
-    pub struct SetRev<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRev<S> {}
-    impl<S: State> State for SetRev<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupName = S::GroupName;
-        type OwnerDid = S::OwnerDid;
-        type Rev = Set<members::rev>;
-        type SubjectFollowsOwner = S::SubjectFollowsOwner;
-        type JoinLinkCode = S::JoinLinkCode;
-    }
-    ///State transition - sets the `subject_follows_owner` field to Set
-    pub struct SetSubjectFollowsOwner<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetSubjectFollowsOwner<S> {}
-    impl<S: State> State for SetSubjectFollowsOwner<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupName = S::GroupName;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
-        type SubjectFollowsOwner = Set<members::subject_follows_owner>;
-        type JoinLinkCode = S::JoinLinkCode;
     }
     ///State transition - sets the `join_link_code` field to Set
     pub struct SetJoinLinkCode<S: State = Empty>(PhantomData<fn() -> S>);
@@ -5885,14 +5840,59 @@ pub mod event_group_chat_member_joined_state {
     impl<S: State> State for SetJoinLinkCode<S> {
         type ActorDid = S::ActorDid;
         type ConvoCreatedAt = S::ConvoCreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
         type ConvoId = S::ConvoId;
         type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = S::GroupMemberCount;
         type GroupName = S::GroupName;
+        type JoinLinkCode = Set<members::join_link_code>;
         type OwnerDid = S::OwnerDid;
         type Rev = S::Rev;
         type SubjectFollowsOwner = S::SubjectFollowsOwner;
-        type JoinLinkCode = Set<members::join_link_code>;
+    }
+    ///State transition - sets the `owner_did` field to Set
+    pub struct SetOwnerDid<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetOwnerDid<S> {}
+    impl<S: State> State for SetOwnerDid<S> {
+        type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = S::ConvoId;
+        type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = S::GroupMemberCount;
+        type GroupName = S::GroupName;
+        type JoinLinkCode = S::JoinLinkCode;
+        type OwnerDid = Set<members::owner_did>;
+        type Rev = S::Rev;
+        type SubjectFollowsOwner = S::SubjectFollowsOwner;
+    }
+    ///State transition - sets the `rev` field to Set
+    pub struct SetRev<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetRev<S> {}
+    impl<S: State> State for SetRev<S> {
+        type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = S::ConvoId;
+        type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = S::GroupMemberCount;
+        type GroupName = S::GroupName;
+        type JoinLinkCode = S::JoinLinkCode;
+        type OwnerDid = S::OwnerDid;
+        type Rev = Set<members::rev>;
+        type SubjectFollowsOwner = S::SubjectFollowsOwner;
+    }
+    ///State transition - sets the `subject_follows_owner` field to Set
+    pub struct SetSubjectFollowsOwner<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetSubjectFollowsOwner<S> {}
+    impl<S: State> State for SetSubjectFollowsOwner<S> {
+        type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = S::ConvoId;
+        type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = S::GroupMemberCount;
+        type GroupName = S::GroupName;
+        type JoinLinkCode = S::JoinLinkCode;
+        type OwnerDid = S::OwnerDid;
+        type Rev = S::Rev;
+        type SubjectFollowsOwner = Set<members::subject_follows_owner>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
@@ -5901,22 +5901,22 @@ pub mod event_group_chat_member_joined_state {
         pub struct actor_did(());
         ///Marker type for the `convo_created_at` field
         pub struct convo_created_at(());
-        ///Marker type for the `group_member_count` field
-        pub struct group_member_count(());
         ///Marker type for the `convo_id` field
         pub struct convo_id(());
         ///Marker type for the `created_at` field
         pub struct created_at(());
+        ///Marker type for the `group_member_count` field
+        pub struct group_member_count(());
         ///Marker type for the `group_name` field
         pub struct group_name(());
+        ///Marker type for the `join_link_code` field
+        pub struct join_link_code(());
         ///Marker type for the `owner_did` field
         pub struct owner_did(());
         ///Marker type for the `rev` field
         pub struct rev(());
         ///Marker type for the `subject_follows_owner` field
         pub struct subject_follows_owner(());
-        ///Marker type for the `join_link_code` field
-        pub struct join_link_code(());
     }
 }
 
@@ -6170,14 +6170,14 @@ where
     S: event_group_chat_member_joined_state::State,
     S::ActorDid: event_group_chat_member_joined_state::IsSet,
     S::ConvoCreatedAt: event_group_chat_member_joined_state::IsSet,
-    S::GroupMemberCount: event_group_chat_member_joined_state::IsSet,
     S::ConvoId: event_group_chat_member_joined_state::IsSet,
     S::CreatedAt: event_group_chat_member_joined_state::IsSet,
+    S::GroupMemberCount: event_group_chat_member_joined_state::IsSet,
     S::GroupName: event_group_chat_member_joined_state::IsSet,
+    S::JoinLinkCode: event_group_chat_member_joined_state::IsSet,
     S::OwnerDid: event_group_chat_member_joined_state::IsSet,
     S::Rev: event_group_chat_member_joined_state::IsSet,
     S::SubjectFollowsOwner: event_group_chat_member_joined_state::IsSet,
-    S::JoinLinkCode: event_group_chat_member_joined_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> EventGroupChatMemberJoined<'a> {
@@ -6278,203 +6278,203 @@ pub mod event_group_chat_member_left_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type ConvoCreatedAt;
         type ActorDid;
+        type ConvoCreatedAt;
+        type ConvoId;
+        type CreatedAt;
         type GroupMemberCount;
         type GroupName;
-        type OwnerDid;
         type LeaveMethod;
-        type ConvoId;
+        type OwnerDid;
         type Rev;
-        type CreatedAt;
         type SubjectDid;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type ConvoCreatedAt = Unset;
         type ActorDid = Unset;
+        type ConvoCreatedAt = Unset;
+        type ConvoId = Unset;
+        type CreatedAt = Unset;
         type GroupMemberCount = Unset;
         type GroupName = Unset;
-        type OwnerDid = Unset;
         type LeaveMethod = Unset;
-        type ConvoId = Unset;
+        type OwnerDid = Unset;
         type Rev = Unset;
-        type CreatedAt = Unset;
         type SubjectDid = Unset;
-    }
-    ///State transition - sets the `convo_created_at` field to Set
-    pub struct SetConvoCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoCreatedAt<S> {}
-    impl<S: State> State for SetConvoCreatedAt<S> {
-        type ConvoCreatedAt = Set<members::convo_created_at>;
-        type ActorDid = S::ActorDid;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type OwnerDid = S::OwnerDid;
-        type LeaveMethod = S::LeaveMethod;
-        type ConvoId = S::ConvoId;
-        type Rev = S::Rev;
-        type CreatedAt = S::CreatedAt;
-        type SubjectDid = S::SubjectDid;
     }
     ///State transition - sets the `actor_did` field to Set
     pub struct SetActorDid<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetActorDid<S> {}
     impl<S: State> State for SetActorDid<S> {
-        type ConvoCreatedAt = S::ConvoCreatedAt;
         type ActorDid = Set<members::actor_did>;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = S::ConvoId;
+        type CreatedAt = S::CreatedAt;
         type GroupMemberCount = S::GroupMemberCount;
         type GroupName = S::GroupName;
-        type OwnerDid = S::OwnerDid;
         type LeaveMethod = S::LeaveMethod;
-        type ConvoId = S::ConvoId;
+        type OwnerDid = S::OwnerDid;
         type Rev = S::Rev;
-        type CreatedAt = S::CreatedAt;
         type SubjectDid = S::SubjectDid;
     }
-    ///State transition - sets the `group_member_count` field to Set
-    pub struct SetGroupMemberCount<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetGroupMemberCount<S> {}
-    impl<S: State> State for SetGroupMemberCount<S> {
-        type ConvoCreatedAt = S::ConvoCreatedAt;
+    ///State transition - sets the `convo_created_at` field to Set
+    pub struct SetConvoCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetConvoCreatedAt<S> {}
+    impl<S: State> State for SetConvoCreatedAt<S> {
         type ActorDid = S::ActorDid;
-        type GroupMemberCount = Set<members::group_member_count>;
-        type GroupName = S::GroupName;
-        type OwnerDid = S::OwnerDid;
-        type LeaveMethod = S::LeaveMethod;
+        type ConvoCreatedAt = Set<members::convo_created_at>;
         type ConvoId = S::ConvoId;
-        type Rev = S::Rev;
         type CreatedAt = S::CreatedAt;
-        type SubjectDid = S::SubjectDid;
-    }
-    ///State transition - sets the `group_name` field to Set
-    pub struct SetGroupName<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetGroupName<S> {}
-    impl<S: State> State for SetGroupName<S> {
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ActorDid = S::ActorDid;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = Set<members::group_name>;
-        type OwnerDid = S::OwnerDid;
-        type LeaveMethod = S::LeaveMethod;
-        type ConvoId = S::ConvoId;
-        type Rev = S::Rev;
-        type CreatedAt = S::CreatedAt;
-        type SubjectDid = S::SubjectDid;
-    }
-    ///State transition - sets the `owner_did` field to Set
-    pub struct SetOwnerDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetOwnerDid<S> {}
-    impl<S: State> State for SetOwnerDid<S> {
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ActorDid = S::ActorDid;
         type GroupMemberCount = S::GroupMemberCount;
         type GroupName = S::GroupName;
-        type OwnerDid = Set<members::owner_did>;
         type LeaveMethod = S::LeaveMethod;
-        type ConvoId = S::ConvoId;
-        type Rev = S::Rev;
-        type CreatedAt = S::CreatedAt;
-        type SubjectDid = S::SubjectDid;
-    }
-    ///State transition - sets the `leave_method` field to Set
-    pub struct SetLeaveMethod<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetLeaveMethod<S> {}
-    impl<S: State> State for SetLeaveMethod<S> {
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ActorDid = S::ActorDid;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
         type OwnerDid = S::OwnerDid;
-        type LeaveMethod = Set<members::leave_method>;
-        type ConvoId = S::ConvoId;
         type Rev = S::Rev;
-        type CreatedAt = S::CreatedAt;
         type SubjectDid = S::SubjectDid;
     }
     ///State transition - sets the `convo_id` field to Set
     pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetConvoId<S> {}
     impl<S: State> State for SetConvoId<S> {
-        type ConvoCreatedAt = S::ConvoCreatedAt;
         type ActorDid = S::ActorDid;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type OwnerDid = S::OwnerDid;
-        type LeaveMethod = S::LeaveMethod;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
         type ConvoId = Set<members::convo_id>;
-        type Rev = S::Rev;
         type CreatedAt = S::CreatedAt;
-        type SubjectDid = S::SubjectDid;
-    }
-    ///State transition - sets the `rev` field to Set
-    pub struct SetRev<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRev<S> {}
-    impl<S: State> State for SetRev<S> {
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ActorDid = S::ActorDid;
         type GroupMemberCount = S::GroupMemberCount;
         type GroupName = S::GroupName;
-        type OwnerDid = S::OwnerDid;
         type LeaveMethod = S::LeaveMethod;
-        type ConvoId = S::ConvoId;
-        type Rev = Set<members::rev>;
-        type CreatedAt = S::CreatedAt;
+        type OwnerDid = S::OwnerDid;
+        type Rev = S::Rev;
         type SubjectDid = S::SubjectDid;
     }
     ///State transition - sets the `created_at` field to Set
     pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
     impl<S: State> State for SetCreatedAt<S> {
-        type ConvoCreatedAt = S::ConvoCreatedAt;
         type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = S::ConvoId;
+        type CreatedAt = Set<members::created_at>;
         type GroupMemberCount = S::GroupMemberCount;
         type GroupName = S::GroupName;
-        type OwnerDid = S::OwnerDid;
         type LeaveMethod = S::LeaveMethod;
-        type ConvoId = S::ConvoId;
+        type OwnerDid = S::OwnerDid;
         type Rev = S::Rev;
-        type CreatedAt = Set<members::created_at>;
+        type SubjectDid = S::SubjectDid;
+    }
+    ///State transition - sets the `group_member_count` field to Set
+    pub struct SetGroupMemberCount<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetGroupMemberCount<S> {}
+    impl<S: State> State for SetGroupMemberCount<S> {
+        type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = S::ConvoId;
+        type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = Set<members::group_member_count>;
+        type GroupName = S::GroupName;
+        type LeaveMethod = S::LeaveMethod;
+        type OwnerDid = S::OwnerDid;
+        type Rev = S::Rev;
+        type SubjectDid = S::SubjectDid;
+    }
+    ///State transition - sets the `group_name` field to Set
+    pub struct SetGroupName<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetGroupName<S> {}
+    impl<S: State> State for SetGroupName<S> {
+        type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = S::ConvoId;
+        type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = S::GroupMemberCount;
+        type GroupName = Set<members::group_name>;
+        type LeaveMethod = S::LeaveMethod;
+        type OwnerDid = S::OwnerDid;
+        type Rev = S::Rev;
+        type SubjectDid = S::SubjectDid;
+    }
+    ///State transition - sets the `leave_method` field to Set
+    pub struct SetLeaveMethod<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetLeaveMethod<S> {}
+    impl<S: State> State for SetLeaveMethod<S> {
+        type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = S::ConvoId;
+        type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = S::GroupMemberCount;
+        type GroupName = S::GroupName;
+        type LeaveMethod = Set<members::leave_method>;
+        type OwnerDid = S::OwnerDid;
+        type Rev = S::Rev;
+        type SubjectDid = S::SubjectDid;
+    }
+    ///State transition - sets the `owner_did` field to Set
+    pub struct SetOwnerDid<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetOwnerDid<S> {}
+    impl<S: State> State for SetOwnerDid<S> {
+        type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = S::ConvoId;
+        type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = S::GroupMemberCount;
+        type GroupName = S::GroupName;
+        type LeaveMethod = S::LeaveMethod;
+        type OwnerDid = Set<members::owner_did>;
+        type Rev = S::Rev;
+        type SubjectDid = S::SubjectDid;
+    }
+    ///State transition - sets the `rev` field to Set
+    pub struct SetRev<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetRev<S> {}
+    impl<S: State> State for SetRev<S> {
+        type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = S::ConvoId;
+        type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = S::GroupMemberCount;
+        type GroupName = S::GroupName;
+        type LeaveMethod = S::LeaveMethod;
+        type OwnerDid = S::OwnerDid;
+        type Rev = Set<members::rev>;
         type SubjectDid = S::SubjectDid;
     }
     ///State transition - sets the `subject_did` field to Set
     pub struct SetSubjectDid<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetSubjectDid<S> {}
     impl<S: State> State for SetSubjectDid<S> {
-        type ConvoCreatedAt = S::ConvoCreatedAt;
         type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = S::ConvoId;
+        type CreatedAt = S::CreatedAt;
         type GroupMemberCount = S::GroupMemberCount;
         type GroupName = S::GroupName;
-        type OwnerDid = S::OwnerDid;
         type LeaveMethod = S::LeaveMethod;
-        type ConvoId = S::ConvoId;
+        type OwnerDid = S::OwnerDid;
         type Rev = S::Rev;
-        type CreatedAt = S::CreatedAt;
         type SubjectDid = Set<members::subject_did>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `convo_created_at` field
-        pub struct convo_created_at(());
         ///Marker type for the `actor_did` field
         pub struct actor_did(());
+        ///Marker type for the `convo_created_at` field
+        pub struct convo_created_at(());
+        ///Marker type for the `convo_id` field
+        pub struct convo_id(());
+        ///Marker type for the `created_at` field
+        pub struct created_at(());
         ///Marker type for the `group_member_count` field
         pub struct group_member_count(());
         ///Marker type for the `group_name` field
         pub struct group_name(());
-        ///Marker type for the `owner_did` field
-        pub struct owner_did(());
         ///Marker type for the `leave_method` field
         pub struct leave_method(());
-        ///Marker type for the `convo_id` field
-        pub struct convo_id(());
+        ///Marker type for the `owner_did` field
+        pub struct owner_did(());
         ///Marker type for the `rev` field
         pub struct rev(());
-        ///Marker type for the `created_at` field
-        pub struct created_at(());
         ///Marker type for the `subject_did` field
         pub struct subject_did(());
     }
@@ -6720,15 +6720,15 @@ where
 impl<'a, S> EventGroupChatMemberLeftBuilder<'a, S>
 where
     S: event_group_chat_member_left_state::State,
-    S::ConvoCreatedAt: event_group_chat_member_left_state::IsSet,
     S::ActorDid: event_group_chat_member_left_state::IsSet,
+    S::ConvoCreatedAt: event_group_chat_member_left_state::IsSet,
+    S::ConvoId: event_group_chat_member_left_state::IsSet,
+    S::CreatedAt: event_group_chat_member_left_state::IsSet,
     S::GroupMemberCount: event_group_chat_member_left_state::IsSet,
     S::GroupName: event_group_chat_member_left_state::IsSet,
-    S::OwnerDid: event_group_chat_member_left_state::IsSet,
     S::LeaveMethod: event_group_chat_member_left_state::IsSet,
-    S::ConvoId: event_group_chat_member_left_state::IsSet,
+    S::OwnerDid: event_group_chat_member_left_state::IsSet,
     S::Rev: event_group_chat_member_left_state::IsSet,
-    S::CreatedAt: event_group_chat_member_left_state::IsSet,
     S::SubjectDid: event_group_chat_member_left_state::IsSet,
 {
     /// Build the final struct
@@ -6850,175 +6850,175 @@ pub mod event_group_chat_updated_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type GroupMemberCount;
-        type ConvoId;
-        type OwnerDid;
-        type ConvoCreatedAt;
-        type Rev;
-        type GroupName;
         type ActorDid;
+        type ConvoCreatedAt;
+        type ConvoId;
         type CreatedAt;
+        type GroupMemberCount;
+        type GroupName;
+        type OwnerDid;
+        type Rev;
         type UpdateType;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type GroupMemberCount = Unset;
-        type ConvoId = Unset;
-        type OwnerDid = Unset;
-        type ConvoCreatedAt = Unset;
-        type Rev = Unset;
-        type GroupName = Unset;
         type ActorDid = Unset;
+        type ConvoCreatedAt = Unset;
+        type ConvoId = Unset;
         type CreatedAt = Unset;
+        type GroupMemberCount = Unset;
+        type GroupName = Unset;
+        type OwnerDid = Unset;
+        type Rev = Unset;
         type UpdateType = Unset;
     }
-    ///State transition - sets the `group_member_count` field to Set
-    pub struct SetGroupMemberCount<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetGroupMemberCount<S> {}
-    impl<S: State> State for SetGroupMemberCount<S> {
-        type GroupMemberCount = Set<members::group_member_count>;
+    ///State transition - sets the `actor_did` field to Set
+    pub struct SetActorDid<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetActorDid<S> {}
+    impl<S: State> State for SetActorDid<S> {
+        type ActorDid = Set<members::actor_did>;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
         type ConvoId = S::ConvoId;
-        type OwnerDid = S::OwnerDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type Rev = S::Rev;
-        type GroupName = S::GroupName;
-        type ActorDid = S::ActorDid;
         type CreatedAt = S::CreatedAt;
-        type UpdateType = S::UpdateType;
-    }
-    ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
         type GroupMemberCount = S::GroupMemberCount;
-        type ConvoId = Set<members::convo_id>;
+        type GroupName = S::GroupName;
         type OwnerDid = S::OwnerDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
         type Rev = S::Rev;
-        type GroupName = S::GroupName;
-        type ActorDid = S::ActorDid;
-        type CreatedAt = S::CreatedAt;
-        type UpdateType = S::UpdateType;
-    }
-    ///State transition - sets the `owner_did` field to Set
-    pub struct SetOwnerDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetOwnerDid<S> {}
-    impl<S: State> State for SetOwnerDid<S> {
-        type GroupMemberCount = S::GroupMemberCount;
-        type ConvoId = S::ConvoId;
-        type OwnerDid = Set<members::owner_did>;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type Rev = S::Rev;
-        type GroupName = S::GroupName;
-        type ActorDid = S::ActorDid;
-        type CreatedAt = S::CreatedAt;
         type UpdateType = S::UpdateType;
     }
     ///State transition - sets the `convo_created_at` field to Set
     pub struct SetConvoCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetConvoCreatedAt<S> {}
     impl<S: State> State for SetConvoCreatedAt<S> {
-        type GroupMemberCount = S::GroupMemberCount;
-        type ConvoId = S::ConvoId;
-        type OwnerDid = S::OwnerDid;
+        type ActorDid = S::ActorDid;
         type ConvoCreatedAt = Set<members::convo_created_at>;
-        type Rev = S::Rev;
-        type GroupName = S::GroupName;
-        type ActorDid = S::ActorDid;
+        type ConvoId = S::ConvoId;
         type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = S::GroupMemberCount;
+        type GroupName = S::GroupName;
+        type OwnerDid = S::OwnerDid;
+        type Rev = S::Rev;
         type UpdateType = S::UpdateType;
     }
-    ///State transition - sets the `rev` field to Set
-    pub struct SetRev<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRev<S> {}
-    impl<S: State> State for SetRev<S> {
-        type GroupMemberCount = S::GroupMemberCount;
-        type ConvoId = S::ConvoId;
-        type OwnerDid = S::OwnerDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type Rev = Set<members::rev>;
-        type GroupName = S::GroupName;
+    ///State transition - sets the `convo_id` field to Set
+    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetConvoId<S> {}
+    impl<S: State> State for SetConvoId<S> {
         type ActorDid = S::ActorDid;
-        type CreatedAt = S::CreatedAt;
-        type UpdateType = S::UpdateType;
-    }
-    ///State transition - sets the `group_name` field to Set
-    pub struct SetGroupName<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetGroupName<S> {}
-    impl<S: State> State for SetGroupName<S> {
-        type GroupMemberCount = S::GroupMemberCount;
-        type ConvoId = S::ConvoId;
-        type OwnerDid = S::OwnerDid;
         type ConvoCreatedAt = S::ConvoCreatedAt;
-        type Rev = S::Rev;
-        type GroupName = Set<members::group_name>;
-        type ActorDid = S::ActorDid;
+        type ConvoId = Set<members::convo_id>;
         type CreatedAt = S::CreatedAt;
-        type UpdateType = S::UpdateType;
-    }
-    ///State transition - sets the `actor_did` field to Set
-    pub struct SetActorDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetActorDid<S> {}
-    impl<S: State> State for SetActorDid<S> {
         type GroupMemberCount = S::GroupMemberCount;
-        type ConvoId = S::ConvoId;
-        type OwnerDid = S::OwnerDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type Rev = S::Rev;
         type GroupName = S::GroupName;
-        type ActorDid = Set<members::actor_did>;
-        type CreatedAt = S::CreatedAt;
+        type OwnerDid = S::OwnerDid;
+        type Rev = S::Rev;
         type UpdateType = S::UpdateType;
     }
     ///State transition - sets the `created_at` field to Set
     pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
     impl<S: State> State for SetCreatedAt<S> {
-        type GroupMemberCount = S::GroupMemberCount;
-        type ConvoId = S::ConvoId;
-        type OwnerDid = S::OwnerDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type Rev = S::Rev;
-        type GroupName = S::GroupName;
         type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = S::ConvoId;
         type CreatedAt = Set<members::created_at>;
+        type GroupMemberCount = S::GroupMemberCount;
+        type GroupName = S::GroupName;
+        type OwnerDid = S::OwnerDid;
+        type Rev = S::Rev;
+        type UpdateType = S::UpdateType;
+    }
+    ///State transition - sets the `group_member_count` field to Set
+    pub struct SetGroupMemberCount<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetGroupMemberCount<S> {}
+    impl<S: State> State for SetGroupMemberCount<S> {
+        type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = S::ConvoId;
+        type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = Set<members::group_member_count>;
+        type GroupName = S::GroupName;
+        type OwnerDid = S::OwnerDid;
+        type Rev = S::Rev;
+        type UpdateType = S::UpdateType;
+    }
+    ///State transition - sets the `group_name` field to Set
+    pub struct SetGroupName<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetGroupName<S> {}
+    impl<S: State> State for SetGroupName<S> {
+        type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = S::ConvoId;
+        type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = S::GroupMemberCount;
+        type GroupName = Set<members::group_name>;
+        type OwnerDid = S::OwnerDid;
+        type Rev = S::Rev;
+        type UpdateType = S::UpdateType;
+    }
+    ///State transition - sets the `owner_did` field to Set
+    pub struct SetOwnerDid<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetOwnerDid<S> {}
+    impl<S: State> State for SetOwnerDid<S> {
+        type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = S::ConvoId;
+        type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = S::GroupMemberCount;
+        type GroupName = S::GroupName;
+        type OwnerDid = Set<members::owner_did>;
+        type Rev = S::Rev;
+        type UpdateType = S::UpdateType;
+    }
+    ///State transition - sets the `rev` field to Set
+    pub struct SetRev<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetRev<S> {}
+    impl<S: State> State for SetRev<S> {
+        type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = S::ConvoId;
+        type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = S::GroupMemberCount;
+        type GroupName = S::GroupName;
+        type OwnerDid = S::OwnerDid;
+        type Rev = Set<members::rev>;
         type UpdateType = S::UpdateType;
     }
     ///State transition - sets the `update_type` field to Set
     pub struct SetUpdateType<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetUpdateType<S> {}
     impl<S: State> State for SetUpdateType<S> {
-        type GroupMemberCount = S::GroupMemberCount;
-        type ConvoId = S::ConvoId;
-        type OwnerDid = S::OwnerDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type Rev = S::Rev;
-        type GroupName = S::GroupName;
         type ActorDid = S::ActorDid;
+        type ConvoCreatedAt = S::ConvoCreatedAt;
+        type ConvoId = S::ConvoId;
         type CreatedAt = S::CreatedAt;
+        type GroupMemberCount = S::GroupMemberCount;
+        type GroupName = S::GroupName;
+        type OwnerDid = S::OwnerDid;
+        type Rev = S::Rev;
         type UpdateType = Set<members::update_type>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `group_member_count` field
-        pub struct group_member_count(());
-        ///Marker type for the `convo_id` field
-        pub struct convo_id(());
-        ///Marker type for the `owner_did` field
-        pub struct owner_did(());
-        ///Marker type for the `convo_created_at` field
-        pub struct convo_created_at(());
-        ///Marker type for the `rev` field
-        pub struct rev(());
-        ///Marker type for the `group_name` field
-        pub struct group_name(());
         ///Marker type for the `actor_did` field
         pub struct actor_did(());
+        ///Marker type for the `convo_created_at` field
+        pub struct convo_created_at(());
+        ///Marker type for the `convo_id` field
+        pub struct convo_id(());
         ///Marker type for the `created_at` field
         pub struct created_at(());
+        ///Marker type for the `group_member_count` field
+        pub struct group_member_count(());
+        ///Marker type for the `group_name` field
+        pub struct group_name(());
+        ///Marker type for the `owner_did` field
+        pub struct owner_did(());
+        ///Marker type for the `rev` field
+        pub struct rev(());
         ///Marker type for the `update_type` field
         pub struct update_type(());
     }
@@ -7322,14 +7322,14 @@ where
 impl<'a, S> EventGroupChatUpdatedBuilder<'a, S>
 where
     S: event_group_chat_updated_state::State,
-    S::GroupMemberCount: event_group_chat_updated_state::IsSet,
-    S::ConvoId: event_group_chat_updated_state::IsSet,
-    S::OwnerDid: event_group_chat_updated_state::IsSet,
-    S::ConvoCreatedAt: event_group_chat_updated_state::IsSet,
-    S::Rev: event_group_chat_updated_state::IsSet,
-    S::GroupName: event_group_chat_updated_state::IsSet,
     S::ActorDid: event_group_chat_updated_state::IsSet,
+    S::ConvoCreatedAt: event_group_chat_updated_state::IsSet,
+    S::ConvoId: event_group_chat_updated_state::IsSet,
     S::CreatedAt: event_group_chat_updated_state::IsSet,
+    S::GroupMemberCount: event_group_chat_updated_state::IsSet,
+    S::GroupName: event_group_chat_updated_state::IsSet,
+    S::OwnerDid: event_group_chat_updated_state::IsSet,
+    S::Rev: event_group_chat_updated_state::IsSet,
     S::UpdateType: event_group_chat_updated_state::IsSet,
 {
     /// Build the final struct
@@ -7427,65 +7427,65 @@ pub mod event_rate_limit_exceeded_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
+        type ActorDid;
         type CreatedAt;
         type Endpoint;
-        type ActorDid;
         type Rev;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
+        type ActorDid = Unset;
         type CreatedAt = Unset;
         type Endpoint = Unset;
-        type ActorDid = Unset;
         type Rev = Unset;
+    }
+    ///State transition - sets the `actor_did` field to Set
+    pub struct SetActorDid<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetActorDid<S> {}
+    impl<S: State> State for SetActorDid<S> {
+        type ActorDid = Set<members::actor_did>;
+        type CreatedAt = S::CreatedAt;
+        type Endpoint = S::Endpoint;
+        type Rev = S::Rev;
     }
     ///State transition - sets the `created_at` field to Set
     pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
     impl<S: State> State for SetCreatedAt<S> {
+        type ActorDid = S::ActorDid;
         type CreatedAt = Set<members::created_at>;
         type Endpoint = S::Endpoint;
-        type ActorDid = S::ActorDid;
         type Rev = S::Rev;
     }
     ///State transition - sets the `endpoint` field to Set
     pub struct SetEndpoint<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetEndpoint<S> {}
     impl<S: State> State for SetEndpoint<S> {
+        type ActorDid = S::ActorDid;
         type CreatedAt = S::CreatedAt;
         type Endpoint = Set<members::endpoint>;
-        type ActorDid = S::ActorDid;
-        type Rev = S::Rev;
-    }
-    ///State transition - sets the `actor_did` field to Set
-    pub struct SetActorDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetActorDid<S> {}
-    impl<S: State> State for SetActorDid<S> {
-        type CreatedAt = S::CreatedAt;
-        type Endpoint = S::Endpoint;
-        type ActorDid = Set<members::actor_did>;
         type Rev = S::Rev;
     }
     ///State transition - sets the `rev` field to Set
     pub struct SetRev<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetRev<S> {}
     impl<S: State> State for SetRev<S> {
+        type ActorDid = S::ActorDid;
         type CreatedAt = S::CreatedAt;
         type Endpoint = S::Endpoint;
-        type ActorDid = S::ActorDid;
         type Rev = Set<members::rev>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
+        ///Marker type for the `actor_did` field
+        pub struct actor_did(());
         ///Marker type for the `created_at` field
         pub struct created_at(());
         ///Marker type for the `endpoint` field
         pub struct endpoint(());
-        ///Marker type for the `actor_did` field
-        pub struct actor_did(());
         ///Marker type for the `rev` field
         pub struct rev(());
     }
@@ -7600,9 +7600,9 @@ where
 impl<'a, S> EventRateLimitExceededBuilder<'a, S>
 where
     S: event_rate_limit_exceeded_state::State,
+    S::ActorDid: event_rate_limit_exceeded_state::IsSet,
     S::CreatedAt: event_rate_limit_exceeded_state::IsSet,
     S::Endpoint: event_rate_limit_exceeded_state::IsSet,
-    S::ActorDid: event_rate_limit_exceeded_state::IsSet,
     S::Rev: event_rate_limit_exceeded_state::IsSet,
 {
     /// Build the final struct

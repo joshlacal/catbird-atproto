@@ -682,151 +682,151 @@ pub mod join_link_preview_view_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type RequireApproval;
-        type MemberCount;
-        type Name;
-        type MemberLimit;
-        type JoinRule;
-        type Code;
-        type Owner;
         type ConvoId;
+        type Code;
+        type Name;
+        type Owner;
+        type MemberCount;
+        type MemberLimit;
+        type RequireApproval;
+        type JoinRule;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type RequireApproval = Unset;
-        type MemberCount = Unset;
-        type Name = Unset;
-        type MemberLimit = Unset;
-        type JoinRule = Unset;
-        type Code = Unset;
-        type Owner = Unset;
         type ConvoId = Unset;
-    }
-    ///State transition - sets the `require_approval` field to Set
-    pub struct SetRequireApproval<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRequireApproval<S> {}
-    impl<S: State> State for SetRequireApproval<S> {
-        type RequireApproval = Set<members::require_approval>;
-        type MemberCount = S::MemberCount;
-        type Name = S::Name;
-        type MemberLimit = S::MemberLimit;
-        type JoinRule = S::JoinRule;
-        type Code = S::Code;
-        type Owner = S::Owner;
-        type ConvoId = S::ConvoId;
-    }
-    ///State transition - sets the `member_count` field to Set
-    pub struct SetMemberCount<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetMemberCount<S> {}
-    impl<S: State> State for SetMemberCount<S> {
-        type RequireApproval = S::RequireApproval;
-        type MemberCount = Set<members::member_count>;
-        type Name = S::Name;
-        type MemberLimit = S::MemberLimit;
-        type JoinRule = S::JoinRule;
-        type Code = S::Code;
-        type Owner = S::Owner;
-        type ConvoId = S::ConvoId;
-    }
-    ///State transition - sets the `name` field to Set
-    pub struct SetName<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetName<S> {}
-    impl<S: State> State for SetName<S> {
-        type RequireApproval = S::RequireApproval;
-        type MemberCount = S::MemberCount;
-        type Name = Set<members::name>;
-        type MemberLimit = S::MemberLimit;
-        type JoinRule = S::JoinRule;
-        type Code = S::Code;
-        type Owner = S::Owner;
-        type ConvoId = S::ConvoId;
-    }
-    ///State transition - sets the `member_limit` field to Set
-    pub struct SetMemberLimit<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetMemberLimit<S> {}
-    impl<S: State> State for SetMemberLimit<S> {
-        type RequireApproval = S::RequireApproval;
-        type MemberCount = S::MemberCount;
-        type Name = S::Name;
-        type MemberLimit = Set<members::member_limit>;
-        type JoinRule = S::JoinRule;
-        type Code = S::Code;
-        type Owner = S::Owner;
-        type ConvoId = S::ConvoId;
-    }
-    ///State transition - sets the `join_rule` field to Set
-    pub struct SetJoinRule<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetJoinRule<S> {}
-    impl<S: State> State for SetJoinRule<S> {
-        type RequireApproval = S::RequireApproval;
-        type MemberCount = S::MemberCount;
-        type Name = S::Name;
-        type MemberLimit = S::MemberLimit;
-        type JoinRule = Set<members::join_rule>;
-        type Code = S::Code;
-        type Owner = S::Owner;
-        type ConvoId = S::ConvoId;
-    }
-    ///State transition - sets the `code` field to Set
-    pub struct SetCode<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCode<S> {}
-    impl<S: State> State for SetCode<S> {
-        type RequireApproval = S::RequireApproval;
-        type MemberCount = S::MemberCount;
-        type Name = S::Name;
-        type MemberLimit = S::MemberLimit;
-        type JoinRule = S::JoinRule;
-        type Code = Set<members::code>;
-        type Owner = S::Owner;
-        type ConvoId = S::ConvoId;
-    }
-    ///State transition - sets the `owner` field to Set
-    pub struct SetOwner<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetOwner<S> {}
-    impl<S: State> State for SetOwner<S> {
-        type RequireApproval = S::RequireApproval;
-        type MemberCount = S::MemberCount;
-        type Name = S::Name;
-        type MemberLimit = S::MemberLimit;
-        type JoinRule = S::JoinRule;
-        type Code = S::Code;
-        type Owner = Set<members::owner>;
-        type ConvoId = S::ConvoId;
+        type Code = Unset;
+        type Name = Unset;
+        type Owner = Unset;
+        type MemberCount = Unset;
+        type MemberLimit = Unset;
+        type RequireApproval = Unset;
+        type JoinRule = Unset;
     }
     ///State transition - sets the `convo_id` field to Set
     pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetConvoId<S> {}
     impl<S: State> State for SetConvoId<S> {
-        type RequireApproval = S::RequireApproval;
-        type MemberCount = S::MemberCount;
-        type Name = S::Name;
-        type MemberLimit = S::MemberLimit;
-        type JoinRule = S::JoinRule;
-        type Code = S::Code;
-        type Owner = S::Owner;
         type ConvoId = Set<members::convo_id>;
+        type Code = S::Code;
+        type Name = S::Name;
+        type Owner = S::Owner;
+        type MemberCount = S::MemberCount;
+        type MemberLimit = S::MemberLimit;
+        type RequireApproval = S::RequireApproval;
+        type JoinRule = S::JoinRule;
+    }
+    ///State transition - sets the `code` field to Set
+    pub struct SetCode<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCode<S> {}
+    impl<S: State> State for SetCode<S> {
+        type ConvoId = S::ConvoId;
+        type Code = Set<members::code>;
+        type Name = S::Name;
+        type Owner = S::Owner;
+        type MemberCount = S::MemberCount;
+        type MemberLimit = S::MemberLimit;
+        type RequireApproval = S::RequireApproval;
+        type JoinRule = S::JoinRule;
+    }
+    ///State transition - sets the `name` field to Set
+    pub struct SetName<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetName<S> {}
+    impl<S: State> State for SetName<S> {
+        type ConvoId = S::ConvoId;
+        type Code = S::Code;
+        type Name = Set<members::name>;
+        type Owner = S::Owner;
+        type MemberCount = S::MemberCount;
+        type MemberLimit = S::MemberLimit;
+        type RequireApproval = S::RequireApproval;
+        type JoinRule = S::JoinRule;
+    }
+    ///State transition - sets the `owner` field to Set
+    pub struct SetOwner<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetOwner<S> {}
+    impl<S: State> State for SetOwner<S> {
+        type ConvoId = S::ConvoId;
+        type Code = S::Code;
+        type Name = S::Name;
+        type Owner = Set<members::owner>;
+        type MemberCount = S::MemberCount;
+        type MemberLimit = S::MemberLimit;
+        type RequireApproval = S::RequireApproval;
+        type JoinRule = S::JoinRule;
+    }
+    ///State transition - sets the `member_count` field to Set
+    pub struct SetMemberCount<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetMemberCount<S> {}
+    impl<S: State> State for SetMemberCount<S> {
+        type ConvoId = S::ConvoId;
+        type Code = S::Code;
+        type Name = S::Name;
+        type Owner = S::Owner;
+        type MemberCount = Set<members::member_count>;
+        type MemberLimit = S::MemberLimit;
+        type RequireApproval = S::RequireApproval;
+        type JoinRule = S::JoinRule;
+    }
+    ///State transition - sets the `member_limit` field to Set
+    pub struct SetMemberLimit<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetMemberLimit<S> {}
+    impl<S: State> State for SetMemberLimit<S> {
+        type ConvoId = S::ConvoId;
+        type Code = S::Code;
+        type Name = S::Name;
+        type Owner = S::Owner;
+        type MemberCount = S::MemberCount;
+        type MemberLimit = Set<members::member_limit>;
+        type RequireApproval = S::RequireApproval;
+        type JoinRule = S::JoinRule;
+    }
+    ///State transition - sets the `require_approval` field to Set
+    pub struct SetRequireApproval<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetRequireApproval<S> {}
+    impl<S: State> State for SetRequireApproval<S> {
+        type ConvoId = S::ConvoId;
+        type Code = S::Code;
+        type Name = S::Name;
+        type Owner = S::Owner;
+        type MemberCount = S::MemberCount;
+        type MemberLimit = S::MemberLimit;
+        type RequireApproval = Set<members::require_approval>;
+        type JoinRule = S::JoinRule;
+    }
+    ///State transition - sets the `join_rule` field to Set
+    pub struct SetJoinRule<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetJoinRule<S> {}
+    impl<S: State> State for SetJoinRule<S> {
+        type ConvoId = S::ConvoId;
+        type Code = S::Code;
+        type Name = S::Name;
+        type Owner = S::Owner;
+        type MemberCount = S::MemberCount;
+        type MemberLimit = S::MemberLimit;
+        type RequireApproval = S::RequireApproval;
+        type JoinRule = Set<members::join_rule>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `require_approval` field
-        pub struct require_approval(());
-        ///Marker type for the `member_count` field
-        pub struct member_count(());
-        ///Marker type for the `name` field
-        pub struct name(());
-        ///Marker type for the `member_limit` field
-        pub struct member_limit(());
-        ///Marker type for the `join_rule` field
-        pub struct join_rule(());
-        ///Marker type for the `code` field
-        pub struct code(());
-        ///Marker type for the `owner` field
-        pub struct owner(());
         ///Marker type for the `convo_id` field
         pub struct convo_id(());
+        ///Marker type for the `code` field
+        pub struct code(());
+        ///Marker type for the `name` field
+        pub struct name(());
+        ///Marker type for the `owner` field
+        pub struct owner(());
+        ///Marker type for the `member_count` field
+        pub struct member_count(());
+        ///Marker type for the `member_limit` field
+        pub struct member_limit(());
+        ///Marker type for the `require_approval` field
+        pub struct require_approval(());
+        ///Marker type for the `join_rule` field
+        pub struct join_rule(());
     }
 }
 
@@ -1059,14 +1059,14 @@ impl<'a, S: join_link_preview_view_state::State> JoinLinkPreviewViewBuilder<'a, 
 impl<'a, S> JoinLinkPreviewViewBuilder<'a, S>
 where
     S: join_link_preview_view_state::State,
-    S::RequireApproval: join_link_preview_view_state::IsSet,
-    S::MemberCount: join_link_preview_view_state::IsSet,
-    S::Name: join_link_preview_view_state::IsSet,
-    S::MemberLimit: join_link_preview_view_state::IsSet,
-    S::JoinRule: join_link_preview_view_state::IsSet,
-    S::Code: join_link_preview_view_state::IsSet,
-    S::Owner: join_link_preview_view_state::IsSet,
     S::ConvoId: join_link_preview_view_state::IsSet,
+    S::Code: join_link_preview_view_state::IsSet,
+    S::Name: join_link_preview_view_state::IsSet,
+    S::Owner: join_link_preview_view_state::IsSet,
+    S::MemberCount: join_link_preview_view_state::IsSet,
+    S::MemberLimit: join_link_preview_view_state::IsSet,
+    S::RequireApproval: join_link_preview_view_state::IsSet,
+    S::JoinRule: join_link_preview_view_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> JoinLinkPreviewView<'a> {
@@ -1152,85 +1152,85 @@ pub mod join_link_view_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type RequireApproval;
-        type CreatedAt;
         type Code;
-        type JoinRule;
         type EnabledStatus;
+        type RequireApproval;
+        type JoinRule;
+        type CreatedAt;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type RequireApproval = Unset;
-        type CreatedAt = Unset;
         type Code = Unset;
-        type JoinRule = Unset;
         type EnabledStatus = Unset;
-    }
-    ///State transition - sets the `require_approval` field to Set
-    pub struct SetRequireApproval<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRequireApproval<S> {}
-    impl<S: State> State for SetRequireApproval<S> {
-        type RequireApproval = Set<members::require_approval>;
-        type CreatedAt = S::CreatedAt;
-        type Code = S::Code;
-        type JoinRule = S::JoinRule;
-        type EnabledStatus = S::EnabledStatus;
-    }
-    ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type RequireApproval = S::RequireApproval;
-        type CreatedAt = Set<members::created_at>;
-        type Code = S::Code;
-        type JoinRule = S::JoinRule;
-        type EnabledStatus = S::EnabledStatus;
+        type RequireApproval = Unset;
+        type JoinRule = Unset;
+        type CreatedAt = Unset;
     }
     ///State transition - sets the `code` field to Set
     pub struct SetCode<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetCode<S> {}
     impl<S: State> State for SetCode<S> {
-        type RequireApproval = S::RequireApproval;
-        type CreatedAt = S::CreatedAt;
         type Code = Set<members::code>;
-        type JoinRule = S::JoinRule;
         type EnabledStatus = S::EnabledStatus;
-    }
-    ///State transition - sets the `join_rule` field to Set
-    pub struct SetJoinRule<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetJoinRule<S> {}
-    impl<S: State> State for SetJoinRule<S> {
         type RequireApproval = S::RequireApproval;
+        type JoinRule = S::JoinRule;
         type CreatedAt = S::CreatedAt;
-        type Code = S::Code;
-        type JoinRule = Set<members::join_rule>;
-        type EnabledStatus = S::EnabledStatus;
     }
     ///State transition - sets the `enabled_status` field to Set
     pub struct SetEnabledStatus<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetEnabledStatus<S> {}
     impl<S: State> State for SetEnabledStatus<S> {
-        type RequireApproval = S::RequireApproval;
-        type CreatedAt = S::CreatedAt;
         type Code = S::Code;
-        type JoinRule = S::JoinRule;
         type EnabledStatus = Set<members::enabled_status>;
+        type RequireApproval = S::RequireApproval;
+        type JoinRule = S::JoinRule;
+        type CreatedAt = S::CreatedAt;
+    }
+    ///State transition - sets the `require_approval` field to Set
+    pub struct SetRequireApproval<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetRequireApproval<S> {}
+    impl<S: State> State for SetRequireApproval<S> {
+        type Code = S::Code;
+        type EnabledStatus = S::EnabledStatus;
+        type RequireApproval = Set<members::require_approval>;
+        type JoinRule = S::JoinRule;
+        type CreatedAt = S::CreatedAt;
+    }
+    ///State transition - sets the `join_rule` field to Set
+    pub struct SetJoinRule<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetJoinRule<S> {}
+    impl<S: State> State for SetJoinRule<S> {
+        type Code = S::Code;
+        type EnabledStatus = S::EnabledStatus;
+        type RequireApproval = S::RequireApproval;
+        type JoinRule = Set<members::join_rule>;
+        type CreatedAt = S::CreatedAt;
+    }
+    ///State transition - sets the `created_at` field to Set
+    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
+    impl<S: State> State for SetCreatedAt<S> {
+        type Code = S::Code;
+        type EnabledStatus = S::EnabledStatus;
+        type RequireApproval = S::RequireApproval;
+        type JoinRule = S::JoinRule;
+        type CreatedAt = Set<members::created_at>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `require_approval` field
-        pub struct require_approval(());
-        ///Marker type for the `created_at` field
-        pub struct created_at(());
         ///Marker type for the `code` field
         pub struct code(());
-        ///Marker type for the `join_rule` field
-        pub struct join_rule(());
         ///Marker type for the `enabled_status` field
         pub struct enabled_status(());
+        ///Marker type for the `require_approval` field
+        pub struct require_approval(());
+        ///Marker type for the `join_rule` field
+        pub struct join_rule(());
+        ///Marker type for the `created_at` field
+        pub struct created_at(());
     }
 }
 
@@ -1363,11 +1363,11 @@ where
 impl<'a, S> JoinLinkViewBuilder<'a, S>
 where
     S: join_link_view_state::State,
-    S::RequireApproval: join_link_view_state::IsSet,
-    S::CreatedAt: join_link_view_state::IsSet,
     S::Code: join_link_view_state::IsSet,
-    S::JoinRule: join_link_view_state::IsSet,
     S::EnabledStatus: join_link_view_state::IsSet,
+    S::RequireApproval: join_link_view_state::IsSet,
+    S::JoinRule: join_link_view_state::IsSet,
+    S::CreatedAt: join_link_view_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> JoinLinkView<'a> {
@@ -1479,105 +1479,105 @@ pub mod join_request_convo_view_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type MemberLimit;
-        type MemberCount;
-        type Owner;
-        type Name;
-        type Viewer;
         type ConvoId;
+        type Name;
+        type Owner;
+        type MemberCount;
+        type MemberLimit;
+        type Viewer;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type MemberLimit = Unset;
-        type MemberCount = Unset;
-        type Owner = Unset;
-        type Name = Unset;
-        type Viewer = Unset;
         type ConvoId = Unset;
-    }
-    ///State transition - sets the `member_limit` field to Set
-    pub struct SetMemberLimit<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetMemberLimit<S> {}
-    impl<S: State> State for SetMemberLimit<S> {
-        type MemberLimit = Set<members::member_limit>;
-        type MemberCount = S::MemberCount;
-        type Owner = S::Owner;
-        type Name = S::Name;
-        type Viewer = S::Viewer;
-        type ConvoId = S::ConvoId;
-    }
-    ///State transition - sets the `member_count` field to Set
-    pub struct SetMemberCount<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetMemberCount<S> {}
-    impl<S: State> State for SetMemberCount<S> {
-        type MemberLimit = S::MemberLimit;
-        type MemberCount = Set<members::member_count>;
-        type Owner = S::Owner;
-        type Name = S::Name;
-        type Viewer = S::Viewer;
-        type ConvoId = S::ConvoId;
-    }
-    ///State transition - sets the `owner` field to Set
-    pub struct SetOwner<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetOwner<S> {}
-    impl<S: State> State for SetOwner<S> {
-        type MemberLimit = S::MemberLimit;
-        type MemberCount = S::MemberCount;
-        type Owner = Set<members::owner>;
-        type Name = S::Name;
-        type Viewer = S::Viewer;
-        type ConvoId = S::ConvoId;
-    }
-    ///State transition - sets the `name` field to Set
-    pub struct SetName<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetName<S> {}
-    impl<S: State> State for SetName<S> {
-        type MemberLimit = S::MemberLimit;
-        type MemberCount = S::MemberCount;
-        type Owner = S::Owner;
-        type Name = Set<members::name>;
-        type Viewer = S::Viewer;
-        type ConvoId = S::ConvoId;
-    }
-    ///State transition - sets the `viewer` field to Set
-    pub struct SetViewer<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetViewer<S> {}
-    impl<S: State> State for SetViewer<S> {
-        type MemberLimit = S::MemberLimit;
-        type MemberCount = S::MemberCount;
-        type Owner = S::Owner;
-        type Name = S::Name;
-        type Viewer = Set<members::viewer>;
-        type ConvoId = S::ConvoId;
+        type Name = Unset;
+        type Owner = Unset;
+        type MemberCount = Unset;
+        type MemberLimit = Unset;
+        type Viewer = Unset;
     }
     ///State transition - sets the `convo_id` field to Set
     pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetConvoId<S> {}
     impl<S: State> State for SetConvoId<S> {
-        type MemberLimit = S::MemberLimit;
-        type MemberCount = S::MemberCount;
-        type Owner = S::Owner;
-        type Name = S::Name;
-        type Viewer = S::Viewer;
         type ConvoId = Set<members::convo_id>;
+        type Name = S::Name;
+        type Owner = S::Owner;
+        type MemberCount = S::MemberCount;
+        type MemberLimit = S::MemberLimit;
+        type Viewer = S::Viewer;
+    }
+    ///State transition - sets the `name` field to Set
+    pub struct SetName<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetName<S> {}
+    impl<S: State> State for SetName<S> {
+        type ConvoId = S::ConvoId;
+        type Name = Set<members::name>;
+        type Owner = S::Owner;
+        type MemberCount = S::MemberCount;
+        type MemberLimit = S::MemberLimit;
+        type Viewer = S::Viewer;
+    }
+    ///State transition - sets the `owner` field to Set
+    pub struct SetOwner<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetOwner<S> {}
+    impl<S: State> State for SetOwner<S> {
+        type ConvoId = S::ConvoId;
+        type Name = S::Name;
+        type Owner = Set<members::owner>;
+        type MemberCount = S::MemberCount;
+        type MemberLimit = S::MemberLimit;
+        type Viewer = S::Viewer;
+    }
+    ///State transition - sets the `member_count` field to Set
+    pub struct SetMemberCount<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetMemberCount<S> {}
+    impl<S: State> State for SetMemberCount<S> {
+        type ConvoId = S::ConvoId;
+        type Name = S::Name;
+        type Owner = S::Owner;
+        type MemberCount = Set<members::member_count>;
+        type MemberLimit = S::MemberLimit;
+        type Viewer = S::Viewer;
+    }
+    ///State transition - sets the `member_limit` field to Set
+    pub struct SetMemberLimit<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetMemberLimit<S> {}
+    impl<S: State> State for SetMemberLimit<S> {
+        type ConvoId = S::ConvoId;
+        type Name = S::Name;
+        type Owner = S::Owner;
+        type MemberCount = S::MemberCount;
+        type MemberLimit = Set<members::member_limit>;
+        type Viewer = S::Viewer;
+    }
+    ///State transition - sets the `viewer` field to Set
+    pub struct SetViewer<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetViewer<S> {}
+    impl<S: State> State for SetViewer<S> {
+        type ConvoId = S::ConvoId;
+        type Name = S::Name;
+        type Owner = S::Owner;
+        type MemberCount = S::MemberCount;
+        type MemberLimit = S::MemberLimit;
+        type Viewer = Set<members::viewer>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `member_limit` field
-        pub struct member_limit(());
-        ///Marker type for the `member_count` field
-        pub struct member_count(());
-        ///Marker type for the `owner` field
-        pub struct owner(());
-        ///Marker type for the `name` field
-        pub struct name(());
-        ///Marker type for the `viewer` field
-        pub struct viewer(());
         ///Marker type for the `convo_id` field
         pub struct convo_id(());
+        ///Marker type for the `name` field
+        pub struct name(());
+        ///Marker type for the `owner` field
+        pub struct owner(());
+        ///Marker type for the `member_count` field
+        pub struct member_count(());
+        ///Marker type for the `member_limit` field
+        pub struct member_limit(());
+        ///Marker type for the `viewer` field
+        pub struct viewer(());
     }
 }
 
@@ -1730,12 +1730,12 @@ where
 impl<'a, S> JoinRequestConvoViewBuilder<'a, S>
 where
     S: join_request_convo_view_state::State,
-    S::MemberLimit: join_request_convo_view_state::IsSet,
-    S::MemberCount: join_request_convo_view_state::IsSet,
-    S::Owner: join_request_convo_view_state::IsSet,
-    S::Name: join_request_convo_view_state::IsSet,
-    S::Viewer: join_request_convo_view_state::IsSet,
     S::ConvoId: join_request_convo_view_state::IsSet,
+    S::Name: join_request_convo_view_state::IsSet,
+    S::Owner: join_request_convo_view_state::IsSet,
+    S::MemberCount: join_request_convo_view_state::IsSet,
+    S::MemberLimit: join_request_convo_view_state::IsSet,
+    S::Viewer: join_request_convo_view_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> JoinRequestConvoView<'a> {
@@ -1810,51 +1810,51 @@ pub mod join_request_view_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
+        type ConvoId;
         type RequestedBy;
         type RequestedAt;
-        type ConvoId;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
+        type ConvoId = Unset;
         type RequestedBy = Unset;
         type RequestedAt = Unset;
-        type ConvoId = Unset;
-    }
-    ///State transition - sets the `requested_by` field to Set
-    pub struct SetRequestedBy<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRequestedBy<S> {}
-    impl<S: State> State for SetRequestedBy<S> {
-        type RequestedBy = Set<members::requested_by>;
-        type RequestedAt = S::RequestedAt;
-        type ConvoId = S::ConvoId;
-    }
-    ///State transition - sets the `requested_at` field to Set
-    pub struct SetRequestedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRequestedAt<S> {}
-    impl<S: State> State for SetRequestedAt<S> {
-        type RequestedBy = S::RequestedBy;
-        type RequestedAt = Set<members::requested_at>;
-        type ConvoId = S::ConvoId;
     }
     ///State transition - sets the `convo_id` field to Set
     pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetConvoId<S> {}
     impl<S: State> State for SetConvoId<S> {
+        type ConvoId = Set<members::convo_id>;
         type RequestedBy = S::RequestedBy;
         type RequestedAt = S::RequestedAt;
-        type ConvoId = Set<members::convo_id>;
+    }
+    ///State transition - sets the `requested_by` field to Set
+    pub struct SetRequestedBy<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetRequestedBy<S> {}
+    impl<S: State> State for SetRequestedBy<S> {
+        type ConvoId = S::ConvoId;
+        type RequestedBy = Set<members::requested_by>;
+        type RequestedAt = S::RequestedAt;
+    }
+    ///State transition - sets the `requested_at` field to Set
+    pub struct SetRequestedAt<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetRequestedAt<S> {}
+    impl<S: State> State for SetRequestedAt<S> {
+        type ConvoId = S::ConvoId;
+        type RequestedBy = S::RequestedBy;
+        type RequestedAt = Set<members::requested_at>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
+        ///Marker type for the `convo_id` field
+        pub struct convo_id(());
         ///Marker type for the `requested_by` field
         pub struct requested_by(());
         ///Marker type for the `requested_at` field
         pub struct requested_at(());
-        ///Marker type for the `convo_id` field
-        pub struct convo_id(());
     }
 }
 
@@ -1947,9 +1947,9 @@ where
 impl<'a, S> JoinRequestViewBuilder<'a, S>
 where
     S: join_request_view_state::State,
+    S::ConvoId: join_request_view_state::IsSet,
     S::RequestedBy: join_request_view_state::IsSet,
     S::RequestedAt: join_request_view_state::IsSet,
-    S::ConvoId: join_request_view_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> JoinRequestView<'a> {

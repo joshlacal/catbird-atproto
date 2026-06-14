@@ -743,67 +743,67 @@ pub mod schedule_action_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Scheduling;
+        type Action;
         type Subjects;
         type CreatedBy;
-        type Action;
+        type Scheduling;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Scheduling = Unset;
+        type Action = Unset;
         type Subjects = Unset;
         type CreatedBy = Unset;
-        type Action = Unset;
-    }
-    ///State transition - sets the `scheduling` field to Set
-    pub struct SetScheduling<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetScheduling<S> {}
-    impl<S: State> State for SetScheduling<S> {
-        type Scheduling = Set<members::scheduling>;
-        type Subjects = S::Subjects;
-        type CreatedBy = S::CreatedBy;
-        type Action = S::Action;
-    }
-    ///State transition - sets the `subjects` field to Set
-    pub struct SetSubjects<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetSubjects<S> {}
-    impl<S: State> State for SetSubjects<S> {
-        type Scheduling = S::Scheduling;
-        type Subjects = Set<members::subjects>;
-        type CreatedBy = S::CreatedBy;
-        type Action = S::Action;
-    }
-    ///State transition - sets the `created_by` field to Set
-    pub struct SetCreatedBy<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedBy<S> {}
-    impl<S: State> State for SetCreatedBy<S> {
-        type Scheduling = S::Scheduling;
-        type Subjects = S::Subjects;
-        type CreatedBy = Set<members::created_by>;
-        type Action = S::Action;
+        type Scheduling = Unset;
     }
     ///State transition - sets the `action` field to Set
     pub struct SetAction<S: State = Empty>(PhantomData<fn() -> S>);
     impl<S: State> sealed::Sealed for SetAction<S> {}
     impl<S: State> State for SetAction<S> {
-        type Scheduling = S::Scheduling;
+        type Action = Set<members::action>;
         type Subjects = S::Subjects;
         type CreatedBy = S::CreatedBy;
-        type Action = Set<members::action>;
+        type Scheduling = S::Scheduling;
+    }
+    ///State transition - sets the `subjects` field to Set
+    pub struct SetSubjects<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetSubjects<S> {}
+    impl<S: State> State for SetSubjects<S> {
+        type Action = S::Action;
+        type Subjects = Set<members::subjects>;
+        type CreatedBy = S::CreatedBy;
+        type Scheduling = S::Scheduling;
+    }
+    ///State transition - sets the `created_by` field to Set
+    pub struct SetCreatedBy<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCreatedBy<S> {}
+    impl<S: State> State for SetCreatedBy<S> {
+        type Action = S::Action;
+        type Subjects = S::Subjects;
+        type CreatedBy = Set<members::created_by>;
+        type Scheduling = S::Scheduling;
+    }
+    ///State transition - sets the `scheduling` field to Set
+    pub struct SetScheduling<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetScheduling<S> {}
+    impl<S: State> State for SetScheduling<S> {
+        type Action = S::Action;
+        type Subjects = S::Subjects;
+        type CreatedBy = S::CreatedBy;
+        type Scheduling = Set<members::scheduling>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `scheduling` field
-        pub struct scheduling(());
+        ///Marker type for the `action` field
+        pub struct action(());
         ///Marker type for the `subjects` field
         pub struct subjects(());
         ///Marker type for the `created_by` field
         pub struct created_by(());
-        ///Marker type for the `action` field
-        pub struct action(());
+        ///Marker type for the `scheduling` field
+        pub struct scheduling(());
     }
 }
 
@@ -942,10 +942,10 @@ where
 impl<'a, S> ScheduleActionBuilder<'a, S>
 where
     S: schedule_action_state::State,
-    S::Scheduling: schedule_action_state::IsSet,
+    S::Action: schedule_action_state::IsSet,
     S::Subjects: schedule_action_state::IsSet,
     S::CreatedBy: schedule_action_state::IsSet,
-    S::Action: schedule_action_state::IsSet,
+    S::Scheduling: schedule_action_state::IsSet,
 {
     /// Build the final struct
     pub fn build(self) -> ScheduleAction<'a> {
