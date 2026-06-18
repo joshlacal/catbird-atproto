@@ -85,6 +85,7 @@ pub mod catbird {
                 pub cipher_suite: String,
                 pub initial_members: Option<Vec<crate::types::string::Did<'static>>>,
                 pub welcome_message: Option<String>,
+                pub group_info: Option<bytes::Bytes>,
                 pub current_epoch: Option<i64>,
                 pub key_package_hashes: Option<Vec<KeyPackageHashEntry>>,
             }
@@ -96,6 +97,7 @@ pub mod catbird {
                         current_epoch: value.current_epoch,
                         extra_data: Default::default(),
                         group_id: value.group_id.into(),
+                        group_info: value.group_info,
                         initial_members: value.initial_members,
                         invite: None,
                         key_package_hashes: value.key_package_hashes,
