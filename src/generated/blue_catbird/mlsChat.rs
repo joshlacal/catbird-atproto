@@ -1244,12 +1244,10 @@ fn lexicon_doc_blue_catbird_mlsChat_defs() -> ::jacquard_lexicon::lexicon::Lexic
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
-                                        "Recipient device that cannot decrypt the original Welcome.",
+                                        "Recipient device that cannot decrypt the original Welcome. This may be a device-qualified DID (did#deviceId).",
                                     ),
                                 ),
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
-                                ),
+                                format: None,
                                 default: None,
                                 min_length: None,
                                 max_length: None,
@@ -2431,9 +2429,9 @@ pub struct WelcomeReissueRequest<'a> {
     /// Conversation needing a reissued Welcome.
     #[serde(borrow)]
     pub convo_id: jacquard_common::CowStr<'a>,
-    /// Recipient device that cannot decrypt the original Welcome.
+    /// Recipient device that cannot decrypt the original Welcome. This may be a device-qualified DID (did#deviceId).
     #[serde(borrow)]
-    pub recipient_device_did: jacquard_common::types::string::Did<'a>,
+    pub recipient_device_did: jacquard_common::CowStr<'a>,
     /// Server-generated request identifier. Inviter echoes this in the replacement commit's idempotencyKey.
     #[serde(borrow)]
     pub request_id: jacquard_common::CowStr<'a>,
@@ -2519,7 +2517,7 @@ pub struct WelcomeReissueRequestBuilder<'a, S: welcome_reissue_request_state::St
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
         ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
+        ::core::option::Option<jacquard_common::CowStr<'a>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
         ::core::option::Option<jacquard_common::types::string::Datetime>,
     ),
@@ -2571,7 +2569,7 @@ where
     /// Set the `recipientDeviceDid` field (required)
     pub fn recipient_device_did(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
+        value: impl Into<jacquard_common::CowStr<'a>>,
     ) -> WelcomeReissueRequestBuilder<'a, welcome_reissue_request_state::SetRecipientDeviceDid<S>>
     {
         self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());

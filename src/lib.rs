@@ -299,6 +299,7 @@ pub mod catbird {
                         extra_data: Default::default(),
                         expires: value.expires,
                         key_package: bytes::Bytes::from(value.key_package),
+                        last_resort: None,
                     }
                 }
             }

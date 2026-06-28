@@ -7,7 +7,14 @@
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic,
+    Default,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ReissueWelcome<'a> {
@@ -17,186 +24,9 @@ pub struct ReissueWelcome<'a> {
     /// Free-form reason for diagnostics (e.g., NoMatchingKeyPackage hex_ref=...).
     #[serde(borrow)]
     pub reason: jacquard_common::CowStr<'a>,
-    /// Recipient device that cannot decrypt.
+    /// Recipient device that cannot decrypt. This may be a device-qualified DID (did#deviceId).
     #[serde(borrow)]
-    pub recipient_device_did: jacquard_common::types::string::Did<'a>,
-}
-
-pub mod reissue_welcome_state {
-
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
-    #[allow(unused)]
-    use core::marker::PhantomData;
-    mod sealed {
-        pub trait Sealed {}
-    }
-    /// State trait tracking which required fields have been set
-    pub trait State: sealed::Sealed {
-        type ConvoId;
-        type RecipientDeviceDid;
-        type Reason;
-    }
-    /// Empty state - all required fields are unset
-    pub struct Empty(());
-    impl sealed::Sealed for Empty {}
-    impl State for Empty {
-        type ConvoId = Unset;
-        type RecipientDeviceDid = Unset;
-        type Reason = Unset;
-    }
-    ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type ConvoId = Set<members::convo_id>;
-        type RecipientDeviceDid = S::RecipientDeviceDid;
-        type Reason = S::Reason;
-    }
-    ///State transition - sets the `recipient_device_did` field to Set
-    pub struct SetRecipientDeviceDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRecipientDeviceDid<S> {}
-    impl<S: State> State for SetRecipientDeviceDid<S> {
-        type ConvoId = S::ConvoId;
-        type RecipientDeviceDid = Set<members::recipient_device_did>;
-        type Reason = S::Reason;
-    }
-    ///State transition - sets the `reason` field to Set
-    pub struct SetReason<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetReason<S> {}
-    impl<S: State> State for SetReason<S> {
-        type ConvoId = S::ConvoId;
-        type RecipientDeviceDid = S::RecipientDeviceDid;
-        type Reason = Set<members::reason>;
-    }
-    /// Marker types for field names
-    #[allow(non_camel_case_types)]
-    pub mod members {
-        ///Marker type for the `convo_id` field
-        pub struct convo_id(());
-        ///Marker type for the `recipient_device_did` field
-        pub struct recipient_device_did(());
-        ///Marker type for the `reason` field
-        pub struct reason(());
-    }
-}
-
-/// Builder for constructing an instance of this type
-pub struct ReissueWelcomeBuilder<'a, S: reissue_welcome_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-    ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
-}
-
-impl<'a> ReissueWelcome<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> ReissueWelcomeBuilder<'a, reissue_welcome_state::Empty> {
-        ReissueWelcomeBuilder::new()
-    }
-}
-
-impl<'a> ReissueWelcomeBuilder<'a, reissue_welcome_state::Empty> {
-    /// Create a new builder with all fields unset
-    pub fn new() -> Self {
-        ReissueWelcomeBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None),
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> ReissueWelcomeBuilder<'a, S>
-where
-    S: reissue_welcome_state::State,
-    S::ConvoId: reissue_welcome_state::IsUnset,
-{
-    /// Set the `convoId` field (required)
-    pub fn convo_id(
-        mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> ReissueWelcomeBuilder<'a, reissue_welcome_state::SetConvoId<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
-        ReissueWelcomeBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> ReissueWelcomeBuilder<'a, S>
-where
-    S: reissue_welcome_state::State,
-    S::Reason: reissue_welcome_state::IsUnset,
-{
-    /// Set the `reason` field (required)
-    pub fn reason(
-        mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> ReissueWelcomeBuilder<'a, reissue_welcome_state::SetReason<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
-        ReissueWelcomeBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> ReissueWelcomeBuilder<'a, S>
-where
-    S: reissue_welcome_state::State,
-    S::RecipientDeviceDid: reissue_welcome_state::IsUnset,
-{
-    /// Set the `recipientDeviceDid` field (required)
-    pub fn recipient_device_did(
-        mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> ReissueWelcomeBuilder<'a, reissue_welcome_state::SetRecipientDeviceDid<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
-        ReissueWelcomeBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> ReissueWelcomeBuilder<'a, S>
-where
-    S: reissue_welcome_state::State,
-    S::ConvoId: reissue_welcome_state::IsSet,
-    S::RecipientDeviceDid: reissue_welcome_state::IsSet,
-    S::Reason: reissue_welcome_state::IsSet,
-{
-    /// Build the final struct
-    pub fn build(self) -> ReissueWelcome<'a> {
-        ReissueWelcome {
-            convo_id: self.__unsafe_private_named.0.unwrap(),
-            reason: self.__unsafe_private_named.1.unwrap(),
-            recipient_device_did: self.__unsafe_private_named.2.unwrap(),
-            extra_data: Default::default(),
-        }
-    }
-    /// Build the final struct with custom extra_data
-    pub fn build_with_data(
-        self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
-        >,
-    ) -> ReissueWelcome<'a> {
-        ReissueWelcome {
-            convo_id: self.__unsafe_private_named.0.unwrap(),
-            reason: self.__unsafe_private_named.1.unwrap(),
-            recipient_device_did: self.__unsafe_private_named.2.unwrap(),
-            extra_data: Some(extra_data),
-        }
-    }
+    pub recipient_device_did: jacquard_common::CowStr<'a>,
 }
 
 #[jacquard_derive::lexicon]
@@ -208,7 +38,10 @@ pub struct ReissueWelcomeOutput<'a> {
     /// Device that will be asked to re-issue. May be empty if no admin exists.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub inviter_device: std::option::Option<jacquard_common::types::string::Did<'a>>,
+    pub inviter_device: std::option::Option<jacquard_common::CowStr<'a>>,
+    /// Server-generated request identifier for the reissue workflow.
+    #[serde(borrow)]
+    pub request_id: jacquard_common::CowStr<'a>,
     /// Server timestamp.
     pub requested_at: jacquard_common::types::string::Datetime,
     /// True if request was recorded and inviter notified.

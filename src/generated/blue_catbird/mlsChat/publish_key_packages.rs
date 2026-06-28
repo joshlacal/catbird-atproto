@@ -281,6 +281,16 @@ fn lexicon_doc_blue_catbird_mlsChat_publishKeyPackages(
                                     },
                                 ),
                             );
+                            map.insert(
+                                ::jacquard_common::smol_str::SmolStr::new_static("lastResort"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(
+                                    ::jacquard_lexicon::lexicon::LexBoolean {
+                                        description: None,
+                                        default: None,
+                                        r#const: None,
+                                    },
+                                ),
+                            );
                             map
                         },
                     },
@@ -836,6 +846,9 @@ pub struct KeyPackageItem<'a> {
     /// MLS key package
     #[serde(with = "jacquard_common::serde_bytes_helper")]
     pub key_package: bytes::Bytes,
+    /// Whether this is a reusable MLS last-resort key package
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    pub last_resort: std::option::Option<bool>,
 }
 
 pub mod key_package_item_state {
@@ -903,6 +916,7 @@ pub struct KeyPackageItemBuilder<'a, S: key_package_item_state::State> {
         ::core::option::Option<jacquard_common::CowStr<'a>>,
         ::core::option::Option<jacquard_common::types::string::Datetime>,
         ::core::option::Option<bytes::Bytes>,
+        ::core::option::Option<bool>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
 }
@@ -919,7 +933,7 @@ impl<'a> KeyPackageItemBuilder<'a, key_package_item_state::Empty> {
     pub fn new() -> Self {
         KeyPackageItemBuilder {
             _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None),
+            __unsafe_private_named: (None, None, None, None),
             _phantom: ::core::marker::PhantomData,
         }
     }
@@ -982,6 +996,19 @@ where
     }
 }
 
+impl<'a, S: key_package_item_state::State> KeyPackageItemBuilder<'a, S> {
+    /// Set the `lastResort` field (optional)
+    pub fn last_resort(mut self, value: impl Into<Option<bool>>) -> Self {
+        self.__unsafe_private_named.3 = value.into();
+        self
+    }
+    /// Set the `lastResort` field to an Option value (optional)
+    pub fn maybe_last_resort(mut self, value: Option<bool>) -> Self {
+        self.__unsafe_private_named.3 = value;
+        self
+    }
+}
+
 impl<'a, S> KeyPackageItemBuilder<'a, S>
 where
     S: key_package_item_state::State,
@@ -995,6 +1022,7 @@ where
             cipher_suite: self.__unsafe_private_named.0.unwrap(),
             expires: self.__unsafe_private_named.1.unwrap(),
             key_package: self.__unsafe_private_named.2.unwrap(),
+            last_resort: self.__unsafe_private_named.3,
             extra_data: Default::default(),
         }
     }
@@ -1010,6 +1038,7 @@ where
             cipher_suite: self.__unsafe_private_named.0.unwrap(),
             expires: self.__unsafe_private_named.1.unwrap(),
             key_package: self.__unsafe_private_named.2.unwrap(),
+            last_resort: self.__unsafe_private_named.3,
             extra_data: Some(extra_data),
         }
     }
