@@ -483,6 +483,7 @@ pub struct RegisterDevice<'a> {
     #[serde(borrow)]
     pub device_name: jacquard_common::CowStr<'a>,
     /// Persistent device UUID (stored in iCloud Keychain). Allows server to detect device re-registration and cleanup old key packages. Optional for backward compatibility.
+    #[serde(rename = "deviceUUID")]
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub device_uuid: std::option::Option<jacquard_common::CowStr<'a>>,

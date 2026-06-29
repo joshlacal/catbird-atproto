@@ -402,6 +402,7 @@ pub struct GetRecommendationsOutput<'a> {
         crate::generated::place_stream::live::get_recommendations::LivestreamRecommendation<'a>,
     >,
     /// The user DID this recommendation is for
+    #[serde(rename = "userDID")]
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub user_did: std::option::Option<jacquard_common::types::string::Did<'a>>,

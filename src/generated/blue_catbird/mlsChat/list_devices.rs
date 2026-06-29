@@ -21,6 +21,7 @@ pub struct DeviceInfo<'a> {
     #[serde(borrow)]
     pub device_name: jacquard_common::CowStr<'a>,
     /// Persistent device UUID (if provided during registration)
+    #[serde(rename = "deviceUUID")]
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub device_uuid: std::option::Option<jacquard_common::CowStr<'a>>,

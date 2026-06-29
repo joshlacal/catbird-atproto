@@ -2038,17 +2038,21 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ViewExternalSource<'a> {
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ViewExternalSourceTheme<'a> {
+    #[serde(rename = "accentForegroundRGB")]
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub accent_foreground_rgb:
         std::option::Option<crate::generated::app_bsky::embed::external::ColorRgb<'a>>,
+    #[serde(rename = "accentRGB")]
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub accent_rgb: std::option::Option<crate::generated::app_bsky::embed::external::ColorRgb<'a>>,
+    #[serde(rename = "backgroundRGB")]
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub background_rgb:
         std::option::Option<crate::generated::app_bsky::embed::external::ColorRgb<'a>>,
+    #[serde(rename = "foregroundRGB")]
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub foreground_rgb:

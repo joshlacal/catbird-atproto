@@ -29,6 +29,7 @@ pub struct Origin<'a> {
     /// Periodically updated timestamp when this origin last saw a livestream
     pub updated_at: jacquard_common::types::string::Datetime,
     /// URL of the websocket endpoint for the livestream
+    #[serde(rename = "websocketURL")]
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub websocket_url: std::option::Option<jacquard_common::types::string::Uri<'a>>,
