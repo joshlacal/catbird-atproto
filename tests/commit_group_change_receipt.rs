@@ -27,3 +27,19 @@ fn full_receipt_decodes_and_round_trips_losslessly() {
     assert_eq!(round_trip_receipt.commit_hash.as_ref(), &[1, 2, 3]);
     assert_eq!(round_trip_receipt.signature.as_ref(), &[4, 5, 6]);
 }
+
+#[test]
+fn malformed_present_receipts_are_rejected() {
+    let malformed = [
+        r#"{"success":true,"receipt":{"convoId":"convo-1","epoch":8,"commitHash":{"$bytes":"AQID"},"sequencerDid":"did:web:sequencer.example","issuedAt":1710000000,"signature":{"$bytes":"BAUG"}}}"#,
+        r#"{"success":true,"receipt":{"convoId":"convo-1","epoch":8,"sequencerTerm":3,"commitHash":{"$bytes":"AQID"},"sequencerDid":"not-a-did","issuedAt":1710000000,"signature":{"$bytes":"BAUG"}}}"#,
+        r#"{"success":true,"receipt":{"convoId":"convo-1","epoch":8,"sequencerTerm":3,"commitHash":{"$bytes":"%%%"},"sequencerDid":"did:web:sequencer.example","issuedAt":1710000000,"signature":{"$bytes":"BAUG"}}}"#,
+        r#"{"success":true,"receipt":{"convoId":"convo-1","epoch":"eight","sequencerTerm":3,"commitHash":{"$bytes":"AQID"},"sequencerDid":"did:web:sequencer.example","issuedAt":1710000000,"signature":{"$bytes":"BAUG"}}}"#,
+    ];
+    for fixture in malformed {
+        assert!(
+            serde_json::from_str::<CommitGroupChangeOutput<'_>>(fixture).is_err(),
+            "expected deserialization to fail for fixture: {fixture}"
+        );
+    }
+}
