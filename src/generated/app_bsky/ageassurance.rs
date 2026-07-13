@@ -297,6 +297,32 @@ fn lexicon_doc_app_bsky_ageassurance_defs() -> ::jacquard_lexicon::lexicon::Lexi
                         let mut map = ::std::collections::BTreeMap::new();
                         map.insert(
                             ::jacquard_common::smol_str::SmolStr::new_static(
+                                "additionalVerificationMethods",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Verification methods permitted in this region in addition to the third-party (KWS) flow, which is always supported. `device` permits using the native on-device age APIs (e.g. Apple Declared Age Range, Google Play Age Signals).",
+                                    ),
+                                ),
+                                items: ::jacquard_lexicon::lexicon::LexArrayItem::String(::jacquard_lexicon::lexicon::LexString {
+                                    description: None,
+                                    format: None,
+                                    default: None,
+                                    min_length: None,
+                                    max_length: None,
+                                    min_graphemes: None,
+                                    max_graphemes: None,
+                                    r#enum: None,
+                                    r#const: None,
+                                    known_values: None,
+                                }),
+                                min_length: None,
+                                max_length: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
                                 "countryCode",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -1092,6 +1118,10 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Config<'a> {
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ConfigRegion<'a> {
+    /// Verification methods permitted in this region in addition to the third-party (KWS) flow, which is always supported. `device` permits using the native on-device age APIs (e.g. Apple Declared Age Range, Google Play Age Signals).
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub additional_verification_methods: std::option::Option<Vec<jacquard_common::CowStr<'a>>>,
     /// The ISO 3166-1 alpha-2 country code this configuration applies to.
     #[serde(borrow)]
     pub country_code: jacquard_common::CowStr<'a>,
@@ -1168,6 +1198,7 @@ pub mod config_region_state {
 pub struct ConfigRegionBuilder<'a, S: config_region_state::State> {
     _phantom_state: ::core::marker::PhantomData<fn() -> S>,
     __unsafe_private_named: (
+        ::core::option::Option<Vec<jacquard_common::CowStr<'a>>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
         ::core::option::Option<i64>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
@@ -1188,9 +1219,28 @@ impl<'a> ConfigRegionBuilder<'a, config_region_state::Empty> {
     pub fn new() -> Self {
         ConfigRegionBuilder {
             _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None),
+            __unsafe_private_named: (None, None, None, None, None),
             _phantom: ::core::marker::PhantomData,
         }
+    }
+}
+
+impl<'a, S: config_region_state::State> ConfigRegionBuilder<'a, S> {
+    /// Set the `additionalVerificationMethods` field (optional)
+    pub fn additional_verification_methods(
+        mut self,
+        value: impl Into<Option<Vec<jacquard_common::CowStr<'a>>>>,
+    ) -> Self {
+        self.__unsafe_private_named.0 = value.into();
+        self
+    }
+    /// Set the `additionalVerificationMethods` field to an Option value (optional)
+    pub fn maybe_additional_verification_methods(
+        mut self,
+        value: Option<Vec<jacquard_common::CowStr<'a>>>,
+    ) -> Self {
+        self.__unsafe_private_named.0 = value;
+        self
     }
 }
 
@@ -1204,7 +1254,7 @@ where
         mut self,
         value: impl Into<jacquard_common::CowStr<'a>>,
     ) -> ConfigRegionBuilder<'a, config_region_state::SetCountryCode<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
         ConfigRegionBuilder {
             _phantom_state: ::core::marker::PhantomData,
             __unsafe_private_named: self.__unsafe_private_named,
@@ -1223,7 +1273,7 @@ where
         mut self,
         value: impl Into<i64>,
     ) -> ConfigRegionBuilder<'a, config_region_state::SetMinAccessAge<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
         ConfigRegionBuilder {
             _phantom_state: ::core::marker::PhantomData,
             __unsafe_private_named: self.__unsafe_private_named,
@@ -1235,12 +1285,12 @@ where
 impl<'a, S: config_region_state::State> ConfigRegionBuilder<'a, S> {
     /// Set the `regionCode` field (optional)
     pub fn region_code(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.2 = value.into();
+        self.__unsafe_private_named.3 = value.into();
         self
     }
     /// Set the `regionCode` field to an Option value (optional)
     pub fn maybe_region_code(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.2 = value;
+        self.__unsafe_private_named.3 = value;
         self
     }
 }
@@ -1255,7 +1305,7 @@ where
         mut self,
         value: impl Into<Vec<ConfigRegionRulesItem<'a>>>,
     ) -> ConfigRegionBuilder<'a, config_region_state::SetRules<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        self.__unsafe_private_named.4 = ::core::option::Option::Some(value.into());
         ConfigRegionBuilder {
             _phantom_state: ::core::marker::PhantomData,
             __unsafe_private_named: self.__unsafe_private_named,
@@ -1274,10 +1324,11 @@ where
     /// Build the final struct
     pub fn build(self) -> ConfigRegion<'a> {
         ConfigRegion {
-            country_code: self.__unsafe_private_named.0.unwrap(),
-            min_access_age: self.__unsafe_private_named.1.unwrap(),
-            region_code: self.__unsafe_private_named.2,
-            rules: self.__unsafe_private_named.3.unwrap(),
+            additional_verification_methods: self.__unsafe_private_named.0,
+            country_code: self.__unsafe_private_named.1.unwrap(),
+            min_access_age: self.__unsafe_private_named.2.unwrap(),
+            region_code: self.__unsafe_private_named.3,
+            rules: self.__unsafe_private_named.4.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -1290,10 +1341,11 @@ where
         >,
     ) -> ConfigRegion<'a> {
         ConfigRegion {
-            country_code: self.__unsafe_private_named.0.unwrap(),
-            min_access_age: self.__unsafe_private_named.1.unwrap(),
-            region_code: self.__unsafe_private_named.2,
-            rules: self.__unsafe_private_named.3.unwrap(),
+            additional_verification_methods: self.__unsafe_private_named.0,
+            country_code: self.__unsafe_private_named.1.unwrap(),
+            min_access_age: self.__unsafe_private_named.2.unwrap(),
+            region_code: self.__unsafe_private_named.3,
+            rules: self.__unsafe_private_named.4.unwrap(),
             extra_data: Some(extra_data),
         }
     }

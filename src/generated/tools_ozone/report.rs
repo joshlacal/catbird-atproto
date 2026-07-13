@@ -13,6 +13,7 @@ pub mod get_latest_report;
 pub mod get_live_stats;
 pub mod get_report;
 pub mod list_activities;
+pub mod query_activities;
 pub mod query_reports;
 pub mod reassign_queue;
 pub mod refresh_stats;
@@ -1057,6 +1058,13 @@ fn lexicon_doc_tools_ozone_report_defs() -> ::jacquard_lexicon::lexicon::Lexicon
                                 r#enum: None,
                                 r#const: None,
                                 known_values: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("report"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                description: None,
+                                r#ref: ::jacquard_common::CowStr::new_static("#reportView"),
                             }),
                         );
                         map.insert(
@@ -3416,6 +3424,10 @@ pub struct ReportActivityView<'a> {
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub public_note: std::option::Option<jacquard_common::CowStr<'a>>,
+    /// Full view of the report this activity belongs to.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub report: std::option::Option<crate::generated::tools_ozone::report::ReportView<'a>>,
     /// ID of the report this activity belongs to
     pub report_id: i64,
 }
@@ -3545,6 +3557,7 @@ pub struct ReportActivityViewBuilder<'a, S: report_activity_view_state::State> {
         ::core::option::Option<jacquard_common::types::value::Data<'a>>,
         ::core::option::Option<crate::generated::tools_ozone::team::Member<'a>>,
         ::core::option::Option<jacquard_common::CowStr<'a>>,
+        ::core::option::Option<crate::generated::tools_ozone::report::ReportView<'a>>,
         ::core::option::Option<i64>,
     ),
     _phantom: ::core::marker::PhantomData<&'a ()>,
@@ -3562,7 +3575,9 @@ impl<'a> ReportActivityViewBuilder<'a, report_activity_view_state::Empty> {
     pub fn new() -> Self {
         ReportActivityViewBuilder {
             _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None, None, None, None, None, None),
+            __unsafe_private_named: (
+                None, None, None, None, None, None, None, None, None, None, None,
+            ),
             _phantom: ::core::marker::PhantomData,
         }
     }
@@ -3724,6 +3739,25 @@ impl<'a, S: report_activity_view_state::State> ReportActivityViewBuilder<'a, S> 
     }
 }
 
+impl<'a, S: report_activity_view_state::State> ReportActivityViewBuilder<'a, S> {
+    /// Set the `report` field (optional)
+    pub fn report(
+        mut self,
+        value: impl Into<Option<crate::generated::tools_ozone::report::ReportView<'a>>>,
+    ) -> Self {
+        self.__unsafe_private_named.9 = value.into();
+        self
+    }
+    /// Set the `report` field to an Option value (optional)
+    pub fn maybe_report(
+        mut self,
+        value: Option<crate::generated::tools_ozone::report::ReportView<'a>>,
+    ) -> Self {
+        self.__unsafe_private_named.9 = value;
+        self
+    }
+}
+
 impl<'a, S> ReportActivityViewBuilder<'a, S>
 where
     S: report_activity_view_state::State,
@@ -3734,7 +3768,7 @@ where
         mut self,
         value: impl Into<i64>,
     ) -> ReportActivityViewBuilder<'a, report_activity_view_state::SetReportId<S>> {
-        self.__unsafe_private_named.9 = ::core::option::Option::Some(value.into());
+        self.__unsafe_private_named.10 = ::core::option::Option::Some(value.into());
         ReportActivityViewBuilder {
             _phantom_state: ::core::marker::PhantomData,
             __unsafe_private_named: self.__unsafe_private_named,
@@ -3765,7 +3799,8 @@ where
             meta: self.__unsafe_private_named.6,
             moderator: self.__unsafe_private_named.7,
             public_note: self.__unsafe_private_named.8,
-            report_id: self.__unsafe_private_named.9.unwrap(),
+            report: self.__unsafe_private_named.9,
+            report_id: self.__unsafe_private_named.10.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -3787,7 +3822,8 @@ where
             meta: self.__unsafe_private_named.6,
             moderator: self.__unsafe_private_named.7,
             public_note: self.__unsafe_private_named.8,
-            report_id: self.__unsafe_private_named.9.unwrap(),
+            report: self.__unsafe_private_named.9,
+            report_id: self.__unsafe_private_named.10.unwrap(),
             extra_data: Some(extra_data),
         }
     }

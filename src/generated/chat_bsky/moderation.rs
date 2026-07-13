@@ -15,7 +15,7 @@ pub mod get_message_context;
 pub mod subscribe_mod_events;
 pub mod update_actor_access;
 
-/// [NOTE: This is under active development and should be considered unstable while this note is here]. A view of a conversation for moderation purposes. Unlike chat.bsky.convo.defs#convoView, it does not include viewer-specific data (such as muted, unreadCount, status, lastMessage, lastReaction), since the requester is a moderator and not a member of the conversation. The member list is not included; use chat.bsky.moderation.getConvoMembers to list members.
+/// A view of a conversation for moderation purposes. Unlike chat.bsky.convo.defs#convoView, it does not include viewer-specific data (such as muted, unreadCount, status, lastMessage, lastReaction), since the requester is a moderator and not a member of the conversation. The member list is not included; use chat.bsky.moderation.getConvoMembers to list members.
 #[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
@@ -65,7 +65,7 @@ fn lexicon_doc_chat_bsky_moderation_defs() -> ::jacquard_lexicon::lexicon::Lexic
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
-                            "[NOTE: This is under active development and should be considered unstable while this note is here]. A view of a conversation for moderation purposes. Unlike chat.bsky.convo.defs#convoView, it does not include viewer-specific data (such as muted, unreadCount, status, lastMessage, lastReaction), since the requester is a moderator and not a member of the conversation. The member list is not included; use chat.bsky.moderation.getConvoMembers to list members.",
+                            "A view of a conversation for moderation purposes. Unlike chat.bsky.convo.defs#convoView, it does not include viewer-specific data (such as muted, unreadCount, status, lastMessage, lastReaction), since the requester is a moderator and not a member of the conversation. The member list is not included; use chat.bsky.moderation.getConvoMembers to list members.",
                         ),
                     ),
                     required: Some(
@@ -129,27 +129,27 @@ fn lexicon_doc_chat_bsky_moderation_defs() -> ::jacquard_lexicon::lexicon::Lexic
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("directConvo"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: Some(
-                        ::jacquard_common::CowStr::new_static(
-                            "[NOTE: This is under active development and should be considered unstable while this note is here]. Data specific to a direct conversation, for moderation purposes.",
-                        ),
-                    ),
-                    required: None,
-                    nullable: None,
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
-                        map
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        description: Some(::jacquard_common::CowStr::new_static(
+                            "Data specific to a direct conversation, for moderation purposes.",
+                        )),
+                        required: None,
+                        nullable: None,
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::std::collections::BTreeMap::new();
+                            map
+                        },
                     },
-                }),
+                ),
             );
             map.insert(
                 ::jacquard_common::smol_str::SmolStr::new_static("groupConvo"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
-                            "[NOTE: This is under active development and should be considered unstable while this note is here]. Data specific to a group conversation, for moderation purposes. Unlike chat.bsky.convo.defs#groupConvo, it does not include viewer-specific data (such as unreadJoinRequestCount), since the requester is a moderator and not a member of the conversation.",
+                            "Data specific to a group conversation, for moderation purposes. Unlike chat.bsky.convo.defs#groupConvo, it does not include viewer-specific data (such as unreadJoinRequestCount), since the requester is a moderator and not a member of the conversation.",
                         ),
                     ),
                     required: Some(
@@ -255,9 +255,9 @@ fn lexicon_doc_chat_bsky_moderation_defs() -> ::jacquard_lexicon::lexicon::Lexic
                                 format: None,
                                 default: None,
                                 min_length: None,
-                                max_length: Some(1280usize),
+                                max_length: Some(500usize),
                                 min_graphemes: None,
-                                max_graphemes: Some(128usize),
+                                max_graphemes: Some(50usize),
                                 r#enum: None,
                                 r#const: None,
                                 known_values: None,
@@ -289,7 +289,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ConvoView<'a> {
     }
 }
 
-/// [NOTE: This is under active development and should be considered unstable while this note is here]. Data specific to a direct conversation, for moderation purposes.
+/// Data specific to a direct conversation, for moderation purposes.
 #[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
@@ -320,7 +320,7 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for DirectConvo<'a> {
     }
 }
 
-/// [NOTE: This is under active development and should be considered unstable while this note is here]. Data specific to a group conversation, for moderation purposes. Unlike chat.bsky.convo.defs#groupConvo, it does not include viewer-specific data (such as unreadJoinRequestCount), since the requester is a moderator and not a member of the conversation.
+/// Data specific to a group conversation, for moderation purposes. Unlike chat.bsky.convo.defs#groupConvo, it does not include viewer-specific data (such as unreadJoinRequestCount), since the requester is a moderator and not a member of the conversation.
 #[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
@@ -683,10 +683,10 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for GroupConvo<'a> {
         {
             let value = &self.name;
             #[allow(unused_comparisons)]
-            if <str>::len(value.as_ref()) > 1280usize {
+            if <str>::len(value.as_ref()) > 500usize {
                 return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
                     path: ::jacquard_lexicon::validation::ValidationPath::from_field("name"),
-                    max: 1280usize,
+                    max: 500usize,
                     actual: <str>::len(value.as_ref()),
                 });
             }
@@ -697,13 +697,13 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for GroupConvo<'a> {
                 let count =
                     ::unicode_segmentation::UnicodeSegmentation::graphemes(value.as_ref(), true)
                         .count();
-                if count > 128usize {
+                if count > 50usize {
                     return Err(
                         ::jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
                             path: ::jacquard_lexicon::validation::ValidationPath::from_field(
                                 "name",
                             ),
-                            max: 128usize,
+                            max: 50usize,
                             actual: count,
                         },
                     );

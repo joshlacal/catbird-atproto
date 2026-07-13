@@ -8,3 +8,4 @@ pub mod convo;
 pub mod embed;
 pub mod group;
 pub mod moderation;
+pub mod notification;

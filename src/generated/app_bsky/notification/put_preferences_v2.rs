@@ -18,6 +18,7 @@
 )]
 #[serde(rename_all = "camelCase")]
 pub struct PutPreferencesV2<'a> {
+    /// Deprecated: use chat.bsky.notification preferences instead. Setting this won't stick and the default values will be returned.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub chat: std::option::Option<crate::generated::app_bsky::notification::ChatPreference<'a>>,
