@@ -423,6 +423,8 @@ pub enum SendMessageBatchError<'a> {
     ConvoLocked(std::option::Option<jacquard_common::CowStr<'a>>),
     #[serde(rename = "InvalidConvo")]
     InvalidConvo(std::option::Option<jacquard_common::CowStr<'a>>),
+    #[serde(rename = "ReplyTargetNotFound")]
+    ReplyTargetNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
 }
 
 impl std::fmt::Display for SendMessageBatchError<'_> {
@@ -437,6 +439,13 @@ impl std::fmt::Display for SendMessageBatchError<'_> {
             }
             Self::InvalidConvo(msg) => {
                 write!(f, "InvalidConvo")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::ReplyTargetNotFound(msg) => {
+                write!(f, "ReplyTargetNotFound")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }

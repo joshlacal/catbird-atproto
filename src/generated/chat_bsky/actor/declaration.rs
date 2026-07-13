@@ -12,7 +12,7 @@
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Declaration<'a> {
-    /// [NOTE: This is under active development and should be considered unstable while this note is here]. Declaration about group chat invitation preferences for the record owner.
+    /// Declaration about group chat invitation preferences for the record owner.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
     pub allow_group_invites: std::option::Option<jacquard_common::CowStr<'a>>,
@@ -251,7 +251,7 @@ fn lexicon_doc_chat_bsky_actor_declaration() -> ::jacquard_lexicon::lexicon::Lex
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                     description: Some(
                                         ::jacquard_common::CowStr::new_static(
-                                            "[NOTE: This is under active development and should be considered unstable while this note is here]. Declaration about group chat invitation preferences for the record owner.",
+                                            "Declaration about group chat invitation preferences for the record owner.",
                                         ),
                                     ),
                                     format: None,

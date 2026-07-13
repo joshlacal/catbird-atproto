@@ -5,30 +5,95 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(rename_all = "camelCase")]
+pub struct GetUnreadCounts {
+    /// (default: true)
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    pub include_group_chats: std::option::Option<bool>,
+}
+
+pub mod get_unread_counts_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {}
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {}
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {}
+}
+
+/// Builder for constructing an instance of this type
+pub struct GetUnreadCountsBuilder<S: get_unread_counts_state::State> {
+    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
+    __unsafe_private_named: (::core::option::Option<bool>,),
+}
+
+impl GetUnreadCounts {
+    /// Create a new builder for this type
+    pub fn new() -> GetUnreadCountsBuilder<get_unread_counts_state::Empty> {
+        GetUnreadCountsBuilder::new()
+    }
+}
+
+impl GetUnreadCountsBuilder<get_unread_counts_state::Empty> {
+    /// Create a new builder with all fields unset
+    pub fn new() -> Self {
+        GetUnreadCountsBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: (None,),
+        }
+    }
+}
+
+impl<S: get_unread_counts_state::State> GetUnreadCountsBuilder<S> {
+    /// Set the `includeGroupChats` field (optional)
+    pub fn include_group_chats(mut self, value: impl Into<Option<bool>>) -> Self {
+        self.__unsafe_private_named.0 = value.into();
+        self
+    }
+    /// Set the `includeGroupChats` field to an Option value (optional)
+    pub fn maybe_include_group_chats(mut self, value: Option<bool>) -> Self {
+        self.__unsafe_private_named.0 = value;
+        self
+    }
+}
+
+impl<S> GetUnreadCountsBuilder<S>
+where
+    S: get_unread_counts_state::State,
+{
+    /// Build the final struct
+    pub fn build(self) -> GetUnreadCounts {
+        GetUnreadCounts {
+            include_group_chats: self.__unsafe_private_named.0,
+        }
+    }
+}
+
 #[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetUnreadCountsOutput<'a> {
-    /// Number of unread, unlocked accepted convos. Counts convos with unread messages and unread join requests. Capped at 31, where 31 means more than 30.
+    /// Number of unread, unlocked accepted convos. Counts convos with unread messages and unread join requests. Capped at 100, where 100 means more than 99.
     pub unread_accepted_convos: i64,
-    /// Number of unread, unlocked request convos. Includes convos with unread messages, but not with unread join request, since only the owner of a group has join requests to read, and the group would necessarily be accepted. Capped at 11, where 11 means more than 10.
+    /// Number of unread, unlocked request convos. Includes convos with unread messages, but not with unread join request, since only the owner of a group has join requests to read, and the group would necessarily be accepted. Capped at 100, where 100 means more than 99.
     pub unread_request_convos: i64,
 }
 
-/// XRPC request marker type
-#[derive(
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
-    serde::Serialize,
-    serde::Deserialize,
-    jacquard_derive::IntoStatic,
-)]
-pub struct GetUnreadCounts;
 /// Response type for
 ///chat.bsky.convo.getUnreadCounts
 pub struct GetUnreadCountsResponse;
