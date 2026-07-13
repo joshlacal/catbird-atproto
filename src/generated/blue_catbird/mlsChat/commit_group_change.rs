@@ -880,6 +880,130 @@ fn lexicon_doc_blue_catbird_mlsChat_commitGroupChange(
                     },
                 }),
             );
+            map.insert(
+                ::jacquard_common::smol_str::SmolStr::new_static("sequencerReceipt"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
+                            "Signed receipt binding an accepted commit to its conversation, epoch, sequencer term, and sequencer identity.",
+                        ),
+                    ),
+                    required: Some(
+                        vec![
+                            ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
+                            ::jacquard_common::smol_str::SmolStr::new_static("epoch"),
+                            ::jacquard_common::smol_str::SmolStr::new_static("sequencerTerm"),
+                            ::jacquard_common::smol_str::SmolStr::new_static("commitHash"),
+                            ::jacquard_common::smol_str::SmolStr::new_static("sequencerDid"),
+                            ::jacquard_common::smol_str::SmolStr::new_static("issuedAt"),
+                            ::jacquard_common::smol_str::SmolStr::new_static("signature")
+                        ],
+                    ),
+                    nullable: None,
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::std::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "commitHash",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                description: None,
+                                max_length: None,
+                                min_length: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Stable conversation identifier.",
+                                    ),
+                                ),
+                                format: None,
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("epoch"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                description: None,
+                                default: None,
+                                minimum: Some(0i64),
+                                maximum: None,
+                                r#enum: None,
+                                r#const: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static("issuedAt"),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                description: None,
+                                default: None,
+                                minimum: Some(0i64),
+                                maximum: None,
+                                r#enum: None,
+                                r#const: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "sequencerDid",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "DID of the sequencer that signed the receipt.",
+                                    ),
+                                ),
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                ),
+                                default: None,
+                                min_length: None,
+                                max_length: None,
+                                min_graphemes: None,
+                                max_graphemes: None,
+                                r#enum: None,
+                                r#const: None,
+                                known_values: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "sequencerTerm",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                description: None,
+                                default: None,
+                                minimum: Some(0i64),
+                                maximum: None,
+                                r#enum: None,
+                                r#const: None,
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "signature",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                description: None,
+                                max_length: None,
+                                min_length: None,
+                            }),
+                        );
+                        map
+                    },
+                }),
+            );
             map
         },
     }
@@ -1174,6 +1298,12 @@ pub struct CommitGroupChangeOutput<'a> {
         Vec<
             crate::generated::blue_catbird::mlsChat::commit_group_change::PendingDeviceAddition<'a>,
         >,
+    >,
+    /// Signed sequencer receipt for an accepted epoch-advancing commit. Absent for legacy servers and non-advancing actions.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    #[serde(borrow)]
+    pub receipt: std::option::Option<
+        crate::generated::blue_catbird::mlsChat::commit_group_change::SequencerReceipt<'a>,
     >,
     /// Timestamp of rejoin (for processExternalCommit, rejoin)
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
@@ -2077,6 +2207,427 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for RateLimitedBody<'a> {
                 return Err(::jacquard_lexicon::validation::ConstraintError::Minimum {
                     path: ::jacquard_lexicon::validation::ValidationPath::from_field(
                         "retry_after_seconds",
+                    ),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
+        Ok(())
+    }
+}
+
+/// Signed receipt binding an accepted commit to its conversation, epoch, sequencer term, and sequencer identity.
+#[jacquard_derive::lexicon]
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(rename_all = "camelCase")]
+pub struct SequencerReceipt<'a> {
+    /// Cryptographic hash of the accepted MLS commit bytes.
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub commit_hash: bytes::Bytes,
+    /// Stable conversation identifier.
+    #[serde(borrow)]
+    pub convo_id: jacquard_common::CowStr<'a>,
+    /// Epoch assigned to the accepted commit.
+    pub epoch: i64,
+    /// Unix timestamp at which the receipt was issued.
+    pub issued_at: i64,
+    /// DID of the sequencer that signed the receipt.
+    #[serde(borrow)]
+    pub sequencer_did: jacquard_common::types::string::Did<'a>,
+    /// Active sequencer leadership term included in the signed receipt bytes.
+    pub sequencer_term: i64,
+    /// Signature over the canonical CATBIRD-RECEIPT-V1 payload.
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub signature: bytes::Bytes,
+}
+
+pub mod sequencer_receipt_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type ConvoId;
+        type Epoch;
+        type SequencerTerm;
+        type CommitHash;
+        type SequencerDid;
+        type IssuedAt;
+        type Signature;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type ConvoId = Unset;
+        type Epoch = Unset;
+        type SequencerTerm = Unset;
+        type CommitHash = Unset;
+        type SequencerDid = Unset;
+        type IssuedAt = Unset;
+        type Signature = Unset;
+    }
+    ///State transition - sets the `convo_id` field to Set
+    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetConvoId<S> {}
+    impl<S: State> State for SetConvoId<S> {
+        type ConvoId = Set<members::convo_id>;
+        type Epoch = S::Epoch;
+        type SequencerTerm = S::SequencerTerm;
+        type CommitHash = S::CommitHash;
+        type SequencerDid = S::SequencerDid;
+        type IssuedAt = S::IssuedAt;
+        type Signature = S::Signature;
+    }
+    ///State transition - sets the `epoch` field to Set
+    pub struct SetEpoch<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetEpoch<S> {}
+    impl<S: State> State for SetEpoch<S> {
+        type ConvoId = S::ConvoId;
+        type Epoch = Set<members::epoch>;
+        type SequencerTerm = S::SequencerTerm;
+        type CommitHash = S::CommitHash;
+        type SequencerDid = S::SequencerDid;
+        type IssuedAt = S::IssuedAt;
+        type Signature = S::Signature;
+    }
+    ///State transition - sets the `sequencer_term` field to Set
+    pub struct SetSequencerTerm<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetSequencerTerm<S> {}
+    impl<S: State> State for SetSequencerTerm<S> {
+        type ConvoId = S::ConvoId;
+        type Epoch = S::Epoch;
+        type SequencerTerm = Set<members::sequencer_term>;
+        type CommitHash = S::CommitHash;
+        type SequencerDid = S::SequencerDid;
+        type IssuedAt = S::IssuedAt;
+        type Signature = S::Signature;
+    }
+    ///State transition - sets the `commit_hash` field to Set
+    pub struct SetCommitHash<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetCommitHash<S> {}
+    impl<S: State> State for SetCommitHash<S> {
+        type ConvoId = S::ConvoId;
+        type Epoch = S::Epoch;
+        type SequencerTerm = S::SequencerTerm;
+        type CommitHash = Set<members::commit_hash>;
+        type SequencerDid = S::SequencerDid;
+        type IssuedAt = S::IssuedAt;
+        type Signature = S::Signature;
+    }
+    ///State transition - sets the `sequencer_did` field to Set
+    pub struct SetSequencerDid<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetSequencerDid<S> {}
+    impl<S: State> State for SetSequencerDid<S> {
+        type ConvoId = S::ConvoId;
+        type Epoch = S::Epoch;
+        type SequencerTerm = S::SequencerTerm;
+        type CommitHash = S::CommitHash;
+        type SequencerDid = Set<members::sequencer_did>;
+        type IssuedAt = S::IssuedAt;
+        type Signature = S::Signature;
+    }
+    ///State transition - sets the `issued_at` field to Set
+    pub struct SetIssuedAt<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetIssuedAt<S> {}
+    impl<S: State> State for SetIssuedAt<S> {
+        type ConvoId = S::ConvoId;
+        type Epoch = S::Epoch;
+        type SequencerTerm = S::SequencerTerm;
+        type CommitHash = S::CommitHash;
+        type SequencerDid = S::SequencerDid;
+        type IssuedAt = Set<members::issued_at>;
+        type Signature = S::Signature;
+    }
+    ///State transition - sets the `signature` field to Set
+    pub struct SetSignature<S: State = Empty>(PhantomData<fn() -> S>);
+    impl<S: State> sealed::Sealed for SetSignature<S> {}
+    impl<S: State> State for SetSignature<S> {
+        type ConvoId = S::ConvoId;
+        type Epoch = S::Epoch;
+        type SequencerTerm = S::SequencerTerm;
+        type CommitHash = S::CommitHash;
+        type SequencerDid = S::SequencerDid;
+        type IssuedAt = S::IssuedAt;
+        type Signature = Set<members::signature>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `convo_id` field
+        pub struct convo_id(());
+        ///Marker type for the `epoch` field
+        pub struct epoch(());
+        ///Marker type for the `sequencer_term` field
+        pub struct sequencer_term(());
+        ///Marker type for the `commit_hash` field
+        pub struct commit_hash(());
+        ///Marker type for the `sequencer_did` field
+        pub struct sequencer_did(());
+        ///Marker type for the `issued_at` field
+        pub struct issued_at(());
+        ///Marker type for the `signature` field
+        pub struct signature(());
+    }
+}
+
+/// Builder for constructing an instance of this type
+pub struct SequencerReceiptBuilder<'a, S: sequencer_receipt_state::State> {
+    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
+    __unsafe_private_named: (
+        ::core::option::Option<bytes::Bytes>,
+        ::core::option::Option<jacquard_common::CowStr<'a>>,
+        ::core::option::Option<i64>,
+        ::core::option::Option<i64>,
+        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
+        ::core::option::Option<i64>,
+        ::core::option::Option<bytes::Bytes>,
+    ),
+    _phantom: ::core::marker::PhantomData<&'a ()>,
+}
+
+impl<'a> SequencerReceipt<'a> {
+    /// Create a new builder for this type
+    pub fn new() -> SequencerReceiptBuilder<'a, sequencer_receipt_state::Empty> {
+        SequencerReceiptBuilder::new()
+    }
+}
+
+impl<'a> SequencerReceiptBuilder<'a, sequencer_receipt_state::Empty> {
+    /// Create a new builder with all fields unset
+    pub fn new() -> Self {
+        SequencerReceiptBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: (None, None, None, None, None, None, None),
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S> SequencerReceiptBuilder<'a, S>
+where
+    S: sequencer_receipt_state::State,
+    S::CommitHash: sequencer_receipt_state::IsUnset,
+{
+    /// Set the `commitHash` field (required)
+    pub fn commit_hash(
+        mut self,
+        value: impl Into<bytes::Bytes>,
+    ) -> SequencerReceiptBuilder<'a, sequencer_receipt_state::SetCommitHash<S>> {
+        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        SequencerReceiptBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: self.__unsafe_private_named,
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S> SequencerReceiptBuilder<'a, S>
+where
+    S: sequencer_receipt_state::State,
+    S::ConvoId: sequencer_receipt_state::IsUnset,
+{
+    /// Set the `convoId` field (required)
+    pub fn convo_id(
+        mut self,
+        value: impl Into<jacquard_common::CowStr<'a>>,
+    ) -> SequencerReceiptBuilder<'a, sequencer_receipt_state::SetConvoId<S>> {
+        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        SequencerReceiptBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: self.__unsafe_private_named,
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S> SequencerReceiptBuilder<'a, S>
+where
+    S: sequencer_receipt_state::State,
+    S::Epoch: sequencer_receipt_state::IsUnset,
+{
+    /// Set the `epoch` field (required)
+    pub fn epoch(
+        mut self,
+        value: impl Into<i64>,
+    ) -> SequencerReceiptBuilder<'a, sequencer_receipt_state::SetEpoch<S>> {
+        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        SequencerReceiptBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: self.__unsafe_private_named,
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S> SequencerReceiptBuilder<'a, S>
+where
+    S: sequencer_receipt_state::State,
+    S::IssuedAt: sequencer_receipt_state::IsUnset,
+{
+    /// Set the `issuedAt` field (required)
+    pub fn issued_at(
+        mut self,
+        value: impl Into<i64>,
+    ) -> SequencerReceiptBuilder<'a, sequencer_receipt_state::SetIssuedAt<S>> {
+        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        SequencerReceiptBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: self.__unsafe_private_named,
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S> SequencerReceiptBuilder<'a, S>
+where
+    S: sequencer_receipt_state::State,
+    S::SequencerDid: sequencer_receipt_state::IsUnset,
+{
+    /// Set the `sequencerDid` field (required)
+    pub fn sequencer_did(
+        mut self,
+        value: impl Into<jacquard_common::types::string::Did<'a>>,
+    ) -> SequencerReceiptBuilder<'a, sequencer_receipt_state::SetSequencerDid<S>> {
+        self.__unsafe_private_named.4 = ::core::option::Option::Some(value.into());
+        SequencerReceiptBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: self.__unsafe_private_named,
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S> SequencerReceiptBuilder<'a, S>
+where
+    S: sequencer_receipt_state::State,
+    S::SequencerTerm: sequencer_receipt_state::IsUnset,
+{
+    /// Set the `sequencerTerm` field (required)
+    pub fn sequencer_term(
+        mut self,
+        value: impl Into<i64>,
+    ) -> SequencerReceiptBuilder<'a, sequencer_receipt_state::SetSequencerTerm<S>> {
+        self.__unsafe_private_named.5 = ::core::option::Option::Some(value.into());
+        SequencerReceiptBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: self.__unsafe_private_named,
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S> SequencerReceiptBuilder<'a, S>
+where
+    S: sequencer_receipt_state::State,
+    S::Signature: sequencer_receipt_state::IsUnset,
+{
+    /// Set the `signature` field (required)
+    pub fn signature(
+        mut self,
+        value: impl Into<bytes::Bytes>,
+    ) -> SequencerReceiptBuilder<'a, sequencer_receipt_state::SetSignature<S>> {
+        self.__unsafe_private_named.6 = ::core::option::Option::Some(value.into());
+        SequencerReceiptBuilder {
+            _phantom_state: ::core::marker::PhantomData,
+            __unsafe_private_named: self.__unsafe_private_named,
+            _phantom: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<'a, S> SequencerReceiptBuilder<'a, S>
+where
+    S: sequencer_receipt_state::State,
+    S::ConvoId: sequencer_receipt_state::IsSet,
+    S::Epoch: sequencer_receipt_state::IsSet,
+    S::SequencerTerm: sequencer_receipt_state::IsSet,
+    S::CommitHash: sequencer_receipt_state::IsSet,
+    S::SequencerDid: sequencer_receipt_state::IsSet,
+    S::IssuedAt: sequencer_receipt_state::IsSet,
+    S::Signature: sequencer_receipt_state::IsSet,
+{
+    /// Build the final struct
+    pub fn build(self) -> SequencerReceipt<'a> {
+        SequencerReceipt {
+            commit_hash: self.__unsafe_private_named.0.unwrap(),
+            convo_id: self.__unsafe_private_named.1.unwrap(),
+            epoch: self.__unsafe_private_named.2.unwrap(),
+            issued_at: self.__unsafe_private_named.3.unwrap(),
+            sequencer_did: self.__unsafe_private_named.4.unwrap(),
+            sequencer_term: self.__unsafe_private_named.5.unwrap(),
+            signature: self.__unsafe_private_named.6.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data
+    pub fn build_with_data(
+        self,
+        extra_data: std::collections::BTreeMap<
+            jacquard_common::smol_str::SmolStr,
+            jacquard_common::types::value::Data<'a>,
+        >,
+    ) -> SequencerReceipt<'a> {
+        SequencerReceipt {
+            commit_hash: self.__unsafe_private_named.0.unwrap(),
+            convo_id: self.__unsafe_private_named.1.unwrap(),
+            epoch: self.__unsafe_private_named.2.unwrap(),
+            issued_at: self.__unsafe_private_named.3.unwrap(),
+            sequencer_did: self.__unsafe_private_named.4.unwrap(),
+            sequencer_term: self.__unsafe_private_named.5.unwrap(),
+            signature: self.__unsafe_private_named.6.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
+}
+
+impl<'a> ::jacquard_lexicon::schema::LexiconSchema for SequencerReceipt<'a> {
+    fn nsid() -> &'static str {
+        "blue.catbird.mlsChat.commitGroupChange"
+    }
+    fn def_name() -> &'static str {
+        "sequencerReceipt"
+    }
+    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_blue_catbird_mlsChat_commitGroupChange()
+    }
+    fn validate(
+        &self,
+    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.epoch;
+            if *value < 0i64 {
+                return Err(::jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("epoch"),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.issued_at;
+            if *value < 0i64 {
+                return Err(::jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("issued_at"),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.sequencer_term;
+            if *value < 0i64 {
+                return Err(::jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
+                        "sequencer_term",
                     ),
                     min: 0i64,
                     actual: *value,
