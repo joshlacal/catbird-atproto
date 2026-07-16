@@ -1,9 +1,15 @@
 #![allow(non_snake_case)]
 
+extern crate alloc;
+
 #[allow(
+    clippy::manual_strip,
+    clippy::needless_update,
     clippy::new_ret_no_self,
     clippy::new_without_default,
-    clippy::type_complexity
+    clippy::type_complexity,
+    clippy::unit_arg,
+    clippy::unnecessary_lazy_evaluations
 )]
 pub mod generated {
     #[cfg(feature = "namespace-bluecatbird")]
@@ -37,20 +43,19 @@ pub mod catbird {
 
     pub mod mls_chat {
         pub mod defs {
-            pub type ConvoView = crate::blue_catbird::mlsChat::ConvoView<'static>;
+            pub type ConvoView = crate::blue_catbird::mlsChat::ConvoView;
             pub type ConvoViewData = ConvoView;
-            pub type MemberView = crate::blue_catbird::mlsChat::MemberView<'static>;
+            pub type MemberView = crate::blue_catbird::mlsChat::MemberView;
             pub type MemberViewData = MemberView;
-            pub type MessageView = crate::blue_catbird::mlsChat::MessageView<'static>;
+            pub type MessageView = crate::blue_catbird::mlsChat::MessageView;
             pub type MessageViewData = MessageView;
         }
 
         pub mod send_message {
             pub const NSID: &str = "blue.catbird.mlsChat.sendMessage";
 
-            pub type Input = crate::blue_catbird::mlsChat::send_message::SendMessage<'static>;
-            pub type Output =
-                crate::blue_catbird::mlsChat::send_message::SendMessageOutput<'static>;
+            pub type Input = crate::blue_catbird::mlsChat::send_message::SendMessage;
+            pub type Output = crate::blue_catbird::mlsChat::send_message::SendMessageOutput;
 
             pub struct InputData {
                 pub convo_id: String,
@@ -68,7 +73,11 @@ pub mod catbird {
                         action: None,
                         ciphertext: bytes::Bytes::from(value.ciphertext),
                         convo_id: value.convo_id.into(),
-                        delivery: value.delivery.map(Into::into),
+                        delivery: value.delivery.map(|delivery| {
+                            crate::blue_catbird::mlsChat::send_message::SendMessageDelivery::from_value(
+                                delivery.into(),
+                            )
+                        }),
                         extra_data: Default::default(),
                         epoch: value.epoch as i64,
                         msg_id: value.msg_id.into(),
@@ -84,23 +93,22 @@ pub mod catbird {
         pub mod get_convos {
             pub const NSID: &str = "blue.catbird.mlsChat.getConvos";
 
-            pub type Output = crate::blue_catbird::mlsChat::get_convos::GetConvosOutput<'static>;
+            pub type Output = crate::blue_catbird::mlsChat::get_convos::GetConvosOutput;
         }
 
         pub mod create_convo {
             pub const NSID: &str = "blue.catbird.mlsChat.createConvo";
 
-            pub type Input = crate::blue_catbird::mlsChat::create_convo::CreateConvo<'static>;
+            pub type Input = crate::blue_catbird::mlsChat::create_convo::CreateConvo;
             pub type KeyPackageHashEntry =
-                crate::blue_catbird::mlsChat::create_convo::KeyPackageHashEntry<'static>;
+                crate::blue_catbird::mlsChat::create_convo::KeyPackageHashEntry;
             pub type KeyPackageHashEntryData = KeyPackageHashEntry;
-            pub type Output =
-                crate::blue_catbird::mlsChat::create_convo::CreateConvoOutput<'static>;
+            pub type Output = crate::blue_catbird::mlsChat::create_convo::CreateConvoOutput;
 
             pub struct InputData {
                 pub group_id: String,
                 pub cipher_suite: String,
-                pub initial_members: Option<Vec<crate::types::string::Did<'static>>>,
+                pub initial_members: Option<Vec<crate::types::string::Did>>,
                 pub welcome_message: Option<String>,
                 pub group_info: Option<bytes::Bytes>,
                 pub current_epoch: Option<i64>,
@@ -110,7 +118,9 @@ pub mod catbird {
             impl From<InputData> for Input {
                 fn from(value: InputData) -> Self {
                     Self {
-                        cipher_suite: value.cipher_suite.into(),
+                        cipher_suite: crate::blue_catbird::mlsChat::create_convo::CreateConvoCipherSuite::from_value(
+                            value.cipher_suite.into(),
+                        ),
                         current_epoch: value.current_epoch,
                         extra_data: Default::default(),
                         group_id: value.group_id.into(),
@@ -127,13 +137,13 @@ pub mod catbird {
         pub mod leave_convo {
             pub const NSID: &str = "blue.catbird.mlsChat.leaveConvo";
 
-            pub type Input = crate::blue_catbird::mlsChat::leave_convo::LeaveConvo<'static>;
-            pub type Output = crate::blue_catbird::mlsChat::leave_convo::LeaveConvoOutput<'static>;
+            pub type Input = crate::blue_catbird::mlsChat::leave_convo::LeaveConvo;
+            pub type Output = crate::blue_catbird::mlsChat::leave_convo::LeaveConvoOutput;
 
             pub struct InputData {
                 pub commit: Option<String>,
                 pub convo_id: String,
-                pub target_did: Option<crate::types::string::Did<'static>>,
+                pub target_did: Option<crate::types::string::Did>,
             }
 
             impl From<InputData> for Input {
@@ -151,21 +161,19 @@ pub mod catbird {
         pub mod get_messages {
             pub const NSID: &str = "blue.catbird.mlsChat.getMessages";
 
-            pub type Output =
-                crate::blue_catbird::mlsChat::get_messages::GetMessagesOutput<'static>;
+            pub type Output = crate::blue_catbird::mlsChat::get_messages::GetMessagesOutput;
         }
 
         pub mod commit_group_change {
             pub const NSID: &str = "blue.catbird.mlsChat.commitGroupChange";
 
-            pub type Input =
-                crate::blue_catbird::mlsChat::commit_group_change::CommitGroupChange<'static>;
+            pub type Input = crate::blue_catbird::mlsChat::commit_group_change::CommitGroupChange;
             pub type Output =
-                crate::blue_catbird::mlsChat::commit_group_change::CommitGroupChangeOutput<'static>;
+                crate::blue_catbird::mlsChat::commit_group_change::CommitGroupChangeOutput;
             pub type KeyPackageHashEntry =
-                crate::blue_catbird::mlsChat::commit_group_change::KeyPackageHashEntry<'static>;
+                crate::blue_catbird::mlsChat::commit_group_change::KeyPackageHashEntry;
             pub type PendingDeviceAddition =
-                crate::blue_catbird::mlsChat::commit_group_change::PendingDeviceAddition<'static>;
+                crate::blue_catbird::mlsChat::commit_group_change::PendingDeviceAddition;
 
             pub struct InputData {
                 pub action: String,
@@ -180,7 +188,7 @@ pub mod catbird {
                 pub group_info: Option<String>,
                 pub idempotency_key: Option<String>,
                 pub key_package_hashes: Option<Vec<KeyPackageHashEntry>>,
-                pub member_dids: Option<Vec<crate::types::string::Did<'static>>>,
+                pub member_dids: Option<Vec<crate::types::string::Did>>,
                 pub pending_addition_id: Option<String>,
                 pub welcome: Option<String>,
             }
@@ -188,7 +196,9 @@ pub mod catbird {
             impl From<InputData> for Input {
                 fn from(value: InputData) -> Self {
                     Self {
-                        action: value.action.into(),
+                        action: crate::blue_catbird::mlsChat::commit_group_change::CommitGroupChangeAction::from_value(
+                            value.action.into(),
+                        ),
                         commit: value.commit.map(Into::into),
                         confirmation_tag: value.confirmation_tag.map(Into::into),
                         convo_id: value.convo_id.into(),
@@ -209,26 +219,22 @@ pub mod catbird {
         pub mod get_key_packages {
             pub const NSID: &str = "blue.catbird.mlsChat.getKeyPackages";
 
-            pub type Output =
-                crate::blue_catbird::mlsChat::get_key_packages::GetKeyPackagesOutput<'static>;
+            pub type Output = crate::blue_catbird::mlsChat::get_key_packages::GetKeyPackagesOutput;
         }
 
         pub mod get_key_package_status {
             pub const NSID: &str = "blue.catbird.mlsChat.getKeyPackageStatus";
 
             pub type Input =
-                crate::blue_catbird::mlsChat::get_key_package_status::GetKeyPackageStatus<'static>;
+                crate::blue_catbird::mlsChat::get_key_package_status::GetKeyPackageStatus;
             pub type Output =
-                crate::blue_catbird::mlsChat::get_key_package_status::GetKeyPackageStatusOutput<
-                    'static,
-                >;
-            pub type Stats =
-                crate::blue_catbird::mlsChat::get_key_package_status::KeyPackageStats<'static>;
+                crate::blue_catbird::mlsChat::get_key_package_status::GetKeyPackageStatusOutput;
+            pub type Stats = crate::blue_catbird::mlsChat::get_key_package_status::KeyPackageStats;
 
             pub struct InputData {
                 pub cipher_suite: Option<String>,
                 pub cursor: Option<String>,
-                pub did: Option<crate::types::string::Did<'static>>,
+                pub did: Option<crate::types::string::Did>,
                 pub include: Option<String>,
                 pub limit: Option<i64>,
             }
@@ -249,9 +255,8 @@ pub mod catbird {
         pub mod get_group_state {
             pub const NSID: &str = "blue.catbird.mlsChat.getGroupState";
 
-            pub type Input = crate::blue_catbird::mlsChat::get_group_state::GetGroupState<'static>;
-            pub type Output =
-                crate::blue_catbird::mlsChat::get_group_state::GetGroupStateOutput<'static>;
+            pub type Input = crate::blue_catbird::mlsChat::get_group_state::GetGroupState;
+            pub type Output = crate::blue_catbird::mlsChat::get_group_state::GetGroupStateOutput;
 
             pub struct InputData {
                 pub convo_id: String,
@@ -277,19 +282,16 @@ pub mod catbird {
         pub mod publish_key_packages {
             pub const NSID: &str = "blue.catbird.mlsChat.publishKeyPackages";
 
-            pub type Input =
-                crate::blue_catbird::mlsChat::publish_key_packages::PublishKeyPackages<'static>;
+            pub type Input = crate::blue_catbird::mlsChat::publish_key_packages::PublishKeyPackages;
             pub type Output =
-                crate::blue_catbird::mlsChat::publish_key_packages::PublishKeyPackagesOutput<
-                    'static,
-                >;
+                crate::blue_catbird::mlsChat::publish_key_packages::PublishKeyPackagesOutput;
             pub type KeyPackageItem =
-                crate::blue_catbird::mlsChat::publish_key_packages::KeyPackageItem<'static>;
+                crate::blue_catbird::mlsChat::publish_key_packages::KeyPackageItem;
 
             /// Owned, lifetime-free constructor helper for the Jacquard-generated
             /// `KeyPackageItem<'a>`. Exists for four reasons:
             ///
-            /// 1. Lifetime erasure — callers build `KeyPackageItem<'static>` without
+            /// 1. Lifetime erasure — callers build `KeyPackageItem` without
             ///    threading `'a` through async code and across await points.
             /// 2. Upstream producers give us owned types (`Vec<u8>` from OpenMLS,
             ///    `String` from SQL) rather than `bytes::Bytes`/`CowStr`, so this
@@ -312,7 +314,9 @@ pub mod catbird {
             impl From<KeyPackageItemData> for KeyPackageItem {
                 fn from(value: KeyPackageItemData) -> Self {
                     Self {
-                        cipher_suite: value.cipher_suite.into(),
+                        cipher_suite: crate::blue_catbird::mlsChat::publish_key_packages::KeyPackageItemCipherSuite::from_value(
+                            value.cipher_suite.into(),
+                        ),
                         extra_data: Default::default(),
                         expires: value.expires,
                         key_package: bytes::Bytes::from(value.key_package),
@@ -328,13 +332,15 @@ pub mod catbird {
                 pub key_packages: Option<Vec<KeyPackageItem>>,
                 pub local_hashes: Option<Vec<String>>,
                 pub reason: Option<String>,
-                pub target_dids: Option<Vec<crate::types::string::Did<'static>>>,
+                pub target_dids: Option<Vec<crate::types::string::Did>>,
             }
 
             impl From<InputData> for Input {
                 fn from(value: InputData) -> Self {
                     Self {
-                        action: value.action.into(),
+                        action: crate::blue_catbird::mlsChat::publish_key_packages::PublishKeyPackagesAction::from_value(
+                            value.action.into(),
+                        ),
                         convo_id: value.convo_id.map(Into::into),
                         device_id: value.device_id.map(Into::into),
                         extra_data: Default::default(),
@@ -352,14 +358,12 @@ pub mod catbird {
         pub mod register_device {
             pub const NSID: &str = "blue.catbird.mlsChat.registerDevice";
 
-            pub type Input = crate::blue_catbird::mlsChat::register_device::RegisterDevice<'static>;
-            pub type KeyPackageItem =
-                crate::blue_catbird::mlsChat::register_device::KeyPackageItem<'static>;
-            pub type Output =
-                crate::blue_catbird::mlsChat::register_device::RegisterDeviceOutput<'static>;
+            pub type Input = crate::blue_catbird::mlsChat::register_device::RegisterDevice;
+            pub type KeyPackageItem = crate::blue_catbird::mlsChat::register_device::KeyPackageItem;
+            pub type Output = crate::blue_catbird::mlsChat::register_device::RegisterDeviceOutput;
 
             /// Owned-type adapter for `KeyPackageItem<'a>`. See `publish_key_packages::KeyPackageItemData`
-            /// for the full rationale — short version: lifetime erasure + owned Vec<u8>/String
+            /// for the full rationale — short version: lifetime erasure + owned `Vec<u8>`/`String`
             /// + defaults `extra_data` + forward-compat buffer vs lexicon field additions.
             pub struct KeyPackageItemData {
                 pub cipher_suite: String,
@@ -403,16 +407,14 @@ pub mod catbird {
         pub mod list_devices {
             pub const NSID: &str = "blue.catbird.mlsChat.listDevices";
 
-            pub type Output =
-                crate::blue_catbird::mlsChat::list_devices::ListDevicesOutput<'static>;
+            pub type Output = crate::blue_catbird::mlsChat::list_devices::ListDevicesOutput;
         }
 
         pub mod remove_device {
             pub const NSID: &str = "blue.catbird.mlsChat.removeDevice";
 
-            pub type Input = crate::blue_catbird::mlsChat::remove_device::RemoveDevice<'static>;
-            pub type Output =
-                crate::blue_catbird::mlsChat::remove_device::RemoveDeviceOutput<'static>;
+            pub type Input = crate::blue_catbird::mlsChat::remove_device::RemoveDevice;
+            pub type Output = crate::blue_catbird::mlsChat::remove_device::RemoveDeviceOutput;
 
             pub struct InputData {
                 pub device_id: String,
@@ -431,9 +433,9 @@ pub mod catbird {
         pub mod opt_in {
             pub const NSID: &str = "blue.catbird.mlsChat.optIn";
 
-            pub type Input = crate::blue_catbird::mlsChat::opt_in::OptIn<'static>;
-            pub type Output = crate::blue_catbird::mlsChat::opt_in::OptInOutput<'static>;
-            pub type Status = crate::blue_catbird::mlsChat::opt_in::OptInStatus<'static>;
+            pub type Input = crate::blue_catbird::mlsChat::opt_in::OptIn;
+            pub type Output = crate::blue_catbird::mlsChat::opt_in::OptInOutput;
+            pub type Status = crate::blue_catbird::mlsChat::opt_in::OptInStatus;
 
             pub struct InputData {
                 pub action: String,
@@ -441,13 +443,15 @@ pub mod catbird {
                 pub allow_following_bypass: Option<bool>,
                 pub auto_expire_days: Option<i64>,
                 pub device_id: Option<String>,
-                pub dids: Option<Vec<crate::types::string::Did<'static>>>,
+                pub dids: Option<Vec<crate::types::string::Did>>,
             }
 
             impl From<InputData> for Input {
                 fn from(value: InputData) -> Self {
                     Self {
-                        action: value.action.into(),
+                        action: crate::blue_catbird::mlsChat::opt_in::OptInAction::from_value(
+                            value.action.into(),
+                        ),
                         allow_followers_bypass: value.allow_followers_bypass,
                         allow_following_bypass: value.allow_following_bypass,
                         auto_expire_days: value.auto_expire_days,
@@ -462,18 +466,18 @@ pub mod catbird {
         pub mod get_opt_in_status {
             pub const NSID: &str = "blue.catbird.mlsChat.optIn";
 
-            pub type Input = crate::blue_catbird::mlsChat::opt_in::OptIn<'static>;
-            pub type Output = crate::blue_catbird::mlsChat::opt_in::OptInOutput<'static>;
-            pub type Status = crate::blue_catbird::mlsChat::opt_in::OptInStatus<'static>;
+            pub type Input = crate::blue_catbird::mlsChat::opt_in::OptIn;
+            pub type Output = crate::blue_catbird::mlsChat::opt_in::OptInOutput;
+            pub type Status = crate::blue_catbird::mlsChat::opt_in::OptInStatus;
 
             pub struct InputData {
-                pub dids: Vec<crate::types::string::Did<'static>>,
+                pub dids: Vec<crate::types::string::Did>,
             }
 
             impl From<InputData> for Input {
                 fn from(value: InputData) -> Self {
                     Self {
-                        action: "getStatus".into(),
+                        action: crate::blue_catbird::mlsChat::opt_in::OptInAction::GetStatus,
                         allow_followers_bypass: None,
                         allow_following_bypass: None,
                         auto_expire_days: None,
@@ -488,28 +492,27 @@ pub mod catbird {
         pub mod update_convo {
             pub const NSID: &str = "blue.catbird.mlsChat.updateConvo";
 
-            pub type Input = crate::blue_catbird::mlsChat::update_convo::UpdateConvo<'static>;
+            pub type Input = crate::blue_catbird::mlsChat::update_convo::UpdateConvo;
             pub type InputData = Input;
-            pub type Output =
-                crate::blue_catbird::mlsChat::update_convo::UpdateConvoOutput<'static>;
+            pub type Output = crate::blue_catbird::mlsChat::update_convo::UpdateConvoOutput;
         }
 
         pub mod promote_admin {
             pub const NSID: &str = "blue.catbird.mlsChat.updateConvo";
 
-            pub type Input = crate::blue_catbird::mlsChat::update_convo::UpdateConvo<'static>;
-            pub type Output =
-                crate::blue_catbird::mlsChat::update_convo::UpdateConvoOutput<'static>;
+            pub type Input = crate::blue_catbird::mlsChat::update_convo::UpdateConvo;
+            pub type Output = crate::blue_catbird::mlsChat::update_convo::UpdateConvoOutput;
 
             pub struct InputData {
                 pub convo_id: String,
-                pub target_did: crate::types::string::Did<'static>,
+                pub target_did: crate::types::string::Did,
             }
 
             impl From<InputData> for Input {
                 fn from(value: InputData) -> Self {
                     Self {
-                        action: "promoteAdmin".into(),
+                        action:
+                            crate::blue_catbird::mlsChat::update_convo::UpdateConvoAction::PromoteAdmin,
                         convo_id: value.convo_id.into(),
                         epoch: None,
                         extra_data: Default::default(),
@@ -524,19 +527,19 @@ pub mod catbird {
         pub mod demote_admin {
             pub const NSID: &str = "blue.catbird.mlsChat.updateConvo";
 
-            pub type Input = crate::blue_catbird::mlsChat::update_convo::UpdateConvo<'static>;
-            pub type Output =
-                crate::blue_catbird::mlsChat::update_convo::UpdateConvoOutput<'static>;
+            pub type Input = crate::blue_catbird::mlsChat::update_convo::UpdateConvo;
+            pub type Output = crate::blue_catbird::mlsChat::update_convo::UpdateConvoOutput;
 
             pub struct InputData {
                 pub convo_id: String,
-                pub target_did: crate::types::string::Did<'static>,
+                pub target_did: crate::types::string::Did,
             }
 
             impl From<InputData> for Input {
                 fn from(value: InputData) -> Self {
                     Self {
-                        action: "demoteAdmin".into(),
+                        action:
+                            crate::blue_catbird::mlsChat::update_convo::UpdateConvoAction::DemoteAdmin,
                         convo_id: value.convo_id.into(),
                         epoch: None,
                         extra_data: Default::default(),
@@ -551,16 +554,16 @@ pub mod catbird {
         pub mod delete_blob {
             pub const NSID: &str = "blue.catbird.mlsChat.deleteBlob";
 
-            pub type Input = crate::blue_catbird::mlsChat::delete_blob::DeleteBlob<'static>;
-            pub type Error = crate::blue_catbird::mlsChat::delete_blob::DeleteBlobError<'static>;
+            pub type Input = crate::blue_catbird::mlsChat::delete_blob::DeleteBlob;
+            pub type Error = crate::blue_catbird::mlsChat::delete_blob::DeleteBlobError;
         }
 
         pub mod get_blob {
             pub const NSID: &str = "blue.catbird.mlsChat.getBlob";
 
-            pub type Input = crate::blue_catbird::mlsChat::get_blob::GetBlob<'static>;
+            pub type Input = crate::blue_catbird::mlsChat::get_blob::GetBlob;
             pub type Output = crate::blue_catbird::mlsChat::get_blob::GetBlobOutput;
-            pub type Error = crate::blue_catbird::mlsChat::get_blob::GetBlobError<'static>;
+            pub type Error = crate::blue_catbird::mlsChat::get_blob::GetBlobError;
 
             pub struct InputData {
                 pub blob_id: String,
@@ -578,23 +581,18 @@ pub mod catbird {
         pub mod get_blob_usage {
             pub const NSID: &str = "blue.catbird.mlsChat.getBlobUsage";
 
-            pub type Output =
-                crate::blue_catbird::mlsChat::get_blob_usage::GetBlobUsageOutput<'static>;
+            pub type Output = crate::blue_catbird::mlsChat::get_blob_usage::GetBlobUsageOutput;
         }
 
         pub mod get_group_metadata_blob {
             pub const NSID: &str = "blue.catbird.mlsChat.getGroupMetadataBlob";
 
             pub type Input =
-                crate::blue_catbird::mlsChat::get_group_metadata_blob::GetGroupMetadataBlob<
-                    'static,
-                >;
+                crate::blue_catbird::mlsChat::get_group_metadata_blob::GetGroupMetadataBlob;
             pub type Output =
                 crate::blue_catbird::mlsChat::get_group_metadata_blob::GetGroupMetadataBlobOutput;
             pub type Error =
-                crate::blue_catbird::mlsChat::get_group_metadata_blob::GetGroupMetadataBlobError<
-                    'static,
-                >;
+                crate::blue_catbird::mlsChat::get_group_metadata_blob::GetGroupMetadataBlobError;
 
             pub struct InputData {
                 pub blob_locator: Option<String>,
@@ -621,17 +619,11 @@ pub mod catbird {
             pub type Input =
                 crate::blue_catbird::mlsChat::put_group_metadata_blob::PutGroupMetadataBlob;
             pub type Params =
-                crate::blue_catbird::mlsChat::put_group_metadata_blob::PutGroupMetadataBlobParams<
-                    'static,
-                >;
+                crate::blue_catbird::mlsChat::put_group_metadata_blob::PutGroupMetadataBlobParams;
             pub type Output =
-                crate::blue_catbird::mlsChat::put_group_metadata_blob::PutGroupMetadataBlobOutput<
-                    'static,
-                >;
+                crate::blue_catbird::mlsChat::put_group_metadata_blob::PutGroupMetadataBlobOutput;
             pub type Error =
-                crate::blue_catbird::mlsChat::put_group_metadata_blob::PutGroupMetadataBlobError<
-                    'static,
-                >;
+                crate::blue_catbird::mlsChat::put_group_metadata_blob::PutGroupMetadataBlobError;
 
             pub struct InputData {
                 pub body: Vec<u8>,
@@ -668,8 +660,8 @@ pub mod catbird {
             pub const NSID: &str = "blue.catbird.mlsChat.uploadBlob";
 
             pub type Input = crate::blue_catbird::mlsChat::upload_blob::UploadBlob;
-            pub type Output = crate::blue_catbird::mlsChat::upload_blob::UploadBlobOutput<'static>;
-            pub type Error = crate::blue_catbird::mlsChat::upload_blob::UploadBlobError<'static>;
+            pub type Output = crate::blue_catbird::mlsChat::upload_blob::UploadBlobOutput;
+            pub type Error = crate::blue_catbird::mlsChat::upload_blob::UploadBlobError;
 
             pub struct InputData {
                 pub body: Vec<u8>,
@@ -688,94 +680,82 @@ pub mod catbird {
     pub mod mls_ds {
         pub mod deliver_message {
             pub const NSID: &str = "blue.catbird.mlsDS.deliverMessage";
-            pub type Input = crate::blue_catbird::mlsDS::deliver_message::DeliverMessage<'static>;
-            pub type Output =
-                crate::blue_catbird::mlsDS::deliver_message::DeliverMessageOutput<'static>;
+            pub type Input = crate::blue_catbird::mlsDS::deliver_message::DeliverMessage;
+            pub type Output = crate::blue_catbird::mlsDS::deliver_message::DeliverMessageOutput;
         }
 
         pub mod deliver_welcome {
             pub const NSID: &str = "blue.catbird.mlsDS.deliverWelcome";
-            pub type Input = crate::blue_catbird::mlsDS::deliver_welcome::DeliverWelcome<'static>;
-            pub type Output =
-                crate::blue_catbird::mlsDS::deliver_welcome::DeliverWelcomeOutput<'static>;
+            pub type Input = crate::blue_catbird::mlsDS::deliver_welcome::DeliverWelcome;
+            pub type Output = crate::blue_catbird::mlsDS::deliver_welcome::DeliverWelcomeOutput;
         }
 
         pub mod fetch_key_package {
             pub const NSID: &str = "blue.catbird.mlsDS.fetchKeyPackage";
-            pub type Output =
-                crate::blue_catbird::mlsDS::fetch_key_package::FetchKeyPackageOutput<'static>;
+            pub type Output = crate::blue_catbird::mlsDS::fetch_key_package::FetchKeyPackageOutput;
         }
 
         pub mod get_convo_digest {
             pub const NSID: &str = "blue.catbird.mlsDS.getConvoDigest";
-            pub type Output =
-                crate::blue_catbird::mlsDS::get_convo_digest::GetConvoDigestOutput<'static>;
+            pub type Output = crate::blue_catbird::mlsDS::get_convo_digest::GetConvoDigestOutput;
         }
 
         pub mod get_convo_events {
             pub const NSID: &str = "blue.catbird.mlsDS.getConvoEvents";
-            pub type Output =
-                crate::blue_catbird::mlsDS::get_convo_events::GetConvoEventsOutput<'static>;
+            pub type Output = crate::blue_catbird::mlsDS::get_convo_events::GetConvoEventsOutput;
         }
 
         pub mod submit_commit {
             pub const NSID: &str = "blue.catbird.mlsDS.submitCommit";
-            pub type Input = crate::blue_catbird::mlsDS::submit_commit::SubmitCommit<'static>;
-            pub type Output =
-                crate::blue_catbird::mlsDS::submit_commit::SubmitCommitOutput<'static>;
+            pub type Input = crate::blue_catbird::mlsDS::submit_commit::SubmitCommit;
+            pub type Output = crate::blue_catbird::mlsDS::submit_commit::SubmitCommitOutput;
         }
 
         pub mod transfer_sequencer {
             pub const NSID: &str = "blue.catbird.mlsDS.transferSequencer";
-            pub type Input =
-                crate::blue_catbird::mlsDS::transfer_sequencer::TransferSequencer<'static>;
+            pub type Input = crate::blue_catbird::mlsDS::transfer_sequencer::TransferSequencer;
             pub type Output =
-                crate::blue_catbird::mlsDS::transfer_sequencer::TransferSequencerOutput<'static>;
+                crate::blue_catbird::mlsDS::transfer_sequencer::TransferSequencerOutput;
         }
 
         pub mod health_check {
             pub const NSID: &str = "blue.catbird.mlsDS.healthCheck";
-            pub type Output = crate::blue_catbird::mlsDS::health_check::HealthCheckOutput<'static>;
+            pub type Output = crate::blue_catbird::mlsDS::health_check::HealthCheckOutput;
         }
 
         pub mod get_federation_peers {
             pub const NSID: &str = "blue.catbird.mlsDS.getFederationPeers";
             pub type Output =
-                crate::blue_catbird::mlsDS::get_federation_peers::GetFederationPeersOutput<'static>;
+                crate::blue_catbird::mlsDS::get_federation_peers::GetFederationPeersOutput;
         }
 
         pub mod upsert_federation_peer {
             pub const NSID: &str = "blue.catbird.mlsDS.upsertFederationPeer";
             pub type Input =
-                crate::blue_catbird::mlsDS::upsert_federation_peer::UpsertFederationPeer<'static>;
+                crate::blue_catbird::mlsDS::upsert_federation_peer::UpsertFederationPeer;
             pub type Output =
-                crate::blue_catbird::mlsDS::upsert_federation_peer::UpsertFederationPeerOutput<
-                    'static,
-                >;
+                crate::blue_catbird::mlsDS::upsert_federation_peer::UpsertFederationPeerOutput;
         }
 
         pub mod delete_federation_peer {
             pub const NSID: &str = "blue.catbird.mlsDS.deleteFederationPeer";
             pub type Input =
-                crate::blue_catbird::mlsDS::delete_federation_peer::DeleteFederationPeer<'static>;
+                crate::blue_catbird::mlsDS::delete_federation_peer::DeleteFederationPeer;
             pub type Output =
-                crate::blue_catbird::mlsDS::delete_federation_peer::DeleteFederationPeerOutput<
-                    'static,
-                >;
+                crate::blue_catbird::mlsDS::delete_federation_peer::DeleteFederationPeerOutput;
         }
 
         pub mod get_federation_mode {
             pub const NSID: &str = "blue.catbird.mlsDS.getFederationMode";
             pub type Output =
-                crate::blue_catbird::mlsDS::get_federation_mode::GetFederationModeOutput<'static>;
+                crate::blue_catbird::mlsDS::get_federation_mode::GetFederationModeOutput;
         }
 
         pub mod set_federation_mode {
             pub const NSID: &str = "blue.catbird.mlsDS.setFederationMode";
-            pub type Input =
-                crate::blue_catbird::mlsDS::set_federation_mode::SetFederationMode<'static>;
+            pub type Input = crate::blue_catbird::mlsDS::set_federation_mode::SetFederationMode;
             pub type Output =
-                crate::blue_catbird::mlsDS::set_federation_mode::SetFederationModeOutput<'static>;
+                crate::blue_catbird::mlsDS::set_federation_mode::SetFederationModeOutput;
         }
     }
 }
