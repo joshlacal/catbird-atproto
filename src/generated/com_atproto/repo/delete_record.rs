@@ -5,29 +5,140 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct DeleteRecord<'a> {
-    /// The NSID of the record collection.
-    #[serde(borrow)]
-    pub collection: jacquard_common::types::string::Nsid<'a>,
-    /// The handle or DID of the repo (aka, current account).
-    #[serde(borrow)]
-    pub repo: jacquard_common::types::ident::AtIdentifier<'a>,
-    /// The Record Key.
-    #[serde(borrow)]
-    pub rkey: jacquard_common::types::string::RecordKey<jacquard_common::types::string::Rkey<'a>>,
-    /// Compare and swap with the previous commit by CID.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub swap_commit: std::option::Option<jacquard_common::types::string::Cid<'a>>,
-    /// Compare and swap with the previous record by CID.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub swap_record: std::option::Option<jacquard_common::types::string::Cid<'a>>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct DeleteRecord<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///The NSID of the record collection.
+    pub collection: jacquard_common::types::string::Nsid<S>,
+    ///The handle or DID of the repo (aka, current account).
+    pub repo: jacquard_common::types::ident::AtIdentifier<S>,
+    ///The Record Key.
+    pub rkey: jacquard_common::types::string::RecordKey<jacquard_common::types::string::Rkey<S>>,
+    ///Compare and swap with the previous commit by CID.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub swap_commit: core::option::Option<jacquard_common::types::string::Cid<S>>,
+    ///Compare and swap with the previous record by CID.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub swap_record: core::option::Option<jacquard_common::types::string::Cid<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic,
+    Default,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct DeleteRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub commit: core::option::Option<crate::generated::com_atproto::repo::CommitMeta<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    thiserror::Error,
+    miette::Diagnostic,
+)]
+#[serde(tag = "error", content = "message")]
+pub enum DeleteRecordError {
+    #[serde(rename = "InvalidSwap")]
+    InvalidSwap(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
+}
+
+impl core::fmt::Display for DeleteRecordError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+            Self::InvalidSwap(msg) => {
+                write!(f, "InvalidSwap")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+        }
+    }
+}
+
+/** Response marker for the `com.atproto.repo.deleteRecord` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `DeleteRecordOutput<S>` for this endpoint.*/
+pub struct DeleteRecordResponse;
+impl jacquard_common::xrpc::XrpcResp for DeleteRecordResponse {
+    const NSID: &'static str = "com.atproto.repo.deleteRecord";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = DeleteRecordOutput<S>;
+    type Err = DeleteRecordError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for DeleteRecord<S> {
+    const NSID: &'static str = "com.atproto.repo.deleteRecord";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Response = DeleteRecordResponse;
+}
+
+/** Endpoint marker for the `com.atproto.repo.deleteRecord` procedure.
+
+Path: `/xrpc/com.atproto.repo.deleteRecord`. The request payload type is `DeleteRecord<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct DeleteRecordRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for DeleteRecordRequest {
+    const PATH: &'static str = "/xrpc/com.atproto.repo.deleteRecord";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Request<S: jacquard_common::BosStr> = DeleteRecord<S>;
+    type Response = DeleteRecordResponse;
 }
 
 pub mod delete_record_state {
@@ -40,297 +151,238 @@ pub mod delete_record_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Repo;
         type Collection;
+        type Repo;
         type Rkey;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Repo = Unset;
         type Collection = Unset;
+        type Repo = Unset;
         type Rkey = Unset;
     }
-    ///State transition - sets the `repo` field to Set
-    pub struct SetRepo<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRepo<S> {}
-    impl<S: State> State for SetRepo<S> {
-        type Repo = Set<members::repo>;
-        type Collection = S::Collection;
-        type Rkey = S::Rkey;
-    }
     ///State transition - sets the `collection` field to Set
-    pub struct SetCollection<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCollection<S> {}
-    impl<S: State> State for SetCollection<S> {
-        type Repo = S::Repo;
+    pub struct SetCollection<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCollection<St> {}
+    impl<St: State> State for SetCollection<St> {
         type Collection = Set<members::collection>;
-        type Rkey = S::Rkey;
+        type Repo = St::Repo;
+        type Rkey = St::Rkey;
+    }
+    ///State transition - sets the `repo` field to Set
+    pub struct SetRepo<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRepo<St> {}
+    impl<St: State> State for SetRepo<St> {
+        type Collection = St::Collection;
+        type Repo = Set<members::repo>;
+        type Rkey = St::Rkey;
     }
     ///State transition - sets the `rkey` field to Set
-    pub struct SetRkey<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRkey<S> {}
-    impl<S: State> State for SetRkey<S> {
-        type Repo = S::Repo;
-        type Collection = S::Collection;
+    pub struct SetRkey<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRkey<St> {}
+    impl<St: State> State for SetRkey<St> {
+        type Collection = St::Collection;
+        type Repo = St::Repo;
         type Rkey = Set<members::rkey>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `repo` field
-        pub struct repo(());
         ///Marker type for the `collection` field
         pub struct collection(());
+        ///Marker type for the `repo` field
+        pub struct repo(());
         ///Marker type for the `rkey` field
         pub struct rkey(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct DeleteRecordBuilder<'a, S: delete_record_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Nsid<'a>>,
-        ::core::option::Option<jacquard_common::types::ident::AtIdentifier<'a>>,
-        ::core::option::Option<
-            jacquard_common::types::string::RecordKey<jacquard_common::types::string::Rkey<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct DeleteRecordBuilder<
+    St: delete_record_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Nsid<S>>,
+        core::option::Option<jacquard_common::types::ident::AtIdentifier<S>>,
+        core::option::Option<
+            jacquard_common::types::string::RecordKey<jacquard_common::types::string::Rkey<S>>,
         >,
-        ::core::option::Option<jacquard_common::types::string::Cid<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Cid<'a>>,
+        core::option::Option<jacquard_common::types::string::Cid<S>>,
+        core::option::Option<jacquard_common::types::string::Cid<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> DeleteRecord<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> DeleteRecordBuilder<'a, delete_record_state::Empty> {
+impl DeleteRecord<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> DeleteRecordBuilder<delete_record_state::Empty, jacquard_common::DefaultStr> {
         DeleteRecordBuilder::new()
     }
 }
 
-impl<'a> DeleteRecordBuilder<'a, delete_record_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> DeleteRecord<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> DeleteRecordBuilder<delete_record_state::Empty, S> {
+        DeleteRecordBuilder::builder()
+    }
+}
+
+impl DeleteRecordBuilder<delete_record_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         DeleteRecordBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> DeleteRecordBuilder<'a, S>
+impl<S: jacquard_common::BosStr> DeleteRecordBuilder<delete_record_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        DeleteRecordBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeleteRecordBuilder<St, S>
 where
-    S: delete_record_state::State,
-    S::Collection: delete_record_state::IsUnset,
+    St: delete_record_state::State,
+    St::Collection: delete_record_state::IsUnset,
 {
     /// Set the `collection` field (required)
     pub fn collection(
         mut self,
-        value: impl Into<jacquard_common::types::string::Nsid<'a>>,
-    ) -> DeleteRecordBuilder<'a, delete_record_state::SetCollection<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Nsid<S>>,
+    ) -> DeleteRecordBuilder<delete_record_state::SetCollection<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         DeleteRecordBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> DeleteRecordBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> DeleteRecordBuilder<St, S>
 where
-    S: delete_record_state::State,
-    S::Repo: delete_record_state::IsUnset,
+    St: delete_record_state::State,
+    St::Repo: delete_record_state::IsUnset,
 {
     /// Set the `repo` field (required)
     pub fn repo(
         mut self,
-        value: impl Into<jacquard_common::types::ident::AtIdentifier<'a>>,
-    ) -> DeleteRecordBuilder<'a, delete_record_state::SetRepo<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::ident::AtIdentifier<S>>,
+    ) -> DeleteRecordBuilder<delete_record_state::SetRepo<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         DeleteRecordBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> DeleteRecordBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> DeleteRecordBuilder<St, S>
 where
-    S: delete_record_state::State,
-    S::Rkey: delete_record_state::IsUnset,
+    St: delete_record_state::State,
+    St::Rkey: delete_record_state::IsUnset,
 {
     /// Set the `rkey` field (required)
     pub fn rkey(
         mut self,
         value: impl Into<
-            jacquard_common::types::string::RecordKey<jacquard_common::types::string::Rkey<'a>>,
+            jacquard_common::types::string::RecordKey<jacquard_common::types::string::Rkey<S>>,
         >,
-    ) -> DeleteRecordBuilder<'a, delete_record_state::SetRkey<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+    ) -> DeleteRecordBuilder<delete_record_state::SetRkey<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         DeleteRecordBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: delete_record_state::State> DeleteRecordBuilder<'a, S> {
+impl<St: delete_record_state::State, S: jacquard_common::BosStr> DeleteRecordBuilder<St, S> {
     /// Set the `swapCommit` field (optional)
     pub fn swap_commit(
         mut self,
-        value: impl Into<Option<jacquard_common::types::string::Cid<'a>>>,
+        value: impl Into<Option<jacquard_common::types::string::Cid<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.3 = value.into();
+        self._fields.3 = value.into();
         self
     }
     /// Set the `swapCommit` field to an Option value (optional)
     pub fn maybe_swap_commit(
         mut self,
-        value: Option<jacquard_common::types::string::Cid<'a>>,
+        value: Option<jacquard_common::types::string::Cid<S>>,
     ) -> Self {
-        self.__unsafe_private_named.3 = value;
+        self._fields.3 = value;
         self
     }
 }
 
-impl<'a, S: delete_record_state::State> DeleteRecordBuilder<'a, S> {
+impl<St: delete_record_state::State, S: jacquard_common::BosStr> DeleteRecordBuilder<St, S> {
     /// Set the `swapRecord` field (optional)
     pub fn swap_record(
         mut self,
-        value: impl Into<Option<jacquard_common::types::string::Cid<'a>>>,
+        value: impl Into<Option<jacquard_common::types::string::Cid<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.4 = value.into();
+        self._fields.4 = value.into();
         self
     }
     /// Set the `swapRecord` field to an Option value (optional)
     pub fn maybe_swap_record(
         mut self,
-        value: Option<jacquard_common::types::string::Cid<'a>>,
+        value: Option<jacquard_common::types::string::Cid<S>>,
     ) -> Self {
-        self.__unsafe_private_named.4 = value;
+        self._fields.4 = value;
         self
     }
 }
 
-impl<'a, S> DeleteRecordBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> DeleteRecordBuilder<St, S>
 where
-    S: delete_record_state::State,
-    S::Repo: delete_record_state::IsSet,
-    S::Collection: delete_record_state::IsSet,
-    S::Rkey: delete_record_state::IsSet,
+    St: delete_record_state::State,
+    St::Collection: delete_record_state::IsSet,
+    St::Repo: delete_record_state::IsSet,
+    St::Rkey: delete_record_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> DeleteRecord<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> DeleteRecord<S> {
         DeleteRecord {
-            collection: self.__unsafe_private_named.0.unwrap(),
-            repo: self.__unsafe_private_named.1.unwrap(),
-            rkey: self.__unsafe_private_named.2.unwrap(),
-            swap_commit: self.__unsafe_private_named.3,
-            swap_record: self.__unsafe_private_named.4,
+            collection: self._fields.0.unwrap(),
+            repo: self._fields.1.unwrap(),
+            rkey: self._fields.2.unwrap(),
+            swap_commit: self._fields.3,
+            swap_record: self._fields.4,
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> DeleteRecord<'a> {
+    ) -> DeleteRecord<S> {
         DeleteRecord {
-            collection: self.__unsafe_private_named.0.unwrap(),
-            repo: self.__unsafe_private_named.1.unwrap(),
-            rkey: self.__unsafe_private_named.2.unwrap(),
-            swap_commit: self.__unsafe_private_named.3,
-            swap_record: self.__unsafe_private_named.4,
+            collection: self._fields.0.unwrap(),
+            repo: self._fields.1.unwrap(),
+            rkey: self._fields.2.unwrap(),
+            swap_commit: self._fields.3,
+            swap_record: self._fields.4,
             extra_data: Some(extra_data),
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic,
-    Default,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct DeleteRecordOutput<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub commit: std::option::Option<crate::generated::com_atproto::repo::CommitMeta<'a>>,
-}
-
-#[jacquard_derive::open_union]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    thiserror::Error,
-    miette::Diagnostic,
-    jacquard_derive::IntoStatic,
-)]
-#[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum DeleteRecordError<'a> {
-    #[serde(rename = "InvalidSwap")]
-    InvalidSwap(std::option::Option<jacquard_common::CowStr<'a>>),
-}
-
-impl std::fmt::Display for DeleteRecordError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::InvalidSwap(msg) => {
-                write!(f, "InvalidSwap")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
-        }
-    }
-}
-
-/// Response type for
-///com.atproto.repo.deleteRecord
-pub struct DeleteRecordResponse;
-impl jacquard_common::xrpc::XrpcResp for DeleteRecordResponse {
-    const NSID: &'static str = "com.atproto.repo.deleteRecord";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = DeleteRecordOutput<'de>;
-    type Err<'de> = DeleteRecordError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for DeleteRecord<'a> {
-    const NSID: &'static str = "com.atproto.repo.deleteRecord";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Response = DeleteRecordResponse;
-}
-
-/// Endpoint type for
-///com.atproto.repo.deleteRecord
-pub struct DeleteRecordRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for DeleteRecordRequest {
-    const PATH: &'static str = "/xrpc/com.atproto.repo.deleteRecord";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = DeleteRecord<'de>;
-    type Response = DeleteRecordResponse;
 }

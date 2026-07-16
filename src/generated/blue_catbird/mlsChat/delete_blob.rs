@@ -5,7 +5,6 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -16,14 +15,26 @@
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct DeleteBlob<'a> {
-    /// The blob identifier to delete
-    #[serde(borrow)]
-    pub blob_id: jacquard_common::CowStr<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct DeleteBlob<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///The blob identifier to delete
+    pub blob_id: S,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::open_union]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -33,18 +44,22 @@ pub struct DeleteBlob<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum DeleteBlobError<'a> {
+pub enum DeleteBlobError {
     /// Blob does not exist or is not owned by the authenticated user
     #[serde(rename = "BlobNotFound")]
-    BlobNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
+    BlobNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
 }
 
-impl std::fmt::Display for DeleteBlobError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for DeleteBlobError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             Self::BlobNotFound(msg) => {
                 write!(f, "BlobNotFound")?;
@@ -53,35 +68,43 @@ impl std::fmt::Display for DeleteBlobError<'_> {
                 }
                 Ok(())
             }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
         }
     }
 }
 
-/// Response type for
-///blue.catbird.mlsChat.deleteBlob
+/** Response marker for the `blue.catbird.mlsChat.deleteBlob` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `()` for this endpoint.*/
 pub struct DeleteBlobResponse;
 impl jacquard_common::xrpc::XrpcResp for DeleteBlobResponse {
     const NSID: &'static str = "blue.catbird.mlsChat.deleteBlob";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = ();
-    type Err<'de> = DeleteBlobError<'de>;
+    type Output<S: jacquard_common::BosStr> = ();
+    type Err = DeleteBlobError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for DeleteBlob<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for DeleteBlob<S> {
     const NSID: &'static str = "blue.catbird.mlsChat.deleteBlob";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = DeleteBlobResponse;
 }
 
-/// Endpoint type for
-///blue.catbird.mlsChat.deleteBlob
+/** Endpoint marker for the `blue.catbird.mlsChat.deleteBlob` procedure.
+
+Path: `/xrpc/blue.catbird.mlsChat.deleteBlob`. The request payload type is `DeleteBlob<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct DeleteBlobRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for DeleteBlobRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.deleteBlob";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = DeleteBlob<'de>;
+    type Request<S: jacquard_common::BosStr> = DeleteBlob<S>;
     type Response = DeleteBlobResponse;
 }

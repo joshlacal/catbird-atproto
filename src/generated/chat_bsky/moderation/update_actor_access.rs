@@ -5,18 +5,59 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct UpdateActorAccess<'a> {
-    #[serde(borrow)]
-    pub actor: jacquard_common::types::string::Did<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct UpdateActorAccess<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub actor: jacquard_common::types::string::Did<S>,
     pub allow_access: bool,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub r#ref: std::option::Option<jacquard_common::CowStr<'a>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub r#ref: core::option::Option<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `chat.bsky.moderation.updateActorAccess` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `()` for this endpoint.*/
+pub struct UpdateActorAccessResponse;
+impl jacquard_common::xrpc::XrpcResp for UpdateActorAccessResponse {
+    const NSID: &'static str = "chat.bsky.moderation.updateActorAccess";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = ();
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for UpdateActorAccess<S> {
+    const NSID: &'static str = "chat.bsky.moderation.updateActorAccess";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Response = UpdateActorAccessResponse;
+}
+
+/** Endpoint marker for the `chat.bsky.moderation.updateActorAccess` procedure.
+
+Path: `/xrpc/chat.bsky.moderation.updateActorAccess`. The request payload type is `UpdateActorAccess<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct UpdateActorAccessRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for UpdateActorAccessRequest {
+    const PATH: &'static str = "/xrpc/chat.bsky.moderation.updateActorAccess";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Request<S: jacquard_common::BosStr> = UpdateActorAccess<S>;
+    type Response = UpdateActorAccessResponse;
 }
 
 pub mod update_actor_access_state {
@@ -40,17 +81,17 @@ pub mod update_actor_access_state {
         type AllowAccess = Unset;
     }
     ///State transition - sets the `actor` field to Set
-    pub struct SetActor<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetActor<S> {}
-    impl<S: State> State for SetActor<S> {
+    pub struct SetActor<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetActor<St> {}
+    impl<St: State> State for SetActor<St> {
         type Actor = Set<members::actor>;
-        type AllowAccess = S::AllowAccess;
+        type AllowAccess = St::AllowAccess;
     }
     ///State transition - sets the `allow_access` field to Set
-    pub struct SetAllowAccess<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetAllowAccess<S> {}
-    impl<S: State> State for SetAllowAccess<S> {
-        type Actor = S::Actor;
+    pub struct SetAllowAccess<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetAllowAccess<St> {}
+    impl<St: State> State for SetAllowAccess<St> {
+        type Actor = St::Actor;
         type AllowAccess = Set<members::allow_access>;
     }
     /// Marker types for field names
@@ -63,142 +104,139 @@ pub mod update_actor_access_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct UpdateActorAccessBuilder<'a, S: update_actor_access_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<bool>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct UpdateActorAccessBuilder<
+    St: update_actor_access_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<bool>,
+        core::option::Option<S>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> UpdateActorAccess<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> UpdateActorAccessBuilder<'a, update_actor_access_state::Empty> {
+impl UpdateActorAccess<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> UpdateActorAccessBuilder<update_actor_access_state::Empty, jacquard_common::DefaultStr>
+    {
         UpdateActorAccessBuilder::new()
     }
 }
 
-impl<'a> UpdateActorAccessBuilder<'a, update_actor_access_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> UpdateActorAccess<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> UpdateActorAccessBuilder<update_actor_access_state::Empty, S> {
+        UpdateActorAccessBuilder::builder()
+    }
+}
+
+impl UpdateActorAccessBuilder<update_actor_access_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         UpdateActorAccessBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> UpdateActorAccessBuilder<'a, S>
+impl<S: jacquard_common::BosStr> UpdateActorAccessBuilder<update_actor_access_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        UpdateActorAccessBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> UpdateActorAccessBuilder<St, S>
 where
-    S: update_actor_access_state::State,
-    S::Actor: update_actor_access_state::IsUnset,
+    St: update_actor_access_state::State,
+    St::Actor: update_actor_access_state::IsUnset,
 {
     /// Set the `actor` field (required)
     pub fn actor(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> UpdateActorAccessBuilder<'a, update_actor_access_state::SetActor<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> UpdateActorAccessBuilder<update_actor_access_state::SetActor<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         UpdateActorAccessBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> UpdateActorAccessBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> UpdateActorAccessBuilder<St, S>
 where
-    S: update_actor_access_state::State,
-    S::AllowAccess: update_actor_access_state::IsUnset,
+    St: update_actor_access_state::State,
+    St::AllowAccess: update_actor_access_state::IsUnset,
 {
     /// Set the `allowAccess` field (required)
     pub fn allow_access(
         mut self,
         value: impl Into<bool>,
-    ) -> UpdateActorAccessBuilder<'a, update_actor_access_state::SetAllowAccess<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+    ) -> UpdateActorAccessBuilder<update_actor_access_state::SetAllowAccess<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         UpdateActorAccessBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: update_actor_access_state::State> UpdateActorAccessBuilder<'a, S> {
+impl<St: update_actor_access_state::State, S: jacquard_common::BosStr>
+    UpdateActorAccessBuilder<St, S>
+{
     /// Set the `ref` field (optional)
-    pub fn r#ref(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.2 = value.into();
+    pub fn r#ref(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.2 = value.into();
         self
     }
     /// Set the `ref` field to an Option value (optional)
-    pub fn maybe_ref(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.2 = value;
+    pub fn maybe_ref(mut self, value: Option<S>) -> Self {
+        self._fields.2 = value;
         self
     }
 }
 
-impl<'a, S> UpdateActorAccessBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> UpdateActorAccessBuilder<St, S>
 where
-    S: update_actor_access_state::State,
-    S::Actor: update_actor_access_state::IsSet,
-    S::AllowAccess: update_actor_access_state::IsSet,
+    St: update_actor_access_state::State,
+    St::Actor: update_actor_access_state::IsSet,
+    St::AllowAccess: update_actor_access_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> UpdateActorAccess<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> UpdateActorAccess<S> {
         UpdateActorAccess {
-            actor: self.__unsafe_private_named.0.unwrap(),
-            allow_access: self.__unsafe_private_named.1.unwrap(),
-            r#ref: self.__unsafe_private_named.2,
+            actor: self._fields.0.unwrap(),
+            allow_access: self._fields.1.unwrap(),
+            r#ref: self._fields.2,
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> UpdateActorAccess<'a> {
+    ) -> UpdateActorAccess<S> {
         UpdateActorAccess {
-            actor: self.__unsafe_private_named.0.unwrap(),
-            allow_access: self.__unsafe_private_named.1.unwrap(),
-            r#ref: self.__unsafe_private_named.2,
+            actor: self._fields.0.unwrap(),
+            allow_access: self._fields.1.unwrap(),
+            r#ref: self._fields.2,
             extra_data: Some(extra_data),
         }
     }
-}
-
-/// Response type for
-///chat.bsky.moderation.updateActorAccess
-pub struct UpdateActorAccessResponse;
-impl jacquard_common::xrpc::XrpcResp for UpdateActorAccessResponse {
-    const NSID: &'static str = "chat.bsky.moderation.updateActorAccess";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = ();
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for UpdateActorAccess<'a> {
-    const NSID: &'static str = "chat.bsky.moderation.updateActorAccess";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Response = UpdateActorAccessResponse;
-}
-
-/// Endpoint type for
-///chat.bsky.moderation.updateActorAccess
-pub struct UpdateActorAccessRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for UpdateActorAccessRequest {
-    const PATH: &'static str = "/xrpc/chat.bsky.moderation.updateActorAccess";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = UpdateActorAccess<'de>;
-    type Response = UpdateActorAccessResponse;
 }

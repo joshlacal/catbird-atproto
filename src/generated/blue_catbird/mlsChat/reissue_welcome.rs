@@ -5,7 +5,6 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -16,39 +15,60 @@
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct ReissueWelcome<'a> {
-    /// Conversation the failed Welcome is for.
-    #[serde(borrow)]
-    pub convo_id: jacquard_common::CowStr<'a>,
-    /// Free-form reason for diagnostics (e.g., NoMatchingKeyPackage hex_ref=...).
-    #[serde(borrow)]
-    pub reason: jacquard_common::CowStr<'a>,
-    /// Recipient device that cannot decrypt. This may be a device-qualified DID (did#deviceId).
-    #[serde(borrow)]
-    pub recipient_device_did: jacquard_common::CowStr<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ReissueWelcome<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Conversation the failed Welcome is for.
+    pub convo_id: S,
+    ///Free-form reason for diagnostics (e.g., NoMatchingKeyPackage hex_ref=...).
+    pub reason: S,
+    ///Recipient device that cannot decrypt. This may be a device-qualified DID (did#deviceId).
+    pub recipient_device_did: S,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct ReissueWelcomeOutput<'a> {
-    /// Device that will be asked to re-issue. May be empty if no admin exists.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub inviter_device: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// Server-generated request identifier for the reissue workflow.
-    #[serde(borrow)]
-    pub request_id: jacquard_common::CowStr<'a>,
-    /// Server timestamp.
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ReissueWelcomeOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Device that will be asked to re-issue. May be empty if no admin exists.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub inviter_device: core::option::Option<S>,
+    ///Server-generated request identifier for the reissue workflow.
+    pub request_id: S,
+    ///Server timestamp.
     pub requested_at: jacquard_common::types::string::Datetime,
-    /// True if request was recorded and inviter notified.
+    ///True if request was recorded and inviter notified.
     pub welcome_requested: bool,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::open_union]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -58,24 +78,28 @@ pub struct ReissueWelcomeOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum ReissueWelcomeError<'a> {
+pub enum ReissueWelcomeError {
     /// Conversation not found.
     #[serde(rename = "ConvoNotFound")]
-    ConvoNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
+    ConvoNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// No current admin/inviter exists to ask. Recipient should Surrender.
     #[serde(rename = "NoAdminToReissue")]
-    NoAdminToReissue(std::option::Option<jacquard_common::CowStr<'a>>),
+    NoAdminToReissue(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// Exceeded 3 requests per (convo, recipient) per hour.
     #[serde(rename = "RateLimited")]
-    RateLimited(std::option::Option<jacquard_common::CowStr<'a>>),
+    RateLimited(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
 }
 
-impl std::fmt::Display for ReissueWelcomeError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for ReissueWelcomeError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             Self::ConvoNotFound(msg) => {
                 write!(f, "ConvoNotFound")?;
@@ -98,35 +122,43 @@ impl std::fmt::Display for ReissueWelcomeError<'_> {
                 }
                 Ok(())
             }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
         }
     }
 }
 
-/// Response type for
-///blue.catbird.mlsChat.reissueWelcome
+/** Response marker for the `blue.catbird.mlsChat.reissueWelcome` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `ReissueWelcomeOutput<S>` for this endpoint.*/
 pub struct ReissueWelcomeResponse;
 impl jacquard_common::xrpc::XrpcResp for ReissueWelcomeResponse {
     const NSID: &'static str = "blue.catbird.mlsChat.reissueWelcome";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = ReissueWelcomeOutput<'de>;
-    type Err<'de> = ReissueWelcomeError<'de>;
+    type Output<S: jacquard_common::BosStr> = ReissueWelcomeOutput<S>;
+    type Err = ReissueWelcomeError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for ReissueWelcome<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for ReissueWelcome<S> {
     const NSID: &'static str = "blue.catbird.mlsChat.reissueWelcome";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = ReissueWelcomeResponse;
 }
 
-/// Endpoint type for
-///blue.catbird.mlsChat.reissueWelcome
+/** Endpoint marker for the `blue.catbird.mlsChat.reissueWelcome` procedure.
+
+Path: `/xrpc/blue.catbird.mlsChat.reissueWelcome`. The request payload type is `ReissueWelcome<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct ReissueWelcomeRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for ReissueWelcomeRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.reissueWelcome";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = ReissueWelcome<'de>;
+    type Request<S: jacquard_common::BosStr> = ReissueWelcome<S>;
     type Response = ReissueWelcomeResponse;
 }

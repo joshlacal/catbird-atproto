@@ -5,26 +5,482 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct LivestreamView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub author: crate::generated::app_bsky::actor::ProfileViewBasic<S>,
+    pub cid: jacquard_common::types::string::Cid<S>,
+    pub indexed_at: jacquard_common::types::string::Datetime,
+    pub record: jacquard_common::types::value::Data<S>,
+    pub uri: jacquard_common::types::string::AtUri<S>,
+    ///The number of viewers watching this livestream. Use when you can't reasonably use #viewerCount directly.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub viewer_count:
+        core::option::Option<crate::generated::place_stream::livestream::ViewerCount<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// Record announcing a livestream is happening
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    rename = "place.stream.livestream",
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct Livestream<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///The source of the livestream, if available, in a User Agent format: `<product> / <product-version> <comment>` e.g. Streamplace/0.7.5 iOS
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub agent: core::option::Option<S>,
+    ///The primary URL where this livestream can be viewed, if available.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub canonical_url: core::option::Option<jacquard_common::types::string::UriValue<S>>,
+    ///Client-declared timestamp when this livestream started.
+    pub created_at: jacquard_common::types::string::Datetime,
+    ///Client-declared timestamp when this livestream ended. Ended livestreams are not supposed to start up again.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub ended_at: core::option::Option<jacquard_common::types::string::Datetime>,
+    ///Time in seconds after which this livestream should be automatically ended if idle. Zero means no timeout.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub idle_timeout_seconds: core::option::Option<i64>,
+    ///Client-declared timestamp when this livestream was last seen by the Streamplace station.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub last_seen_at: core::option::Option<jacquard_common::types::string::Datetime>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub notification_settings:
+        core::option::Option<crate::generated::place_stream::livestream::NotificationSettings<S>>,
+    ///The post that announced this livestream.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub post: core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub thumb: core::option::Option<jacquard_common::types::blob::BlobRef<S>>,
+    ///The title of the livestream, as it will be announced to followers.
+    pub title: S,
+    ///The URL where this stream can be found. This is primarily a hint for other Streamplace nodes to locate and replicate the stream.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub url: core::option::Option<jacquard_common::types::string::UriValue<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// Typed wrapper for GetRecord response with this collection's record type.
+
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
-pub struct LivestreamView<'a> {
-    #[serde(borrow)]
-    pub author: crate::generated::app_bsky::actor::ProfileViewBasic<'a>,
-    #[serde(borrow)]
-    pub cid: jacquard_common::types::string::Cid<'a>,
-    pub indexed_at: jacquard_common::types::string::Datetime,
-    #[serde(borrow)]
-    pub record: jacquard_common::types::value::Data<'a>,
-    #[serde(borrow)]
-    pub uri: jacquard_common::types::string::AtUri<'a>,
-    /// The number of viewers watching this livestream. Use when you can't reasonably use #viewerCount directly.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub viewer_count:
-        std::option::Option<crate::generated::place_stream::livestream::ViewerCount<'a>>,
+pub struct LivestreamGetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
+    pub uri: jacquard_common::types::string::AtUri<S>,
+    pub value: Livestream<S>,
+}
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic,
+    Default,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct NotificationSettings<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Whether this livestream should trigger a push notification to followers.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub push_notification: core::option::Option<bool>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct StreamplaceAnything<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub livestream: StreamplaceAnythingLivestream<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[jacquard_derive::open_union]
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub enum StreamplaceAnythingLivestream<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(rename = "place.stream.livestream#livestreamView")]
+    LivestreamView(Box<crate::generated::place_stream::livestream::LivestreamView<S>>),
+    #[serde(rename = "place.stream.livestream#viewerCount")]
+    ViewerCount(Box<crate::generated::place_stream::livestream::ViewerCount<S>>),
+    #[serde(rename = "place.stream.livestream#teleportArrival")]
+    TeleportArrival(Box<crate::generated::place_stream::livestream::TeleportArrival<S>>),
+    #[serde(rename = "place.stream.livestream#teleportCanceled")]
+    TeleportCanceled(Box<crate::generated::place_stream::livestream::TeleportCanceled<S>>),
+    #[serde(rename = "place.stream.defs#blockView")]
+    BlockView(Box<crate::generated::place_stream::BlockView<S>>),
+    #[serde(rename = "place.stream.defs#renditions")]
+    Renditions(Box<crate::generated::place_stream::Renditions<S>>),
+    #[serde(rename = "place.stream.defs#rendition")]
+    Rendition(Box<crate::generated::place_stream::Rendition<S>>),
+    #[serde(rename = "place.stream.chat.defs#messageView")]
+    MessageView(Box<crate::generated::place_stream::chat::MessageView<S>>),
+    #[serde(rename = "place.stream.chat.defs#pinnedRecordView")]
+    PinnedRecordView(Box<crate::generated::place_stream::chat::PinnedRecordView<S>>),
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct TeleportArrival<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///The chat profile of the source streamer
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub chat_profile:
+        core::option::Option<crate::generated::place_stream::chat::profile::Profile<S>>,
+    ///The streamer who is teleporting their viewers here
+    pub source: crate::generated::app_bsky::actor::ProfileViewBasic<S>,
+    ///When this teleport started
+    pub starts_at: jacquard_common::types::string::Datetime,
+    ///The URI of the teleport record
+    pub teleport_uri: jacquard_common::types::string::AtUri<S>,
+    ///How many viewers are arriving from this teleport
+    pub viewer_count: i64,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct TeleportCanceled<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Why this teleport was canceled
+    pub reason: S,
+    ///The URI of the teleport record that was canceled
+    pub teleport_uri: jacquard_common::types::string::AtUri<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ViewerCount<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub count: i64,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+impl<S: jacquard_common::BosStr> Livestream<S> {
+    pub fn uri(
+        uri: S,
+    ) -> Result<
+        jacquard_common::types::uri::RecordUri<S, LivestreamRecord>,
+        jacquard_common::types::uri::UriError,
+    > {
+        jacquard_common::types::uri::RecordUri::try_from_uri(
+            jacquard_common::types::string::AtUri::new(uri)?,
+        )
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for LivestreamView<S> {
+    fn nsid() -> &'static str {
+        "place.stream.livestream"
+    }
+    fn def_name() -> &'static str {
+        "livestreamView"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_place_stream_livestream()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+/// Marker type for deserializing records from this collection.
+
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+pub struct LivestreamRecord;
+impl jacquard_common::xrpc::XrpcResp for LivestreamRecord {
+    const NSID: &'static str = "place.stream.livestream";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = LivestreamGetRecordOutput<S>;
+    type Err = jacquard_common::types::collection::RecordError;
+}
+
+impl<S: jacquard_common::BosStr> From<LivestreamGetRecordOutput<S>> for Livestream<S> {
+    fn from(output: LivestreamGetRecordOutput<S>) -> Self {
+        output.value
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection for Livestream<S> {
+    const NSID: &'static str = "place.stream.livestream";
+    type Record = LivestreamRecord;
+}
+
+impl jacquard_common::types::collection::Collection for LivestreamRecord {
+    const NSID: &'static str = "place.stream.livestream";
+    type Record = LivestreamRecord;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Livestream<S> {
+    fn nsid() -> &'static str {
+        "place.stream.livestream"
+    }
+    fn def_name() -> &'static str {
+        "main"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_place_stream_livestream()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        if let Some(ref value) = self.thumb {
+            {
+                let size = value.blob().size;
+                if size > 1000000usize {
+                    return Err(
+                        jacquard_lexicon::validation::ConstraintError::BlobTooLarge {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field("thumb"),
+                            max: 1000000usize,
+                            actual: size,
+                        },
+                    );
+                }
+            }
+        }
+        if let Some(ref value) = self.thumb {
+            {
+                let mime = value.blob().mime_type.as_str();
+                let accepted: &[&str] = &["image/*"];
+                let matched = accepted.iter().any(|pattern| {
+                    if *pattern == "*/*" {
+                        true
+                    } else if pattern.ends_with("/*") {
+                        let prefix = &pattern[..pattern.len() - 2];
+                        mime.starts_with(prefix) && mime.as_bytes().get(prefix.len()) == Some(&b'/')
+                    } else {
+                        mime == *pattern
+                    }
+                });
+                if !matched {
+                    return Err(
+                        jacquard_lexicon::validation::ConstraintError::BlobMimeTypeNotAccepted {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field("thumb"),
+                            accepted: vec!["image/*".to_string()],
+                            actual: mime.to_string(),
+                        },
+                    );
+                }
+            }
+        }
+        {
+            let value = &self.title;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 1400usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("title"),
+                    max: 1400usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.title;
+            {
+                let count = jacquard_common::deps::codegen::unicode_segmentation::UnicodeSegmentation::graphemes(
+                        value.as_ref(),
+                        true,
+                    )
+                    .count();
+                if count > 140usize {
+                    return Err(
+                        jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field("title"),
+                            max: 140usize,
+                            actual: count,
+                        },
+                    );
+                }
+            }
+        }
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+    for NotificationSettings<S>
+{
+    fn nsid() -> &'static str {
+        "place.stream.livestream"
+    }
+    fn def_name() -> &'static str {
+        "notificationSettings"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_place_stream_livestream()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+    for StreamplaceAnything<S>
+{
+    fn nsid() -> &'static str {
+        "place.stream.livestream"
+    }
+    fn def_name() -> &'static str {
+        "streamplaceAnything"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_place_stream_livestream()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for TeleportArrival<S> {
+    fn nsid() -> &'static str {
+        "place.stream.livestream"
+    }
+    fn def_name() -> &'static str {
+        "teleportArrival"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_place_stream_livestream()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for TeleportCanceled<S> {
+    fn nsid() -> &'static str {
+        "place.stream.livestream"
+    }
+    fn def_name() -> &'static str {
+        "teleportCanceled"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_place_stream_livestream()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ViewerCount<S> {
+    fn nsid() -> &'static str {
+        "place.stream.livestream"
+    }
+    fn def_name() -> &'static str {
+        "viewerCount"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_place_stream_livestream()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
 }
 
 pub mod livestream_view_state {
@@ -37,391 +493,390 @@ pub mod livestream_view_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Uri;
-        type Cid;
         type Author;
-        type Record;
+        type Cid;
         type IndexedAt;
+        type Record;
+        type Uri;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Uri = Unset;
-        type Cid = Unset;
         type Author = Unset;
-        type Record = Unset;
+        type Cid = Unset;
         type IndexedAt = Unset;
-    }
-    ///State transition - sets the `uri` field to Set
-    pub struct SetUri<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUri<S> {}
-    impl<S: State> State for SetUri<S> {
-        type Uri = Set<members::uri>;
-        type Cid = S::Cid;
-        type Author = S::Author;
-        type Record = S::Record;
-        type IndexedAt = S::IndexedAt;
-    }
-    ///State transition - sets the `cid` field to Set
-    pub struct SetCid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCid<S> {}
-    impl<S: State> State for SetCid<S> {
-        type Uri = S::Uri;
-        type Cid = Set<members::cid>;
-        type Author = S::Author;
-        type Record = S::Record;
-        type IndexedAt = S::IndexedAt;
+        type Record = Unset;
+        type Uri = Unset;
     }
     ///State transition - sets the `author` field to Set
-    pub struct SetAuthor<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetAuthor<S> {}
-    impl<S: State> State for SetAuthor<S> {
-        type Uri = S::Uri;
-        type Cid = S::Cid;
+    pub struct SetAuthor<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetAuthor<St> {}
+    impl<St: State> State for SetAuthor<St> {
         type Author = Set<members::author>;
-        type Record = S::Record;
-        type IndexedAt = S::IndexedAt;
+        type Cid = St::Cid;
+        type IndexedAt = St::IndexedAt;
+        type Record = St::Record;
+        type Uri = St::Uri;
     }
-    ///State transition - sets the `record` field to Set
-    pub struct SetRecord<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRecord<S> {}
-    impl<S: State> State for SetRecord<S> {
-        type Uri = S::Uri;
-        type Cid = S::Cid;
-        type Author = S::Author;
-        type Record = Set<members::record>;
-        type IndexedAt = S::IndexedAt;
+    ///State transition - sets the `cid` field to Set
+    pub struct SetCid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCid<St> {}
+    impl<St: State> State for SetCid<St> {
+        type Author = St::Author;
+        type Cid = Set<members::cid>;
+        type IndexedAt = St::IndexedAt;
+        type Record = St::Record;
+        type Uri = St::Uri;
     }
     ///State transition - sets the `indexed_at` field to Set
-    pub struct SetIndexedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetIndexedAt<S> {}
-    impl<S: State> State for SetIndexedAt<S> {
-        type Uri = S::Uri;
-        type Cid = S::Cid;
-        type Author = S::Author;
-        type Record = S::Record;
+    pub struct SetIndexedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetIndexedAt<St> {}
+    impl<St: State> State for SetIndexedAt<St> {
+        type Author = St::Author;
+        type Cid = St::Cid;
         type IndexedAt = Set<members::indexed_at>;
+        type Record = St::Record;
+        type Uri = St::Uri;
+    }
+    ///State transition - sets the `record` field to Set
+    pub struct SetRecord<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRecord<St> {}
+    impl<St: State> State for SetRecord<St> {
+        type Author = St::Author;
+        type Cid = St::Cid;
+        type IndexedAt = St::IndexedAt;
+        type Record = Set<members::record>;
+        type Uri = St::Uri;
+    }
+    ///State transition - sets the `uri` field to Set
+    pub struct SetUri<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetUri<St> {}
+    impl<St: State> State for SetUri<St> {
+        type Author = St::Author;
+        type Cid = St::Cid;
+        type IndexedAt = St::IndexedAt;
+        type Record = St::Record;
+        type Uri = Set<members::uri>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `uri` field
-        pub struct uri(());
-        ///Marker type for the `cid` field
-        pub struct cid(());
         ///Marker type for the `author` field
         pub struct author(());
-        ///Marker type for the `record` field
-        pub struct record(());
+        ///Marker type for the `cid` field
+        pub struct cid(());
         ///Marker type for the `indexed_at` field
         pub struct indexed_at(());
+        ///Marker type for the `record` field
+        pub struct record(());
+        ///Marker type for the `uri` field
+        pub struct uri(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct LivestreamViewBuilder<'a, S: livestream_view_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<crate::generated::app_bsky::actor::ProfileViewBasic<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Cid<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<jacquard_common::types::value::Data<'a>>,
-        ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
-        ::core::option::Option<crate::generated::place_stream::livestream::ViewerCount<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct LivestreamViewBuilder<
+    St: livestream_view_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<crate::generated::app_bsky::actor::ProfileViewBasic<S>>,
+        core::option::Option<jacquard_common::types::string::Cid<S>>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<jacquard_common::types::value::Data<S>>,
+        core::option::Option<jacquard_common::types::string::AtUri<S>>,
+        core::option::Option<crate::generated::place_stream::livestream::ViewerCount<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> LivestreamView<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> LivestreamViewBuilder<'a, livestream_view_state::Empty> {
+impl LivestreamView<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> LivestreamViewBuilder<livestream_view_state::Empty, jacquard_common::DefaultStr>
+    {
         LivestreamViewBuilder::new()
     }
 }
 
-impl<'a> LivestreamViewBuilder<'a, livestream_view_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> LivestreamView<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> LivestreamViewBuilder<livestream_view_state::Empty, S> {
+        LivestreamViewBuilder::builder()
+    }
+}
+
+impl LivestreamViewBuilder<livestream_view_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         LivestreamViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> LivestreamViewBuilder<'a, S>
+impl<S: jacquard_common::BosStr> LivestreamViewBuilder<livestream_view_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        LivestreamViewBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> LivestreamViewBuilder<St, S>
 where
-    S: livestream_view_state::State,
-    S::Author: livestream_view_state::IsUnset,
+    St: livestream_view_state::State,
+    St::Author: livestream_view_state::IsUnset,
 {
     /// Set the `author` field (required)
     pub fn author(
         mut self,
-        value: impl Into<crate::generated::app_bsky::actor::ProfileViewBasic<'a>>,
-    ) -> LivestreamViewBuilder<'a, livestream_view_state::SetAuthor<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<crate::generated::app_bsky::actor::ProfileViewBasic<S>>,
+    ) -> LivestreamViewBuilder<livestream_view_state::SetAuthor<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         LivestreamViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> LivestreamViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> LivestreamViewBuilder<St, S>
 where
-    S: livestream_view_state::State,
-    S::Cid: livestream_view_state::IsUnset,
+    St: livestream_view_state::State,
+    St::Cid: livestream_view_state::IsUnset,
 {
     /// Set the `cid` field (required)
     pub fn cid(
         mut self,
-        value: impl Into<jacquard_common::types::string::Cid<'a>>,
-    ) -> LivestreamViewBuilder<'a, livestream_view_state::SetCid<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Cid<S>>,
+    ) -> LivestreamViewBuilder<livestream_view_state::SetCid<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         LivestreamViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> LivestreamViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> LivestreamViewBuilder<St, S>
 where
-    S: livestream_view_state::State,
-    S::IndexedAt: livestream_view_state::IsUnset,
+    St: livestream_view_state::State,
+    St::IndexedAt: livestream_view_state::IsUnset,
 {
     /// Set the `indexedAt` field (required)
     pub fn indexed_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> LivestreamViewBuilder<'a, livestream_view_state::SetIndexedAt<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+    ) -> LivestreamViewBuilder<livestream_view_state::SetIndexedAt<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         LivestreamViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> LivestreamViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> LivestreamViewBuilder<St, S>
 where
-    S: livestream_view_state::State,
-    S::Record: livestream_view_state::IsUnset,
+    St: livestream_view_state::State,
+    St::Record: livestream_view_state::IsUnset,
 {
     /// Set the `record` field (required)
     pub fn record(
         mut self,
-        value: impl Into<jacquard_common::types::value::Data<'a>>,
-    ) -> LivestreamViewBuilder<'a, livestream_view_state::SetRecord<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::value::Data<S>>,
+    ) -> LivestreamViewBuilder<livestream_view_state::SetRecord<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
         LivestreamViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> LivestreamViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> LivestreamViewBuilder<St, S>
 where
-    S: livestream_view_state::State,
-    S::Uri: livestream_view_state::IsUnset,
+    St: livestream_view_state::State,
+    St::Uri: livestream_view_state::IsUnset,
 {
     /// Set the `uri` field (required)
     pub fn uri(
         mut self,
-        value: impl Into<jacquard_common::types::string::AtUri<'a>>,
-    ) -> LivestreamViewBuilder<'a, livestream_view_state::SetUri<S>> {
-        self.__unsafe_private_named.4 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::AtUri<S>>,
+    ) -> LivestreamViewBuilder<livestream_view_state::SetUri<St>, S> {
+        self._fields.4 = ::core::option::Option::Some(value.into());
         LivestreamViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: livestream_view_state::State> LivestreamViewBuilder<'a, S> {
+impl<St: livestream_view_state::State, S: jacquard_common::BosStr> LivestreamViewBuilder<St, S> {
     /// Set the `viewerCount` field (optional)
     pub fn viewer_count(
         mut self,
-        value: impl Into<Option<crate::generated::place_stream::livestream::ViewerCount<'a>>>,
+        value: impl Into<Option<crate::generated::place_stream::livestream::ViewerCount<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.5 = value.into();
+        self._fields.5 = value.into();
         self
     }
     /// Set the `viewerCount` field to an Option value (optional)
     pub fn maybe_viewer_count(
         mut self,
-        value: Option<crate::generated::place_stream::livestream::ViewerCount<'a>>,
+        value: Option<crate::generated::place_stream::livestream::ViewerCount<S>>,
     ) -> Self {
-        self.__unsafe_private_named.5 = value;
+        self._fields.5 = value;
         self
     }
 }
 
-impl<'a, S> LivestreamViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> LivestreamViewBuilder<St, S>
 where
-    S: livestream_view_state::State,
-    S::Uri: livestream_view_state::IsSet,
-    S::Cid: livestream_view_state::IsSet,
-    S::Author: livestream_view_state::IsSet,
-    S::Record: livestream_view_state::IsSet,
-    S::IndexedAt: livestream_view_state::IsSet,
+    St: livestream_view_state::State,
+    St::Author: livestream_view_state::IsSet,
+    St::Cid: livestream_view_state::IsSet,
+    St::IndexedAt: livestream_view_state::IsSet,
+    St::Record: livestream_view_state::IsSet,
+    St::Uri: livestream_view_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> LivestreamView<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> LivestreamView<S> {
         LivestreamView {
-            author: self.__unsafe_private_named.0.unwrap(),
-            cid: self.__unsafe_private_named.1.unwrap(),
-            indexed_at: self.__unsafe_private_named.2.unwrap(),
-            record: self.__unsafe_private_named.3.unwrap(),
-            uri: self.__unsafe_private_named.4.unwrap(),
-            viewer_count: self.__unsafe_private_named.5,
+            author: self._fields.0.unwrap(),
+            cid: self._fields.1.unwrap(),
+            indexed_at: self._fields.2.unwrap(),
+            record: self._fields.3.unwrap(),
+            uri: self._fields.4.unwrap(),
+            viewer_count: self._fields.5,
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> LivestreamView<'a> {
+    ) -> LivestreamView<S> {
         LivestreamView {
-            author: self.__unsafe_private_named.0.unwrap(),
-            cid: self.__unsafe_private_named.1.unwrap(),
-            indexed_at: self.__unsafe_private_named.2.unwrap(),
-            record: self.__unsafe_private_named.3.unwrap(),
-            uri: self.__unsafe_private_named.4.unwrap(),
-            viewer_count: self.__unsafe_private_named.5,
+            author: self._fields.0.unwrap(),
+            cid: self._fields.1.unwrap(),
+            indexed_at: self._fields.2.unwrap(),
+            record: self._fields.3.unwrap(),
+            uri: self._fields.4.unwrap(),
+            viewer_count: self._fields.5,
             extra_data: Some(extra_data),
         }
     }
 }
 
-fn lexicon_doc_place_stream_livestream() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_place_stream_livestream() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("place.stream.livestream"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("livestreamView"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("livestreamView"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("uri"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("cid"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("author"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("record"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("indexedAt"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("uri"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("cid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("author"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("record"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("indexedAt"),
                         ]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("author"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("author"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
                                     ::jacquard_lexicon::lexicon::LexRef {
-                                        description: None,
                                         r#ref: ::jacquard_common::CowStr::new_static(
                                             "app.bsky.actor.defs#profileViewBasic",
                                         ),
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("cid"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("cid"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Cid,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("indexedAt"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("indexedAt"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("record"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("record"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Unknown(
-                                    ::jacquard_lexicon::lexicon::LexUnknown { description: None },
+                                    ::jacquard_lexicon::lexicon::LexUnknown {
+                                        ..Default::default()
+                                    },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("uri"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("uri"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("viewerCount"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "viewerCount",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
                                     ::jacquard_lexicon::lexicon::LexRef {
-                                        description: None,
                                         r#ref: ::jacquard_common::CowStr::new_static(
                                             "#viewerCount",
                                         ),
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
                 ::jacquard_lexicon::lexicon::LexUserType::Record(::jacquard_lexicon::lexicon::LexRecord {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
@@ -430,38 +885,30 @@ fn lexicon_doc_place_stream_livestream() -> ::jacquard_lexicon::lexicon::Lexicon
                     ),
                     key: Some(::jacquard_common::CowStr::new_static("tid")),
                     record: ::jacquard_lexicon::lexicon::LexRecordRecord::Object(::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(
                             vec![
-                                ::jacquard_common::smol_str::SmolStr::new_static("title"),
-                                ::jacquard_common::smol_str::SmolStr::new_static("createdAt")
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("title"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt")
                             ],
                         ),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("agent"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "agent",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                     description: Some(
                                         ::jacquard_common::CowStr::new_static(
                                             "The source of the livestream, if available, in a User Agent format: `<product> / <product-version> <comment>` e.g. Streamplace/0.7.5 iOS",
                                         ),
                                     ),
-                                    format: None,
-                                    default: None,
-                                    min_length: None,
-                                    max_length: None,
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "canonicalUrl",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -473,18 +920,11 @@ fn lexicon_doc_place_stream_livestream() -> ::jacquard_lexicon::lexicon::Lexicon
                                     format: Some(
                                         ::jacquard_lexicon::lexicon::LexStringFormat::Uri,
                                     ),
-                                    default: None,
-                                    min_length: None,
-                                    max_length: None,
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "createdAt",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -496,18 +936,13 @@ fn lexicon_doc_place_stream_livestream() -> ::jacquard_lexicon::lexicon::Lexicon
                                     format: Some(
                                         ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                     ),
-                                    default: None,
-                                    min_length: None,
-                                    max_length: None,
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("endedAt"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "endedAt",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                     description: Some(
                                         ::jacquard_common::CowStr::new_static(
@@ -517,31 +952,19 @@ fn lexicon_doc_place_stream_livestream() -> ::jacquard_lexicon::lexicon::Lexicon
                                     format: Some(
                                         ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                     ),
-                                    default: None,
-                                    min_length: None,
-                                    max_length: None,
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "idleTimeoutSeconds",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                    description: None,
-                                    default: None,
-                                    minimum: None,
-                                    maximum: None,
-                                    r#enum: None,
-                                    r#const: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "lastSeenAt",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -553,65 +976,58 @@ fn lexicon_doc_place_stream_livestream() -> ::jacquard_lexicon::lexicon::Lexicon
                                     format: Some(
                                         ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                     ),
-                                    default: None,
-                                    min_length: None,
-                                    max_length: None,
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "notificationSettings",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                    description: None,
                                     r#ref: ::jacquard_common::CowStr::new_static(
                                         "place.stream.livestream#notificationSettings",
                                     ),
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("post"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "post",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                    description: None,
                                     r#ref: ::jacquard_common::CowStr::new_static(
                                         "com.atproto.repo.strongRef",
                                     ),
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("thumb"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "thumb",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Blob(::jacquard_lexicon::lexicon::LexBlob {
-                                    description: None,
-                                    accept: None,
-                                    max_size: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("title"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "title",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                     description: Some(
                                         ::jacquard_common::CowStr::new_static(
                                             "The title of the livestream, as it will be announced to followers.",
                                         ),
                                     ),
-                                    format: None,
-                                    default: None,
-                                    min_length: None,
                                     max_length: Some(1400usize),
-                                    min_graphemes: None,
                                     max_graphemes: Some(140usize),
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("url"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "url",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                     description: Some(
                                         ::jacquard_common::CowStr::new_static(
@@ -621,65 +1037,56 @@ fn lexicon_doc_place_stream_livestream() -> ::jacquard_lexicon::lexicon::Lexicon
                                     format: Some(
                                         ::jacquard_lexicon::lexicon::LexStringFormat::Uri,
                                     ),
-                                    default: None,
-                                    min_length: None,
-                                    max_length: None,
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
                             );
                             map
                         },
+                        ..Default::default()
                     }),
+                    ..Default::default()
                 }),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("notificationSettings"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("notificationSettings"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(vec![]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "pushNotification",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(
                                     ::jacquard_lexicon::lexicon::LexBoolean {
-                                        description: None,
-                                        default: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("streamplaceAnything"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("streamplaceAnything"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
-                        required: Some(vec![::jacquard_common::smol_str::SmolStr::new_static(
-                            "livestream",
-                        )]),
-                        nullable: None,
+                        required: Some(vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("livestream"),
+                        ]),
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("livestream"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "livestream",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Union(
                                     ::jacquard_lexicon::lexicon::LexRefUnion {
-                                        description: None,
                                         refs: vec![
                                             ::jacquard_common::CowStr::new_static(
                                                 "#livestreamView",
@@ -707,54 +1114,55 @@ fn lexicon_doc_place_stream_livestream() -> ::jacquard_lexicon::lexicon::Lexicon
                                                 "place.stream.chat.defs#pinnedRecordView",
                                             ),
                                         ],
-                                        closed: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("teleportArrival"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("teleportArrival"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("teleportUri"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("source"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("viewerCount"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("startsAt"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("teleportUri"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("source"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("viewerCount"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("startsAt"),
                         ]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("chatProfile"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "chatProfile",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
                                     ::jacquard_lexicon::lexicon::LexRef {
-                                        description: None,
                                         r#ref: ::jacquard_common::CowStr::new_static(
                                             "place.stream.chat.profile",
                                         ),
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("source"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("source"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
                                     ::jacquard_lexicon::lexicon::LexRef {
-                                        description: None,
                                         r#ref: ::jacquard_common::CowStr::new_static(
                                             "app.bsky.actor.defs#profileViewBasic",
                                         ),
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("startsAt"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("startsAt"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
@@ -763,19 +1171,14 @@ fn lexicon_doc_place_stream_livestream() -> ::jacquard_lexicon::lexicon::Lexicon
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("teleportUri"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "teleportUri",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
@@ -784,69 +1187,52 @@ fn lexicon_doc_place_stream_livestream() -> ::jacquard_lexicon::lexicon::Lexicon
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("viewerCount"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "viewerCount",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
                                     ::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
-                                        minimum: None,
-                                        maximum: None,
-                                        r#enum: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("teleportCanceled"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("teleportCanceled"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("teleportUri"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("reason"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("teleportUri"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("reason"),
                         ]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("reason"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("reason"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
                                             "Why this teleport was canceled",
                                         )),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("teleportUri"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "teleportUri",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
@@ -855,118 +1241,44 @@ fn lexicon_doc_place_stream_livestream() -> ::jacquard_lexicon::lexicon::Lexicon
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("viewerCount"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("viewerCount"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
-                        required: Some(vec![::jacquard_common::smol_str::SmolStr::new_static(
-                            "count",
-                        )]),
-                        nullable: None,
+                        required: Some(vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("count"),
+                        ]),
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("count"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("count"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
                                     ::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
-                                        minimum: None,
-                                        maximum: None,
-                                        r#enum: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map
         },
+        ..Default::default()
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for LivestreamView<'a> {
-    fn nsid() -> &'static str {
-        "place.stream.livestream"
-    }
-    fn def_name() -> &'static str {
-        "livestreamView"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_place_stream_livestream()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-/// Record announcing a livestream is happening
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct Livestream<'a> {
-    /// The source of the livestream, if available, in a User Agent format: `<product> / <product-version> <comment>` e.g. Streamplace/0.7.5 iOS
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub agent: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// The primary URL where this livestream can be viewed, if available.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub canonical_url: std::option::Option<jacquard_common::types::string::Uri<'a>>,
-    /// Client-declared timestamp when this livestream started.
-    pub created_at: jacquard_common::types::string::Datetime,
-    /// Client-declared timestamp when this livestream ended. Ended livestreams are not supposed to start up again.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub ended_at: std::option::Option<jacquard_common::types::string::Datetime>,
-    /// Time in seconds after which this livestream should be automatically ended if idle. Zero means no timeout.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub idle_timeout_seconds: std::option::Option<i64>,
-    /// Client-declared timestamp when this livestream was last seen by the Streamplace station.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub last_seen_at: std::option::Option<jacquard_common::types::string::Datetime>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub notification_settings:
-        std::option::Option<crate::generated::place_stream::livestream::NotificationSettings<'a>>,
-    /// The post that announced this livestream.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub post: std::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub thumb: std::option::Option<jacquard_common::types::blob::BlobRef<'a>>,
-    /// The title of the livestream, as it will be announced to followers.
-    #[serde(borrow)]
-    pub title: jacquard_common::CowStr<'a>,
-    /// The URL where this stream can be found. This is primarily a hint for other Streamplace nodes to locate and replicate the stream.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub url: std::option::Option<jacquard_common::types::string::Uri<'a>>,
 }
 
 pub mod livestream_state {
@@ -979,139 +1291,160 @@ pub mod livestream_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Title;
         type CreatedAt;
+        type Title;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Title = Unset;
         type CreatedAt = Unset;
-    }
-    ///State transition - sets the `title` field to Set
-    pub struct SetTitle<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetTitle<S> {}
-    impl<S: State> State for SetTitle<S> {
-        type Title = Set<members::title>;
-        type CreatedAt = S::CreatedAt;
+        type Title = Unset;
     }
     ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type Title = S::Title;
+    pub struct SetCreatedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCreatedAt<St> {}
+    impl<St: State> State for SetCreatedAt<St> {
         type CreatedAt = Set<members::created_at>;
+        type Title = St::Title;
+    }
+    ///State transition - sets the `title` field to Set
+    pub struct SetTitle<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetTitle<St> {}
+    impl<St: State> State for SetTitle<St> {
+        type CreatedAt = St::CreatedAt;
+        type Title = Set<members::title>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `title` field
-        pub struct title(());
         ///Marker type for the `created_at` field
         pub struct created_at(());
+        ///Marker type for the `title` field
+        pub struct title(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct LivestreamBuilder<'a, S: livestream_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Uri<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<
-            crate::generated::place_stream::livestream::NotificationSettings<'a>,
-        >,
-        ::core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,
-        ::core::option::Option<jacquard_common::types::blob::BlobRef<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Uri<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct LivestreamBuilder<
+    St: livestream_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::UriValue<S>>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<i64>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<crate::generated::place_stream::livestream::NotificationSettings<S>>,
+        core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
+        core::option::Option<jacquard_common::types::blob::BlobRef<S>>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::UriValue<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> Livestream<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> LivestreamBuilder<'a, livestream_state::Empty> {
+impl Livestream<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> LivestreamBuilder<livestream_state::Empty, jacquard_common::DefaultStr> {
         LivestreamBuilder::new()
     }
 }
 
-impl<'a> LivestreamBuilder<'a, livestream_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> Livestream<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> LivestreamBuilder<livestream_state::Empty, S> {
+        LivestreamBuilder::builder()
+    }
+}
+
+impl LivestreamBuilder<livestream_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         LivestreamBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (
+            _state: ::core::marker::PhantomData,
+            _fields: (
                 None, None, None, None, None, None, None, None, None, None, None,
             ),
-            _phantom: ::core::marker::PhantomData,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: livestream_state::State> LivestreamBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> LivestreamBuilder<livestream_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        LivestreamBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (
+                None, None, None, None, None, None, None, None, None, None, None,
+            ),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: livestream_state::State, S: jacquard_common::BosStr> LivestreamBuilder<St, S> {
     /// Set the `agent` field (optional)
-    pub fn agent(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+    pub fn agent(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.0 = value.into();
         self
     }
     /// Set the `agent` field to an Option value (optional)
-    pub fn maybe_agent(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.0 = value;
+    pub fn maybe_agent(mut self, value: Option<S>) -> Self {
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S: livestream_state::State> LivestreamBuilder<'a, S> {
+impl<St: livestream_state::State, S: jacquard_common::BosStr> LivestreamBuilder<St, S> {
     /// Set the `canonicalUrl` field (optional)
     pub fn canonical_url(
         mut self,
-        value: impl Into<Option<jacquard_common::types::string::Uri<'a>>>,
+        value: impl Into<Option<jacquard_common::types::string::UriValue<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self._fields.1 = value.into();
         self
     }
     /// Set the `canonicalUrl` field to an Option value (optional)
     pub fn maybe_canonical_url(
         mut self,
-        value: Option<jacquard_common::types::string::Uri<'a>>,
+        value: Option<jacquard_common::types::string::UriValue<S>>,
     ) -> Self {
-        self.__unsafe_private_named.1 = value;
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S> LivestreamBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> LivestreamBuilder<St, S>
 where
-    S: livestream_state::State,
-    S::CreatedAt: livestream_state::IsUnset,
+    St: livestream_state::State,
+    St::CreatedAt: livestream_state::IsUnset,
 {
     /// Set the `createdAt` field (required)
     pub fn created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> LivestreamBuilder<'a, livestream_state::SetCreatedAt<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+    ) -> LivestreamBuilder<livestream_state::SetCreatedAt<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         LivestreamBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: livestream_state::State> LivestreamBuilder<'a, S> {
+impl<St: livestream_state::State, S: jacquard_common::BosStr> LivestreamBuilder<St, S> {
     /// Set the `endedAt` field (optional)
     pub fn ended_at(
         mut self,
         value: impl Into<Option<jacquard_common::types::string::Datetime>>,
     ) -> Self {
-        self.__unsafe_private_named.3 = value.into();
+        self._fields.3 = value.into();
         self
     }
     /// Set the `endedAt` field to an Option value (optional)
@@ -1119,31 +1452,31 @@ impl<'a, S: livestream_state::State> LivestreamBuilder<'a, S> {
         mut self,
         value: Option<jacquard_common::types::string::Datetime>,
     ) -> Self {
-        self.__unsafe_private_named.3 = value;
+        self._fields.3 = value;
         self
     }
 }
 
-impl<'a, S: livestream_state::State> LivestreamBuilder<'a, S> {
+impl<St: livestream_state::State, S: jacquard_common::BosStr> LivestreamBuilder<St, S> {
     /// Set the `idleTimeoutSeconds` field (optional)
     pub fn idle_timeout_seconds(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.4 = value.into();
+        self._fields.4 = value.into();
         self
     }
     /// Set the `idleTimeoutSeconds` field to an Option value (optional)
     pub fn maybe_idle_timeout_seconds(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.4 = value;
+        self._fields.4 = value;
         self
     }
 }
 
-impl<'a, S: livestream_state::State> LivestreamBuilder<'a, S> {
+impl<St: livestream_state::State, S: jacquard_common::BosStr> LivestreamBuilder<St, S> {
     /// Set the `lastSeenAt` field (optional)
     pub fn last_seen_at(
         mut self,
         value: impl Into<Option<jacquard_common::types::string::Datetime>>,
     ) -> Self {
-        self.__unsafe_private_named.5 = value.into();
+        self._fields.5 = value.into();
         self
     }
     /// Set the `lastSeenAt` field to an Option value (optional)
@@ -1151,293 +1484,146 @@ impl<'a, S: livestream_state::State> LivestreamBuilder<'a, S> {
         mut self,
         value: Option<jacquard_common::types::string::Datetime>,
     ) -> Self {
-        self.__unsafe_private_named.5 = value;
+        self._fields.5 = value;
         self
     }
 }
 
-impl<'a, S: livestream_state::State> LivestreamBuilder<'a, S> {
+impl<St: livestream_state::State, S: jacquard_common::BosStr> LivestreamBuilder<St, S> {
     /// Set the `notificationSettings` field (optional)
     pub fn notification_settings(
         mut self,
-        value: impl Into<Option<crate::generated::place_stream::livestream::NotificationSettings<'a>>>,
+        value: impl Into<Option<crate::generated::place_stream::livestream::NotificationSettings<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.6 = value.into();
+        self._fields.6 = value.into();
         self
     }
     /// Set the `notificationSettings` field to an Option value (optional)
     pub fn maybe_notification_settings(
         mut self,
-        value: Option<crate::generated::place_stream::livestream::NotificationSettings<'a>>,
+        value: Option<crate::generated::place_stream::livestream::NotificationSettings<S>>,
     ) -> Self {
-        self.__unsafe_private_named.6 = value;
+        self._fields.6 = value;
         self
     }
 }
 
-impl<'a, S: livestream_state::State> LivestreamBuilder<'a, S> {
+impl<St: livestream_state::State, S: jacquard_common::BosStr> LivestreamBuilder<St, S> {
     /// Set the `post` field (optional)
     pub fn post(
         mut self,
-        value: impl Into<Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>>,
+        value: impl Into<Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.7 = value.into();
+        self._fields.7 = value.into();
         self
     }
     /// Set the `post` field to an Option value (optional)
     pub fn maybe_post(
         mut self,
-        value: Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,
+        value: Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
     ) -> Self {
-        self.__unsafe_private_named.7 = value;
+        self._fields.7 = value;
         self
     }
 }
 
-impl<'a, S: livestream_state::State> LivestreamBuilder<'a, S> {
+impl<St: livestream_state::State, S: jacquard_common::BosStr> LivestreamBuilder<St, S> {
     /// Set the `thumb` field (optional)
     pub fn thumb(
         mut self,
-        value: impl Into<Option<jacquard_common::types::blob::BlobRef<'a>>>,
+        value: impl Into<Option<jacquard_common::types::blob::BlobRef<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.8 = value.into();
+        self._fields.8 = value.into();
         self
     }
     /// Set the `thumb` field to an Option value (optional)
-    pub fn maybe_thumb(mut self, value: Option<jacquard_common::types::blob::BlobRef<'a>>) -> Self {
-        self.__unsafe_private_named.8 = value;
+    pub fn maybe_thumb(mut self, value: Option<jacquard_common::types::blob::BlobRef<S>>) -> Self {
+        self._fields.8 = value;
         self
     }
 }
 
-impl<'a, S> LivestreamBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> LivestreamBuilder<St, S>
 where
-    S: livestream_state::State,
-    S::Title: livestream_state::IsUnset,
+    St: livestream_state::State,
+    St::Title: livestream_state::IsUnset,
 {
     /// Set the `title` field (required)
     pub fn title(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> LivestreamBuilder<'a, livestream_state::SetTitle<S>> {
-        self.__unsafe_private_named.9 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> LivestreamBuilder<livestream_state::SetTitle<St>, S> {
+        self._fields.9 = ::core::option::Option::Some(value.into());
         LivestreamBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: livestream_state::State> LivestreamBuilder<'a, S> {
+impl<St: livestream_state::State, S: jacquard_common::BosStr> LivestreamBuilder<St, S> {
     /// Set the `url` field (optional)
     pub fn url(
         mut self,
-        value: impl Into<Option<jacquard_common::types::string::Uri<'a>>>,
+        value: impl Into<Option<jacquard_common::types::string::UriValue<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.10 = value.into();
+        self._fields.10 = value.into();
         self
     }
     /// Set the `url` field to an Option value (optional)
-    pub fn maybe_url(mut self, value: Option<jacquard_common::types::string::Uri<'a>>) -> Self {
-        self.__unsafe_private_named.10 = value;
+    pub fn maybe_url(mut self, value: Option<jacquard_common::types::string::UriValue<S>>) -> Self {
+        self._fields.10 = value;
         self
     }
 }
 
-impl<'a, S> LivestreamBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> LivestreamBuilder<St, S>
 where
-    S: livestream_state::State,
-    S::Title: livestream_state::IsSet,
-    S::CreatedAt: livestream_state::IsSet,
+    St: livestream_state::State,
+    St::CreatedAt: livestream_state::IsSet,
+    St::Title: livestream_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> Livestream<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> Livestream<S> {
         Livestream {
-            agent: self.__unsafe_private_named.0,
-            canonical_url: self.__unsafe_private_named.1,
-            created_at: self.__unsafe_private_named.2.unwrap(),
-            ended_at: self.__unsafe_private_named.3,
-            idle_timeout_seconds: self.__unsafe_private_named.4,
-            last_seen_at: self.__unsafe_private_named.5,
-            notification_settings: self.__unsafe_private_named.6,
-            post: self.__unsafe_private_named.7,
-            thumb: self.__unsafe_private_named.8,
-            title: self.__unsafe_private_named.9.unwrap(),
-            url: self.__unsafe_private_named.10,
+            agent: self._fields.0,
+            canonical_url: self._fields.1,
+            created_at: self._fields.2.unwrap(),
+            ended_at: self._fields.3,
+            idle_timeout_seconds: self._fields.4,
+            last_seen_at: self._fields.5,
+            notification_settings: self._fields.6,
+            post: self._fields.7,
+            thumb: self._fields.8,
+            title: self._fields.9.unwrap(),
+            url: self._fields.10,
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> Livestream<'a> {
+    ) -> Livestream<S> {
         Livestream {
-            agent: self.__unsafe_private_named.0,
-            canonical_url: self.__unsafe_private_named.1,
-            created_at: self.__unsafe_private_named.2.unwrap(),
-            ended_at: self.__unsafe_private_named.3,
-            idle_timeout_seconds: self.__unsafe_private_named.4,
-            last_seen_at: self.__unsafe_private_named.5,
-            notification_settings: self.__unsafe_private_named.6,
-            post: self.__unsafe_private_named.7,
-            thumb: self.__unsafe_private_named.8,
-            title: self.__unsafe_private_named.9.unwrap(),
-            url: self.__unsafe_private_named.10,
+            agent: self._fields.0,
+            canonical_url: self._fields.1,
+            created_at: self._fields.2.unwrap(),
+            ended_at: self._fields.3,
+            idle_timeout_seconds: self._fields.4,
+            last_seen_at: self._fields.5,
+            notification_settings: self._fields.6,
+            post: self._fields.7,
+            thumb: self._fields.8,
+            title: self._fields.9.unwrap(),
+            url: self._fields.10,
             extra_data: Some(extra_data),
         }
     }
-}
-
-impl<'a> Livestream<'a> {
-    pub fn uri(
-        uri: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> Result<
-        jacquard_common::types::uri::RecordUri<'a, LivestreamRecord>,
-        jacquard_common::types::uri::UriError,
-    > {
-        jacquard_common::types::uri::RecordUri::try_from_uri(
-            jacquard_common::types::string::AtUri::new_cow(uri.into())?,
-        )
-    }
-}
-
-/// Typed wrapper for GetRecord response with this collection's record type.
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct LivestreamGetRecordOutput<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cid: std::option::Option<jacquard_common::types::string::Cid<'a>>,
-    #[serde(borrow)]
-    pub uri: jacquard_common::types::string::AtUri<'a>,
-    #[serde(borrow)]
-    pub value: Livestream<'a>,
-}
-
-impl From<LivestreamGetRecordOutput<'_>> for Livestream<'_> {
-    fn from(output: LivestreamGetRecordOutput<'_>) -> Self {
-        use jacquard_common::IntoStatic;
-        output.value.into_static()
-    }
-}
-
-impl jacquard_common::types::collection::Collection for Livestream<'_> {
-    const NSID: &'static str = "place.stream.livestream";
-    type Record = LivestreamRecord;
-}
-
-/// Marker type for deserializing records from this collection.
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
-pub struct LivestreamRecord;
-impl jacquard_common::xrpc::XrpcResp for LivestreamRecord {
-    const NSID: &'static str = "place.stream.livestream";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = LivestreamGetRecordOutput<'de>;
-    type Err<'de> = jacquard_common::types::collection::RecordError<'de>;
-}
-
-impl jacquard_common::types::collection::Collection for LivestreamRecord {
-    const NSID: &'static str = "place.stream.livestream";
-    type Record = LivestreamRecord;
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Livestream<'a> {
-    fn nsid() -> &'static str {
-        "place.stream.livestream"
-    }
-    fn def_name() -> &'static str {
-        "main"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_place_stream_livestream()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        {
-            let value = &self.title;
-            #[allow(unused_comparisons)]
-            if <str>::len(value.as_ref()) > 1400usize {
-                return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("title"),
-                    max: 1400usize,
-                    actual: <str>::len(value.as_ref()),
-                });
-            }
-        }
-        {
-            let value = &self.title;
-            {
-                let count =
-                    ::unicode_segmentation::UnicodeSegmentation::graphemes(value.as_ref(), true)
-                        .count();
-                if count > 140usize {
-                    return Err(
-                        ::jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
-                            path: ::jacquard_lexicon::validation::ValidationPath::from_field(
-                                "title",
-                            ),
-                            max: 140usize,
-                            actual: count,
-                        },
-                    );
-                }
-            }
-        }
-        Ok(())
-    }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic,
-    Default,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct NotificationSettings<'a> {
-    /// Whether this livestream should trigger a push notification to followers.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub push_notification: std::option::Option<bool>,
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for NotificationSettings<'a> {
-    fn nsid() -> &'static str {
-        "place.stream.livestream"
-    }
-    fn def_name() -> &'static str {
-        "notificationSettings"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_place_stream_livestream()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct StreamplaceAnything<'a> {
-    #[serde(borrow)]
-    pub livestream: StreamplaceAnythingLivestream<'a>,
 }
 
 pub mod streamplace_anything_state {
@@ -1459,9 +1645,9 @@ pub mod streamplace_anything_state {
         type Livestream = Unset;
     }
     ///State transition - sets the `livestream` field to Set
-    pub struct SetLivestream<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetLivestream<S> {}
-    impl<S: State> State for SetLivestream<S> {
+    pub struct SetLivestream<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetLivestream<St> {}
+    impl<St: State> State for SetLivestream<St> {
         type Livestream = Set<members::livestream>;
     }
     /// Marker types for field names
@@ -1472,142 +1658,98 @@ pub mod streamplace_anything_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct StreamplaceAnythingBuilder<'a, S: streamplace_anything_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<StreamplaceAnythingLivestream<'a>>,),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct StreamplaceAnythingBuilder<
+    St: streamplace_anything_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<StreamplaceAnythingLivestream<S>>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> StreamplaceAnything<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> StreamplaceAnythingBuilder<'a, streamplace_anything_state::Empty> {
+impl StreamplaceAnything<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> StreamplaceAnythingBuilder<streamplace_anything_state::Empty, jacquard_common::DefaultStr>
+    {
         StreamplaceAnythingBuilder::new()
     }
 }
 
-impl<'a> StreamplaceAnythingBuilder<'a, streamplace_anything_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> StreamplaceAnything<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> StreamplaceAnythingBuilder<streamplace_anything_state::Empty, S> {
+        StreamplaceAnythingBuilder::builder()
+    }
+}
+
+impl StreamplaceAnythingBuilder<streamplace_anything_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         StreamplaceAnythingBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> StreamplaceAnythingBuilder<'a, S>
+impl<S: jacquard_common::BosStr> StreamplaceAnythingBuilder<streamplace_anything_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        StreamplaceAnythingBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> StreamplaceAnythingBuilder<St, S>
 where
-    S: streamplace_anything_state::State,
-    S::Livestream: streamplace_anything_state::IsUnset,
+    St: streamplace_anything_state::State,
+    St::Livestream: streamplace_anything_state::IsUnset,
 {
     /// Set the `livestream` field (required)
     pub fn livestream(
         mut self,
-        value: impl Into<StreamplaceAnythingLivestream<'a>>,
-    ) -> StreamplaceAnythingBuilder<'a, streamplace_anything_state::SetLivestream<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<StreamplaceAnythingLivestream<S>>,
+    ) -> StreamplaceAnythingBuilder<streamplace_anything_state::SetLivestream<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         StreamplaceAnythingBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> StreamplaceAnythingBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> StreamplaceAnythingBuilder<St, S>
 where
-    S: streamplace_anything_state::State,
-    S::Livestream: streamplace_anything_state::IsSet,
+    St: streamplace_anything_state::State,
+    St::Livestream: streamplace_anything_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> StreamplaceAnything<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> StreamplaceAnything<S> {
         StreamplaceAnything {
-            livestream: self.__unsafe_private_named.0.unwrap(),
+            livestream: self._fields.0.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> StreamplaceAnything<'a> {
+    ) -> StreamplaceAnything<S> {
         StreamplaceAnything {
-            livestream: self.__unsafe_private_named.0.unwrap(),
+            livestream: self._fields.0.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-#[jacquard_derive::open_union]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(tag = "$type")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum StreamplaceAnythingLivestream<'a> {
-    #[serde(rename = "place.stream.livestream#livestreamView")]
-    LivestreamView(Box<crate::generated::place_stream::livestream::LivestreamView<'a>>),
-    #[serde(rename = "place.stream.livestream#viewerCount")]
-    ViewerCount(Box<crate::generated::place_stream::livestream::ViewerCount<'a>>),
-    #[serde(rename = "place.stream.livestream#teleportArrival")]
-    TeleportArrival(Box<crate::generated::place_stream::livestream::TeleportArrival<'a>>),
-    #[serde(rename = "place.stream.livestream#teleportCanceled")]
-    TeleportCanceled(Box<crate::generated::place_stream::livestream::TeleportCanceled<'a>>),
-    #[serde(rename = "place.stream.defs#blockView")]
-    BlockView(Box<crate::generated::place_stream::BlockView<'a>>),
-    #[serde(rename = "place.stream.defs#renditions")]
-    Renditions(Box<crate::generated::place_stream::Renditions<'a>>),
-    #[serde(rename = "place.stream.defs#rendition")]
-    Rendition(Box<crate::generated::place_stream::Rendition<'a>>),
-    #[serde(rename = "place.stream.chat.defs#messageView")]
-    MessageView(Box<crate::generated::place_stream::chat::MessageView<'a>>),
-    #[serde(rename = "place.stream.chat.defs#pinnedRecordView")]
-    PinnedRecordView(Box<crate::generated::place_stream::chat::PinnedRecordView<'a>>),
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for StreamplaceAnything<'a> {
-    fn nsid() -> &'static str {
-        "place.stream.livestream"
-    }
-    fn def_name() -> &'static str {
-        "streamplaceAnything"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_place_stream_livestream()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct TeleportArrival<'a> {
-    /// The chat profile of the source streamer
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub chat_profile:
-        std::option::Option<crate::generated::place_stream::chat::profile::Profile<'a>>,
-    /// The streamer who is teleporting their viewers here
-    #[serde(borrow)]
-    pub source: crate::generated::app_bsky::actor::ProfileViewBasic<'a>,
-    /// When this teleport started
-    pub starts_at: jacquard_common::types::string::Datetime,
-    /// The URI of the teleport record
-    #[serde(borrow)]
-    pub teleport_uri: jacquard_common::types::string::AtUri<'a>,
-    /// How many viewers are arriving from this teleport
-    pub viewer_count: i64,
 }
 
 pub mod teleport_arrival_state {
@@ -1620,263 +1762,254 @@ pub mod teleport_arrival_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type TeleportUri;
         type Source;
-        type ViewerCount;
         type StartsAt;
+        type TeleportUri;
+        type ViewerCount;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type TeleportUri = Unset;
         type Source = Unset;
-        type ViewerCount = Unset;
         type StartsAt = Unset;
-    }
-    ///State transition - sets the `teleport_uri` field to Set
-    pub struct SetTeleportUri<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetTeleportUri<S> {}
-    impl<S: State> State for SetTeleportUri<S> {
-        type TeleportUri = Set<members::teleport_uri>;
-        type Source = S::Source;
-        type ViewerCount = S::ViewerCount;
-        type StartsAt = S::StartsAt;
+        type TeleportUri = Unset;
+        type ViewerCount = Unset;
     }
     ///State transition - sets the `source` field to Set
-    pub struct SetSource<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetSource<S> {}
-    impl<S: State> State for SetSource<S> {
-        type TeleportUri = S::TeleportUri;
+    pub struct SetSource<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSource<St> {}
+    impl<St: State> State for SetSource<St> {
         type Source = Set<members::source>;
-        type ViewerCount = S::ViewerCount;
-        type StartsAt = S::StartsAt;
-    }
-    ///State transition - sets the `viewer_count` field to Set
-    pub struct SetViewerCount<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetViewerCount<S> {}
-    impl<S: State> State for SetViewerCount<S> {
-        type TeleportUri = S::TeleportUri;
-        type Source = S::Source;
-        type ViewerCount = Set<members::viewer_count>;
-        type StartsAt = S::StartsAt;
+        type StartsAt = St::StartsAt;
+        type TeleportUri = St::TeleportUri;
+        type ViewerCount = St::ViewerCount;
     }
     ///State transition - sets the `starts_at` field to Set
-    pub struct SetStartsAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetStartsAt<S> {}
-    impl<S: State> State for SetStartsAt<S> {
-        type TeleportUri = S::TeleportUri;
-        type Source = S::Source;
-        type ViewerCount = S::ViewerCount;
+    pub struct SetStartsAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetStartsAt<St> {}
+    impl<St: State> State for SetStartsAt<St> {
+        type Source = St::Source;
         type StartsAt = Set<members::starts_at>;
+        type TeleportUri = St::TeleportUri;
+        type ViewerCount = St::ViewerCount;
+    }
+    ///State transition - sets the `teleport_uri` field to Set
+    pub struct SetTeleportUri<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetTeleportUri<St> {}
+    impl<St: State> State for SetTeleportUri<St> {
+        type Source = St::Source;
+        type StartsAt = St::StartsAt;
+        type TeleportUri = Set<members::teleport_uri>;
+        type ViewerCount = St::ViewerCount;
+    }
+    ///State transition - sets the `viewer_count` field to Set
+    pub struct SetViewerCount<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetViewerCount<St> {}
+    impl<St: State> State for SetViewerCount<St> {
+        type Source = St::Source;
+        type StartsAt = St::StartsAt;
+        type TeleportUri = St::TeleportUri;
+        type ViewerCount = Set<members::viewer_count>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `teleport_uri` field
-        pub struct teleport_uri(());
         ///Marker type for the `source` field
         pub struct source(());
-        ///Marker type for the `viewer_count` field
-        pub struct viewer_count(());
         ///Marker type for the `starts_at` field
         pub struct starts_at(());
+        ///Marker type for the `teleport_uri` field
+        pub struct teleport_uri(());
+        ///Marker type for the `viewer_count` field
+        pub struct viewer_count(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct TeleportArrivalBuilder<'a, S: teleport_arrival_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<crate::generated::place_stream::chat::profile::Profile<'a>>,
-        ::core::option::Option<crate::generated::app_bsky::actor::ProfileViewBasic<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
-        ::core::option::Option<i64>,
+/// Builder for constructing an instance of this type.
+pub struct TeleportArrivalBuilder<
+    St: teleport_arrival_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<crate::generated::place_stream::chat::profile::Profile<S>>,
+        core::option::Option<crate::generated::app_bsky::actor::ProfileViewBasic<S>>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<jacquard_common::types::string::AtUri<S>>,
+        core::option::Option<i64>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> TeleportArrival<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> TeleportArrivalBuilder<'a, teleport_arrival_state::Empty> {
+impl TeleportArrival<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> TeleportArrivalBuilder<teleport_arrival_state::Empty, jacquard_common::DefaultStr> {
         TeleportArrivalBuilder::new()
     }
 }
 
-impl<'a> TeleportArrivalBuilder<'a, teleport_arrival_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> TeleportArrival<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> TeleportArrivalBuilder<teleport_arrival_state::Empty, S> {
+        TeleportArrivalBuilder::builder()
+    }
+}
+
+impl TeleportArrivalBuilder<teleport_arrival_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         TeleportArrivalBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: teleport_arrival_state::State> TeleportArrivalBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> TeleportArrivalBuilder<teleport_arrival_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        TeleportArrivalBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: teleport_arrival_state::State, S: jacquard_common::BosStr> TeleportArrivalBuilder<St, S> {
     /// Set the `chatProfile` field (optional)
     pub fn chat_profile(
         mut self,
-        value: impl Into<Option<crate::generated::place_stream::chat::profile::Profile<'a>>>,
+        value: impl Into<Option<crate::generated::place_stream::chat::profile::Profile<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+        self._fields.0 = value.into();
         self
     }
     /// Set the `chatProfile` field to an Option value (optional)
     pub fn maybe_chat_profile(
         mut self,
-        value: Option<crate::generated::place_stream::chat::profile::Profile<'a>>,
+        value: Option<crate::generated::place_stream::chat::profile::Profile<S>>,
     ) -> Self {
-        self.__unsafe_private_named.0 = value;
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S> TeleportArrivalBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> TeleportArrivalBuilder<St, S>
 where
-    S: teleport_arrival_state::State,
-    S::Source: teleport_arrival_state::IsUnset,
+    St: teleport_arrival_state::State,
+    St::Source: teleport_arrival_state::IsUnset,
 {
     /// Set the `source` field (required)
     pub fn source(
         mut self,
-        value: impl Into<crate::generated::app_bsky::actor::ProfileViewBasic<'a>>,
-    ) -> TeleportArrivalBuilder<'a, teleport_arrival_state::SetSource<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<crate::generated::app_bsky::actor::ProfileViewBasic<S>>,
+    ) -> TeleportArrivalBuilder<teleport_arrival_state::SetSource<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         TeleportArrivalBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> TeleportArrivalBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> TeleportArrivalBuilder<St, S>
 where
-    S: teleport_arrival_state::State,
-    S::StartsAt: teleport_arrival_state::IsUnset,
+    St: teleport_arrival_state::State,
+    St::StartsAt: teleport_arrival_state::IsUnset,
 {
     /// Set the `startsAt` field (required)
     pub fn starts_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> TeleportArrivalBuilder<'a, teleport_arrival_state::SetStartsAt<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+    ) -> TeleportArrivalBuilder<teleport_arrival_state::SetStartsAt<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         TeleportArrivalBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> TeleportArrivalBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> TeleportArrivalBuilder<St, S>
 where
-    S: teleport_arrival_state::State,
-    S::TeleportUri: teleport_arrival_state::IsUnset,
+    St: teleport_arrival_state::State,
+    St::TeleportUri: teleport_arrival_state::IsUnset,
 {
     /// Set the `teleportUri` field (required)
     pub fn teleport_uri(
         mut self,
-        value: impl Into<jacquard_common::types::string::AtUri<'a>>,
-    ) -> TeleportArrivalBuilder<'a, teleport_arrival_state::SetTeleportUri<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::AtUri<S>>,
+    ) -> TeleportArrivalBuilder<teleport_arrival_state::SetTeleportUri<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
         TeleportArrivalBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> TeleportArrivalBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> TeleportArrivalBuilder<St, S>
 where
-    S: teleport_arrival_state::State,
-    S::ViewerCount: teleport_arrival_state::IsUnset,
+    St: teleport_arrival_state::State,
+    St::ViewerCount: teleport_arrival_state::IsUnset,
 {
     /// Set the `viewerCount` field (required)
     pub fn viewer_count(
         mut self,
         value: impl Into<i64>,
-    ) -> TeleportArrivalBuilder<'a, teleport_arrival_state::SetViewerCount<S>> {
-        self.__unsafe_private_named.4 = ::core::option::Option::Some(value.into());
+    ) -> TeleportArrivalBuilder<teleport_arrival_state::SetViewerCount<St>, S> {
+        self._fields.4 = ::core::option::Option::Some(value.into());
         TeleportArrivalBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> TeleportArrivalBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> TeleportArrivalBuilder<St, S>
 where
-    S: teleport_arrival_state::State,
-    S::TeleportUri: teleport_arrival_state::IsSet,
-    S::Source: teleport_arrival_state::IsSet,
-    S::ViewerCount: teleport_arrival_state::IsSet,
-    S::StartsAt: teleport_arrival_state::IsSet,
+    St: teleport_arrival_state::State,
+    St::Source: teleport_arrival_state::IsSet,
+    St::StartsAt: teleport_arrival_state::IsSet,
+    St::TeleportUri: teleport_arrival_state::IsSet,
+    St::ViewerCount: teleport_arrival_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> TeleportArrival<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> TeleportArrival<S> {
         TeleportArrival {
-            chat_profile: self.__unsafe_private_named.0,
-            source: self.__unsafe_private_named.1.unwrap(),
-            starts_at: self.__unsafe_private_named.2.unwrap(),
-            teleport_uri: self.__unsafe_private_named.3.unwrap(),
-            viewer_count: self.__unsafe_private_named.4.unwrap(),
+            chat_profile: self._fields.0,
+            source: self._fields.1.unwrap(),
+            starts_at: self._fields.2.unwrap(),
+            teleport_uri: self._fields.3.unwrap(),
+            viewer_count: self._fields.4.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> TeleportArrival<'a> {
+    ) -> TeleportArrival<S> {
         TeleportArrival {
-            chat_profile: self.__unsafe_private_named.0,
-            source: self.__unsafe_private_named.1.unwrap(),
-            starts_at: self.__unsafe_private_named.2.unwrap(),
-            teleport_uri: self.__unsafe_private_named.3.unwrap(),
-            viewer_count: self.__unsafe_private_named.4.unwrap(),
+            chat_profile: self._fields.0,
+            source: self._fields.1.unwrap(),
+            starts_at: self._fields.2.unwrap(),
+            teleport_uri: self._fields.3.unwrap(),
+            viewer_count: self._fields.4.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for TeleportArrival<'a> {
-    fn nsid() -> &'static str {
-        "place.stream.livestream"
-    }
-    fn def_name() -> &'static str {
-        "teleportArrival"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_place_stream_livestream()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct TeleportCanceled<'a> {
-    /// Why this teleport was canceled
-    #[serde(borrow)]
-    pub reason: jacquard_common::CowStr<'a>,
-    /// The URI of the teleport record that was canceled
-    #[serde(borrow)]
-    pub teleport_uri: jacquard_common::types::string::AtUri<'a>,
 }
 
 pub mod teleport_canceled_state {
@@ -1889,160 +2022,156 @@ pub mod teleport_canceled_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type TeleportUri;
         type Reason;
+        type TeleportUri;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type TeleportUri = Unset;
         type Reason = Unset;
-    }
-    ///State transition - sets the `teleport_uri` field to Set
-    pub struct SetTeleportUri<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetTeleportUri<S> {}
-    impl<S: State> State for SetTeleportUri<S> {
-        type TeleportUri = Set<members::teleport_uri>;
-        type Reason = S::Reason;
+        type TeleportUri = Unset;
     }
     ///State transition - sets the `reason` field to Set
-    pub struct SetReason<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetReason<S> {}
-    impl<S: State> State for SetReason<S> {
-        type TeleportUri = S::TeleportUri;
+    pub struct SetReason<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetReason<St> {}
+    impl<St: State> State for SetReason<St> {
         type Reason = Set<members::reason>;
+        type TeleportUri = St::TeleportUri;
+    }
+    ///State transition - sets the `teleport_uri` field to Set
+    pub struct SetTeleportUri<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetTeleportUri<St> {}
+    impl<St: State> State for SetTeleportUri<St> {
+        type Reason = St::Reason;
+        type TeleportUri = Set<members::teleport_uri>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `teleport_uri` field
-        pub struct teleport_uri(());
         ///Marker type for the `reason` field
         pub struct reason(());
+        ///Marker type for the `teleport_uri` field
+        pub struct teleport_uri(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct TeleportCanceledBuilder<'a, S: teleport_canceled_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct TeleportCanceledBuilder<
+    St: teleport_canceled_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::AtUri<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> TeleportCanceled<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> TeleportCanceledBuilder<'a, teleport_canceled_state::Empty> {
+impl TeleportCanceled<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> TeleportCanceledBuilder<teleport_canceled_state::Empty, jacquard_common::DefaultStr> {
         TeleportCanceledBuilder::new()
     }
 }
 
-impl<'a> TeleportCanceledBuilder<'a, teleport_canceled_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> TeleportCanceled<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> TeleportCanceledBuilder<teleport_canceled_state::Empty, S> {
+        TeleportCanceledBuilder::builder()
+    }
+}
+
+impl TeleportCanceledBuilder<teleport_canceled_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         TeleportCanceledBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> TeleportCanceledBuilder<'a, S>
+impl<S: jacquard_common::BosStr> TeleportCanceledBuilder<teleport_canceled_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        TeleportCanceledBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> TeleportCanceledBuilder<St, S>
 where
-    S: teleport_canceled_state::State,
-    S::Reason: teleport_canceled_state::IsUnset,
+    St: teleport_canceled_state::State,
+    St::Reason: teleport_canceled_state::IsUnset,
 {
     /// Set the `reason` field (required)
     pub fn reason(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> TeleportCanceledBuilder<'a, teleport_canceled_state::SetReason<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> TeleportCanceledBuilder<teleport_canceled_state::SetReason<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         TeleportCanceledBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> TeleportCanceledBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> TeleportCanceledBuilder<St, S>
 where
-    S: teleport_canceled_state::State,
-    S::TeleportUri: teleport_canceled_state::IsUnset,
+    St: teleport_canceled_state::State,
+    St::TeleportUri: teleport_canceled_state::IsUnset,
 {
     /// Set the `teleportUri` field (required)
     pub fn teleport_uri(
         mut self,
-        value: impl Into<jacquard_common::types::string::AtUri<'a>>,
-    ) -> TeleportCanceledBuilder<'a, teleport_canceled_state::SetTeleportUri<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::AtUri<S>>,
+    ) -> TeleportCanceledBuilder<teleport_canceled_state::SetTeleportUri<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         TeleportCanceledBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> TeleportCanceledBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> TeleportCanceledBuilder<St, S>
 where
-    S: teleport_canceled_state::State,
-    S::TeleportUri: teleport_canceled_state::IsSet,
-    S::Reason: teleport_canceled_state::IsSet,
+    St: teleport_canceled_state::State,
+    St::Reason: teleport_canceled_state::IsSet,
+    St::TeleportUri: teleport_canceled_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> TeleportCanceled<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> TeleportCanceled<S> {
         TeleportCanceled {
-            reason: self.__unsafe_private_named.0.unwrap(),
-            teleport_uri: self.__unsafe_private_named.1.unwrap(),
+            reason: self._fields.0.unwrap(),
+            teleport_uri: self._fields.1.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> TeleportCanceled<'a> {
+    ) -> TeleportCanceled<S> {
         TeleportCanceled {
-            reason: self.__unsafe_private_named.0.unwrap(),
-            teleport_uri: self.__unsafe_private_named.1.unwrap(),
+            reason: self._fields.0.unwrap(),
+            teleport_uri: self._fields.1.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for TeleportCanceled<'a> {
-    fn nsid() -> &'static str {
-        "place.stream.livestream"
-    }
-    fn def_name() -> &'static str {
-        "teleportCanceled"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_place_stream_livestream()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct ViewerCount<'a> {
-    pub count: i64,
 }
 
 pub mod viewer_count_state {
@@ -2064,9 +2193,9 @@ pub mod viewer_count_state {
         type Count = Unset;
     }
     ///State transition - sets the `count` field to Set
-    pub struct SetCount<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCount<S> {}
-    impl<S: State> State for SetCount<S> {
+    pub struct SetCount<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCount<St> {}
+    impl<St: State> State for SetCount<St> {
         type Count = Set<members::count>;
     }
     /// Marker types for field names
@@ -2077,90 +2206,94 @@ pub mod viewer_count_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct ViewerCountBuilder<'a, S: viewer_count_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<i64>,),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct ViewerCountBuilder<
+    St: viewer_count_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<i64>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> ViewerCount<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> ViewerCountBuilder<'a, viewer_count_state::Empty> {
+impl ViewerCount<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> ViewerCountBuilder<viewer_count_state::Empty, jacquard_common::DefaultStr> {
         ViewerCountBuilder::new()
     }
 }
 
-impl<'a> ViewerCountBuilder<'a, viewer_count_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> ViewerCount<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> ViewerCountBuilder<viewer_count_state::Empty, S> {
+        ViewerCountBuilder::builder()
+    }
+}
+
+impl ViewerCountBuilder<viewer_count_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ViewerCountBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ViewerCountBuilder<'a, S>
+impl<S: jacquard_common::BosStr> ViewerCountBuilder<viewer_count_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        ViewerCountBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ViewerCountBuilder<St, S>
 where
-    S: viewer_count_state::State,
-    S::Count: viewer_count_state::IsUnset,
+    St: viewer_count_state::State,
+    St::Count: viewer_count_state::IsUnset,
 {
     /// Set the `count` field (required)
     pub fn count(
         mut self,
         value: impl Into<i64>,
-    ) -> ViewerCountBuilder<'a, viewer_count_state::SetCount<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+    ) -> ViewerCountBuilder<viewer_count_state::SetCount<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         ViewerCountBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ViewerCountBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ViewerCountBuilder<St, S>
 where
-    S: viewer_count_state::State,
-    S::Count: viewer_count_state::IsSet,
+    St: viewer_count_state::State,
+    St::Count: viewer_count_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> ViewerCount<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> ViewerCount<S> {
         ViewerCount {
-            count: self.__unsafe_private_named.0.unwrap(),
+            count: self._fields.0.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> ViewerCount<'a> {
+    ) -> ViewerCount<S> {
         ViewerCount {
-            count: self.__unsafe_private_named.0.unwrap(),
+            count: self._fields.0.unwrap(),
             extra_data: Some(extra_data),
         }
-    }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ViewerCount<'a> {
-    fn nsid() -> &'static str {
-        "place.stream.livestream"
-    }
-    fn def_name() -> &'static str {
-        "viewerCount"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_place_stream_livestream()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
     }
 }

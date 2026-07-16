@@ -8,13 +8,127 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetRelationships<'a> {
-    #[serde(borrow)]
-    pub actor: jacquard_common::types::ident::AtIdentifier<'a>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub others: std::option::Option<Vec<jacquard_common::types::ident::AtIdentifier<'a>>>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetRelationships<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub actor: jacquard_common::types::ident::AtIdentifier<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub others: core::option::Option<Vec<jacquard_common::types::ident::AtIdentifier<S>>>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetRelationshipsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub actor: core::option::Option<jacquard_common::types::string::Did<S>>,
+    pub relationships: Vec<GetRelationshipsOutputRelationshipsItem<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[jacquard_derive::open_union]
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub enum GetRelationshipsOutputRelationshipsItem<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    #[serde(rename = "app.bsky.graph.defs#relationship")]
+    Relationship(Box<crate::generated::app_bsky::graph::Relationship<S>>),
+    #[serde(rename = "app.bsky.graph.defs#notFoundActor")]
+    NotFoundActor(Box<crate::generated::app_bsky::graph::NotFoundActor<S>>),
+}
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    thiserror::Error,
+    miette::Diagnostic,
+)]
+#[serde(tag = "error", content = "message")]
+pub enum GetRelationshipsError {
+    /// the primary actor at-identifier could not be resolved
+    #[serde(rename = "ActorNotFound")]
+    ActorNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
+}
+
+impl core::fmt::Display for GetRelationshipsError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+            Self::ActorNotFound(msg) => {
+                write!(f, "ActorNotFound")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+        }
+    }
+}
+
+/** Response marker for the `app.bsky.graph.getRelationships` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetRelationshipsOutput<S>` for this endpoint.*/
+pub struct GetRelationshipsResponse;
+impl jacquard_common::xrpc::XrpcResp for GetRelationshipsResponse {
+    const NSID: &'static str = "app.bsky.graph.getRelationships";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = GetRelationshipsOutput<S>;
+    type Err = GetRelationshipsError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetRelationships<S> {
+    const NSID: &'static str = "app.bsky.graph.getRelationships";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = GetRelationshipsResponse;
+}
+
+/** Endpoint marker for the `app.bsky.graph.getRelationships` query.
+
+Path: `/xrpc/app.bsky.graph.getRelationships`. The request payload type is `GetRelationships<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct GetRelationshipsRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for GetRelationshipsRequest {
+    const PATH: &'static str = "/xrpc/app.bsky.graph.getRelationships";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = GetRelationships<S>;
+    type Response = GetRelationshipsResponse;
 }
 
 pub mod get_relationships_state {
@@ -36,9 +150,9 @@ pub mod get_relationships_state {
         type Actor = Unset;
     }
     ///State transition - sets the `actor` field to Set
-    pub struct SetActor<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetActor<S> {}
-    impl<S: State> State for SetActor<S> {
+    pub struct SetActor<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetActor<St> {}
+    impl<St: State> State for SetActor<St> {
         type Actor = Set<members::actor>;
     }
     /// Marker types for field names
@@ -49,169 +163,106 @@ pub mod get_relationships_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct GetRelationshipsBuilder<'a, S: get_relationships_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::ident::AtIdentifier<'a>>,
-        ::core::option::Option<Vec<jacquard_common::types::ident::AtIdentifier<'a>>>,
+/// Builder for constructing an instance of this type.
+pub struct GetRelationshipsBuilder<
+    St: get_relationships_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::ident::AtIdentifier<S>>,
+        core::option::Option<Vec<jacquard_common::types::ident::AtIdentifier<S>>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> GetRelationships<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> GetRelationshipsBuilder<'a, get_relationships_state::Empty> {
+impl GetRelationships<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> GetRelationshipsBuilder<get_relationships_state::Empty, jacquard_common::DefaultStr> {
         GetRelationshipsBuilder::new()
     }
 }
 
-impl<'a> GetRelationshipsBuilder<'a, get_relationships_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> GetRelationships<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> GetRelationshipsBuilder<get_relationships_state::Empty, S> {
+        GetRelationshipsBuilder::builder()
+    }
+}
+
+impl GetRelationshipsBuilder<get_relationships_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetRelationshipsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GetRelationshipsBuilder<'a, S>
+impl<S: jacquard_common::BosStr> GetRelationshipsBuilder<get_relationships_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GetRelationshipsBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> GetRelationshipsBuilder<St, S>
 where
-    S: get_relationships_state::State,
-    S::Actor: get_relationships_state::IsUnset,
+    St: get_relationships_state::State,
+    St::Actor: get_relationships_state::IsUnset,
 {
     /// Set the `actor` field (required)
     pub fn actor(
         mut self,
-        value: impl Into<jacquard_common::types::ident::AtIdentifier<'a>>,
-    ) -> GetRelationshipsBuilder<'a, get_relationships_state::SetActor<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::ident::AtIdentifier<S>>,
+    ) -> GetRelationshipsBuilder<get_relationships_state::SetActor<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         GetRelationshipsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: get_relationships_state::State> GetRelationshipsBuilder<'a, S> {
+impl<St: get_relationships_state::State, S: jacquard_common::BosStr>
+    GetRelationshipsBuilder<St, S>
+{
     /// Set the `others` field (optional)
     pub fn others(
         mut self,
-        value: impl Into<Option<Vec<jacquard_common::types::ident::AtIdentifier<'a>>>>,
+        value: impl Into<Option<Vec<jacquard_common::types::ident::AtIdentifier<S>>>>,
     ) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self._fields.1 = value.into();
         self
     }
     /// Set the `others` field to an Option value (optional)
     pub fn maybe_others(
         mut self,
-        value: Option<Vec<jacquard_common::types::ident::AtIdentifier<'a>>>,
+        value: Option<Vec<jacquard_common::types::ident::AtIdentifier<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.1 = value;
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S> GetRelationshipsBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GetRelationshipsBuilder<St, S>
 where
-    S: get_relationships_state::State,
-    S::Actor: get_relationships_state::IsSet,
+    St: get_relationships_state::State,
+    St::Actor: get_relationships_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> GetRelationships<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> GetRelationships<S> {
         GetRelationships {
-            actor: self.__unsafe_private_named.0.unwrap(),
-            others: self.__unsafe_private_named.1,
+            actor: self._fields.0.unwrap(),
+            others: self._fields.1,
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GetRelationshipsOutput<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub actor: std::option::Option<jacquard_common::types::string::Did<'a>>,
-    #[serde(borrow)]
-    pub relationships: Vec<GetRelationshipsOutputRelationshipsItem<'a>>,
-}
-
-#[jacquard_derive::open_union]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(tag = "$type")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum GetRelationshipsOutputRelationshipsItem<'a> {
-    #[serde(rename = "app.bsky.graph.defs#relationship")]
-    Relationship(Box<crate::generated::app_bsky::graph::Relationship<'a>>),
-    #[serde(rename = "app.bsky.graph.defs#notFoundActor")]
-    NotFoundActor(Box<crate::generated::app_bsky::graph::NotFoundActor<'a>>),
-}
-
-#[jacquard_derive::open_union]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    thiserror::Error,
-    miette::Diagnostic,
-    jacquard_derive::IntoStatic,
-)]
-#[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum GetRelationshipsError<'a> {
-    /// the primary actor at-identifier could not be resolved
-    #[serde(rename = "ActorNotFound")]
-    ActorNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
-}
-
-impl std::fmt::Display for GetRelationshipsError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::ActorNotFound(msg) => {
-                write!(f, "ActorNotFound")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
-        }
-    }
-}
-
-/// Response type for
-///app.bsky.graph.getRelationships
-pub struct GetRelationshipsResponse;
-impl jacquard_common::xrpc::XrpcResp for GetRelationshipsResponse {
-    const NSID: &'static str = "app.bsky.graph.getRelationships";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetRelationshipsOutput<'de>;
-    type Err<'de> = GetRelationshipsError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for GetRelationships<'a> {
-    const NSID: &'static str = "app.bsky.graph.getRelationships";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = GetRelationshipsResponse;
-}
-
-/// Endpoint type for
-///app.bsky.graph.getRelationships
-pub struct GetRelationshipsRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for GetRelationshipsRequest {
-    const PATH: &'static str = "/xrpc/app.bsky.graph.getRelationships";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetRelationships<'de>;
-    type Response = GetRelationshipsResponse;
 }

@@ -5,33 +5,221 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
+//! Generated bindings for the `tools.ozone.team` Lexicon namespace/module.
 pub mod add_member;
 pub mod delete_member;
 pub mod list_members;
 pub mod update_member;
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct Member<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub created_at: std::option::Option<jacquard_common::types::string::Datetime>,
-    #[serde(borrow)]
-    pub did: jacquard_common::types::string::Did<'a>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub disabled: std::option::Option<bool>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub last_updated_by: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub profile: std::option::Option<crate::generated::app_bsky::actor::ProfileViewDetailed<'a>>,
-    #[serde(borrow)]
-    pub role: jacquard_common::CowStr<'a>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub updated_at: std::option::Option<jacquard_common::types::string::Datetime>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct Member<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub created_at: core::option::Option<jacquard_common::types::string::Datetime>,
+    pub did: jacquard_common::types::string::Did<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub disabled: core::option::Option<bool>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub last_updated_by: core::option::Option<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub profile: core::option::Option<crate::generated::app_bsky::actor::ProfileViewDetailed<S>>,
+    pub role: MemberRole<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub updated_at: core::option::Option<jacquard_common::types::string::Datetime>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum MemberRole<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    RoleAdmin,
+    RoleModerator,
+    RoleTriage,
+    RoleVerifier,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> MemberRole<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::RoleAdmin => "tools.ozone.team.defs#roleAdmin",
+            Self::RoleModerator => "tools.ozone.team.defs#roleModerator",
+            Self::RoleTriage => "tools.ozone.team.defs#roleTriage",
+            Self::RoleVerifier => "tools.ozone.team.defs#roleVerifier",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "tools.ozone.team.defs#roleAdmin" => Self::RoleAdmin,
+            "tools.ozone.team.defs#roleModerator" => Self::RoleModerator,
+            "tools.ozone.team.defs#roleTriage" => Self::RoleTriage,
+            "tools.ozone.team.defs#roleVerifier" => Self::RoleVerifier,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for MemberRole<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for MemberRole<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for MemberRole<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for MemberRole<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for MemberRole<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for MemberRole<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = MemberRole<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            MemberRole::RoleAdmin => MemberRole::RoleAdmin,
+            MemberRole::RoleModerator => MemberRole::RoleModerator,
+            MemberRole::RoleTriage => MemberRole::RoleTriage,
+            MemberRole::RoleVerifier => MemberRole::RoleVerifier,
+            MemberRole::Other(v) => MemberRole::Other(v.into_static()),
+        }
+    }
+}
+
+/// Admin role. Highest level of access, can perform all actions.
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic,
+    Hash,
+)]
+pub struct RoleAdmin;
+impl core::fmt::Display for RoleAdmin {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "roleAdmin")
+    }
+}
+
+/// Moderator role. Can perform most actions.
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic,
+    Hash,
+)]
+pub struct RoleModerator;
+impl core::fmt::Display for RoleModerator {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "roleModerator")
+    }
+}
+
+/// Triage role. Mostly intended for monitoring and escalating issues.
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic,
+    Hash,
+)]
+pub struct RoleTriage;
+impl core::fmt::Display for RoleTriage {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "roleTriage")
+    }
+}
+
+/// Verifier role. Only allowed to issue verifications.
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic,
+    Hash,
+)]
+pub struct RoleVerifier;
+impl core::fmt::Display for RoleVerifier {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "roleVerifier")
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Member<S> {
+    fn nsid() -> &'static str {
+        "tools.ozone.team.defs"
+    }
+    fn def_name() -> &'static str {
+        "member"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_tools_ozone_team_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
 }
 
 pub mod member_state {
@@ -55,17 +243,17 @@ pub mod member_state {
         type Role = Unset;
     }
     ///State transition - sets the `did` field to Set
-    pub struct SetDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDid<S> {}
-    impl<S: State> State for SetDid<S> {
+    pub struct SetDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetDid<St> {}
+    impl<St: State> State for SetDid<St> {
         type Did = Set<members::did>;
-        type Role = S::Role;
+        type Role = St::Role;
     }
     ///State transition - sets the `role` field to Set
-    pub struct SetRole<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRole<S> {}
-    impl<S: State> State for SetRole<S> {
-        type Did = S::Did;
+    pub struct SetRole<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRole<St> {}
+    impl<St: State> State for SetRole<St> {
+        type Did = St::Did;
         type Role = Set<members::role>;
     }
     /// Marker types for field names
@@ -78,46 +266,67 @@ pub mod member_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct MemberBuilder<'a, S: member_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<bool>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<crate::generated::app_bsky::actor::ProfileViewDetailed<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
+/// Builder for constructing an instance of this type.
+pub struct MemberBuilder<
+    St: member_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<bool>,
+        core::option::Option<S>,
+        core::option::Option<crate::generated::app_bsky::actor::ProfileViewDetailed<S>>,
+        core::option::Option<MemberRole<S>>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> Member<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> MemberBuilder<'a, member_state::Empty> {
+impl Member<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> MemberBuilder<member_state::Empty, jacquard_common::DefaultStr> {
         MemberBuilder::new()
     }
 }
 
-impl<'a> MemberBuilder<'a, member_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> Member<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> MemberBuilder<member_state::Empty, S> {
+        MemberBuilder::builder()
+    }
+}
+
+impl MemberBuilder<member_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         MemberBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: member_state::State> MemberBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> MemberBuilder<member_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        MemberBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: member_state::State, S: jacquard_common::BosStr> MemberBuilder<St, S> {
     /// Set the `createdAt` field (optional)
     pub fn created_at(
         mut self,
         value: impl Into<Option<jacquard_common::types::string::Datetime>>,
     ) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+        self._fields.0 = value.into();
         self
     }
     /// Set the `createdAt` field to an Option value (optional)
@@ -125,104 +334,101 @@ impl<'a, S: member_state::State> MemberBuilder<'a, S> {
         mut self,
         value: Option<jacquard_common::types::string::Datetime>,
     ) -> Self {
-        self.__unsafe_private_named.0 = value;
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S> MemberBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> MemberBuilder<St, S>
 where
-    S: member_state::State,
-    S::Did: member_state::IsUnset,
+    St: member_state::State,
+    St::Did: member_state::IsUnset,
 {
     /// Set the `did` field (required)
     pub fn did(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> MemberBuilder<'a, member_state::SetDid<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> MemberBuilder<member_state::SetDid<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         MemberBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: member_state::State> MemberBuilder<'a, S> {
+impl<St: member_state::State, S: jacquard_common::BosStr> MemberBuilder<St, S> {
     /// Set the `disabled` field (optional)
     pub fn disabled(mut self, value: impl Into<Option<bool>>) -> Self {
-        self.__unsafe_private_named.2 = value.into();
+        self._fields.2 = value.into();
         self
     }
     /// Set the `disabled` field to an Option value (optional)
     pub fn maybe_disabled(mut self, value: Option<bool>) -> Self {
-        self.__unsafe_private_named.2 = value;
+        self._fields.2 = value;
         self
     }
 }
 
-impl<'a, S: member_state::State> MemberBuilder<'a, S> {
+impl<St: member_state::State, S: jacquard_common::BosStr> MemberBuilder<St, S> {
     /// Set the `lastUpdatedBy` field (optional)
-    pub fn last_updated_by(
-        mut self,
-        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
-    ) -> Self {
-        self.__unsafe_private_named.3 = value.into();
+    pub fn last_updated_by(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.3 = value.into();
         self
     }
     /// Set the `lastUpdatedBy` field to an Option value (optional)
-    pub fn maybe_last_updated_by(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.3 = value;
+    pub fn maybe_last_updated_by(mut self, value: Option<S>) -> Self {
+        self._fields.3 = value;
         self
     }
 }
 
-impl<'a, S: member_state::State> MemberBuilder<'a, S> {
+impl<St: member_state::State, S: jacquard_common::BosStr> MemberBuilder<St, S> {
     /// Set the `profile` field (optional)
     pub fn profile(
         mut self,
-        value: impl Into<Option<crate::generated::app_bsky::actor::ProfileViewDetailed<'a>>>,
+        value: impl Into<Option<crate::generated::app_bsky::actor::ProfileViewDetailed<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.4 = value.into();
+        self._fields.4 = value.into();
         self
     }
     /// Set the `profile` field to an Option value (optional)
     pub fn maybe_profile(
         mut self,
-        value: Option<crate::generated::app_bsky::actor::ProfileViewDetailed<'a>>,
+        value: Option<crate::generated::app_bsky::actor::ProfileViewDetailed<S>>,
     ) -> Self {
-        self.__unsafe_private_named.4 = value;
+        self._fields.4 = value;
         self
     }
 }
 
-impl<'a, S> MemberBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> MemberBuilder<St, S>
 where
-    S: member_state::State,
-    S::Role: member_state::IsUnset,
+    St: member_state::State,
+    St::Role: member_state::IsUnset,
 {
     /// Set the `role` field (required)
     pub fn role(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> MemberBuilder<'a, member_state::SetRole<S>> {
-        self.__unsafe_private_named.5 = ::core::option::Option::Some(value.into());
+        value: impl Into<MemberRole<S>>,
+    ) -> MemberBuilder<member_state::SetRole<St>, S> {
+        self._fields.5 = ::core::option::Option::Some(value.into());
         MemberBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: member_state::State> MemberBuilder<'a, S> {
+impl<St: member_state::State, S: jacquard_common::BosStr> MemberBuilder<St, S> {
     /// Set the `updatedAt` field (optional)
     pub fn updated_at(
         mut self,
         value: impl Into<Option<jacquard_common::types::string::Datetime>>,
     ) -> Self {
-        self.__unsafe_private_named.6 = value.into();
+        self._fields.6 = value.into();
         self
     }
     /// Set the `updatedAt` field to an Option value (optional)
@@ -230,303 +436,178 @@ impl<'a, S: member_state::State> MemberBuilder<'a, S> {
         mut self,
         value: Option<jacquard_common::types::string::Datetime>,
     ) -> Self {
-        self.__unsafe_private_named.6 = value;
+        self._fields.6 = value;
         self
     }
 }
 
-impl<'a, S> MemberBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> MemberBuilder<St, S>
 where
-    S: member_state::State,
-    S::Did: member_state::IsSet,
-    S::Role: member_state::IsSet,
+    St: member_state::State,
+    St::Did: member_state::IsSet,
+    St::Role: member_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> Member<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> Member<S> {
         Member {
-            created_at: self.__unsafe_private_named.0,
-            did: self.__unsafe_private_named.1.unwrap(),
-            disabled: self.__unsafe_private_named.2,
-            last_updated_by: self.__unsafe_private_named.3,
-            profile: self.__unsafe_private_named.4,
-            role: self.__unsafe_private_named.5.unwrap(),
-            updated_at: self.__unsafe_private_named.6,
+            created_at: self._fields.0,
+            did: self._fields.1.unwrap(),
+            disabled: self._fields.2,
+            last_updated_by: self._fields.3,
+            profile: self._fields.4,
+            role: self._fields.5.unwrap(),
+            updated_at: self._fields.6,
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> Member<'a> {
+    ) -> Member<S> {
         Member {
-            created_at: self.__unsafe_private_named.0,
-            did: self.__unsafe_private_named.1.unwrap(),
-            disabled: self.__unsafe_private_named.2,
-            last_updated_by: self.__unsafe_private_named.3,
-            profile: self.__unsafe_private_named.4,
-            role: self.__unsafe_private_named.5.unwrap(),
-            updated_at: self.__unsafe_private_named.6,
+            created_at: self._fields.0,
+            did: self._fields.1.unwrap(),
+            disabled: self._fields.2,
+            last_updated_by: self._fields.3,
+            profile: self._fields.4,
+            role: self._fields.5.unwrap(),
+            updated_at: self._fields.6,
             extra_data: Some(extra_data),
         }
     }
 }
 
-fn lexicon_doc_tools_ozone_team_defs() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_tools_ozone_team_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("tools.ozone.team.defs"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("member"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("member"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("did"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("role"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("role"),
                         ]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("createdAt"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("did"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("disabled"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("disabled"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(
                                     ::jacquard_lexicon::lexicon::LexBoolean {
-                                        description: None,
-                                        default: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("lastUpdatedBy"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "lastUpdatedBy",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("profile"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("profile"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
                                     ::jacquard_lexicon::lexicon::LexRef {
-                                        description: None,
                                         r#ref: ::jacquard_common::CowStr::new_static(
                                             "app.bsky.actor.defs#profileViewDetailed",
                                         ),
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("role"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("role"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("updatedAt"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("updatedAt"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("roleAdmin"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("roleAdmin"),
                 ::jacquard_lexicon::lexicon::LexUserType::Token(
-                    ::jacquard_lexicon::lexicon::LexToken { description: None },
+                    ::jacquard_lexicon::lexicon::LexToken {
+                        ..Default::default()
+                    },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("roleModerator"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("roleModerator"),
                 ::jacquard_lexicon::lexicon::LexUserType::Token(
-                    ::jacquard_lexicon::lexicon::LexToken { description: None },
+                    ::jacquard_lexicon::lexicon::LexToken {
+                        ..Default::default()
+                    },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("roleTriage"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("roleTriage"),
                 ::jacquard_lexicon::lexicon::LexUserType::Token(
-                    ::jacquard_lexicon::lexicon::LexToken { description: None },
+                    ::jacquard_lexicon::lexicon::LexToken {
+                        ..Default::default()
+                    },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("roleVerifier"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("roleVerifier"),
                 ::jacquard_lexicon::lexicon::LexUserType::Token(
-                    ::jacquard_lexicon::lexicon::LexToken { description: None },
+                    ::jacquard_lexicon::lexicon::LexToken {
+                        ..Default::default()
+                    },
                 ),
             );
             map
         },
-    }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Member<'a> {
-    fn nsid() -> &'static str {
-        "tools.ozone.team.defs"
-    }
-    fn def_name() -> &'static str {
-        "member"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_tools_ozone_team_defs()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-/// Admin role. Highest level of access, can perform all actions.
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    Hash,
-    jacquard_derive::IntoStatic,
-)]
-pub struct RoleAdmin;
-impl std::fmt::Display for RoleAdmin {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "roleAdmin")
-    }
-}
-
-/// Moderator role. Can perform most actions.
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    Hash,
-    jacquard_derive::IntoStatic,
-)]
-pub struct RoleModerator;
-impl std::fmt::Display for RoleModerator {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "roleModerator")
-    }
-}
-
-/// Triage role. Mostly intended for monitoring and escalating issues.
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    Hash,
-    jacquard_derive::IntoStatic,
-)]
-pub struct RoleTriage;
-impl std::fmt::Display for RoleTriage {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "roleTriage")
-    }
-}
-
-/// Verifier role. Only allowed to issue verifications.
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    Hash,
-    jacquard_derive::IntoStatic,
-)]
-pub struct RoleVerifier;
-impl std::fmt::Display for RoleVerifier {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "roleVerifier")
+        ..Default::default()
     }
 }

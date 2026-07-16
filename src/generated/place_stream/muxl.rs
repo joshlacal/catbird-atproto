@@ -6,29 +6,57 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 /// A track within a multiplexed stream
-#[jacquard_derive::lexicon]
+
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct Track<'a> {
-    /// Number of audio channels
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub channels: std::option::Option<i64>,
-    /// Codec used for this track
-    #[serde(borrow)]
-    pub codec: jacquard_common::CowStr<'a>,
-    /// Height in pixels (video tracks)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub height: std::option::Option<i64>,
-    /// Track identifier
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct Track<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Number of audio channels
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub channels: core::option::Option<i64>,
+    ///Codec used for this track
+    pub codec: S,
+    ///Height in pixels (video tracks)
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub height: core::option::Option<i64>,
+    ///Track identifier
     pub id: i64,
-    /// Sample rate (audio tracks)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub rate: std::option::Option<i64>,
-    /// Width in pixels (video tracks)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub width: std::option::Option<i64>,
+    ///Sample rate (audio tracks)
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub rate: core::option::Option<i64>,
+    ///Width in pixels (video tracks)
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub width: core::option::Option<i64>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Track<S> {
+    fn nsid() -> &'static str {
+        "place.stream.muxl.defs"
+    }
+    fn def_name() -> &'static str {
+        "track"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_place_stream_muxl_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
 }
 
 pub mod track_state {
@@ -41,327 +69,294 @@ pub mod track_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Id;
         type Codec;
+        type Id;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Id = Unset;
         type Codec = Unset;
-    }
-    ///State transition - sets the `id` field to Set
-    pub struct SetId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetId<S> {}
-    impl<S: State> State for SetId<S> {
-        type Id = Set<members::id>;
-        type Codec = S::Codec;
+        type Id = Unset;
     }
     ///State transition - sets the `codec` field to Set
-    pub struct SetCodec<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCodec<S> {}
-    impl<S: State> State for SetCodec<S> {
-        type Id = S::Id;
+    pub struct SetCodec<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCodec<St> {}
+    impl<St: State> State for SetCodec<St> {
         type Codec = Set<members::codec>;
+        type Id = St::Id;
+    }
+    ///State transition - sets the `id` field to Set
+    pub struct SetId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetId<St> {}
+    impl<St: State> State for SetId<St> {
+        type Codec = St::Codec;
+        type Id = Set<members::id>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `id` field
-        pub struct id(());
         ///Marker type for the `codec` field
         pub struct codec(());
+        ///Marker type for the `id` field
+        pub struct id(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct TrackBuilder<'a, S: track_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<i64>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<i64>,
+/// Builder for constructing an instance of this type.
+pub struct TrackBuilder<
+    St: track_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<i64>,
+        core::option::Option<S>,
+        core::option::Option<i64>,
+        core::option::Option<i64>,
+        core::option::Option<i64>,
+        core::option::Option<i64>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> Track<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> TrackBuilder<'a, track_state::Empty> {
+impl Track<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> TrackBuilder<track_state::Empty, jacquard_common::DefaultStr> {
         TrackBuilder::new()
     }
 }
 
-impl<'a> TrackBuilder<'a, track_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> Track<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> TrackBuilder<track_state::Empty, S> {
+        TrackBuilder::builder()
+    }
+}
+
+impl TrackBuilder<track_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         TrackBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: track_state::State> TrackBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> TrackBuilder<track_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        TrackBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: track_state::State, S: jacquard_common::BosStr> TrackBuilder<St, S> {
     /// Set the `channels` field (optional)
     pub fn channels(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+        self._fields.0 = value.into();
         self
     }
     /// Set the `channels` field to an Option value (optional)
     pub fn maybe_channels(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.0 = value;
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S> TrackBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> TrackBuilder<St, S>
 where
-    S: track_state::State,
-    S::Codec: track_state::IsUnset,
+    St: track_state::State,
+    St::Codec: track_state::IsUnset,
 {
     /// Set the `codec` field (required)
-    pub fn codec(
-        mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> TrackBuilder<'a, track_state::SetCodec<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+    pub fn codec(mut self, value: impl Into<S>) -> TrackBuilder<track_state::SetCodec<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         TrackBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: track_state::State> TrackBuilder<'a, S> {
+impl<St: track_state::State, S: jacquard_common::BosStr> TrackBuilder<St, S> {
     /// Set the `height` field (optional)
     pub fn height(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.2 = value.into();
+        self._fields.2 = value.into();
         self
     }
     /// Set the `height` field to an Option value (optional)
     pub fn maybe_height(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.2 = value;
+        self._fields.2 = value;
         self
     }
 }
 
-impl<'a, S> TrackBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> TrackBuilder<St, S>
 where
-    S: track_state::State,
-    S::Id: track_state::IsUnset,
+    St: track_state::State,
+    St::Id: track_state::IsUnset,
 {
     /// Set the `id` field (required)
-    pub fn id(mut self, value: impl Into<i64>) -> TrackBuilder<'a, track_state::SetId<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+    pub fn id(mut self, value: impl Into<i64>) -> TrackBuilder<track_state::SetId<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
         TrackBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: track_state::State> TrackBuilder<'a, S> {
+impl<St: track_state::State, S: jacquard_common::BosStr> TrackBuilder<St, S> {
     /// Set the `rate` field (optional)
     pub fn rate(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.4 = value.into();
+        self._fields.4 = value.into();
         self
     }
     /// Set the `rate` field to an Option value (optional)
     pub fn maybe_rate(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.4 = value;
+        self._fields.4 = value;
         self
     }
 }
 
-impl<'a, S: track_state::State> TrackBuilder<'a, S> {
+impl<St: track_state::State, S: jacquard_common::BosStr> TrackBuilder<St, S> {
     /// Set the `width` field (optional)
     pub fn width(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.5 = value.into();
+        self._fields.5 = value.into();
         self
     }
     /// Set the `width` field to an Option value (optional)
     pub fn maybe_width(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.5 = value;
+        self._fields.5 = value;
         self
     }
 }
 
-impl<'a, S> TrackBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> TrackBuilder<St, S>
 where
-    S: track_state::State,
-    S::Id: track_state::IsSet,
-    S::Codec: track_state::IsSet,
+    St: track_state::State,
+    St::Codec: track_state::IsSet,
+    St::Id: track_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> Track<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> Track<S> {
         Track {
-            channels: self.__unsafe_private_named.0,
-            codec: self.__unsafe_private_named.1.unwrap(),
-            height: self.__unsafe_private_named.2,
-            id: self.__unsafe_private_named.3.unwrap(),
-            rate: self.__unsafe_private_named.4,
-            width: self.__unsafe_private_named.5,
+            channels: self._fields.0,
+            codec: self._fields.1.unwrap(),
+            height: self._fields.2,
+            id: self._fields.3.unwrap(),
+            rate: self._fields.4,
+            width: self._fields.5,
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> Track<'a> {
+    ) -> Track<S> {
         Track {
-            channels: self.__unsafe_private_named.0,
-            codec: self.__unsafe_private_named.1.unwrap(),
-            height: self.__unsafe_private_named.2,
-            id: self.__unsafe_private_named.3.unwrap(),
-            rate: self.__unsafe_private_named.4,
-            width: self.__unsafe_private_named.5,
+            channels: self._fields.0,
+            codec: self._fields.1.unwrap(),
+            height: self._fields.2,
+            id: self._fields.3.unwrap(),
+            rate: self._fields.4,
+            width: self._fields.5,
             extra_data: Some(extra_data),
         }
     }
 }
 
-fn lexicon_doc_place_stream_muxl_defs() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_place_stream_muxl_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("place.stream.muxl.defs"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("track"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("track"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
                         description: Some(::jacquard_common::CowStr::new_static(
                             "A track within a multiplexed stream",
                         )),
                         required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("id"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("codec"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("id"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("codec"),
                         ]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("channels"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("channels"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
                                     ::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
-                                        minimum: None,
-                                        maximum: None,
-                                        r#enum: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("codec"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("codec"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
                                             "Codec used for this track",
                                         )),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("height"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("height"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
                                     ::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
-                                        minimum: None,
-                                        maximum: None,
-                                        r#enum: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("id"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("id"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
                                     ::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
-                                        minimum: None,
-                                        maximum: None,
-                                        r#enum: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("rate"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("rate"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
                                     ::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
-                                        minimum: None,
-                                        maximum: None,
-                                        r#enum: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("width"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("width"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
                                     ::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
-                                        minimum: None,
-                                        maximum: None,
-                                        r#enum: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map
         },
-    }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Track<'a> {
-    fn nsid() -> &'static str {
-        "place.stream.muxl.defs"
-    }
-    fn def_name() -> &'static str {
-        "track"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_place_stream_muxl_defs()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
+        ..Default::default()
     }
 }

@@ -5,16 +5,140 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct ApproveJoinRequest<'a> {
-    #[serde(borrow)]
-    pub convo_id: jacquard_common::CowStr<'a>,
-    #[serde(borrow)]
-    pub member: jacquard_common::types::string::Did<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ApproveJoinRequest<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub convo_id: S,
+    pub member: jacquard_common::types::string::Did<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ApproveJoinRequestOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub convo: crate::generated::chat_bsky::convo::ConvoView<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    thiserror::Error,
+    miette::Diagnostic,
+)]
+#[serde(tag = "error", content = "message")]
+pub enum ApproveJoinRequestError {
+    #[serde(rename = "InvalidConvo")]
+    InvalidConvo(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    #[serde(rename = "InsufficientRole")]
+    InsufficientRole(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    #[serde(rename = "MemberLimitReached")]
+    MemberLimitReached(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
+}
+
+impl core::fmt::Display for ApproveJoinRequestError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+            Self::InvalidConvo(msg) => {
+                write!(f, "InvalidConvo")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::InsufficientRole(msg) => {
+                write!(f, "InsufficientRole")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::MemberLimitReached(msg) => {
+                write!(f, "MemberLimitReached")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+        }
+    }
+}
+
+/** Response marker for the `chat.bsky.group.approveJoinRequest` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `ApproveJoinRequestOutput<S>` for this endpoint.*/
+pub struct ApproveJoinRequestResponse;
+impl jacquard_common::xrpc::XrpcResp for ApproveJoinRequestResponse {
+    const NSID: &'static str = "chat.bsky.group.approveJoinRequest";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = ApproveJoinRequestOutput<S>;
+    type Err = ApproveJoinRequestError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for ApproveJoinRequest<S> {
+    const NSID: &'static str = "chat.bsky.group.approveJoinRequest";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Response = ApproveJoinRequestResponse;
+}
+
+/** Endpoint marker for the `chat.bsky.group.approveJoinRequest` procedure.
+
+Path: `/xrpc/chat.bsky.group.approveJoinRequest`. The request payload type is `ApproveJoinRequest<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct ApproveJoinRequestRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for ApproveJoinRequestRequest {
+    const PATH: &'static str = "/xrpc/chat.bsky.group.approveJoinRequest";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Request<S: jacquard_common::BosStr> = ApproveJoinRequest<S>;
+    type Response = ApproveJoinRequestResponse;
 }
 
 pub mod approve_join_request_state {
@@ -38,17 +162,17 @@ pub mod approve_join_request_state {
         type Member = Unset;
     }
     ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
+    pub struct SetConvoId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetConvoId<St> {}
+    impl<St: State> State for SetConvoId<St> {
         type ConvoId = Set<members::convo_id>;
-        type Member = S::Member;
+        type Member = St::Member;
     }
     ///State transition - sets the `member` field to Set
-    pub struct SetMember<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetMember<S> {}
-    impl<S: State> State for SetMember<S> {
-        type ConvoId = S::ConvoId;
+    pub struct SetMember<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetMember<St> {}
+    impl<St: State> State for SetMember<St> {
+        type ConvoId = St::ConvoId;
         type Member = Set<members::member>;
     }
     /// Marker types for field names
@@ -61,188 +185,121 @@ pub mod approve_join_request_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct ApproveJoinRequestBuilder<'a, S: approve_join_request_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct ApproveJoinRequestBuilder<
+    St: approve_join_request_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> ApproveJoinRequest<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> ApproveJoinRequestBuilder<'a, approve_join_request_state::Empty> {
+impl ApproveJoinRequest<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> ApproveJoinRequestBuilder<approve_join_request_state::Empty, jacquard_common::DefaultStr>
+    {
         ApproveJoinRequestBuilder::new()
     }
 }
 
-impl<'a> ApproveJoinRequestBuilder<'a, approve_join_request_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> ApproveJoinRequest<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> ApproveJoinRequestBuilder<approve_join_request_state::Empty, S> {
+        ApproveJoinRequestBuilder::builder()
+    }
+}
+
+impl ApproveJoinRequestBuilder<approve_join_request_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ApproveJoinRequestBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ApproveJoinRequestBuilder<'a, S>
+impl<S: jacquard_common::BosStr> ApproveJoinRequestBuilder<approve_join_request_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        ApproveJoinRequestBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ApproveJoinRequestBuilder<St, S>
 where
-    S: approve_join_request_state::State,
-    S::ConvoId: approve_join_request_state::IsUnset,
+    St: approve_join_request_state::State,
+    St::ConvoId: approve_join_request_state::IsUnset,
 {
     /// Set the `convoId` field (required)
     pub fn convo_id(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> ApproveJoinRequestBuilder<'a, approve_join_request_state::SetConvoId<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> ApproveJoinRequestBuilder<approve_join_request_state::SetConvoId<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         ApproveJoinRequestBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ApproveJoinRequestBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ApproveJoinRequestBuilder<St, S>
 where
-    S: approve_join_request_state::State,
-    S::Member: approve_join_request_state::IsUnset,
+    St: approve_join_request_state::State,
+    St::Member: approve_join_request_state::IsUnset,
 {
     /// Set the `member` field (required)
     pub fn member(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> ApproveJoinRequestBuilder<'a, approve_join_request_state::SetMember<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> ApproveJoinRequestBuilder<approve_join_request_state::SetMember<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         ApproveJoinRequestBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ApproveJoinRequestBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ApproveJoinRequestBuilder<St, S>
 where
-    S: approve_join_request_state::State,
-    S::ConvoId: approve_join_request_state::IsSet,
-    S::Member: approve_join_request_state::IsSet,
+    St: approve_join_request_state::State,
+    St::ConvoId: approve_join_request_state::IsSet,
+    St::Member: approve_join_request_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> ApproveJoinRequest<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> ApproveJoinRequest<S> {
         ApproveJoinRequest {
-            convo_id: self.__unsafe_private_named.0.unwrap(),
-            member: self.__unsafe_private_named.1.unwrap(),
+            convo_id: self._fields.0.unwrap(),
+            member: self._fields.1.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> ApproveJoinRequest<'a> {
+    ) -> ApproveJoinRequest<S> {
         ApproveJoinRequest {
-            convo_id: self.__unsafe_private_named.0.unwrap(),
-            member: self.__unsafe_private_named.1.unwrap(),
+            convo_id: self._fields.0.unwrap(),
+            member: self._fields.1.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct ApproveJoinRequestOutput<'a> {
-    #[serde(borrow)]
-    pub convo: crate::generated::chat_bsky::convo::ConvoView<'a>,
-}
-
-#[jacquard_derive::open_union]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    thiserror::Error,
-    miette::Diagnostic,
-    jacquard_derive::IntoStatic,
-)]
-#[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum ApproveJoinRequestError<'a> {
-    #[serde(rename = "InvalidConvo")]
-    InvalidConvo(std::option::Option<jacquard_common::CowStr<'a>>),
-    #[serde(rename = "InsufficientRole")]
-    InsufficientRole(std::option::Option<jacquard_common::CowStr<'a>>),
-    #[serde(rename = "MemberLimitReached")]
-    MemberLimitReached(std::option::Option<jacquard_common::CowStr<'a>>),
-}
-
-impl std::fmt::Display for ApproveJoinRequestError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::InvalidConvo(msg) => {
-                write!(f, "InvalidConvo")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
-            Self::InsufficientRole(msg) => {
-                write!(f, "InsufficientRole")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
-            Self::MemberLimitReached(msg) => {
-                write!(f, "MemberLimitReached")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
-        }
-    }
-}
-
-/// Response type for
-///chat.bsky.group.approveJoinRequest
-pub struct ApproveJoinRequestResponse;
-impl jacquard_common::xrpc::XrpcResp for ApproveJoinRequestResponse {
-    const NSID: &'static str = "chat.bsky.group.approveJoinRequest";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = ApproveJoinRequestOutput<'de>;
-    type Err<'de> = ApproveJoinRequestError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for ApproveJoinRequest<'a> {
-    const NSID: &'static str = "chat.bsky.group.approveJoinRequest";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Response = ApproveJoinRequestResponse;
-}
-
-/// Endpoint type for
-///chat.bsky.group.approveJoinRequest
-pub struct ApproveJoinRequestRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for ApproveJoinRequestRequest {
-    const PATH: &'static str = "/xrpc/chat.bsky.group.approveJoinRequest";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = ApproveJoinRequest<'de>;
-    type Response = ApproveJoinRequestResponse;
 }

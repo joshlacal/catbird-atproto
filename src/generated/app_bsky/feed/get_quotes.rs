@@ -8,19 +8,79 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetQuotes<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cid: std::option::Option<jacquard_common::types::string::Cid<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    ///(default: 50, min: 1, max: 100)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub limit: std::option::Option<i64>,
-    #[serde(borrow)]
-    pub uri: jacquard_common::types::string::AtUri<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetQuotes<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    /// Defaults to `50`. Min: 1. Max: 100.
+    #[serde(default = "_default_limit")]
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub limit: core::option::Option<i64>,
+    pub uri: jacquard_common::types::string::AtUri<S>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetQuotesOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    pub posts: Vec<crate::generated::app_bsky::feed::PostView<S>>,
+    pub uri: jacquard_common::types::string::AtUri<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `app.bsky.feed.getQuotes` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetQuotesOutput<S>` for this endpoint.*/
+pub struct GetQuotesResponse;
+impl jacquard_common::xrpc::XrpcResp for GetQuotesResponse {
+    const NSID: &'static str = "app.bsky.feed.getQuotes";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = GetQuotesOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetQuotes<S> {
+    const NSID: &'static str = "app.bsky.feed.getQuotes";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = GetQuotesResponse;
+}
+
+/** Endpoint marker for the `app.bsky.feed.getQuotes` query.
+
+Path: `/xrpc/app.bsky.feed.getQuotes`. The request payload type is `GetQuotes<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct GetQuotesRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for GetQuotesRequest {
+    const PATH: &'static str = "/xrpc/app.bsky.feed.getQuotes";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = GetQuotes<S>;
+    type Response = GetQuotesResponse;
+}
+
+fn _default_limit() -> core::option::Option<i64> {
+    Some(50i64)
 }
 
 pub mod get_quotes_state {
@@ -42,9 +102,9 @@ pub mod get_quotes_state {
         type Uri = Unset;
     }
     ///State transition - sets the `uri` field to Set
-    pub struct SetUri<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUri<S> {}
-    impl<S: State> State for SetUri<S> {
+    pub struct SetUri<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetUri<St> {}
+    impl<St: State> State for SetUri<St> {
         type Uri = Set<members::uri>;
     }
     /// Marker types for field names
@@ -55,153 +115,127 @@ pub mod get_quotes_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct GetQuotesBuilder<'a, S: get_quotes_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Cid<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct GetQuotesBuilder<
+    St: get_quotes_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Cid<S>>,
+        core::option::Option<S>,
+        core::option::Option<i64>,
+        core::option::Option<jacquard_common::types::string::AtUri<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> GetQuotes<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> GetQuotesBuilder<'a, get_quotes_state::Empty> {
+impl GetQuotes<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> GetQuotesBuilder<get_quotes_state::Empty, jacquard_common::DefaultStr> {
         GetQuotesBuilder::new()
     }
 }
 
-impl<'a> GetQuotesBuilder<'a, get_quotes_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> GetQuotes<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> GetQuotesBuilder<get_quotes_state::Empty, S> {
+        GetQuotesBuilder::builder()
+    }
+}
+
+impl GetQuotesBuilder<get_quotes_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetQuotesBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: get_quotes_state::State> GetQuotesBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> GetQuotesBuilder<get_quotes_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GetQuotesBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: get_quotes_state::State, S: jacquard_common::BosStr> GetQuotesBuilder<St, S> {
     /// Set the `cid` field (optional)
-    pub fn cid(
-        mut self,
-        value: impl Into<Option<jacquard_common::types::string::Cid<'a>>>,
-    ) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+    pub fn cid(mut self, value: impl Into<Option<jacquard_common::types::string::Cid<S>>>) -> Self {
+        self._fields.0 = value.into();
         self
     }
     /// Set the `cid` field to an Option value (optional)
-    pub fn maybe_cid(mut self, value: Option<jacquard_common::types::string::Cid<'a>>) -> Self {
-        self.__unsafe_private_named.0 = value;
+    pub fn maybe_cid(mut self, value: Option<jacquard_common::types::string::Cid<S>>) -> Self {
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S: get_quotes_state::State> GetQuotesBuilder<'a, S> {
+impl<St: get_quotes_state::State, S: jacquard_common::BosStr> GetQuotesBuilder<St, S> {
     /// Set the `cursor` field (optional)
-    pub fn cursor(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+    pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.1 = value.into();
         self
     }
     /// Set the `cursor` field to an Option value (optional)
-    pub fn maybe_cursor(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.1 = value;
+    pub fn maybe_cursor(mut self, value: Option<S>) -> Self {
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S: get_quotes_state::State> GetQuotesBuilder<'a, S> {
+impl<St: get_quotes_state::State, S: jacquard_common::BosStr> GetQuotesBuilder<St, S> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.2 = value.into();
+        self._fields.2 = value.into();
         self
     }
     /// Set the `limit` field to an Option value (optional)
     pub fn maybe_limit(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.2 = value;
+        self._fields.2 = value;
         self
     }
 }
 
-impl<'a, S> GetQuotesBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GetQuotesBuilder<St, S>
 where
-    S: get_quotes_state::State,
-    S::Uri: get_quotes_state::IsUnset,
+    St: get_quotes_state::State,
+    St::Uri: get_quotes_state::IsUnset,
 {
     /// Set the `uri` field (required)
     pub fn uri(
         mut self,
-        value: impl Into<jacquard_common::types::string::AtUri<'a>>,
-    ) -> GetQuotesBuilder<'a, get_quotes_state::SetUri<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::AtUri<S>>,
+    ) -> GetQuotesBuilder<get_quotes_state::SetUri<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
         GetQuotesBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GetQuotesBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GetQuotesBuilder<St, S>
 where
-    S: get_quotes_state::State,
-    S::Uri: get_quotes_state::IsSet,
+    St: get_quotes_state::State,
+    St::Uri: get_quotes_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> GetQuotes<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> GetQuotes<S> {
         GetQuotes {
-            cid: self.__unsafe_private_named.0,
-            cursor: self.__unsafe_private_named.1,
-            limit: self.__unsafe_private_named.2,
-            uri: self.__unsafe_private_named.3.unwrap(),
+            cid: self._fields.0,
+            cursor: self._fields.1,
+            limit: self._fields.2,
+            uri: self._fields.3.unwrap(),
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GetQuotesOutput<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cid: std::option::Option<jacquard_common::types::string::Cid<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(borrow)]
-    pub posts: Vec<crate::generated::app_bsky::feed::PostView<'a>>,
-    #[serde(borrow)]
-    pub uri: jacquard_common::types::string::AtUri<'a>,
-}
-
-/// Response type for
-///app.bsky.feed.getQuotes
-pub struct GetQuotesResponse;
-impl jacquard_common::xrpc::XrpcResp for GetQuotesResponse {
-    const NSID: &'static str = "app.bsky.feed.getQuotes";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetQuotesOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for GetQuotes<'a> {
-    const NSID: &'static str = "app.bsky.feed.getQuotes";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = GetQuotesResponse;
-}
-
-/// Endpoint type for
-///app.bsky.feed.getQuotes
-pub struct GetQuotesRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for GetQuotesRequest {
-    const PATH: &'static str = "/xrpc/app.bsky.feed.getQuotes";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetQuotes<'de>;
-    type Response = GetQuotesResponse;
 }

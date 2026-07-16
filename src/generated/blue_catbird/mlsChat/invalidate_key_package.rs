@@ -5,21 +5,231 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct InvalidateKeyPackage<'a> {
-    /// DID of the device whose KP is being invalidated.
-    #[serde(borrow)]
-    pub device_did: jacquard_common::types::string::Did<'a>,
-    /// Hex-encoded SHA-256 hash of the KP to invalidate.
-    #[serde(borrow)]
-    pub key_package_hash: jacquard_common::CowStr<'a>,
-    /// Why the KP is being invalidated.
-    #[serde(borrow)]
-    pub reason: jacquard_common::CowStr<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct InvalidateKeyPackage<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///DID of the device whose KP is being invalidated.
+    pub device_did: jacquard_common::types::string::Did<S>,
+    ///Hex-encoded SHA-256 hash of the KP to invalidate.
+    pub key_package_hash: S,
+    ///Why the KP is being invalidated.
+    pub reason: InvalidateKeyPackageReason<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// Why the KP is being invalidated.
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum InvalidateKeyPackageReason<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    NoMatchingKeyPackage,
+    CorruptInvitee,
+    Unowned,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> InvalidateKeyPackageReason<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::NoMatchingKeyPackage => "noMatchingKeyPackage",
+            Self::CorruptInvitee => "corruptInvitee",
+            Self::Unowned => "unowned",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "noMatchingKeyPackage" => Self::NoMatchingKeyPackage,
+            "corruptInvitee" => Self::CorruptInvitee,
+            "unowned" => Self::Unowned,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for InvalidateKeyPackageReason<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for InvalidateKeyPackageReason<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for InvalidateKeyPackageReason<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for InvalidateKeyPackageReason<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for InvalidateKeyPackageReason<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for InvalidateKeyPackageReason<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = InvalidateKeyPackageReason<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            InvalidateKeyPackageReason::NoMatchingKeyPackage => {
+                InvalidateKeyPackageReason::NoMatchingKeyPackage
+            }
+            InvalidateKeyPackageReason::CorruptInvitee => {
+                InvalidateKeyPackageReason::CorruptInvitee
+            }
+            InvalidateKeyPackageReason::Unowned => InvalidateKeyPackageReason::Unowned,
+            InvalidateKeyPackageReason::Other(v) => {
+                InvalidateKeyPackageReason::Other(v.into_static())
+            }
+        }
+    }
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct InvalidateKeyPackageOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///True if the KP was already dead before this call (idempotent).
+    pub already_dead: bool,
+    ///True if the KP was just marked dead in this call.
+    pub marked: bool,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    thiserror::Error,
+    miette::Diagnostic,
+)]
+#[serde(tag = "error", content = "message")]
+pub enum InvalidateKeyPackageError {
+    /// No KP exists for the given (deviceDid, keyPackageHash) pair.
+    #[serde(rename = "KeyPackageNotFound")]
+    KeyPackageNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Caller is neither the KP owner nor a member of any convo where the failure was observed.
+    #[serde(rename = "Unauthorized")]
+    Unauthorized(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
+}
+
+impl core::fmt::Display for InvalidateKeyPackageError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+            Self::KeyPackageNotFound(msg) => {
+                write!(f, "KeyPackageNotFound")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::Unauthorized(msg) => {
+                write!(f, "Unauthorized")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+        }
+    }
+}
+
+/** Response marker for the `blue.catbird.mlsChat.invalidateKeyPackage` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `InvalidateKeyPackageOutput<S>` for this endpoint.*/
+pub struct InvalidateKeyPackageResponse;
+impl jacquard_common::xrpc::XrpcResp for InvalidateKeyPackageResponse {
+    const NSID: &'static str = "blue.catbird.mlsChat.invalidateKeyPackage";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = InvalidateKeyPackageOutput<S>;
+    type Err = InvalidateKeyPackageError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for InvalidateKeyPackage<S> {
+    const NSID: &'static str = "blue.catbird.mlsChat.invalidateKeyPackage";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Response = InvalidateKeyPackageResponse;
+}
+
+/** Endpoint marker for the `blue.catbird.mlsChat.invalidateKeyPackage` procedure.
+
+Path: `/xrpc/blue.catbird.mlsChat.invalidateKeyPackage`. The request payload type is `InvalidateKeyPackage<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct InvalidateKeyPackageRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for InvalidateKeyPackageRequest {
+    const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.invalidateKeyPackage";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Request<S: jacquard_common::BosStr> = InvalidateKeyPackage<S>;
+    type Response = InvalidateKeyPackageResponse;
 }
 
 pub mod invalidate_key_package_state {
@@ -45,27 +255,27 @@ pub mod invalidate_key_package_state {
         type Reason = Unset;
     }
     ///State transition - sets the `device_did` field to Set
-    pub struct SetDeviceDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDeviceDid<S> {}
-    impl<S: State> State for SetDeviceDid<S> {
+    pub struct SetDeviceDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetDeviceDid<St> {}
+    impl<St: State> State for SetDeviceDid<St> {
         type DeviceDid = Set<members::device_did>;
-        type KeyPackageHash = S::KeyPackageHash;
-        type Reason = S::Reason;
+        type KeyPackageHash = St::KeyPackageHash;
+        type Reason = St::Reason;
     }
     ///State transition - sets the `key_package_hash` field to Set
-    pub struct SetKeyPackageHash<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetKeyPackageHash<S> {}
-    impl<S: State> State for SetKeyPackageHash<S> {
-        type DeviceDid = S::DeviceDid;
+    pub struct SetKeyPackageHash<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetKeyPackageHash<St> {}
+    impl<St: State> State for SetKeyPackageHash<St> {
+        type DeviceDid = St::DeviceDid;
         type KeyPackageHash = Set<members::key_package_hash>;
-        type Reason = S::Reason;
+        type Reason = St::Reason;
     }
     ///State transition - sets the `reason` field to Set
-    pub struct SetReason<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetReason<S> {}
-    impl<S: State> State for SetReason<S> {
-        type DeviceDid = S::DeviceDid;
-        type KeyPackageHash = S::KeyPackageHash;
+    pub struct SetReason<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetReason<St> {}
+    impl<St: State> State for SetReason<St> {
+        type DeviceDid = St::DeviceDid;
+        type KeyPackageHash = St::KeyPackageHash;
         type Reason = Set<members::reason>;
     }
     /// Marker types for field names
@@ -80,206 +290,146 @@ pub mod invalidate_key_package_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct InvalidateKeyPackageBuilder<'a, S: invalidate_key_package_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct InvalidateKeyPackageBuilder<
+    St: invalidate_key_package_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<S>,
+        core::option::Option<InvalidateKeyPackageReason<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> InvalidateKeyPackage<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> InvalidateKeyPackageBuilder<'a, invalidate_key_package_state::Empty> {
+impl InvalidateKeyPackage<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> InvalidateKeyPackageBuilder<invalidate_key_package_state::Empty, jacquard_common::DefaultStr>
+    {
         InvalidateKeyPackageBuilder::new()
     }
 }
 
-impl<'a> InvalidateKeyPackageBuilder<'a, invalidate_key_package_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> InvalidateKeyPackage<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> InvalidateKeyPackageBuilder<invalidate_key_package_state::Empty, S> {
+        InvalidateKeyPackageBuilder::builder()
+    }
+}
+
+impl InvalidateKeyPackageBuilder<invalidate_key_package_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         InvalidateKeyPackageBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> InvalidateKeyPackageBuilder<'a, S>
+impl<S: jacquard_common::BosStr>
+    InvalidateKeyPackageBuilder<invalidate_key_package_state::Empty, S>
+{
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        InvalidateKeyPackageBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> InvalidateKeyPackageBuilder<St, S>
 where
-    S: invalidate_key_package_state::State,
-    S::DeviceDid: invalidate_key_package_state::IsUnset,
+    St: invalidate_key_package_state::State,
+    St::DeviceDid: invalidate_key_package_state::IsUnset,
 {
     /// Set the `deviceDid` field (required)
     pub fn device_did(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> InvalidateKeyPackageBuilder<'a, invalidate_key_package_state::SetDeviceDid<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> InvalidateKeyPackageBuilder<invalidate_key_package_state::SetDeviceDid<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         InvalidateKeyPackageBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> InvalidateKeyPackageBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> InvalidateKeyPackageBuilder<St, S>
 where
-    S: invalidate_key_package_state::State,
-    S::KeyPackageHash: invalidate_key_package_state::IsUnset,
+    St: invalidate_key_package_state::State,
+    St::KeyPackageHash: invalidate_key_package_state::IsUnset,
 {
     /// Set the `keyPackageHash` field (required)
     pub fn key_package_hash(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> InvalidateKeyPackageBuilder<'a, invalidate_key_package_state::SetKeyPackageHash<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> InvalidateKeyPackageBuilder<invalidate_key_package_state::SetKeyPackageHash<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         InvalidateKeyPackageBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> InvalidateKeyPackageBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> InvalidateKeyPackageBuilder<St, S>
 where
-    S: invalidate_key_package_state::State,
-    S::Reason: invalidate_key_package_state::IsUnset,
+    St: invalidate_key_package_state::State,
+    St::Reason: invalidate_key_package_state::IsUnset,
 {
     /// Set the `reason` field (required)
     pub fn reason(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> InvalidateKeyPackageBuilder<'a, invalidate_key_package_state::SetReason<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        value: impl Into<InvalidateKeyPackageReason<S>>,
+    ) -> InvalidateKeyPackageBuilder<invalidate_key_package_state::SetReason<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         InvalidateKeyPackageBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> InvalidateKeyPackageBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> InvalidateKeyPackageBuilder<St, S>
 where
-    S: invalidate_key_package_state::State,
-    S::DeviceDid: invalidate_key_package_state::IsSet,
-    S::KeyPackageHash: invalidate_key_package_state::IsSet,
-    S::Reason: invalidate_key_package_state::IsSet,
+    St: invalidate_key_package_state::State,
+    St::DeviceDid: invalidate_key_package_state::IsSet,
+    St::KeyPackageHash: invalidate_key_package_state::IsSet,
+    St::Reason: invalidate_key_package_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> InvalidateKeyPackage<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> InvalidateKeyPackage<S> {
         InvalidateKeyPackage {
-            device_did: self.__unsafe_private_named.0.unwrap(),
-            key_package_hash: self.__unsafe_private_named.1.unwrap(),
-            reason: self.__unsafe_private_named.2.unwrap(),
+            device_did: self._fields.0.unwrap(),
+            key_package_hash: self._fields.1.unwrap(),
+            reason: self._fields.2.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> InvalidateKeyPackage<'a> {
+    ) -> InvalidateKeyPackage<S> {
         InvalidateKeyPackage {
-            device_did: self.__unsafe_private_named.0.unwrap(),
-            key_package_hash: self.__unsafe_private_named.1.unwrap(),
-            reason: self.__unsafe_private_named.2.unwrap(),
+            device_did: self._fields.0.unwrap(),
+            key_package_hash: self._fields.1.unwrap(),
+            reason: self._fields.2.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct InvalidateKeyPackageOutput<'a> {
-    /// True if the KP was already dead before this call (idempotent).
-    pub already_dead: bool,
-    /// True if the KP was just marked dead in this call.
-    pub marked: bool,
-}
-
-#[jacquard_derive::open_union]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    thiserror::Error,
-    miette::Diagnostic,
-    jacquard_derive::IntoStatic,
-)]
-#[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum InvalidateKeyPackageError<'a> {
-    /// No KP exists for the given (deviceDid, keyPackageHash) pair.
-    #[serde(rename = "KeyPackageNotFound")]
-    KeyPackageNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
-    /// Caller is neither the KP owner nor a member of any convo where the failure was observed.
-    #[serde(rename = "Unauthorized")]
-    Unauthorized(std::option::Option<jacquard_common::CowStr<'a>>),
-}
-
-impl std::fmt::Display for InvalidateKeyPackageError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::KeyPackageNotFound(msg) => {
-                write!(f, "KeyPackageNotFound")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
-            Self::Unauthorized(msg) => {
-                write!(f, "Unauthorized")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
-        }
-    }
-}
-
-/// Response type for
-///blue.catbird.mlsChat.invalidateKeyPackage
-pub struct InvalidateKeyPackageResponse;
-impl jacquard_common::xrpc::XrpcResp for InvalidateKeyPackageResponse {
-    const NSID: &'static str = "blue.catbird.mlsChat.invalidateKeyPackage";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = InvalidateKeyPackageOutput<'de>;
-    type Err<'de> = InvalidateKeyPackageError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for InvalidateKeyPackage<'a> {
-    const NSID: &'static str = "blue.catbird.mlsChat.invalidateKeyPackage";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Response = InvalidateKeyPackageResponse;
-}
-
-/// Endpoint type for
-///blue.catbird.mlsChat.invalidateKeyPackage
-pub struct InvalidateKeyPackageRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for InvalidateKeyPackageRequest {
-    const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.invalidateKeyPackage";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = InvalidateKeyPackage<'de>;
-    type Response = InvalidateKeyPackageResponse;
 }

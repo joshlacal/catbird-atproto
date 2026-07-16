@@ -5,533 +5,81 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct BlockRelationship<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub block_uri: std::option::Option<jacquard_common::types::string::AtUri<'a>>,
-    #[serde(borrow)]
-    pub blocked_did: jacquard_common::types::string::Did<'a>,
-    #[serde(borrow)]
-    pub blocker_did: jacquard_common::types::string::Did<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct BlockRelationship<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub block_uri: core::option::Option<jacquard_common::types::string::AtUri<S>>,
+    pub blocked_did: jacquard_common::types::string::Did<S>,
+    pub blocker_did: jacquard_common::types::string::Did<S>,
     pub created_at: jacquard_common::types::string::Datetime,
-}
-
-pub mod block_relationship_state {
-
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
-    #[allow(unused)]
-    use core::marker::PhantomData;
-    mod sealed {
-        pub trait Sealed {}
-    }
-    /// State trait tracking which required fields have been set
-    pub trait State: sealed::Sealed {
-        type BlockerDid;
-        type BlockedDid;
-        type CreatedAt;
-    }
-    /// Empty state - all required fields are unset
-    pub struct Empty(());
-    impl sealed::Sealed for Empty {}
-    impl State for Empty {
-        type BlockerDid = Unset;
-        type BlockedDid = Unset;
-        type CreatedAt = Unset;
-    }
-    ///State transition - sets the `blocker_did` field to Set
-    pub struct SetBlockerDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetBlockerDid<S> {}
-    impl<S: State> State for SetBlockerDid<S> {
-        type BlockerDid = Set<members::blocker_did>;
-        type BlockedDid = S::BlockedDid;
-        type CreatedAt = S::CreatedAt;
-    }
-    ///State transition - sets the `blocked_did` field to Set
-    pub struct SetBlockedDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetBlockedDid<S> {}
-    impl<S: State> State for SetBlockedDid<S> {
-        type BlockerDid = S::BlockerDid;
-        type BlockedDid = Set<members::blocked_did>;
-        type CreatedAt = S::CreatedAt;
-    }
-    ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type BlockerDid = S::BlockerDid;
-        type BlockedDid = S::BlockedDid;
-        type CreatedAt = Set<members::created_at>;
-    }
-    /// Marker types for field names
-    #[allow(non_camel_case_types)]
-    pub mod members {
-        ///Marker type for the `blocker_did` field
-        pub struct blocker_did(());
-        ///Marker type for the `blocked_did` field
-        pub struct blocked_did(());
-        ///Marker type for the `created_at` field
-        pub struct created_at(());
-    }
-}
-
-/// Builder for constructing an instance of this type
-pub struct BlockRelationshipBuilder<'a, S: block_relationship_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-    ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
-}
-
-impl<'a> BlockRelationship<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> BlockRelationshipBuilder<'a, block_relationship_state::Empty> {
-        BlockRelationshipBuilder::new()
-    }
-}
-
-impl<'a> BlockRelationshipBuilder<'a, block_relationship_state::Empty> {
-    /// Create a new builder with all fields unset
-    pub fn new() -> Self {
-        BlockRelationshipBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S: block_relationship_state::State> BlockRelationshipBuilder<'a, S> {
-    /// Set the `blockUri` field (optional)
-    pub fn block_uri(
-        mut self,
-        value: impl Into<Option<jacquard_common::types::string::AtUri<'a>>>,
-    ) -> Self {
-        self.__unsafe_private_named.0 = value.into();
-        self
-    }
-    /// Set the `blockUri` field to an Option value (optional)
-    pub fn maybe_block_uri(
-        mut self,
-        value: Option<jacquard_common::types::string::AtUri<'a>>,
-    ) -> Self {
-        self.__unsafe_private_named.0 = value;
-        self
-    }
-}
-
-impl<'a, S> BlockRelationshipBuilder<'a, S>
-where
-    S: block_relationship_state::State,
-    S::BlockedDid: block_relationship_state::IsUnset,
-{
-    /// Set the `blockedDid` field (required)
-    pub fn blocked_did(
-        mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> BlockRelationshipBuilder<'a, block_relationship_state::SetBlockedDid<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
-        BlockRelationshipBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> BlockRelationshipBuilder<'a, S>
-where
-    S: block_relationship_state::State,
-    S::BlockerDid: block_relationship_state::IsUnset,
-{
-    /// Set the `blockerDid` field (required)
-    pub fn blocker_did(
-        mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> BlockRelationshipBuilder<'a, block_relationship_state::SetBlockerDid<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
-        BlockRelationshipBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> BlockRelationshipBuilder<'a, S>
-where
-    S: block_relationship_state::State,
-    S::CreatedAt: block_relationship_state::IsUnset,
-{
-    /// Set the `createdAt` field (required)
-    pub fn created_at(
-        mut self,
-        value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> BlockRelationshipBuilder<'a, block_relationship_state::SetCreatedAt<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
-        BlockRelationshipBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> BlockRelationshipBuilder<'a, S>
-where
-    S: block_relationship_state::State,
-    S::BlockerDid: block_relationship_state::IsSet,
-    S::BlockedDid: block_relationship_state::IsSet,
-    S::CreatedAt: block_relationship_state::IsSet,
-{
-    /// Build the final struct
-    pub fn build(self) -> BlockRelationship<'a> {
-        BlockRelationship {
-            block_uri: self.__unsafe_private_named.0,
-            blocked_did: self.__unsafe_private_named.1.unwrap(),
-            blocker_did: self.__unsafe_private_named.2.unwrap(),
-            created_at: self.__unsafe_private_named.3.unwrap(),
-            extra_data: Default::default(),
-        }
-    }
-    /// Build the final struct with custom extra_data
-    pub fn build_with_data(
-        self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> BlockRelationship<'a> {
-        BlockRelationship {
-            block_uri: self.__unsafe_private_named.0,
-            blocked_did: self.__unsafe_private_named.1.unwrap(),
-            blocker_did: self.__unsafe_private_named.2.unwrap(),
-            created_at: self.__unsafe_private_named.3.unwrap(),
-            extra_data: Some(extra_data),
-        }
-    }
+    >,
 }
 
-fn lexicon_doc_blue_catbird_mlsChat_checkBlocks() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static>
-{
-    ::jacquard_lexicon::lexicon::LexiconDoc {
-        lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
-        id: ::jacquard_common::CowStr::new_static("blue.catbird.mlsChat.checkBlocks"),
-        revision: None,
-        description: None,
-        defs: {
-            let mut map = ::std::collections::BTreeMap::new();
-            map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("blockRelationship"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
-                        required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("blockerDid"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("blockedDid"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("createdAt"),
-                        ]),
-                        nullable: None,
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("blockUri"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
-                                        ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("blockedDid"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Did,
-                                        ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("blockerDid"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Did,
-                                        ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("createdAt"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
-                                        ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                    },
-                ),
-            );
-            map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
-                ::jacquard_lexicon::lexicon::LexUserType::XrpcProcedure(::jacquard_lexicon::lexicon::LexXrpcProcedure {
-                    description: None,
-                    parameters: None,
-                    input: Some(::jacquard_lexicon::lexicon::LexXrpcBody {
-                        description: None,
-                        encoding: ::jacquard_common::CowStr::new_static(
-                            "application/json",
-                        ),
-                        schema: Some(
-                            ::jacquard_lexicon::lexicon::LexXrpcBodySchema::Object(::jacquard_lexicon::lexicon::LexObject {
-                                description: None,
-                                required: Some(
-                                    vec![
-                                        ::jacquard_common::smol_str::SmolStr::new_static("dids")
-                                    ],
-                                ),
-                                nullable: None,
-                                properties: {
-                                    #[allow(unused_mut)]
-                                    let mut map = ::std::collections::BTreeMap::new();
-                                    map.insert(
-                                        ::jacquard_common::smol_str::SmolStr::new_static("dids"),
-                                        ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
-                                            description: Some(
-                                                ::jacquard_common::CowStr::new_static(
-                                                    "DIDs to check for mutual blocks (2–100 users).",
-                                                ),
-                                            ),
-                                            items: ::jacquard_lexicon::lexicon::LexArrayItem::String(::jacquard_lexicon::lexicon::LexString {
-                                                description: None,
-                                                format: Some(
-                                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
-                                                ),
-                                                default: None,
-                                                min_length: None,
-                                                max_length: None,
-                                                min_graphemes: None,
-                                                max_graphemes: None,
-                                                r#enum: None,
-                                                r#const: None,
-                                                known_values: None,
-                                            }),
-                                            min_length: Some(2usize),
-                                            max_length: Some(100usize),
-                                        }),
-                                    );
-                                    map
-                                },
-                            }),
-                        ),
-                    }),
-                    output: None,
-                    errors: None,
-                }),
-            );
-            map
-        },
-    }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for BlockRelationship<'a> {
-    fn nsid() -> &'static str {
-        "blue.catbird.mlsChat.checkBlocks"
-    }
-    fn def_name() -> &'static str {
-        "blockRelationship"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_blue_catbird_mlsChat_checkBlocks()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct CheckBlocks<'a> {
-    /// DIDs to check for mutual blocks (2–100 users).
-    #[serde(borrow)]
-    pub dids: Vec<jacquard_common::types::string::Did<'a>>,
-}
-
-pub mod check_blocks_state {
-
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
-    #[allow(unused)]
-    use core::marker::PhantomData;
-    mod sealed {
-        pub trait Sealed {}
-    }
-    /// State trait tracking which required fields have been set
-    pub trait State: sealed::Sealed {
-        type Dids;
-    }
-    /// Empty state - all required fields are unset
-    pub struct Empty(());
-    impl sealed::Sealed for Empty {}
-    impl State for Empty {
-        type Dids = Unset;
-    }
-    ///State transition - sets the `dids` field to Set
-    pub struct SetDids<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDids<S> {}
-    impl<S: State> State for SetDids<S> {
-        type Dids = Set<members::dids>;
-    }
-    /// Marker types for field names
-    #[allow(non_camel_case_types)]
-    pub mod members {
-        ///Marker type for the `dids` field
-        pub struct dids(());
-    }
-}
-
-/// Builder for constructing an instance of this type
-pub struct CheckBlocksBuilder<'a, S: check_blocks_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<Vec<jacquard_common::types::string::Did<'a>>>,),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
-}
-
-impl<'a> CheckBlocks<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> CheckBlocksBuilder<'a, check_blocks_state::Empty> {
-        CheckBlocksBuilder::new()
-    }
-}
-
-impl<'a> CheckBlocksBuilder<'a, check_blocks_state::Empty> {
-    /// Create a new builder with all fields unset
-    pub fn new() -> Self {
-        CheckBlocksBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> CheckBlocksBuilder<'a, S>
-where
-    S: check_blocks_state::State,
-    S::Dids: check_blocks_state::IsUnset,
-{
-    /// Set the `dids` field (required)
-    pub fn dids(
-        mut self,
-        value: impl Into<Vec<jacquard_common::types::string::Did<'a>>>,
-    ) -> CheckBlocksBuilder<'a, check_blocks_state::SetDids<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
-        CheckBlocksBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> CheckBlocksBuilder<'a, S>
-where
-    S: check_blocks_state::State,
-    S::Dids: check_blocks_state::IsSet,
-{
-    /// Build the final struct
-    pub fn build(self) -> CheckBlocks<'a> {
-        CheckBlocks {
-            dids: self.__unsafe_private_named.0.unwrap(),
-            extra_data: Default::default(),
-        }
-    }
-    /// Build the final struct with custom extra_data
-    pub fn build_with_data(
-        self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct CheckBlocks<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///DIDs to check for mutual blocks (2–100 users).
+    pub dids: Vec<jacquard_common::types::string::Did<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> CheckBlocks<'a> {
-        CheckBlocks {
-            dids: self.__unsafe_private_named.0.unwrap(),
-            extra_data: Some(extra_data),
-        }
-    }
+    >,
 }
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct CheckBlocksOutput<'a> {
-    /// True if any block edge exists between any pair in the input.
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct CheckBlocksOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///True if any block edge exists between any pair in the input.
     pub blocked: bool,
-    /// Every block edge found among the input DIDs.
-    #[serde(borrow)]
-    pub blocks: Vec<crate::generated::blue_catbird::mlsChat::check_blocks::BlockRelationship<'a>>,
+    ///Every block edge found among the input DIDs.
+    pub blocks: Vec<crate::generated::blue_catbird::mlsChat::check_blocks::BlockRelationship<S>>,
     pub checked_at: jacquard_common::types::string::Datetime,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::open_union]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -541,24 +89,28 @@ pub struct CheckBlocksOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum CheckBlocksError<'a> {
+pub enum CheckBlocksError {
     /// At least two DIDs are required.
     #[serde(rename = "TooFewDids")]
-    TooFewDids(std::option::Option<jacquard_common::CowStr<'a>>),
+    TooFewDids(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// Maximum 100 DIDs per request.
     #[serde(rename = "TooManyDids")]
-    TooManyDids(std::option::Option<jacquard_common::CowStr<'a>>),
+    TooManyDids(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// Upstream PDS query failed and local cache is empty.
     #[serde(rename = "BlueskyServiceUnavailable")]
-    BlueskyServiceUnavailable(std::option::Option<jacquard_common::CowStr<'a>>),
+    BlueskyServiceUnavailable(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
 }
 
-impl std::fmt::Display for CheckBlocksError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for CheckBlocksError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             Self::TooFewDids(msg) => {
                 write!(f, "TooFewDids")?;
@@ -581,35 +133,533 @@ impl std::fmt::Display for CheckBlocksError<'_> {
                 }
                 Ok(())
             }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
         }
     }
 }
 
-/// Response type for
-///blue.catbird.mlsChat.checkBlocks
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for BlockRelationship<S> {
+    fn nsid() -> &'static str {
+        "blue.catbird.mlsChat.checkBlocks"
+    }
+    fn def_name() -> &'static str {
+        "blockRelationship"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_blue_catbird_mlsChat_checkBlocks()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+/** Response marker for the `blue.catbird.mlsChat.checkBlocks` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `CheckBlocksOutput<S>` for this endpoint.*/
 pub struct CheckBlocksResponse;
 impl jacquard_common::xrpc::XrpcResp for CheckBlocksResponse {
     const NSID: &'static str = "blue.catbird.mlsChat.checkBlocks";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = CheckBlocksOutput<'de>;
-    type Err<'de> = CheckBlocksError<'de>;
+    type Output<S: jacquard_common::BosStr> = CheckBlocksOutput<S>;
+    type Err = CheckBlocksError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for CheckBlocks<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for CheckBlocks<S> {
     const NSID: &'static str = "blue.catbird.mlsChat.checkBlocks";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = CheckBlocksResponse;
 }
 
-/// Endpoint type for
-///blue.catbird.mlsChat.checkBlocks
+/** Endpoint marker for the `blue.catbird.mlsChat.checkBlocks` procedure.
+
+Path: `/xrpc/blue.catbird.mlsChat.checkBlocks`. The request payload type is `CheckBlocks<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct CheckBlocksRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for CheckBlocksRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.checkBlocks";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = CheckBlocks<'de>;
+    type Request<S: jacquard_common::BosStr> = CheckBlocks<S>;
     type Response = CheckBlocksResponse;
+}
+
+pub mod block_relationship_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type BlockedDid;
+        type BlockerDid;
+        type CreatedAt;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type BlockedDid = Unset;
+        type BlockerDid = Unset;
+        type CreatedAt = Unset;
+    }
+    ///State transition - sets the `blocked_did` field to Set
+    pub struct SetBlockedDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetBlockedDid<St> {}
+    impl<St: State> State for SetBlockedDid<St> {
+        type BlockedDid = Set<members::blocked_did>;
+        type BlockerDid = St::BlockerDid;
+        type CreatedAt = St::CreatedAt;
+    }
+    ///State transition - sets the `blocker_did` field to Set
+    pub struct SetBlockerDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetBlockerDid<St> {}
+    impl<St: State> State for SetBlockerDid<St> {
+        type BlockedDid = St::BlockedDid;
+        type BlockerDid = Set<members::blocker_did>;
+        type CreatedAt = St::CreatedAt;
+    }
+    ///State transition - sets the `created_at` field to Set
+    pub struct SetCreatedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCreatedAt<St> {}
+    impl<St: State> State for SetCreatedAt<St> {
+        type BlockedDid = St::BlockedDid;
+        type BlockerDid = St::BlockerDid;
+        type CreatedAt = Set<members::created_at>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `blocked_did` field
+        pub struct blocked_did(());
+        ///Marker type for the `blocker_did` field
+        pub struct blocker_did(());
+        ///Marker type for the `created_at` field
+        pub struct created_at(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct BlockRelationshipBuilder<
+    St: block_relationship_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::AtUri<S>>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+    ),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl BlockRelationship<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> BlockRelationshipBuilder<block_relationship_state::Empty, jacquard_common::DefaultStr>
+    {
+        BlockRelationshipBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> BlockRelationship<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> BlockRelationshipBuilder<block_relationship_state::Empty, S> {
+        BlockRelationshipBuilder::builder()
+    }
+}
+
+impl BlockRelationshipBuilder<block_relationship_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        BlockRelationshipBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> BlockRelationshipBuilder<block_relationship_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        BlockRelationshipBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: block_relationship_state::State, S: jacquard_common::BosStr>
+    BlockRelationshipBuilder<St, S>
+{
+    /// Set the `blockUri` field (optional)
+    pub fn block_uri(
+        mut self,
+        value: impl Into<Option<jacquard_common::types::string::AtUri<S>>>,
+    ) -> Self {
+        self._fields.0 = value.into();
+        self
+    }
+    /// Set the `blockUri` field to an Option value (optional)
+    pub fn maybe_block_uri(
+        mut self,
+        value: Option<jacquard_common::types::string::AtUri<S>>,
+    ) -> Self {
+        self._fields.0 = value;
+        self
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> BlockRelationshipBuilder<St, S>
+where
+    St: block_relationship_state::State,
+    St::BlockedDid: block_relationship_state::IsUnset,
+{
+    /// Set the `blockedDid` field (required)
+    pub fn blocked_did(
+        mut self,
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> BlockRelationshipBuilder<block_relationship_state::SetBlockedDid<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
+        BlockRelationshipBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> BlockRelationshipBuilder<St, S>
+where
+    St: block_relationship_state::State,
+    St::BlockerDid: block_relationship_state::IsUnset,
+{
+    /// Set the `blockerDid` field (required)
+    pub fn blocker_did(
+        mut self,
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> BlockRelationshipBuilder<block_relationship_state::SetBlockerDid<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
+        BlockRelationshipBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> BlockRelationshipBuilder<St, S>
+where
+    St: block_relationship_state::State,
+    St::CreatedAt: block_relationship_state::IsUnset,
+{
+    /// Set the `createdAt` field (required)
+    pub fn created_at(
+        mut self,
+        value: impl Into<jacquard_common::types::string::Datetime>,
+    ) -> BlockRelationshipBuilder<block_relationship_state::SetCreatedAt<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
+        BlockRelationshipBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> BlockRelationshipBuilder<St, S>
+where
+    St: block_relationship_state::State,
+    St::BlockedDid: block_relationship_state::IsSet,
+    St::BlockerDid: block_relationship_state::IsSet,
+    St::CreatedAt: block_relationship_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> BlockRelationship<S> {
+        BlockRelationship {
+            block_uri: self._fields.0,
+            blocked_did: self._fields.1.unwrap(),
+            blocker_did: self._fields.2.unwrap(),
+            created_at: self._fields.3.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> BlockRelationship<S> {
+        BlockRelationship {
+            block_uri: self._fields.0,
+            blocked_did: self._fields.1.unwrap(),
+            blocker_did: self._fields.2.unwrap(),
+            created_at: self._fields.3.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
+}
+
+fn lexicon_doc_blue_catbird_mlsChat_checkBlocks() -> jacquard_lexicon::lexicon::LexiconDoc<'static>
+{
+    ::jacquard_lexicon::lexicon::LexiconDoc {
+        lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
+        id: ::jacquard_common::CowStr::new_static("blue.catbird.mlsChat.checkBlocks"),
+        defs: {
+            let mut map = ::alloc::collections::BTreeMap::new();
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("blockRelationship"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        required: Some(vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("blockerDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("blockedDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
+                        ]),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("blockUri"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "blockedDid",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "blockerDid",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map
+                        },
+                        ..Default::default()
+                    },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
+                ::jacquard_lexicon::lexicon::LexUserType::XrpcProcedure(::jacquard_lexicon::lexicon::LexXrpcProcedure {
+                    input: Some(::jacquard_lexicon::lexicon::LexXrpcBody {
+                        encoding: ::jacquard_common::CowStr::new_static(
+                            "application/json",
+                        ),
+                        schema: Some(
+                            ::jacquard_lexicon::lexicon::LexXrpcBodySchema::Object(::jacquard_lexicon::lexicon::LexObject {
+                                required: Some(
+                                    vec![
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static("dids")
+                                    ],
+                                ),
+                                properties: {
+                                    #[allow(unused_mut)]
+                                    let mut map = ::alloc::collections::BTreeMap::new();
+                                    map.insert(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "dids",
+                                        ),
+                                        ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                            description: Some(
+                                                ::jacquard_common::CowStr::new_static(
+                                                    "DIDs to check for mutual blocks (2–100 users).",
+                                                ),
+                                            ),
+                                            items: ::jacquard_lexicon::lexicon::LexArrayItem::String(::jacquard_lexicon::lexicon::LexString {
+                                                format: Some(
+                                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                                ),
+                                                ..Default::default()
+                                            }),
+                                            min_length: Some(2usize),
+                                            max_length: Some(100usize),
+                                            ..Default::default()
+                                        }),
+                                    );
+                                    map
+                                },
+                                ..Default::default()
+                            }),
+                        ),
+                        ..Default::default()
+                    }),
+                    ..Default::default()
+                }),
+            );
+            map
+        },
+        ..Default::default()
+    }
+}
+
+pub mod check_blocks_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type Dids;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type Dids = Unset;
+    }
+    ///State transition - sets the `dids` field to Set
+    pub struct SetDids<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetDids<St> {}
+    impl<St: State> State for SetDids<St> {
+        type Dids = Set<members::dids>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `dids` field
+        pub struct dids(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct CheckBlocksBuilder<
+    St: check_blocks_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<Vec<jacquard_common::types::string::Did<S>>>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl CheckBlocks<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> CheckBlocksBuilder<check_blocks_state::Empty, jacquard_common::DefaultStr> {
+        CheckBlocksBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> CheckBlocks<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> CheckBlocksBuilder<check_blocks_state::Empty, S> {
+        CheckBlocksBuilder::builder()
+    }
+}
+
+impl CheckBlocksBuilder<check_blocks_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        CheckBlocksBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> CheckBlocksBuilder<check_blocks_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        CheckBlocksBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> CheckBlocksBuilder<St, S>
+where
+    St: check_blocks_state::State,
+    St::Dids: check_blocks_state::IsUnset,
+{
+    /// Set the `dids` field (required)
+    pub fn dids(
+        mut self,
+        value: impl Into<Vec<jacquard_common::types::string::Did<S>>>,
+    ) -> CheckBlocksBuilder<check_blocks_state::SetDids<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        CheckBlocksBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> CheckBlocksBuilder<St, S>
+where
+    St: check_blocks_state::State,
+    St::Dids: check_blocks_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> CheckBlocks<S> {
+        CheckBlocks {
+            dids: self._fields.0.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> CheckBlocks<S> {
+        CheckBlocks {
+            dids: self._fields.0.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
 }

@@ -5,7 +5,6 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -16,74 +15,150 @@
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct JoinLink<'a> {
-    /// The join link code.
-    #[serde(borrow)]
-    pub code: jacquard_common::CowStr<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct JoinLink<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///The join link code.
+    pub code: S,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-fn lexicon_doc_chat_bsky_embed_joinLink() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct View<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub join_link_preview: ViewJoinLinkPreview<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[jacquard_derive::open_union]
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub enum ViewJoinLinkPreview<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(rename = "chat.bsky.group.defs#joinLinkPreviewView")]
+    JoinLinkPreviewView(Box<crate::generated::chat_bsky::group::JoinLinkPreviewView<S>>),
+    #[serde(rename = "chat.bsky.group.defs#disabledJoinLinkPreviewView")]
+    DisabledJoinLinkPreviewView(
+        Box<crate::generated::chat_bsky::group::DisabledJoinLinkPreviewView<S>>,
+    ),
+    #[serde(rename = "chat.bsky.group.defs#invalidJoinLinkPreviewView")]
+    InvalidJoinLinkPreviewView(
+        Box<crate::generated::chat_bsky::group::InvalidJoinLinkPreviewView<S>>,
+    ),
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for JoinLink<S> {
+    fn nsid() -> &'static str {
+        "chat.bsky.embed.joinLink"
+    }
+    fn def_name() -> &'static str {
+        "main"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_chat_bsky_embed_joinLink()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for View<S> {
+    fn nsid() -> &'static str {
+        "chat.bsky.embed.joinLink"
+    }
+    fn def_name() -> &'static str {
+        "view"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_chat_bsky_embed_joinLink()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+fn lexicon_doc_chat_bsky_embed_joinLink() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("chat.bsky.embed.joinLink"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
-                        required: Some(vec![::jacquard_common::smol_str::SmolStr::new_static(
-                            "code",
-                        )]),
-                        nullable: None,
+                        required: Some(vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("code"),
+                        ]),
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("code"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("code"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
                                             "The join link code.",
                                         )),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("view"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("view"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
-                        required: Some(vec![::jacquard_common::smol_str::SmolStr::new_static(
-                            "joinLinkPreview",
-                        )]),
-                        nullable: None,
+                        required: Some(vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "joinLinkPreview",
+                            ),
+                        ]),
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("joinLinkPreview"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "joinLinkPreview",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Union(
                                     ::jacquard_lexicon::lexicon::LexRefUnion {
-                                        description: None,
                                         refs: vec![
                                             ::jacquard_common::CowStr::new_static(
                                                 "chat.bsky.group.defs#joinLinkPreviewView",
@@ -95,45 +170,20 @@ fn lexicon_doc_chat_bsky_embed_joinLink() -> ::jacquard_lexicon::lexicon::Lexico
                                                 "chat.bsky.group.defs#invalidJoinLinkPreviewView",
                                             ),
                                         ],
-                                        closed: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map
         },
+        ..Default::default()
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for JoinLink<'a> {
-    fn nsid() -> &'static str {
-        "chat.bsky.embed.joinLink"
-    }
-    fn def_name() -> &'static str {
-        "main"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_chat_bsky_embed_joinLink()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct View<'a> {
-    #[serde(borrow)]
-    pub join_link_preview: ViewJoinLinkPreview<'a>,
 }
 
 pub mod view_state {
@@ -155,9 +205,9 @@ pub mod view_state {
         type JoinLinkPreview = Unset;
     }
     ///State transition - sets the `join_link_preview` field to Set
-    pub struct SetJoinLinkPreview<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetJoinLinkPreview<S> {}
-    impl<S: State> State for SetJoinLinkPreview<S> {
+    pub struct SetJoinLinkPreview<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetJoinLinkPreview<St> {}
+    impl<St: State> State for SetJoinLinkPreview<St> {
         type JoinLinkPreview = Set<members::join_link_preview>;
     }
     /// Marker types for field names
@@ -168,109 +218,94 @@ pub mod view_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct ViewBuilder<'a, S: view_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<ViewJoinLinkPreview<'a>>,),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct ViewBuilder<
+    St: view_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<ViewJoinLinkPreview<S>>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> View<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> ViewBuilder<'a, view_state::Empty> {
+impl View<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> ViewBuilder<view_state::Empty, jacquard_common::DefaultStr> {
         ViewBuilder::new()
     }
 }
 
-impl<'a> ViewBuilder<'a, view_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> View<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> ViewBuilder<view_state::Empty, S> {
+        ViewBuilder::builder()
+    }
+}
+
+impl ViewBuilder<view_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ViewBuilder<'a, S>
+impl<S: jacquard_common::BosStr> ViewBuilder<view_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        ViewBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ViewBuilder<St, S>
 where
-    S: view_state::State,
-    S::JoinLinkPreview: view_state::IsUnset,
+    St: view_state::State,
+    St::JoinLinkPreview: view_state::IsUnset,
 {
     /// Set the `joinLinkPreview` field (required)
     pub fn join_link_preview(
         mut self,
-        value: impl Into<ViewJoinLinkPreview<'a>>,
-    ) -> ViewBuilder<'a, view_state::SetJoinLinkPreview<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<ViewJoinLinkPreview<S>>,
+    ) -> ViewBuilder<view_state::SetJoinLinkPreview<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         ViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ViewBuilder<St, S>
 where
-    S: view_state::State,
-    S::JoinLinkPreview: view_state::IsSet,
+    St: view_state::State,
+    St::JoinLinkPreview: view_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> View<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> View<S> {
         View {
-            join_link_preview: self.__unsafe_private_named.0.unwrap(),
+            join_link_preview: self._fields.0.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> View<'a> {
+    ) -> View<S> {
         View {
-            join_link_preview: self.__unsafe_private_named.0.unwrap(),
+            join_link_preview: self._fields.0.unwrap(),
             extra_data: Some(extra_data),
         }
-    }
-}
-
-#[jacquard_derive::open_union]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(tag = "$type")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum ViewJoinLinkPreview<'a> {
-    #[serde(rename = "chat.bsky.group.defs#joinLinkPreviewView")]
-    JoinLinkPreviewView(Box<crate::generated::chat_bsky::group::JoinLinkPreviewView<'a>>),
-    #[serde(rename = "chat.bsky.group.defs#disabledJoinLinkPreviewView")]
-    DisabledJoinLinkPreviewView(
-        Box<crate::generated::chat_bsky::group::DisabledJoinLinkPreviewView<'a>>,
-    ),
-    #[serde(rename = "chat.bsky.group.defs#invalidJoinLinkPreviewView")]
-    InvalidJoinLinkPreviewView(
-        Box<crate::generated::chat_bsky::group::InvalidJoinLinkPreviewView<'a>>,
-    ),
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for View<'a> {
-    fn nsid() -> &'static str {
-        "chat.bsky.embed.joinLink"
-    }
-    fn def_name() -> &'static str {
-        "view"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_chat_bsky_embed_joinLink()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
     }
 }

@@ -8,25 +8,81 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct ListQueues<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub collection: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub enabled: std::option::Option<bool>,
-    ///(default: 50, min: 1, max: 100)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub limit: std::option::Option<i64>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub report_types: std::option::Option<Vec<jacquard_common::CowStr<'a>>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub subject_type: std::option::Option<jacquard_common::CowStr<'a>>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ListQueues<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub collection: core::option::Option<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub enabled: core::option::Option<bool>,
+    /// Defaults to `50`. Min: 1. Max: 100.
+    #[serde(default = "_default_limit")]
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub limit: core::option::Option<i64>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub report_types: core::option::Option<Vec<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub subject_type: core::option::Option<S>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ListQueuesOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    pub queues: Vec<crate::generated::tools_ozone::queue::QueueView<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `tools.ozone.queue.listQueues` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `ListQueuesOutput<S>` for this endpoint.*/
+pub struct ListQueuesResponse;
+impl jacquard_common::xrpc::XrpcResp for ListQueuesResponse {
+    const NSID: &'static str = "tools.ozone.queue.listQueues";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = ListQueuesOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for ListQueues<S> {
+    const NSID: &'static str = "tools.ozone.queue.listQueues";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = ListQueuesResponse;
+}
+
+/** Endpoint marker for the `tools.ozone.queue.listQueues` query.
+
+Path: `/xrpc/tools.ozone.queue.listQueues`. The request payload type is `ListQueues<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct ListQueuesRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for ListQueuesRequest {
+    const PATH: &'static str = "/xrpc/tools.ozone.queue.listQueues";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = ListQueues<S>;
+    type Response = ListQueuesResponse;
+}
+
+fn _default_limit() -> core::option::Option<i64> {
+    Some(50i64)
 }
 
 pub mod list_queues_state {
@@ -48,171 +104,150 @@ pub mod list_queues_state {
     pub mod members {}
 }
 
-/// Builder for constructing an instance of this type
-pub struct ListQueuesBuilder<'a, S: list_queues_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<bool>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<Vec<jacquard_common::CowStr<'a>>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct ListQueuesBuilder<
+    St: list_queues_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<S>,
+        core::option::Option<bool>,
+        core::option::Option<i64>,
+        core::option::Option<Vec<S>>,
+        core::option::Option<S>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> ListQueues<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> ListQueuesBuilder<'a, list_queues_state::Empty> {
+impl ListQueues<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> ListQueuesBuilder<list_queues_state::Empty, jacquard_common::DefaultStr> {
         ListQueuesBuilder::new()
     }
 }
 
-impl<'a> ListQueuesBuilder<'a, list_queues_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> ListQueues<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> ListQueuesBuilder<list_queues_state::Empty, S> {
+        ListQueuesBuilder::builder()
+    }
+}
+
+impl ListQueuesBuilder<list_queues_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ListQueuesBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: list_queues_state::State> ListQueuesBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> ListQueuesBuilder<list_queues_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        ListQueuesBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: list_queues_state::State, S: jacquard_common::BosStr> ListQueuesBuilder<St, S> {
     /// Set the `collection` field (optional)
-    pub fn collection(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+    pub fn collection(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.0 = value.into();
         self
     }
     /// Set the `collection` field to an Option value (optional)
-    pub fn maybe_collection(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.0 = value;
+    pub fn maybe_collection(mut self, value: Option<S>) -> Self {
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S: list_queues_state::State> ListQueuesBuilder<'a, S> {
+impl<St: list_queues_state::State, S: jacquard_common::BosStr> ListQueuesBuilder<St, S> {
     /// Set the `cursor` field (optional)
-    pub fn cursor(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+    pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.1 = value.into();
         self
     }
     /// Set the `cursor` field to an Option value (optional)
-    pub fn maybe_cursor(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.1 = value;
+    pub fn maybe_cursor(mut self, value: Option<S>) -> Self {
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S: list_queues_state::State> ListQueuesBuilder<'a, S> {
+impl<St: list_queues_state::State, S: jacquard_common::BosStr> ListQueuesBuilder<St, S> {
     /// Set the `enabled` field (optional)
     pub fn enabled(mut self, value: impl Into<Option<bool>>) -> Self {
-        self.__unsafe_private_named.2 = value.into();
+        self._fields.2 = value.into();
         self
     }
     /// Set the `enabled` field to an Option value (optional)
     pub fn maybe_enabled(mut self, value: Option<bool>) -> Self {
-        self.__unsafe_private_named.2 = value;
+        self._fields.2 = value;
         self
     }
 }
 
-impl<'a, S: list_queues_state::State> ListQueuesBuilder<'a, S> {
+impl<St: list_queues_state::State, S: jacquard_common::BosStr> ListQueuesBuilder<St, S> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.3 = value.into();
+        self._fields.3 = value.into();
         self
     }
     /// Set the `limit` field to an Option value (optional)
     pub fn maybe_limit(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.3 = value;
+        self._fields.3 = value;
         self
     }
 }
 
-impl<'a, S: list_queues_state::State> ListQueuesBuilder<'a, S> {
+impl<St: list_queues_state::State, S: jacquard_common::BosStr> ListQueuesBuilder<St, S> {
     /// Set the `reportTypes` field (optional)
-    pub fn report_types(
-        mut self,
-        value: impl Into<Option<Vec<jacquard_common::CowStr<'a>>>>,
-    ) -> Self {
-        self.__unsafe_private_named.4 = value.into();
+    pub fn report_types(mut self, value: impl Into<Option<Vec<S>>>) -> Self {
+        self._fields.4 = value.into();
         self
     }
     /// Set the `reportTypes` field to an Option value (optional)
-    pub fn maybe_report_types(mut self, value: Option<Vec<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.4 = value;
+    pub fn maybe_report_types(mut self, value: Option<Vec<S>>) -> Self {
+        self._fields.4 = value;
         self
     }
 }
 
-impl<'a, S: list_queues_state::State> ListQueuesBuilder<'a, S> {
+impl<St: list_queues_state::State, S: jacquard_common::BosStr> ListQueuesBuilder<St, S> {
     /// Set the `subjectType` field (optional)
-    pub fn subject_type(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.5 = value.into();
+    pub fn subject_type(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.5 = value.into();
         self
     }
     /// Set the `subjectType` field to an Option value (optional)
-    pub fn maybe_subject_type(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.5 = value;
+    pub fn maybe_subject_type(mut self, value: Option<S>) -> Self {
+        self._fields.5 = value;
         self
     }
 }
 
-impl<'a, S> ListQueuesBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ListQueuesBuilder<St, S>
 where
-    S: list_queues_state::State,
+    St: list_queues_state::State,
 {
-    /// Build the final struct
-    pub fn build(self) -> ListQueues<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> ListQueues<S> {
         ListQueues {
-            collection: self.__unsafe_private_named.0,
-            cursor: self.__unsafe_private_named.1,
-            enabled: self.__unsafe_private_named.2,
-            limit: self.__unsafe_private_named.3,
-            report_types: self.__unsafe_private_named.4,
-            subject_type: self.__unsafe_private_named.5,
+            collection: self._fields.0,
+            cursor: self._fields.1,
+            enabled: self._fields.2,
+            limit: self._fields.3,
+            report_types: self._fields.4,
+            subject_type: self._fields.5,
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct ListQueuesOutput<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(borrow)]
-    pub queues: Vec<crate::generated::tools_ozone::queue::QueueView<'a>>,
-}
-
-/// Response type for
-///tools.ozone.queue.listQueues
-pub struct ListQueuesResponse;
-impl jacquard_common::xrpc::XrpcResp for ListQueuesResponse {
-    const NSID: &'static str = "tools.ozone.queue.listQueues";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = ListQueuesOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for ListQueues<'a> {
-    const NSID: &'static str = "tools.ozone.queue.listQueues";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = ListQueuesResponse;
-}
-
-/// Endpoint type for
-///tools.ozone.queue.listQueues
-pub struct ListQueuesRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for ListQueuesRequest {
-    const PATH: &'static str = "/xrpc/tools.ozone.queue.listQueues";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = ListQueues<'de>;
-    type Response = ListQueuesResponse;
 }

@@ -8,113 +8,37 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetLatestCommit<'a> {
-    #[serde(borrow)]
-    pub did: jacquard_common::types::string::Did<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetLatestCommit<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub did: jacquard_common::types::string::Did<S>,
 }
 
-pub mod get_latest_commit_state {
-
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
-    #[allow(unused)]
-    use core::marker::PhantomData;
-    mod sealed {
-        pub trait Sealed {}
-    }
-    /// State trait tracking which required fields have been set
-    pub trait State: sealed::Sealed {
-        type Did;
-    }
-    /// Empty state - all required fields are unset
-    pub struct Empty(());
-    impl sealed::Sealed for Empty {}
-    impl State for Empty {
-        type Did = Unset;
-    }
-    ///State transition - sets the `did` field to Set
-    pub struct SetDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDid<S> {}
-    impl<S: State> State for SetDid<S> {
-        type Did = Set<members::did>;
-    }
-    /// Marker types for field names
-    #[allow(non_camel_case_types)]
-    pub mod members {
-        ///Marker type for the `did` field
-        pub struct did(());
-    }
-}
-
-/// Builder for constructing an instance of this type
-pub struct GetLatestCommitBuilder<'a, S: get_latest_commit_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<jacquard_common::types::string::Did<'a>>,),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
-}
-
-impl<'a> GetLatestCommit<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> GetLatestCommitBuilder<'a, get_latest_commit_state::Empty> {
-        GetLatestCommitBuilder::new()
-    }
-}
-
-impl<'a> GetLatestCommitBuilder<'a, get_latest_commit_state::Empty> {
-    /// Create a new builder with all fields unset
-    pub fn new() -> Self {
-        GetLatestCommitBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> GetLatestCommitBuilder<'a, S>
-where
-    S: get_latest_commit_state::State,
-    S::Did: get_latest_commit_state::IsUnset,
-{
-    /// Set the `did` field (required)
-    pub fn did(
-        mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> GetLatestCommitBuilder<'a, get_latest_commit_state::SetDid<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
-        GetLatestCommitBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> GetLatestCommitBuilder<'a, S>
-where
-    S: get_latest_commit_state::State,
-    S::Did: get_latest_commit_state::IsSet,
-{
-    /// Build the final struct
-    pub fn build(self) -> GetLatestCommit<'a> {
-        GetLatestCommit {
-            did: self.__unsafe_private_named.0.unwrap(),
-        }
-    }
-}
-
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetLatestCommitOutput<'a> {
-    #[serde(borrow)]
-    pub cid: jacquard_common::types::string::Cid<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetLatestCommitOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub cid: jacquard_common::types::string::Cid<S>,
     pub rev: jacquard_common::types::string::Tid,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::open_union]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -124,23 +48,27 @@ pub struct GetLatestCommitOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum GetLatestCommitError<'a> {
+pub enum GetLatestCommitError {
     #[serde(rename = "RepoNotFound")]
-    RepoNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
+    RepoNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "RepoTakendown")]
-    RepoTakendown(std::option::Option<jacquard_common::CowStr<'a>>),
+    RepoTakendown(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "RepoSuspended")]
-    RepoSuspended(std::option::Option<jacquard_common::CowStr<'a>>),
+    RepoSuspended(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "RepoDeactivated")]
-    RepoDeactivated(std::option::Option<jacquard_common::CowStr<'a>>),
+    RepoDeactivated(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
 }
 
-impl std::fmt::Display for GetLatestCommitError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for GetLatestCommitError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             Self::RepoNotFound(msg) => {
                 write!(f, "RepoNotFound")?;
@@ -170,33 +98,152 @@ impl std::fmt::Display for GetLatestCommitError<'_> {
                 }
                 Ok(())
             }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
         }
     }
 }
 
-/// Response type for
-///com.atproto.sync.getLatestCommit
+/** Response marker for the `com.atproto.sync.getLatestCommit` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetLatestCommitOutput<S>` for this endpoint.*/
 pub struct GetLatestCommitResponse;
 impl jacquard_common::xrpc::XrpcResp for GetLatestCommitResponse {
     const NSID: &'static str = "com.atproto.sync.getLatestCommit";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetLatestCommitOutput<'de>;
-    type Err<'de> = GetLatestCommitError<'de>;
+    type Output<S: jacquard_common::BosStr> = GetLatestCommitOutput<S>;
+    type Err = GetLatestCommitError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for GetLatestCommit<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetLatestCommit<S> {
     const NSID: &'static str = "com.atproto.sync.getLatestCommit";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = GetLatestCommitResponse;
 }
 
-/// Endpoint type for
-///com.atproto.sync.getLatestCommit
+/** Endpoint marker for the `com.atproto.sync.getLatestCommit` query.
+
+Path: `/xrpc/com.atproto.sync.getLatestCommit`. The request payload type is `GetLatestCommit<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct GetLatestCommitRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for GetLatestCommitRequest {
     const PATH: &'static str = "/xrpc/com.atproto.sync.getLatestCommit";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetLatestCommit<'de>;
+    type Request<S: jacquard_common::BosStr> = GetLatestCommit<S>;
     type Response = GetLatestCommitResponse;
+}
+
+pub mod get_latest_commit_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type Did;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type Did = Unset;
+    }
+    ///State transition - sets the `did` field to Set
+    pub struct SetDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetDid<St> {}
+    impl<St: State> State for SetDid<St> {
+        type Did = Set<members::did>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `did` field
+        pub struct did(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct GetLatestCommitBuilder<
+    St: get_latest_commit_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<jacquard_common::types::string::Did<S>>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl GetLatestCommit<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> GetLatestCommitBuilder<get_latest_commit_state::Empty, jacquard_common::DefaultStr> {
+        GetLatestCommitBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> GetLatestCommit<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> GetLatestCommitBuilder<get_latest_commit_state::Empty, S> {
+        GetLatestCommitBuilder::builder()
+    }
+}
+
+impl GetLatestCommitBuilder<get_latest_commit_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        GetLatestCommitBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> GetLatestCommitBuilder<get_latest_commit_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GetLatestCommitBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> GetLatestCommitBuilder<St, S>
+where
+    St: get_latest_commit_state::State,
+    St::Did: get_latest_commit_state::IsUnset,
+{
+    /// Set the `did` field (required)
+    pub fn did(
+        mut self,
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> GetLatestCommitBuilder<get_latest_commit_state::SetDid<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        GetLatestCommitBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> GetLatestCommitBuilder<St, S>
+where
+    St: get_latest_commit_state::State,
+    St::Did: get_latest_commit_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> GetLatestCommit<S> {
+        GetLatestCommit {
+            did: self._fields.0.unwrap(),
+        }
+    }
 }

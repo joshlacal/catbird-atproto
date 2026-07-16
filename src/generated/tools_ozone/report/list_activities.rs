@@ -8,15 +8,74 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct ListActivities<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    ///(default: 50, min: 1, max: 100)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub limit: std::option::Option<i64>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ListActivities<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    /// Defaults to `50`. Min: 1. Max: 100.
+    #[serde(default = "_default_limit")]
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub limit: core::option::Option<i64>,
     pub report_id: i64,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ListActivitiesOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub activities: Vec<crate::generated::tools_ozone::report::ReportActivityView<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `tools.ozone.report.listActivities` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `ListActivitiesOutput<S>` for this endpoint.*/
+pub struct ListActivitiesResponse;
+impl jacquard_common::xrpc::XrpcResp for ListActivitiesResponse {
+    const NSID: &'static str = "tools.ozone.report.listActivities";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = ListActivitiesOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for ListActivities<S> {
+    const NSID: &'static str = "tools.ozone.report.listActivities";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = ListActivitiesResponse;
+}
+
+/** Endpoint marker for the `tools.ozone.report.listActivities` query.
+
+Path: `/xrpc/tools.ozone.report.listActivities`. The request payload type is `ListActivities<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct ListActivitiesRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for ListActivitiesRequest {
+    const PATH: &'static str = "/xrpc/tools.ozone.report.listActivities";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = ListActivities<S>;
+    type Response = ListActivitiesResponse;
+}
+
+fn _default_limit() -> core::option::Option<i64> {
+    Some(50i64)
 }
 
 pub mod list_activities_state {
@@ -38,9 +97,9 @@ pub mod list_activities_state {
         type ReportId = Unset;
     }
     ///State transition - sets the `report_id` field to Set
-    pub struct SetReportId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetReportId<S> {}
-    impl<S: State> State for SetReportId<S> {
+    pub struct SetReportId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetReportId<St> {}
+    impl<St: State> State for SetReportId<St> {
         type ReportId = Set<members::report_id>;
     }
     /// Marker types for field names
@@ -51,130 +110,113 @@ pub mod list_activities_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct ListActivitiesBuilder<'a, S: list_activities_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<i64>,
+/// Builder for constructing an instance of this type.
+pub struct ListActivitiesBuilder<
+    St: list_activities_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<i64>,
+        core::option::Option<i64>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> ListActivities<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> ListActivitiesBuilder<'a, list_activities_state::Empty> {
+impl ListActivities<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> ListActivitiesBuilder<list_activities_state::Empty, jacquard_common::DefaultStr>
+    {
         ListActivitiesBuilder::new()
     }
 }
 
-impl<'a> ListActivitiesBuilder<'a, list_activities_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> ListActivities<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> ListActivitiesBuilder<list_activities_state::Empty, S> {
+        ListActivitiesBuilder::builder()
+    }
+}
+
+impl ListActivitiesBuilder<list_activities_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ListActivitiesBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: list_activities_state::State> ListActivitiesBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> ListActivitiesBuilder<list_activities_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        ListActivitiesBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: list_activities_state::State, S: jacquard_common::BosStr> ListActivitiesBuilder<St, S> {
     /// Set the `cursor` field (optional)
-    pub fn cursor(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+    pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.0 = value.into();
         self
     }
     /// Set the `cursor` field to an Option value (optional)
-    pub fn maybe_cursor(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.0 = value;
+    pub fn maybe_cursor(mut self, value: Option<S>) -> Self {
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S: list_activities_state::State> ListActivitiesBuilder<'a, S> {
+impl<St: list_activities_state::State, S: jacquard_common::BosStr> ListActivitiesBuilder<St, S> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self._fields.1 = value.into();
         self
     }
     /// Set the `limit` field to an Option value (optional)
     pub fn maybe_limit(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.1 = value;
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S> ListActivitiesBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ListActivitiesBuilder<St, S>
 where
-    S: list_activities_state::State,
-    S::ReportId: list_activities_state::IsUnset,
+    St: list_activities_state::State,
+    St::ReportId: list_activities_state::IsUnset,
 {
     /// Set the `reportId` field (required)
     pub fn report_id(
         mut self,
         value: impl Into<i64>,
-    ) -> ListActivitiesBuilder<'a, list_activities_state::SetReportId<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+    ) -> ListActivitiesBuilder<list_activities_state::SetReportId<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         ListActivitiesBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ListActivitiesBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ListActivitiesBuilder<St, S>
 where
-    S: list_activities_state::State,
-    S::ReportId: list_activities_state::IsSet,
+    St: list_activities_state::State,
+    St::ReportId: list_activities_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> ListActivities<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> ListActivities<S> {
         ListActivities {
-            cursor: self.__unsafe_private_named.0,
-            limit: self.__unsafe_private_named.1,
-            report_id: self.__unsafe_private_named.2.unwrap(),
+            cursor: self._fields.0,
+            limit: self._fields.1,
+            report_id: self._fields.2.unwrap(),
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct ListActivitiesOutput<'a> {
-    #[serde(borrow)]
-    pub activities: Vec<crate::generated::tools_ozone::report::ReportActivityView<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-}
-
-/// Response type for
-///tools.ozone.report.listActivities
-pub struct ListActivitiesResponse;
-impl jacquard_common::xrpc::XrpcResp for ListActivitiesResponse {
-    const NSID: &'static str = "tools.ozone.report.listActivities";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = ListActivitiesOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for ListActivities<'a> {
-    const NSID: &'static str = "tools.ozone.report.listActivities";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = ListActivitiesResponse;
-}
-
-/// Endpoint type for
-///tools.ozone.report.listActivities
-pub struct ListActivitiesRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for ListActivitiesRequest {
-    const PATH: &'static str = "/xrpc/tools.ozone.report.listActivities";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = ListActivities<'de>;
-    type Response = ListActivitiesResponse;
 }

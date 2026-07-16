@@ -8,88 +8,179 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct SearchPostsV2<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub all_time: std::option::Option<bool>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub authors: std::option::Option<Vec<jacquard_common::types::ident::AtIdentifier<'a>>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub domains: std::option::Option<Vec<jacquard_common::CowStr<'a>>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub embedded_at_uris: std::option::Option<Vec<jacquard_common::types::string::AtUri<'a>>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub exclude_authors: std::option::Option<Vec<jacquard_common::types::ident::AtIdentifier<'a>>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub exclude_domains: std::option::Option<Vec<jacquard_common::CowStr<'a>>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct SearchPostsV2<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub all_time: core::option::Option<bool>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub authors: core::option::Option<Vec<jacquard_common::types::ident::AtIdentifier<S>>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub domains: core::option::Option<Vec<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub embedded_at_uris: core::option::Option<Vec<jacquard_common::types::string::AtUri<S>>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub exclude_authors: core::option::Option<Vec<jacquard_common::types::ident::AtIdentifier<S>>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub exclude_domains: core::option::Option<Vec<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub exclude_embedded_at_uris:
-        std::option::Option<Vec<jacquard_common::types::string::AtUri<'a>>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub exclude_hashtags: std::option::Option<Vec<jacquard_common::CowStr<'a>>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub exclude_languages: std::option::Option<Vec<jacquard_common::types::string::Language>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub exclude_mentions: std::option::Option<Vec<jacquard_common::types::ident::AtIdentifier<'a>>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub exclude_replies: std::option::Option<bool>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub exclude_urls: std::option::Option<Vec<jacquard_common::types::string::Uri<'a>>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub following: std::option::Option<bool>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub has_media: std::option::Option<bool>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub has_video: std::option::Option<bool>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub hashtags: std::option::Option<Vec<jacquard_common::CowStr<'a>>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub languages: std::option::Option<Vec<jacquard_common::types::string::Language>>,
-    ///(default: 25, min: 1, max: 100)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub limit: std::option::Option<i64>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub mentions: std::option::Option<Vec<jacquard_common::types::ident::AtIdentifier<'a>>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub query: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub query_language: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub replies_only: std::option::Option<bool>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub reply_parent_uri: std::option::Option<jacquard_common::types::string::AtUri<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub since: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub sort: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub thread_root_uri: std::option::Option<jacquard_common::types::string::AtUri<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub until: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub urls: std::option::Option<Vec<jacquard_common::types::string::Uri<'a>>>,
+        core::option::Option<Vec<jacquard_common::types::string::AtUri<S>>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub exclude_hashtags: core::option::Option<Vec<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub exclude_languages: core::option::Option<Vec<jacquard_common::types::string::Language>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub exclude_mentions: core::option::Option<Vec<jacquard_common::types::ident::AtIdentifier<S>>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub exclude_replies: core::option::Option<bool>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub exclude_urls: core::option::Option<Vec<jacquard_common::types::string::UriValue<S>>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub following: core::option::Option<bool>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub has_media: core::option::Option<bool>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub has_video: core::option::Option<bool>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub hashtags: core::option::Option<Vec<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub languages: core::option::Option<Vec<jacquard_common::types::string::Language>>,
+    /// Defaults to `25`. Min: 1. Max: 100.
+    #[serde(default = "_default_limit")]
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub limit: core::option::Option<i64>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub mentions: core::option::Option<Vec<jacquard_common::types::ident::AtIdentifier<S>>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub query: core::option::Option<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub query_language: core::option::Option<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub replies_only: core::option::Option<bool>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub reply_parent_uri: core::option::Option<jacquard_common::types::string::AtUri<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub since: core::option::Option<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub sort: core::option::Option<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub thread_root_uri: core::option::Option<jacquard_common::types::string::AtUri<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub until: core::option::Option<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub urls: core::option::Option<Vec<jacquard_common::types::string::UriValue<S>>>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct SearchPostsV2Output<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Cursor for the next page of results.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    ///Query languages detected for CJK, Thai, or Arabic text. Empty or omitted for other scripts.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub detected_query_languages: core::option::Option<Vec<S>>,
+    ///Estimated total number of matching hits. May be rounded or truncated.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub hits_total: core::option::Option<i64>,
+    ///Hydrated views of matching posts.
+    pub posts: Vec<crate::generated::app_bsky::feed::PostView<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    thiserror::Error,
+    miette::Diagnostic,
+)]
+#[serde(tag = "error", content = "message")]
+pub enum SearchPostsV2Error {
+    #[serde(rename = "BadQueryString")]
+    BadQueryString(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
+}
+
+impl core::fmt::Display for SearchPostsV2Error {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+            Self::BadQueryString(msg) => {
+                write!(f, "BadQueryString")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+        }
+    }
+}
+
+/** Response marker for the `app.bsky.feed.searchPostsV2` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `SearchPostsV2Output<S>` for this endpoint.*/
+pub struct SearchPostsV2Response;
+impl jacquard_common::xrpc::XrpcResp for SearchPostsV2Response {
+    const NSID: &'static str = "app.bsky.feed.searchPostsV2";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = SearchPostsV2Output<S>;
+    type Err = SearchPostsV2Error;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for SearchPostsV2<S> {
+    const NSID: &'static str = "app.bsky.feed.searchPostsV2";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = SearchPostsV2Response;
+}
+
+/** Endpoint marker for the `app.bsky.feed.searchPostsV2` query.
+
+Path: `/xrpc/app.bsky.feed.searchPostsV2`. The request payload type is `SearchPostsV2<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct SearchPostsV2Request;
+impl jacquard_common::xrpc::XrpcEndpoint for SearchPostsV2Request {
+    const PATH: &'static str = "/xrpc/app.bsky.feed.searchPostsV2";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = SearchPostsV2<S>;
+    type Response = SearchPostsV2Response;
+}
+
+fn _default_limit() -> core::option::Option<i64> {
+    Some(25i64)
 }
 
 pub mod search_posts_v2_state {
@@ -111,225 +202,239 @@ pub mod search_posts_v2_state {
     pub mod members {}
 }
 
-/// Builder for constructing an instance of this type
-pub struct SearchPostsV2Builder<'a, S: search_posts_v2_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<bool>,
-        ::core::option::Option<Vec<jacquard_common::types::ident::AtIdentifier<'a>>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<Vec<jacquard_common::CowStr<'a>>>,
-        ::core::option::Option<Vec<jacquard_common::types::string::AtUri<'a>>>,
-        ::core::option::Option<Vec<jacquard_common::types::ident::AtIdentifier<'a>>>,
-        ::core::option::Option<Vec<jacquard_common::CowStr<'a>>>,
-        ::core::option::Option<Vec<jacquard_common::types::string::AtUri<'a>>>,
-        ::core::option::Option<Vec<jacquard_common::CowStr<'a>>>,
-        ::core::option::Option<Vec<jacquard_common::types::string::Language>>,
-        ::core::option::Option<Vec<jacquard_common::types::ident::AtIdentifier<'a>>>,
-        ::core::option::Option<bool>,
-        ::core::option::Option<Vec<jacquard_common::types::string::Uri<'a>>>,
-        ::core::option::Option<bool>,
-        ::core::option::Option<bool>,
-        ::core::option::Option<bool>,
-        ::core::option::Option<Vec<jacquard_common::CowStr<'a>>>,
-        ::core::option::Option<Vec<jacquard_common::types::string::Language>>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<Vec<jacquard_common::types::ident::AtIdentifier<'a>>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<bool>,
-        ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<Vec<jacquard_common::types::string::Uri<'a>>>,
+/// Builder for constructing an instance of this type.
+pub struct SearchPostsV2Builder<
+    St: search_posts_v2_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<bool>,
+        core::option::Option<Vec<jacquard_common::types::ident::AtIdentifier<S>>>,
+        core::option::Option<S>,
+        core::option::Option<Vec<S>>,
+        core::option::Option<Vec<jacquard_common::types::string::AtUri<S>>>,
+        core::option::Option<Vec<jacquard_common::types::ident::AtIdentifier<S>>>,
+        core::option::Option<Vec<S>>,
+        core::option::Option<Vec<jacquard_common::types::string::AtUri<S>>>,
+        core::option::Option<Vec<S>>,
+        core::option::Option<Vec<jacquard_common::types::string::Language>>,
+        core::option::Option<Vec<jacquard_common::types::ident::AtIdentifier<S>>>,
+        core::option::Option<bool>,
+        core::option::Option<Vec<jacquard_common::types::string::UriValue<S>>>,
+        core::option::Option<bool>,
+        core::option::Option<bool>,
+        core::option::Option<bool>,
+        core::option::Option<Vec<S>>,
+        core::option::Option<Vec<jacquard_common::types::string::Language>>,
+        core::option::Option<i64>,
+        core::option::Option<Vec<jacquard_common::types::ident::AtIdentifier<S>>>,
+        core::option::Option<S>,
+        core::option::Option<S>,
+        core::option::Option<bool>,
+        core::option::Option<jacquard_common::types::string::AtUri<S>>,
+        core::option::Option<S>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::AtUri<S>>,
+        core::option::Option<S>,
+        core::option::Option<Vec<jacquard_common::types::string::UriValue<S>>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> SearchPostsV2<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> SearchPostsV2Builder<'a, search_posts_v2_state::Empty> {
+impl SearchPostsV2<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> SearchPostsV2Builder<search_posts_v2_state::Empty, jacquard_common::DefaultStr>
+    {
         SearchPostsV2Builder::new()
     }
 }
 
-impl<'a> SearchPostsV2Builder<'a, search_posts_v2_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> SearchPostsV2<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> SearchPostsV2Builder<search_posts_v2_state::Empty, S> {
+        SearchPostsV2Builder::builder()
+    }
+}
+
+impl SearchPostsV2Builder<search_posts_v2_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         SearchPostsV2Builder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (
+            _state: ::core::marker::PhantomData,
+            _fields: (
                 None, None, None, None, None, None, None, None, None, None, None, None, None, None,
                 None, None, None, None, None, None, None, None, None, None, None, None, None, None,
                 None,
             ),
-            _phantom: ::core::marker::PhantomData,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: search_posts_v2_state::State> SearchPostsV2Builder<'a, S> {
+impl<S: jacquard_common::BosStr> SearchPostsV2Builder<search_posts_v2_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        SearchPostsV2Builder {
+            _state: ::core::marker::PhantomData,
+            _fields: (
+                None, None, None, None, None, None, None, None, None, None, None, None, None, None,
+                None, None, None, None, None, None, None, None, None, None, None, None, None, None,
+                None,
+            ),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: search_posts_v2_state::State, S: jacquard_common::BosStr> SearchPostsV2Builder<St, S> {
     /// Set the `allTime` field (optional)
     pub fn all_time(mut self, value: impl Into<Option<bool>>) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+        self._fields.0 = value.into();
         self
     }
     /// Set the `allTime` field to an Option value (optional)
     pub fn maybe_all_time(mut self, value: Option<bool>) -> Self {
-        self.__unsafe_private_named.0 = value;
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S: search_posts_v2_state::State> SearchPostsV2Builder<'a, S> {
+impl<St: search_posts_v2_state::State, S: jacquard_common::BosStr> SearchPostsV2Builder<St, S> {
     /// Set the `authors` field (optional)
     pub fn authors(
         mut self,
-        value: impl Into<Option<Vec<jacquard_common::types::ident::AtIdentifier<'a>>>>,
+        value: impl Into<Option<Vec<jacquard_common::types::ident::AtIdentifier<S>>>>,
     ) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self._fields.1 = value.into();
         self
     }
     /// Set the `authors` field to an Option value (optional)
     pub fn maybe_authors(
         mut self,
-        value: Option<Vec<jacquard_common::types::ident::AtIdentifier<'a>>>,
+        value: Option<Vec<jacquard_common::types::ident::AtIdentifier<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.1 = value;
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S: search_posts_v2_state::State> SearchPostsV2Builder<'a, S> {
+impl<St: search_posts_v2_state::State, S: jacquard_common::BosStr> SearchPostsV2Builder<St, S> {
     /// Set the `cursor` field (optional)
-    pub fn cursor(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.2 = value.into();
+    pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.2 = value.into();
         self
     }
     /// Set the `cursor` field to an Option value (optional)
-    pub fn maybe_cursor(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.2 = value;
+    pub fn maybe_cursor(mut self, value: Option<S>) -> Self {
+        self._fields.2 = value;
         self
     }
 }
 
-impl<'a, S: search_posts_v2_state::State> SearchPostsV2Builder<'a, S> {
+impl<St: search_posts_v2_state::State, S: jacquard_common::BosStr> SearchPostsV2Builder<St, S> {
     /// Set the `domains` field (optional)
-    pub fn domains(mut self, value: impl Into<Option<Vec<jacquard_common::CowStr<'a>>>>) -> Self {
-        self.__unsafe_private_named.3 = value.into();
+    pub fn domains(mut self, value: impl Into<Option<Vec<S>>>) -> Self {
+        self._fields.3 = value.into();
         self
     }
     /// Set the `domains` field to an Option value (optional)
-    pub fn maybe_domains(mut self, value: Option<Vec<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.3 = value;
+    pub fn maybe_domains(mut self, value: Option<Vec<S>>) -> Self {
+        self._fields.3 = value;
         self
     }
 }
 
-impl<'a, S: search_posts_v2_state::State> SearchPostsV2Builder<'a, S> {
+impl<St: search_posts_v2_state::State, S: jacquard_common::BosStr> SearchPostsV2Builder<St, S> {
     /// Set the `embeddedAtUris` field (optional)
     pub fn embedded_at_uris(
         mut self,
-        value: impl Into<Option<Vec<jacquard_common::types::string::AtUri<'a>>>>,
+        value: impl Into<Option<Vec<jacquard_common::types::string::AtUri<S>>>>,
     ) -> Self {
-        self.__unsafe_private_named.4 = value.into();
+        self._fields.4 = value.into();
         self
     }
     /// Set the `embeddedAtUris` field to an Option value (optional)
     pub fn maybe_embedded_at_uris(
         mut self,
-        value: Option<Vec<jacquard_common::types::string::AtUri<'a>>>,
+        value: Option<Vec<jacquard_common::types::string::AtUri<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.4 = value;
+        self._fields.4 = value;
         self
     }
 }
 
-impl<'a, S: search_posts_v2_state::State> SearchPostsV2Builder<'a, S> {
+impl<St: search_posts_v2_state::State, S: jacquard_common::BosStr> SearchPostsV2Builder<St, S> {
     /// Set the `excludeAuthors` field (optional)
     pub fn exclude_authors(
         mut self,
-        value: impl Into<Option<Vec<jacquard_common::types::ident::AtIdentifier<'a>>>>,
+        value: impl Into<Option<Vec<jacquard_common::types::ident::AtIdentifier<S>>>>,
     ) -> Self {
-        self.__unsafe_private_named.5 = value.into();
+        self._fields.5 = value.into();
         self
     }
     /// Set the `excludeAuthors` field to an Option value (optional)
     pub fn maybe_exclude_authors(
         mut self,
-        value: Option<Vec<jacquard_common::types::ident::AtIdentifier<'a>>>,
+        value: Option<Vec<jacquard_common::types::ident::AtIdentifier<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.5 = value;
+        self._fields.5 = value;
         self
     }
 }
 
-impl<'a, S: search_posts_v2_state::State> SearchPostsV2Builder<'a, S> {
+impl<St: search_posts_v2_state::State, S: jacquard_common::BosStr> SearchPostsV2Builder<St, S> {
     /// Set the `excludeDomains` field (optional)
-    pub fn exclude_domains(
-        mut self,
-        value: impl Into<Option<Vec<jacquard_common::CowStr<'a>>>>,
-    ) -> Self {
-        self.__unsafe_private_named.6 = value.into();
+    pub fn exclude_domains(mut self, value: impl Into<Option<Vec<S>>>) -> Self {
+        self._fields.6 = value.into();
         self
     }
     /// Set the `excludeDomains` field to an Option value (optional)
-    pub fn maybe_exclude_domains(
-        mut self,
-        value: Option<Vec<jacquard_common::CowStr<'a>>>,
-    ) -> Self {
-        self.__unsafe_private_named.6 = value;
+    pub fn maybe_exclude_domains(mut self, value: Option<Vec<S>>) -> Self {
+        self._fields.6 = value;
         self
     }
 }
 
-impl<'a, S: search_posts_v2_state::State> SearchPostsV2Builder<'a, S> {
+impl<St: search_posts_v2_state::State, S: jacquard_common::BosStr> SearchPostsV2Builder<St, S> {
     /// Set the `excludeEmbeddedAtUris` field (optional)
     pub fn exclude_embedded_at_uris(
         mut self,
-        value: impl Into<Option<Vec<jacquard_common::types::string::AtUri<'a>>>>,
+        value: impl Into<Option<Vec<jacquard_common::types::string::AtUri<S>>>>,
     ) -> Self {
-        self.__unsafe_private_named.7 = value.into();
+        self._fields.7 = value.into();
         self
     }
     /// Set the `excludeEmbeddedAtUris` field to an Option value (optional)
     pub fn maybe_exclude_embedded_at_uris(
         mut self,
-        value: Option<Vec<jacquard_common::types::string::AtUri<'a>>>,
+        value: Option<Vec<jacquard_common::types::string::AtUri<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.7 = value;
+        self._fields.7 = value;
         self
     }
 }
 
-impl<'a, S: search_posts_v2_state::State> SearchPostsV2Builder<'a, S> {
+impl<St: search_posts_v2_state::State, S: jacquard_common::BosStr> SearchPostsV2Builder<St, S> {
     /// Set the `excludeHashtags` field (optional)
-    pub fn exclude_hashtags(
-        mut self,
-        value: impl Into<Option<Vec<jacquard_common::CowStr<'a>>>>,
-    ) -> Self {
-        self.__unsafe_private_named.8 = value.into();
+    pub fn exclude_hashtags(mut self, value: impl Into<Option<Vec<S>>>) -> Self {
+        self._fields.8 = value.into();
         self
     }
     /// Set the `excludeHashtags` field to an Option value (optional)
-    pub fn maybe_exclude_hashtags(
-        mut self,
-        value: Option<Vec<jacquard_common::CowStr<'a>>>,
-    ) -> Self {
-        self.__unsafe_private_named.8 = value;
+    pub fn maybe_exclude_hashtags(mut self, value: Option<Vec<S>>) -> Self {
+        self._fields.8 = value;
         self
     }
 }
 
-impl<'a, S: search_posts_v2_state::State> SearchPostsV2Builder<'a, S> {
+impl<St: search_posts_v2_state::State, S: jacquard_common::BosStr> SearchPostsV2Builder<St, S> {
     /// Set the `excludeLanguages` field (optional)
     pub fn exclude_languages(
         mut self,
         value: impl Into<Option<Vec<jacquard_common::types::string::Language>>>,
     ) -> Self {
-        self.__unsafe_private_named.9 = value.into();
+        self._fields.9 = value.into();
         self
     }
     /// Set the `excludeLanguages` field to an Option value (optional)
@@ -337,121 +442,121 @@ impl<'a, S: search_posts_v2_state::State> SearchPostsV2Builder<'a, S> {
         mut self,
         value: Option<Vec<jacquard_common::types::string::Language>>,
     ) -> Self {
-        self.__unsafe_private_named.9 = value;
+        self._fields.9 = value;
         self
     }
 }
 
-impl<'a, S: search_posts_v2_state::State> SearchPostsV2Builder<'a, S> {
+impl<St: search_posts_v2_state::State, S: jacquard_common::BosStr> SearchPostsV2Builder<St, S> {
     /// Set the `excludeMentions` field (optional)
     pub fn exclude_mentions(
         mut self,
-        value: impl Into<Option<Vec<jacquard_common::types::ident::AtIdentifier<'a>>>>,
+        value: impl Into<Option<Vec<jacquard_common::types::ident::AtIdentifier<S>>>>,
     ) -> Self {
-        self.__unsafe_private_named.10 = value.into();
+        self._fields.10 = value.into();
         self
     }
     /// Set the `excludeMentions` field to an Option value (optional)
     pub fn maybe_exclude_mentions(
         mut self,
-        value: Option<Vec<jacquard_common::types::ident::AtIdentifier<'a>>>,
+        value: Option<Vec<jacquard_common::types::ident::AtIdentifier<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.10 = value;
+        self._fields.10 = value;
         self
     }
 }
 
-impl<'a, S: search_posts_v2_state::State> SearchPostsV2Builder<'a, S> {
+impl<St: search_posts_v2_state::State, S: jacquard_common::BosStr> SearchPostsV2Builder<St, S> {
     /// Set the `excludeReplies` field (optional)
     pub fn exclude_replies(mut self, value: impl Into<Option<bool>>) -> Self {
-        self.__unsafe_private_named.11 = value.into();
+        self._fields.11 = value.into();
         self
     }
     /// Set the `excludeReplies` field to an Option value (optional)
     pub fn maybe_exclude_replies(mut self, value: Option<bool>) -> Self {
-        self.__unsafe_private_named.11 = value;
+        self._fields.11 = value;
         self
     }
 }
 
-impl<'a, S: search_posts_v2_state::State> SearchPostsV2Builder<'a, S> {
+impl<St: search_posts_v2_state::State, S: jacquard_common::BosStr> SearchPostsV2Builder<St, S> {
     /// Set the `excludeUrls` field (optional)
     pub fn exclude_urls(
         mut self,
-        value: impl Into<Option<Vec<jacquard_common::types::string::Uri<'a>>>>,
+        value: impl Into<Option<Vec<jacquard_common::types::string::UriValue<S>>>>,
     ) -> Self {
-        self.__unsafe_private_named.12 = value.into();
+        self._fields.12 = value.into();
         self
     }
     /// Set the `excludeUrls` field to an Option value (optional)
     pub fn maybe_exclude_urls(
         mut self,
-        value: Option<Vec<jacquard_common::types::string::Uri<'a>>>,
+        value: Option<Vec<jacquard_common::types::string::UriValue<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.12 = value;
+        self._fields.12 = value;
         self
     }
 }
 
-impl<'a, S: search_posts_v2_state::State> SearchPostsV2Builder<'a, S> {
+impl<St: search_posts_v2_state::State, S: jacquard_common::BosStr> SearchPostsV2Builder<St, S> {
     /// Set the `following` field (optional)
     pub fn following(mut self, value: impl Into<Option<bool>>) -> Self {
-        self.__unsafe_private_named.13 = value.into();
+        self._fields.13 = value.into();
         self
     }
     /// Set the `following` field to an Option value (optional)
     pub fn maybe_following(mut self, value: Option<bool>) -> Self {
-        self.__unsafe_private_named.13 = value;
+        self._fields.13 = value;
         self
     }
 }
 
-impl<'a, S: search_posts_v2_state::State> SearchPostsV2Builder<'a, S> {
+impl<St: search_posts_v2_state::State, S: jacquard_common::BosStr> SearchPostsV2Builder<St, S> {
     /// Set the `hasMedia` field (optional)
     pub fn has_media(mut self, value: impl Into<Option<bool>>) -> Self {
-        self.__unsafe_private_named.14 = value.into();
+        self._fields.14 = value.into();
         self
     }
     /// Set the `hasMedia` field to an Option value (optional)
     pub fn maybe_has_media(mut self, value: Option<bool>) -> Self {
-        self.__unsafe_private_named.14 = value;
+        self._fields.14 = value;
         self
     }
 }
 
-impl<'a, S: search_posts_v2_state::State> SearchPostsV2Builder<'a, S> {
+impl<St: search_posts_v2_state::State, S: jacquard_common::BosStr> SearchPostsV2Builder<St, S> {
     /// Set the `hasVideo` field (optional)
     pub fn has_video(mut self, value: impl Into<Option<bool>>) -> Self {
-        self.__unsafe_private_named.15 = value.into();
+        self._fields.15 = value.into();
         self
     }
     /// Set the `hasVideo` field to an Option value (optional)
     pub fn maybe_has_video(mut self, value: Option<bool>) -> Self {
-        self.__unsafe_private_named.15 = value;
+        self._fields.15 = value;
         self
     }
 }
 
-impl<'a, S: search_posts_v2_state::State> SearchPostsV2Builder<'a, S> {
+impl<St: search_posts_v2_state::State, S: jacquard_common::BosStr> SearchPostsV2Builder<St, S> {
     /// Set the `hashtags` field (optional)
-    pub fn hashtags(mut self, value: impl Into<Option<Vec<jacquard_common::CowStr<'a>>>>) -> Self {
-        self.__unsafe_private_named.16 = value.into();
+    pub fn hashtags(mut self, value: impl Into<Option<Vec<S>>>) -> Self {
+        self._fields.16 = value.into();
         self
     }
     /// Set the `hashtags` field to an Option value (optional)
-    pub fn maybe_hashtags(mut self, value: Option<Vec<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.16 = value;
+    pub fn maybe_hashtags(mut self, value: Option<Vec<S>>) -> Self {
+        self._fields.16 = value;
         self
     }
 }
 
-impl<'a, S: search_posts_v2_state::State> SearchPostsV2Builder<'a, S> {
+impl<St: search_posts_v2_state::State, S: jacquard_common::BosStr> SearchPostsV2Builder<St, S> {
     /// Set the `languages` field (optional)
     pub fn languages(
         mut self,
         value: impl Into<Option<Vec<jacquard_common::types::string::Language>>>,
     ) -> Self {
-        self.__unsafe_private_named.17 = value.into();
+        self._fields.17 = value.into();
         self
     }
     /// Set the `languages` field to an Option value (optional)
@@ -459,296 +564,214 @@ impl<'a, S: search_posts_v2_state::State> SearchPostsV2Builder<'a, S> {
         mut self,
         value: Option<Vec<jacquard_common::types::string::Language>>,
     ) -> Self {
-        self.__unsafe_private_named.17 = value;
+        self._fields.17 = value;
         self
     }
 }
 
-impl<'a, S: search_posts_v2_state::State> SearchPostsV2Builder<'a, S> {
+impl<St: search_posts_v2_state::State, S: jacquard_common::BosStr> SearchPostsV2Builder<St, S> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.18 = value.into();
+        self._fields.18 = value.into();
         self
     }
     /// Set the `limit` field to an Option value (optional)
     pub fn maybe_limit(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.18 = value;
+        self._fields.18 = value;
         self
     }
 }
 
-impl<'a, S: search_posts_v2_state::State> SearchPostsV2Builder<'a, S> {
+impl<St: search_posts_v2_state::State, S: jacquard_common::BosStr> SearchPostsV2Builder<St, S> {
     /// Set the `mentions` field (optional)
     pub fn mentions(
         mut self,
-        value: impl Into<Option<Vec<jacquard_common::types::ident::AtIdentifier<'a>>>>,
+        value: impl Into<Option<Vec<jacquard_common::types::ident::AtIdentifier<S>>>>,
     ) -> Self {
-        self.__unsafe_private_named.19 = value.into();
+        self._fields.19 = value.into();
         self
     }
     /// Set the `mentions` field to an Option value (optional)
     pub fn maybe_mentions(
         mut self,
-        value: Option<Vec<jacquard_common::types::ident::AtIdentifier<'a>>>,
+        value: Option<Vec<jacquard_common::types::ident::AtIdentifier<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.19 = value;
+        self._fields.19 = value;
         self
     }
 }
 
-impl<'a, S: search_posts_v2_state::State> SearchPostsV2Builder<'a, S> {
+impl<St: search_posts_v2_state::State, S: jacquard_common::BosStr> SearchPostsV2Builder<St, S> {
     /// Set the `query` field (optional)
-    pub fn query(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.20 = value.into();
+    pub fn query(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.20 = value.into();
         self
     }
     /// Set the `query` field to an Option value (optional)
-    pub fn maybe_query(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.20 = value;
+    pub fn maybe_query(mut self, value: Option<S>) -> Self {
+        self._fields.20 = value;
         self
     }
 }
 
-impl<'a, S: search_posts_v2_state::State> SearchPostsV2Builder<'a, S> {
+impl<St: search_posts_v2_state::State, S: jacquard_common::BosStr> SearchPostsV2Builder<St, S> {
     /// Set the `queryLanguage` field (optional)
-    pub fn query_language(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.21 = value.into();
+    pub fn query_language(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.21 = value.into();
         self
     }
     /// Set the `queryLanguage` field to an Option value (optional)
-    pub fn maybe_query_language(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.21 = value;
+    pub fn maybe_query_language(mut self, value: Option<S>) -> Self {
+        self._fields.21 = value;
         self
     }
 }
 
-impl<'a, S: search_posts_v2_state::State> SearchPostsV2Builder<'a, S> {
+impl<St: search_posts_v2_state::State, S: jacquard_common::BosStr> SearchPostsV2Builder<St, S> {
     /// Set the `repliesOnly` field (optional)
     pub fn replies_only(mut self, value: impl Into<Option<bool>>) -> Self {
-        self.__unsafe_private_named.22 = value.into();
+        self._fields.22 = value.into();
         self
     }
     /// Set the `repliesOnly` field to an Option value (optional)
     pub fn maybe_replies_only(mut self, value: Option<bool>) -> Self {
-        self.__unsafe_private_named.22 = value;
+        self._fields.22 = value;
         self
     }
 }
 
-impl<'a, S: search_posts_v2_state::State> SearchPostsV2Builder<'a, S> {
+impl<St: search_posts_v2_state::State, S: jacquard_common::BosStr> SearchPostsV2Builder<St, S> {
     /// Set the `replyParentUri` field (optional)
     pub fn reply_parent_uri(
         mut self,
-        value: impl Into<Option<jacquard_common::types::string::AtUri<'a>>>,
+        value: impl Into<Option<jacquard_common::types::string::AtUri<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.23 = value.into();
+        self._fields.23 = value.into();
         self
     }
     /// Set the `replyParentUri` field to an Option value (optional)
     pub fn maybe_reply_parent_uri(
         mut self,
-        value: Option<jacquard_common::types::string::AtUri<'a>>,
+        value: Option<jacquard_common::types::string::AtUri<S>>,
     ) -> Self {
-        self.__unsafe_private_named.23 = value;
+        self._fields.23 = value;
         self
     }
 }
 
-impl<'a, S: search_posts_v2_state::State> SearchPostsV2Builder<'a, S> {
+impl<St: search_posts_v2_state::State, S: jacquard_common::BosStr> SearchPostsV2Builder<St, S> {
     /// Set the `since` field (optional)
-    pub fn since(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.24 = value.into();
+    pub fn since(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.24 = value.into();
         self
     }
     /// Set the `since` field to an Option value (optional)
-    pub fn maybe_since(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.24 = value;
+    pub fn maybe_since(mut self, value: Option<S>) -> Self {
+        self._fields.24 = value;
         self
     }
 }
 
-impl<'a, S: search_posts_v2_state::State> SearchPostsV2Builder<'a, S> {
+impl<St: search_posts_v2_state::State, S: jacquard_common::BosStr> SearchPostsV2Builder<St, S> {
     /// Set the `sort` field (optional)
-    pub fn sort(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.25 = value.into();
+    pub fn sort(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.25 = value.into();
         self
     }
     /// Set the `sort` field to an Option value (optional)
-    pub fn maybe_sort(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.25 = value;
+    pub fn maybe_sort(mut self, value: Option<S>) -> Self {
+        self._fields.25 = value;
         self
     }
 }
 
-impl<'a, S: search_posts_v2_state::State> SearchPostsV2Builder<'a, S> {
+impl<St: search_posts_v2_state::State, S: jacquard_common::BosStr> SearchPostsV2Builder<St, S> {
     /// Set the `threadRootUri` field (optional)
     pub fn thread_root_uri(
         mut self,
-        value: impl Into<Option<jacquard_common::types::string::AtUri<'a>>>,
+        value: impl Into<Option<jacquard_common::types::string::AtUri<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.26 = value.into();
+        self._fields.26 = value.into();
         self
     }
     /// Set the `threadRootUri` field to an Option value (optional)
     pub fn maybe_thread_root_uri(
         mut self,
-        value: Option<jacquard_common::types::string::AtUri<'a>>,
+        value: Option<jacquard_common::types::string::AtUri<S>>,
     ) -> Self {
-        self.__unsafe_private_named.26 = value;
+        self._fields.26 = value;
         self
     }
 }
 
-impl<'a, S: search_posts_v2_state::State> SearchPostsV2Builder<'a, S> {
+impl<St: search_posts_v2_state::State, S: jacquard_common::BosStr> SearchPostsV2Builder<St, S> {
     /// Set the `until` field (optional)
-    pub fn until(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.27 = value.into();
+    pub fn until(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.27 = value.into();
         self
     }
     /// Set the `until` field to an Option value (optional)
-    pub fn maybe_until(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.27 = value;
+    pub fn maybe_until(mut self, value: Option<S>) -> Self {
+        self._fields.27 = value;
         self
     }
 }
 
-impl<'a, S: search_posts_v2_state::State> SearchPostsV2Builder<'a, S> {
+impl<St: search_posts_v2_state::State, S: jacquard_common::BosStr> SearchPostsV2Builder<St, S> {
     /// Set the `urls` field (optional)
     pub fn urls(
         mut self,
-        value: impl Into<Option<Vec<jacquard_common::types::string::Uri<'a>>>>,
+        value: impl Into<Option<Vec<jacquard_common::types::string::UriValue<S>>>>,
     ) -> Self {
-        self.__unsafe_private_named.28 = value.into();
+        self._fields.28 = value.into();
         self
     }
     /// Set the `urls` field to an Option value (optional)
     pub fn maybe_urls(
         mut self,
-        value: Option<Vec<jacquard_common::types::string::Uri<'a>>>,
+        value: Option<Vec<jacquard_common::types::string::UriValue<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.28 = value;
+        self._fields.28 = value;
         self
     }
 }
 
-impl<'a, S> SearchPostsV2Builder<'a, S>
+impl<St, S: jacquard_common::BosStr> SearchPostsV2Builder<St, S>
 where
-    S: search_posts_v2_state::State,
+    St: search_posts_v2_state::State,
 {
-    /// Build the final struct
-    pub fn build(self) -> SearchPostsV2<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> SearchPostsV2<S> {
         SearchPostsV2 {
-            all_time: self.__unsafe_private_named.0,
-            authors: self.__unsafe_private_named.1,
-            cursor: self.__unsafe_private_named.2,
-            domains: self.__unsafe_private_named.3,
-            embedded_at_uris: self.__unsafe_private_named.4,
-            exclude_authors: self.__unsafe_private_named.5,
-            exclude_domains: self.__unsafe_private_named.6,
-            exclude_embedded_at_uris: self.__unsafe_private_named.7,
-            exclude_hashtags: self.__unsafe_private_named.8,
-            exclude_languages: self.__unsafe_private_named.9,
-            exclude_mentions: self.__unsafe_private_named.10,
-            exclude_replies: self.__unsafe_private_named.11,
-            exclude_urls: self.__unsafe_private_named.12,
-            following: self.__unsafe_private_named.13,
-            has_media: self.__unsafe_private_named.14,
-            has_video: self.__unsafe_private_named.15,
-            hashtags: self.__unsafe_private_named.16,
-            languages: self.__unsafe_private_named.17,
-            limit: self.__unsafe_private_named.18,
-            mentions: self.__unsafe_private_named.19,
-            query: self.__unsafe_private_named.20,
-            query_language: self.__unsafe_private_named.21,
-            replies_only: self.__unsafe_private_named.22,
-            reply_parent_uri: self.__unsafe_private_named.23,
-            since: self.__unsafe_private_named.24,
-            sort: self.__unsafe_private_named.25,
-            thread_root_uri: self.__unsafe_private_named.26,
-            until: self.__unsafe_private_named.27,
-            urls: self.__unsafe_private_named.28,
+            all_time: self._fields.0,
+            authors: self._fields.1,
+            cursor: self._fields.2,
+            domains: self._fields.3,
+            embedded_at_uris: self._fields.4,
+            exclude_authors: self._fields.5,
+            exclude_domains: self._fields.6,
+            exclude_embedded_at_uris: self._fields.7,
+            exclude_hashtags: self._fields.8,
+            exclude_languages: self._fields.9,
+            exclude_mentions: self._fields.10,
+            exclude_replies: self._fields.11,
+            exclude_urls: self._fields.12,
+            following: self._fields.13,
+            has_media: self._fields.14,
+            has_video: self._fields.15,
+            hashtags: self._fields.16,
+            languages: self._fields.17,
+            limit: self._fields.18,
+            mentions: self._fields.19,
+            query: self._fields.20,
+            query_language: self._fields.21,
+            replies_only: self._fields.22,
+            reply_parent_uri: self._fields.23,
+            since: self._fields.24,
+            sort: self._fields.25,
+            thread_root_uri: self._fields.26,
+            until: self._fields.27,
+            urls: self._fields.28,
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct SearchPostsV2Output<'a> {
-    /// Cursor for the next page of results.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// Query languages detected for CJK, Thai, or Arabic text. Empty or omitted for other scripts.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub detected_query_languages: std::option::Option<Vec<jacquard_common::CowStr<'a>>>,
-    /// Estimated total number of matching hits. May be rounded or truncated.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub hits_total: std::option::Option<i64>,
-    /// Hydrated views of matching posts.
-    #[serde(borrow)]
-    pub posts: Vec<crate::generated::app_bsky::feed::PostView<'a>>,
-}
-
-#[jacquard_derive::open_union]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    thiserror::Error,
-    miette::Diagnostic,
-    jacquard_derive::IntoStatic,
-)]
-#[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum SearchPostsV2Error<'a> {
-    #[serde(rename = "BadQueryString")]
-    BadQueryString(std::option::Option<jacquard_common::CowStr<'a>>),
-}
-
-impl std::fmt::Display for SearchPostsV2Error<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::BadQueryString(msg) => {
-                write!(f, "BadQueryString")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
-        }
-    }
-}
-
-/// Response type for
-///app.bsky.feed.searchPostsV2
-pub struct SearchPostsV2Response;
-impl jacquard_common::xrpc::XrpcResp for SearchPostsV2Response {
-    const NSID: &'static str = "app.bsky.feed.searchPostsV2";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = SearchPostsV2Output<'de>;
-    type Err<'de> = SearchPostsV2Error<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for SearchPostsV2<'a> {
-    const NSID: &'static str = "app.bsky.feed.searchPostsV2";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = SearchPostsV2Response;
-}
-
-/// Endpoint type for
-///app.bsky.feed.searchPostsV2
-pub struct SearchPostsV2Request;
-impl jacquard_common::xrpc::XrpcEndpoint for SearchPostsV2Request {
-    const PATH: &'static str = "/xrpc/app.bsky.feed.searchPostsV2";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = SearchPostsV2<'de>;
-    type Response = SearchPostsV2Response;
 }

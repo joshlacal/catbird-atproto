@@ -8,16 +8,74 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct SearchStarterPacks<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    ///(default: 25, min: 1, max: 100)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub limit: std::option::Option<i64>,
-    #[serde(borrow)]
-    pub q: jacquard_common::CowStr<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct SearchStarterPacks<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    /// Defaults to `25`. Min: 1. Max: 100.
+    #[serde(default = "_default_limit")]
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub limit: core::option::Option<i64>,
+    pub q: S,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct SearchStarterPacksOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    pub starter_packs: Vec<crate::generated::app_bsky::graph::StarterPackViewBasic<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `app.bsky.graph.searchStarterPacks` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `SearchStarterPacksOutput<S>` for this endpoint.*/
+pub struct SearchStarterPacksResponse;
+impl jacquard_common::xrpc::XrpcResp for SearchStarterPacksResponse {
+    const NSID: &'static str = "app.bsky.graph.searchStarterPacks";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = SearchStarterPacksOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for SearchStarterPacks<S> {
+    const NSID: &'static str = "app.bsky.graph.searchStarterPacks";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = SearchStarterPacksResponse;
+}
+
+/** Endpoint marker for the `app.bsky.graph.searchStarterPacks` query.
+
+Path: `/xrpc/app.bsky.graph.searchStarterPacks`. The request payload type is `SearchStarterPacks<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct SearchStarterPacksRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for SearchStarterPacksRequest {
+    const PATH: &'static str = "/xrpc/app.bsky.graph.searchStarterPacks";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = SearchStarterPacks<S>;
+    type Response = SearchStarterPacksResponse;
+}
+
+fn _default_limit() -> core::option::Option<i64> {
+    Some(25i64)
 }
 
 pub mod search_starter_packs_state {
@@ -39,9 +97,9 @@ pub mod search_starter_packs_state {
         type Q = Unset;
     }
     ///State transition - sets the `q` field to Set
-    pub struct SetQ<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetQ<S> {}
-    impl<S: State> State for SetQ<S> {
+    pub struct SetQ<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetQ<St> {}
+    impl<St: State> State for SetQ<St> {
         type Q = Set<members::q>;
     }
     /// Marker types for field names
@@ -52,130 +110,118 @@ pub mod search_starter_packs_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct SearchStarterPacksBuilder<'a, S: search_starter_packs_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct SearchStarterPacksBuilder<
+    St: search_starter_packs_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<i64>,
+        core::option::Option<S>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> SearchStarterPacks<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> SearchStarterPacksBuilder<'a, search_starter_packs_state::Empty> {
+impl SearchStarterPacks<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> SearchStarterPacksBuilder<search_starter_packs_state::Empty, jacquard_common::DefaultStr>
+    {
         SearchStarterPacksBuilder::new()
     }
 }
 
-impl<'a> SearchStarterPacksBuilder<'a, search_starter_packs_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> SearchStarterPacks<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> SearchStarterPacksBuilder<search_starter_packs_state::Empty, S> {
+        SearchStarterPacksBuilder::builder()
+    }
+}
+
+impl SearchStarterPacksBuilder<search_starter_packs_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         SearchStarterPacksBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: search_starter_packs_state::State> SearchStarterPacksBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> SearchStarterPacksBuilder<search_starter_packs_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        SearchStarterPacksBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: search_starter_packs_state::State, S: jacquard_common::BosStr>
+    SearchStarterPacksBuilder<St, S>
+{
     /// Set the `cursor` field (optional)
-    pub fn cursor(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+    pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.0 = value.into();
         self
     }
     /// Set the `cursor` field to an Option value (optional)
-    pub fn maybe_cursor(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.0 = value;
+    pub fn maybe_cursor(mut self, value: Option<S>) -> Self {
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S: search_starter_packs_state::State> SearchStarterPacksBuilder<'a, S> {
+impl<St: search_starter_packs_state::State, S: jacquard_common::BosStr>
+    SearchStarterPacksBuilder<St, S>
+{
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self._fields.1 = value.into();
         self
     }
     /// Set the `limit` field to an Option value (optional)
     pub fn maybe_limit(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.1 = value;
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S> SearchStarterPacksBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> SearchStarterPacksBuilder<St, S>
 where
-    S: search_starter_packs_state::State,
-    S::Q: search_starter_packs_state::IsUnset,
+    St: search_starter_packs_state::State,
+    St::Q: search_starter_packs_state::IsUnset,
 {
     /// Set the `q` field (required)
     pub fn q(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> SearchStarterPacksBuilder<'a, search_starter_packs_state::SetQ<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> SearchStarterPacksBuilder<search_starter_packs_state::SetQ<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         SearchStarterPacksBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> SearchStarterPacksBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> SearchStarterPacksBuilder<St, S>
 where
-    S: search_starter_packs_state::State,
-    S::Q: search_starter_packs_state::IsSet,
+    St: search_starter_packs_state::State,
+    St::Q: search_starter_packs_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> SearchStarterPacks<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> SearchStarterPacks<S> {
         SearchStarterPacks {
-            cursor: self.__unsafe_private_named.0,
-            limit: self.__unsafe_private_named.1,
-            q: self.__unsafe_private_named.2.unwrap(),
+            cursor: self._fields.0,
+            limit: self._fields.1,
+            q: self._fields.2.unwrap(),
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct SearchStarterPacksOutput<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(borrow)]
-    pub starter_packs: Vec<crate::generated::app_bsky::graph::StarterPackViewBasic<'a>>,
-}
-
-/// Response type for
-///app.bsky.graph.searchStarterPacks
-pub struct SearchStarterPacksResponse;
-impl jacquard_common::xrpc::XrpcResp for SearchStarterPacksResponse {
-    const NSID: &'static str = "app.bsky.graph.searchStarterPacks";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = SearchStarterPacksOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for SearchStarterPacks<'a> {
-    const NSID: &'static str = "app.bsky.graph.searchStarterPacks";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = SearchStarterPacksResponse;
-}
-
-/// Endpoint type for
-///app.bsky.graph.searchStarterPacks
-pub struct SearchStarterPacksRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for SearchStarterPacksRequest {
-    const PATH: &'static str = "/xrpc/app.bsky.graph.searchStarterPacks";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = SearchStarterPacks<'de>;
-    type Response = SearchStarterPacksResponse;
 }

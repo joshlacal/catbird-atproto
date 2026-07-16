@@ -8,114 +8,37 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct ResolveIdentity<'a> {
-    #[serde(borrow)]
-    pub identifier: jacquard_common::types::ident::AtIdentifier<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ResolveIdentity<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub identifier: jacquard_common::types::ident::AtIdentifier<S>,
 }
 
-pub mod resolve_identity_state {
-
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
-    #[allow(unused)]
-    use core::marker::PhantomData;
-    mod sealed {
-        pub trait Sealed {}
-    }
-    /// State trait tracking which required fields have been set
-    pub trait State: sealed::Sealed {
-        type Identifier;
-    }
-    /// Empty state - all required fields are unset
-    pub struct Empty(());
-    impl sealed::Sealed for Empty {}
-    impl State for Empty {
-        type Identifier = Unset;
-    }
-    ///State transition - sets the `identifier` field to Set
-    pub struct SetIdentifier<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetIdentifier<S> {}
-    impl<S: State> State for SetIdentifier<S> {
-        type Identifier = Set<members::identifier>;
-    }
-    /// Marker types for field names
-    #[allow(non_camel_case_types)]
-    pub mod members {
-        ///Marker type for the `identifier` field
-        pub struct identifier(());
-    }
-}
-
-/// Builder for constructing an instance of this type
-pub struct ResolveIdentityBuilder<'a, S: resolve_identity_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named:
-        (::core::option::Option<jacquard_common::types::ident::AtIdentifier<'a>>,),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
-}
-
-impl<'a> ResolveIdentity<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> ResolveIdentityBuilder<'a, resolve_identity_state::Empty> {
-        ResolveIdentityBuilder::new()
-    }
-}
-
-impl<'a> ResolveIdentityBuilder<'a, resolve_identity_state::Empty> {
-    /// Create a new builder with all fields unset
-    pub fn new() -> Self {
-        ResolveIdentityBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> ResolveIdentityBuilder<'a, S>
-where
-    S: resolve_identity_state::State,
-    S::Identifier: resolve_identity_state::IsUnset,
-{
-    /// Set the `identifier` field (required)
-    pub fn identifier(
-        mut self,
-        value: impl Into<jacquard_common::types::ident::AtIdentifier<'a>>,
-    ) -> ResolveIdentityBuilder<'a, resolve_identity_state::SetIdentifier<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
-        ResolveIdentityBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> ResolveIdentityBuilder<'a, S>
-where
-    S: resolve_identity_state::State,
-    S::Identifier: resolve_identity_state::IsSet,
-{
-    /// Build the final struct
-    pub fn build(self) -> ResolveIdentity<'a> {
-        ResolveIdentity {
-            identifier: self.__unsafe_private_named.0.unwrap(),
-        }
-    }
-}
-
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct ResolveIdentityOutput<'a> {
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ResolveIdentityOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(flatten)]
-    #[serde(borrow)]
-    pub value: crate::generated::com_atproto::identity::IdentityInfo<'a>,
+    pub value: crate::generated::com_atproto::identity::IdentityInfo<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::open_union]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -125,24 +48,28 @@ pub struct ResolveIdentityOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum ResolveIdentityError<'a> {
+pub enum ResolveIdentityError {
     /// The resolution process confirmed that the handle does not resolve to any DID.
     #[serde(rename = "HandleNotFound")]
-    HandleNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
+    HandleNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// The DID resolution process confirmed that there is no current DID.
     #[serde(rename = "DidNotFound")]
-    DidNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
+    DidNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// The DID previously existed, but has been deactivated.
     #[serde(rename = "DidDeactivated")]
-    DidDeactivated(std::option::Option<jacquard_common::CowStr<'a>>),
+    DidDeactivated(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
 }
 
-impl std::fmt::Display for ResolveIdentityError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for ResolveIdentityError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             Self::HandleNotFound(msg) => {
                 write!(f, "HandleNotFound")?;
@@ -165,33 +92,152 @@ impl std::fmt::Display for ResolveIdentityError<'_> {
                 }
                 Ok(())
             }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
         }
     }
 }
 
-/// Response type for
-///com.atproto.identity.resolveIdentity
+/** Response marker for the `com.atproto.identity.resolveIdentity` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `ResolveIdentityOutput<S>` for this endpoint.*/
 pub struct ResolveIdentityResponse;
 impl jacquard_common::xrpc::XrpcResp for ResolveIdentityResponse {
     const NSID: &'static str = "com.atproto.identity.resolveIdentity";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = ResolveIdentityOutput<'de>;
-    type Err<'de> = ResolveIdentityError<'de>;
+    type Output<S: jacquard_common::BosStr> = ResolveIdentityOutput<S>;
+    type Err = ResolveIdentityError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for ResolveIdentity<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for ResolveIdentity<S> {
     const NSID: &'static str = "com.atproto.identity.resolveIdentity";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = ResolveIdentityResponse;
 }
 
-/// Endpoint type for
-///com.atproto.identity.resolveIdentity
+/** Endpoint marker for the `com.atproto.identity.resolveIdentity` query.
+
+Path: `/xrpc/com.atproto.identity.resolveIdentity`. The request payload type is `ResolveIdentity<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct ResolveIdentityRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for ResolveIdentityRequest {
     const PATH: &'static str = "/xrpc/com.atproto.identity.resolveIdentity";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = ResolveIdentity<'de>;
+    type Request<S: jacquard_common::BosStr> = ResolveIdentity<S>;
     type Response = ResolveIdentityResponse;
+}
+
+pub mod resolve_identity_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type Identifier;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type Identifier = Unset;
+    }
+    ///State transition - sets the `identifier` field to Set
+    pub struct SetIdentifier<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetIdentifier<St> {}
+    impl<St: State> State for SetIdentifier<St> {
+        type Identifier = Set<members::identifier>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `identifier` field
+        pub struct identifier(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct ResolveIdentityBuilder<
+    St: resolve_identity_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<jacquard_common::types::ident::AtIdentifier<S>>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl ResolveIdentity<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> ResolveIdentityBuilder<resolve_identity_state::Empty, jacquard_common::DefaultStr> {
+        ResolveIdentityBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> ResolveIdentity<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> ResolveIdentityBuilder<resolve_identity_state::Empty, S> {
+        ResolveIdentityBuilder::builder()
+    }
+}
+
+impl ResolveIdentityBuilder<resolve_identity_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        ResolveIdentityBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> ResolveIdentityBuilder<resolve_identity_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        ResolveIdentityBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ResolveIdentityBuilder<St, S>
+where
+    St: resolve_identity_state::State,
+    St::Identifier: resolve_identity_state::IsUnset,
+{
+    /// Set the `identifier` field (required)
+    pub fn identifier(
+        mut self,
+        value: impl Into<jacquard_common::types::ident::AtIdentifier<S>>,
+    ) -> ResolveIdentityBuilder<resolve_identity_state::SetIdentifier<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        ResolveIdentityBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ResolveIdentityBuilder<St, S>
+where
+    St: resolve_identity_state::State,
+    St::Identifier: resolve_identity_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> ResolveIdentity<S> {
+        ResolveIdentity {
+            identifier: self._fields.0.unwrap(),
+        }
+    }
 }

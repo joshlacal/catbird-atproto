@@ -5,200 +5,59 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct CreatePin<'a> {
-    /// Optional expiration time for this pin.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub expires_at: std::option::Option<jacquard_common::types::string::Datetime>,
-    /// The AT-URI of the chat message to pin.
-    #[serde(borrow)]
-    pub message_uri: jacquard_common::types::string::AtUri<'a>,
-    /// The DID of the streamer.
-    #[serde(borrow)]
-    pub streamer: jacquard_common::types::string::Did<'a>,
-}
-
-pub mod create_pin_state {
-
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
-    #[allow(unused)]
-    use core::marker::PhantomData;
-    mod sealed {
-        pub trait Sealed {}
-    }
-    /// State trait tracking which required fields have been set
-    pub trait State: sealed::Sealed {
-        type Streamer;
-        type MessageUri;
-    }
-    /// Empty state - all required fields are unset
-    pub struct Empty(());
-    impl sealed::Sealed for Empty {}
-    impl State for Empty {
-        type Streamer = Unset;
-        type MessageUri = Unset;
-    }
-    ///State transition - sets the `streamer` field to Set
-    pub struct SetStreamer<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetStreamer<S> {}
-    impl<S: State> State for SetStreamer<S> {
-        type Streamer = Set<members::streamer>;
-        type MessageUri = S::MessageUri;
-    }
-    ///State transition - sets the `message_uri` field to Set
-    pub struct SetMessageUri<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetMessageUri<S> {}
-    impl<S: State> State for SetMessageUri<S> {
-        type Streamer = S::Streamer;
-        type MessageUri = Set<members::message_uri>;
-    }
-    /// Marker types for field names
-    #[allow(non_camel_case_types)]
-    pub mod members {
-        ///Marker type for the `streamer` field
-        pub struct streamer(());
-        ///Marker type for the `message_uri` field
-        pub struct message_uri(());
-    }
-}
-
-/// Builder for constructing an instance of this type
-pub struct CreatePinBuilder<'a, S: create_pin_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-    ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
-}
-
-impl<'a> CreatePin<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> CreatePinBuilder<'a, create_pin_state::Empty> {
-        CreatePinBuilder::new()
-    }
-}
-
-impl<'a> CreatePinBuilder<'a, create_pin_state::Empty> {
-    /// Create a new builder with all fields unset
-    pub fn new() -> Self {
-        CreatePinBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None),
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S: create_pin_state::State> CreatePinBuilder<'a, S> {
-    /// Set the `expiresAt` field (optional)
-    pub fn expires_at(
-        mut self,
-        value: impl Into<Option<jacquard_common::types::string::Datetime>>,
-    ) -> Self {
-        self.__unsafe_private_named.0 = value.into();
-        self
-    }
-    /// Set the `expiresAt` field to an Option value (optional)
-    pub fn maybe_expires_at(
-        mut self,
-        value: Option<jacquard_common::types::string::Datetime>,
-    ) -> Self {
-        self.__unsafe_private_named.0 = value;
-        self
-    }
-}
-
-impl<'a, S> CreatePinBuilder<'a, S>
-where
-    S: create_pin_state::State,
-    S::MessageUri: create_pin_state::IsUnset,
-{
-    /// Set the `messageUri` field (required)
-    pub fn message_uri(
-        mut self,
-        value: impl Into<jacquard_common::types::string::AtUri<'a>>,
-    ) -> CreatePinBuilder<'a, create_pin_state::SetMessageUri<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
-        CreatePinBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> CreatePinBuilder<'a, S>
-where
-    S: create_pin_state::State,
-    S::Streamer: create_pin_state::IsUnset,
-{
-    /// Set the `streamer` field (required)
-    pub fn streamer(
-        mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> CreatePinBuilder<'a, create_pin_state::SetStreamer<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
-        CreatePinBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> CreatePinBuilder<'a, S>
-where
-    S: create_pin_state::State,
-    S::Streamer: create_pin_state::IsSet,
-    S::MessageUri: create_pin_state::IsSet,
-{
-    /// Build the final struct
-    pub fn build(self) -> CreatePin<'a> {
-        CreatePin {
-            expires_at: self.__unsafe_private_named.0,
-            message_uri: self.__unsafe_private_named.1.unwrap(),
-            streamer: self.__unsafe_private_named.2.unwrap(),
-            extra_data: Default::default(),
-        }
-    }
-    /// Build the final struct with custom extra_data
-    pub fn build_with_data(
-        self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct CreatePin<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Optional expiration time for this pin.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub expires_at: core::option::Option<jacquard_common::types::string::Datetime>,
+    ///The AT-URI of the chat message to pin.
+    pub message_uri: jacquard_common::types::string::AtUri<S>,
+    ///The DID of the streamer.
+    pub streamer: jacquard_common::types::string::Did<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> CreatePin<'a> {
-        CreatePin {
-            expires_at: self.__unsafe_private_named.0,
-            message_uri: self.__unsafe_private_named.1.unwrap(),
-            streamer: self.__unsafe_private_named.2.unwrap(),
-            extra_data: Some(extra_data),
-        }
-    }
+    >,
 }
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct CreatePinOutput<'a> {
-    /// The CID of the created pinned record.
-    #[serde(borrow)]
-    pub cid: jacquard_common::types::string::Cid<'a>,
-    /// The AT-URI of the created pinned record.
-    #[serde(borrow)]
-    pub uri: jacquard_common::types::string::AtUri<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct CreatePinOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///The CID of the created pinned record.
+    pub cid: jacquard_common::types::string::Cid<S>,
+    ///The AT-URI of the created pinned record.
+    pub uri: jacquard_common::types::string::AtUri<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::open_union]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -208,24 +67,28 @@ pub struct CreatePinOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum CreatePinError<'a> {
+pub enum CreatePinError {
     /// The request lacks valid authentication credentials.
     #[serde(rename = "Unauthorized")]
-    Unauthorized(std::option::Option<jacquard_common::CowStr<'a>>),
+    Unauthorized(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// The caller does not have permission to pin messages for this streamer.
     #[serde(rename = "Forbidden")]
-    Forbidden(std::option::Option<jacquard_common::CowStr<'a>>),
+    Forbidden(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// The streamer's OAuth session could not be found or is invalid.
     #[serde(rename = "SessionNotFound")]
-    SessionNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
+    SessionNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
 }
 
-impl std::fmt::Display for CreatePinError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for CreatePinError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             Self::Unauthorized(msg) => {
                 write!(f, "Unauthorized")?;
@@ -248,35 +111,226 @@ impl std::fmt::Display for CreatePinError<'_> {
                 }
                 Ok(())
             }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
         }
     }
 }
 
-/// Response type for
-///place.stream.moderation.createPin
+/** Response marker for the `place.stream.moderation.createPin` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `CreatePinOutput<S>` for this endpoint.*/
 pub struct CreatePinResponse;
 impl jacquard_common::xrpc::XrpcResp for CreatePinResponse {
     const NSID: &'static str = "place.stream.moderation.createPin";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = CreatePinOutput<'de>;
-    type Err<'de> = CreatePinError<'de>;
+    type Output<S: jacquard_common::BosStr> = CreatePinOutput<S>;
+    type Err = CreatePinError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for CreatePin<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for CreatePin<S> {
     const NSID: &'static str = "place.stream.moderation.createPin";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = CreatePinResponse;
 }
 
-/// Endpoint type for
-///place.stream.moderation.createPin
+/** Endpoint marker for the `place.stream.moderation.createPin` procedure.
+
+Path: `/xrpc/place.stream.moderation.createPin`. The request payload type is `CreatePin<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct CreatePinRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for CreatePinRequest {
     const PATH: &'static str = "/xrpc/place.stream.moderation.createPin";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = CreatePin<'de>;
+    type Request<S: jacquard_common::BosStr> = CreatePin<S>;
     type Response = CreatePinResponse;
+}
+
+pub mod create_pin_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type MessageUri;
+        type Streamer;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type MessageUri = Unset;
+        type Streamer = Unset;
+    }
+    ///State transition - sets the `message_uri` field to Set
+    pub struct SetMessageUri<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetMessageUri<St> {}
+    impl<St: State> State for SetMessageUri<St> {
+        type MessageUri = Set<members::message_uri>;
+        type Streamer = St::Streamer;
+    }
+    ///State transition - sets the `streamer` field to Set
+    pub struct SetStreamer<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetStreamer<St> {}
+    impl<St: State> State for SetStreamer<St> {
+        type MessageUri = St::MessageUri;
+        type Streamer = Set<members::streamer>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `message_uri` field
+        pub struct message_uri(());
+        ///Marker type for the `streamer` field
+        pub struct streamer(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct CreatePinBuilder<
+    St: create_pin_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<jacquard_common::types::string::AtUri<S>>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+    ),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl CreatePin<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> CreatePinBuilder<create_pin_state::Empty, jacquard_common::DefaultStr> {
+        CreatePinBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> CreatePin<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> CreatePinBuilder<create_pin_state::Empty, S> {
+        CreatePinBuilder::builder()
+    }
+}
+
+impl CreatePinBuilder<create_pin_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        CreatePinBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> CreatePinBuilder<create_pin_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        CreatePinBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: create_pin_state::State, S: jacquard_common::BosStr> CreatePinBuilder<St, S> {
+    /// Set the `expiresAt` field (optional)
+    pub fn expires_at(
+        mut self,
+        value: impl Into<Option<jacquard_common::types::string::Datetime>>,
+    ) -> Self {
+        self._fields.0 = value.into();
+        self
+    }
+    /// Set the `expiresAt` field to an Option value (optional)
+    pub fn maybe_expires_at(
+        mut self,
+        value: Option<jacquard_common::types::string::Datetime>,
+    ) -> Self {
+        self._fields.0 = value;
+        self
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> CreatePinBuilder<St, S>
+where
+    St: create_pin_state::State,
+    St::MessageUri: create_pin_state::IsUnset,
+{
+    /// Set the `messageUri` field (required)
+    pub fn message_uri(
+        mut self,
+        value: impl Into<jacquard_common::types::string::AtUri<S>>,
+    ) -> CreatePinBuilder<create_pin_state::SetMessageUri<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
+        CreatePinBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> CreatePinBuilder<St, S>
+where
+    St: create_pin_state::State,
+    St::Streamer: create_pin_state::IsUnset,
+{
+    /// Set the `streamer` field (required)
+    pub fn streamer(
+        mut self,
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> CreatePinBuilder<create_pin_state::SetStreamer<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
+        CreatePinBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> CreatePinBuilder<St, S>
+where
+    St: create_pin_state::State,
+    St::MessageUri: create_pin_state::IsSet,
+    St::Streamer: create_pin_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> CreatePin<S> {
+        CreatePin {
+            expires_at: self._fields.0,
+            message_uri: self._fields.1.unwrap(),
+            streamer: self._fields.2.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> CreatePin<S> {
+        CreatePin {
+            expires_at: self._fields.0,
+            message_uri: self._fields.1.unwrap(),
+            streamer: self._fields.2.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
 }

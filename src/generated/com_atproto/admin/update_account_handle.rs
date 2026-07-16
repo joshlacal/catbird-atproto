@@ -5,16 +5,57 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct UpdateAccountHandle<'a> {
-    #[serde(borrow)]
-    pub did: jacquard_common::types::string::Did<'a>,
-    #[serde(borrow)]
-    pub handle: jacquard_common::types::string::Handle<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct UpdateAccountHandle<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub did: jacquard_common::types::string::Did<S>,
+    pub handle: jacquard_common::types::string::Handle<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `com.atproto.admin.updateAccountHandle` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `()` for this endpoint.*/
+pub struct UpdateAccountHandleResponse;
+impl jacquard_common::xrpc::XrpcResp for UpdateAccountHandleResponse {
+    const NSID: &'static str = "com.atproto.admin.updateAccountHandle";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = ();
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for UpdateAccountHandle<S> {
+    const NSID: &'static str = "com.atproto.admin.updateAccountHandle";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Response = UpdateAccountHandleResponse;
+}
+
+/** Endpoint marker for the `com.atproto.admin.updateAccountHandle` procedure.
+
+Path: `/xrpc/com.atproto.admin.updateAccountHandle`. The request payload type is `UpdateAccountHandle<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct UpdateAccountHandleRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for UpdateAccountHandleRequest {
+    const PATH: &'static str = "/xrpc/com.atproto.admin.updateAccountHandle";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Request<S: jacquard_common::BosStr> = UpdateAccountHandle<S>;
+    type Response = UpdateAccountHandleResponse;
 }
 
 pub mod update_account_handle_state {
@@ -38,17 +79,17 @@ pub mod update_account_handle_state {
         type Handle = Unset;
     }
     ///State transition - sets the `did` field to Set
-    pub struct SetDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDid<S> {}
-    impl<S: State> State for SetDid<S> {
+    pub struct SetDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetDid<St> {}
+    impl<St: State> State for SetDid<St> {
         type Did = Set<members::did>;
-        type Handle = S::Handle;
+        type Handle = St::Handle;
     }
     ///State transition - sets the `handle` field to Set
-    pub struct SetHandle<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetHandle<S> {}
-    impl<S: State> State for SetHandle<S> {
-        type Did = S::Did;
+    pub struct SetHandle<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetHandle<St> {}
+    impl<St: State> State for SetHandle<St> {
+        type Did = St::Did;
         type Handle = Set<members::handle>;
     }
     /// Marker types for field names
@@ -61,126 +102,121 @@ pub mod update_account_handle_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct UpdateAccountHandleBuilder<'a, S: update_account_handle_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Handle<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct UpdateAccountHandleBuilder<
+    St: update_account_handle_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<jacquard_common::types::string::Handle<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> UpdateAccountHandle<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> UpdateAccountHandleBuilder<'a, update_account_handle_state::Empty> {
+impl UpdateAccountHandle<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> UpdateAccountHandleBuilder<update_account_handle_state::Empty, jacquard_common::DefaultStr>
+    {
         UpdateAccountHandleBuilder::new()
     }
 }
 
-impl<'a> UpdateAccountHandleBuilder<'a, update_account_handle_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> UpdateAccountHandle<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> UpdateAccountHandleBuilder<update_account_handle_state::Empty, S> {
+        UpdateAccountHandleBuilder::builder()
+    }
+}
+
+impl UpdateAccountHandleBuilder<update_account_handle_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         UpdateAccountHandleBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> UpdateAccountHandleBuilder<'a, S>
+impl<S: jacquard_common::BosStr> UpdateAccountHandleBuilder<update_account_handle_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        UpdateAccountHandleBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> UpdateAccountHandleBuilder<St, S>
 where
-    S: update_account_handle_state::State,
-    S::Did: update_account_handle_state::IsUnset,
+    St: update_account_handle_state::State,
+    St::Did: update_account_handle_state::IsUnset,
 {
     /// Set the `did` field (required)
     pub fn did(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> UpdateAccountHandleBuilder<'a, update_account_handle_state::SetDid<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> UpdateAccountHandleBuilder<update_account_handle_state::SetDid<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         UpdateAccountHandleBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> UpdateAccountHandleBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> UpdateAccountHandleBuilder<St, S>
 where
-    S: update_account_handle_state::State,
-    S::Handle: update_account_handle_state::IsUnset,
+    St: update_account_handle_state::State,
+    St::Handle: update_account_handle_state::IsUnset,
 {
     /// Set the `handle` field (required)
     pub fn handle(
         mut self,
-        value: impl Into<jacquard_common::types::string::Handle<'a>>,
-    ) -> UpdateAccountHandleBuilder<'a, update_account_handle_state::SetHandle<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Handle<S>>,
+    ) -> UpdateAccountHandleBuilder<update_account_handle_state::SetHandle<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         UpdateAccountHandleBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> UpdateAccountHandleBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> UpdateAccountHandleBuilder<St, S>
 where
-    S: update_account_handle_state::State,
-    S::Did: update_account_handle_state::IsSet,
-    S::Handle: update_account_handle_state::IsSet,
+    St: update_account_handle_state::State,
+    St::Did: update_account_handle_state::IsSet,
+    St::Handle: update_account_handle_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> UpdateAccountHandle<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> UpdateAccountHandle<S> {
         UpdateAccountHandle {
-            did: self.__unsafe_private_named.0.unwrap(),
-            handle: self.__unsafe_private_named.1.unwrap(),
+            did: self._fields.0.unwrap(),
+            handle: self._fields.1.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> UpdateAccountHandle<'a> {
+    ) -> UpdateAccountHandle<S> {
         UpdateAccountHandle {
-            did: self.__unsafe_private_named.0.unwrap(),
-            handle: self.__unsafe_private_named.1.unwrap(),
+            did: self._fields.0.unwrap(),
+            handle: self._fields.1.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-/// Response type for
-///com.atproto.admin.updateAccountHandle
-pub struct UpdateAccountHandleResponse;
-impl jacquard_common::xrpc::XrpcResp for UpdateAccountHandleResponse {
-    const NSID: &'static str = "com.atproto.admin.updateAccountHandle";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = ();
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for UpdateAccountHandle<'a> {
-    const NSID: &'static str = "com.atproto.admin.updateAccountHandle";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Response = UpdateAccountHandleResponse;
-}
-
-/// Endpoint type for
-///com.atproto.admin.updateAccountHandle
-pub struct UpdateAccountHandleRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for UpdateAccountHandleRequest {
-    const PATH: &'static str = "/xrpc/com.atproto.admin.updateAccountHandle";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = UpdateAccountHandle<'de>;
-    type Response = UpdateAccountHandleResponse;
 }

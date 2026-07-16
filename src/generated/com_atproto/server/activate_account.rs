@@ -5,26 +5,30 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-/// XRPC request marker type
+/** Request marker for the `com.atproto.server.activateAccount` procedure.
+
+This endpoint has no request parameters or input body; send this marker with `jacquard::Client`.*/
+
 #[derive(
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
     serde::Serialize,
     serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
     jacquard_derive::IntoStatic,
+    Copy,
 )]
 pub struct ActivateAccount;
-/// Response type for
-///com.atproto.server.activateAccount
+/** Response marker for the `com.atproto.server.activateAccount` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `()` for this endpoint.*/
 pub struct ActivateAccountResponse;
 impl jacquard_common::xrpc::XrpcResp for ActivateAccountResponse {
     const NSID: &'static str = "com.atproto.server.activateAccount";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = ();
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
+    type Output<S: jacquard_common::BosStr> = ();
+    type Err = jacquard_common::xrpc::GenericError;
 }
 
 impl jacquard_common::xrpc::XrpcRequest for ActivateAccount {
@@ -34,13 +38,14 @@ impl jacquard_common::xrpc::XrpcRequest for ActivateAccount {
     type Response = ActivateAccountResponse;
 }
 
-/// Endpoint type for
-///com.atproto.server.activateAccount
+/** Endpoint marker for the `com.atproto.server.activateAccount` procedure.
+
+Path: `/xrpc/com.atproto.server.activateAccount`. The request payload type is `ActivateAccount`; use this marker with lower-level `XrpcEndpoint` APIs when you need endpoint metadata.*/
 pub struct ActivateAccountRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for ActivateAccountRequest {
     const PATH: &'static str = "/xrpc/com.atproto.server.activateAccount";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = ActivateAccount;
+    type Request<S: jacquard_common::BosStr> = ActivateAccount;
     type Response = ActivateAccountResponse;
 }

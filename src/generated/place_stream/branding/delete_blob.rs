@@ -5,7 +5,6 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -16,27 +15,51 @@
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct DeleteBlob<'a> {
-    /// DID of the broadcaster. If not provided, uses the server's default broadcaster.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub broadcaster: std::option::Option<jacquard_common::types::string::Did<'a>>,
-    /// Branding asset key (mainLogo, favicon, siteTitle, etc.)
-    #[serde(borrow)]
-    pub key: jacquard_common::CowStr<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct DeleteBlob<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///DID of the broadcaster. If not provided, uses the server's default broadcaster.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub broadcaster: core::option::Option<jacquard_common::types::string::Did<S>>,
+    ///Branding asset key (mainLogo, favicon, siteTitle, etc.)
+    pub key: S,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct DeleteBlobOutput<'a> {
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct DeleteBlobOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub success: bool,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::open_union]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -46,21 +69,25 @@ pub struct DeleteBlobOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum DeleteBlobError<'a> {
+pub enum DeleteBlobError {
     /// The authenticated DID is not authorized to modify branding
     #[serde(rename = "Unauthorized")]
-    Unauthorized(std::option::Option<jacquard_common::CowStr<'a>>),
+    Unauthorized(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// The requested branding asset does not exist
     #[serde(rename = "BrandingNotFound")]
-    BrandingNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
+    BrandingNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
 }
 
-impl std::fmt::Display for DeleteBlobError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for DeleteBlobError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             Self::Unauthorized(msg) => {
                 write!(f, "Unauthorized")?;
@@ -76,35 +103,43 @@ impl std::fmt::Display for DeleteBlobError<'_> {
                 }
                 Ok(())
             }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
         }
     }
 }
 
-/// Response type for
-///place.stream.branding.deleteBlob
+/** Response marker for the `place.stream.branding.deleteBlob` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `DeleteBlobOutput<S>` for this endpoint.*/
 pub struct DeleteBlobResponse;
 impl jacquard_common::xrpc::XrpcResp for DeleteBlobResponse {
     const NSID: &'static str = "place.stream.branding.deleteBlob";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = DeleteBlobOutput<'de>;
-    type Err<'de> = DeleteBlobError<'de>;
+    type Output<S: jacquard_common::BosStr> = DeleteBlobOutput<S>;
+    type Err = DeleteBlobError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for DeleteBlob<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for DeleteBlob<S> {
     const NSID: &'static str = "place.stream.branding.deleteBlob";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = DeleteBlobResponse;
 }
 
-/// Endpoint type for
-///place.stream.branding.deleteBlob
+/** Endpoint marker for the `place.stream.branding.deleteBlob` procedure.
+
+Path: `/xrpc/place.stream.branding.deleteBlob`. The request payload type is `DeleteBlob<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct DeleteBlobRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for DeleteBlobRequest {
     const PATH: &'static str = "/xrpc/place.stream.branding.deleteBlob";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = DeleteBlob<'de>;
+    type Request<S: jacquard_common::BosStr> = DeleteBlob<S>;
     type Response = DeleteBlobResponse;
 }

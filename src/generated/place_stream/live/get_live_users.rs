@@ -10,11 +10,75 @@
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetLiveUsers {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub before: std::option::Option<jacquard_common::types::string::Datetime>,
-    ///(default: 50, min: 1, max: 100)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub limit: std::option::Option<i64>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub before: core::option::Option<jacquard_common::types::string::Datetime>,
+    /// Defaults to `50`. Min: 1. Max: 100.
+    #[serde(default = "_default_limit")]
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub limit: core::option::Option<i64>,
+}
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic,
+    Default,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetLiveUsersOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub streams:
+        core::option::Option<Vec<crate::generated::place_stream::livestream::LivestreamView<S>>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `place.stream.live.getLiveUsers` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetLiveUsersOutput<S>` for this endpoint.*/
+pub struct GetLiveUsersResponse;
+impl jacquard_common::xrpc::XrpcResp for GetLiveUsersResponse {
+    const NSID: &'static str = "place.stream.live.getLiveUsers";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = GetLiveUsersOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl jacquard_common::xrpc::XrpcRequest for GetLiveUsers {
+    const NSID: &'static str = "place.stream.live.getLiveUsers";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = GetLiveUsersResponse;
+}
+
+/** Endpoint marker for the `place.stream.live.getLiveUsers` query.
+
+Path: `/xrpc/place.stream.live.getLiveUsers`. The request payload type is `GetLiveUsers`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct GetLiveUsersRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for GetLiveUsersRequest {
+    const PATH: &'static str = "/xrpc/place.stream.live.getLiveUsers";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = GetLiveUsers;
+    type Response = GetLiveUsersResponse;
+}
+
+fn _default_limit() -> core::option::Option<i64> {
+    Some(50i64)
 }
 
 pub mod get_live_users_state {
@@ -36,115 +100,80 @@ pub mod get_live_users_state {
     pub mod members {}
 }
 
-/// Builder for constructing an instance of this type
-pub struct GetLiveUsersBuilder<S: get_live_users_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<i64>,
+/// Builder for constructing an instance of this type.
+pub struct GetLiveUsersBuilder<St: get_live_users_state::State> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<i64>,
     ),
 }
 
 impl GetLiveUsers {
-    /// Create a new builder for this type
+    /// Create a new builder for this type.
     pub fn new() -> GetLiveUsersBuilder<get_live_users_state::Empty> {
         GetLiveUsersBuilder::new()
     }
 }
 
 impl GetLiveUsersBuilder<get_live_users_state::Empty> {
-    /// Create a new builder with all fields unset
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetLiveUsersBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
         }
     }
 }
 
-impl<S: get_live_users_state::State> GetLiveUsersBuilder<S> {
+impl GetLiveUsersBuilder<get_live_users_state::Empty> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GetLiveUsersBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+        }
+    }
+}
+
+impl<St: get_live_users_state::State> GetLiveUsersBuilder<St> {
     /// Set the `before` field (optional)
     pub fn before(
         mut self,
         value: impl Into<Option<jacquard_common::types::string::Datetime>>,
     ) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+        self._fields.0 = value.into();
         self
     }
     /// Set the `before` field to an Option value (optional)
     pub fn maybe_before(mut self, value: Option<jacquard_common::types::string::Datetime>) -> Self {
-        self.__unsafe_private_named.0 = value;
+        self._fields.0 = value;
         self
     }
 }
 
-impl<S: get_live_users_state::State> GetLiveUsersBuilder<S> {
+impl<St: get_live_users_state::State> GetLiveUsersBuilder<St> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self._fields.1 = value.into();
         self
     }
     /// Set the `limit` field to an Option value (optional)
     pub fn maybe_limit(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.1 = value;
+        self._fields.1 = value;
         self
     }
 }
 
-impl<S> GetLiveUsersBuilder<S>
+impl<St> GetLiveUsersBuilder<St>
 where
-    S: get_live_users_state::State,
+    St: get_live_users_state::State,
 {
-    /// Build the final struct
+    /// Build the final struct.
     pub fn build(self) -> GetLiveUsers {
         GetLiveUsers {
-            before: self.__unsafe_private_named.0,
-            limit: self.__unsafe_private_named.1,
+            before: self._fields.0,
+            limit: self._fields.1,
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic,
-    Default,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GetLiveUsersOutput<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub streams:
-        std::option::Option<Vec<crate::generated::place_stream::livestream::LivestreamView<'a>>>,
-}
-
-/// Response type for
-///place.stream.live.getLiveUsers
-pub struct GetLiveUsersResponse;
-impl jacquard_common::xrpc::XrpcResp for GetLiveUsersResponse {
-    const NSID: &'static str = "place.stream.live.getLiveUsers";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetLiveUsersOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl jacquard_common::xrpc::XrpcRequest for GetLiveUsers {
-    const NSID: &'static str = "place.stream.live.getLiveUsers";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = GetLiveUsersResponse;
-}
-
-/// Endpoint type for
-///place.stream.live.getLiveUsers
-pub struct GetLiveUsersRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for GetLiveUsersRequest {
-    const PATH: &'static str = "/xrpc/place.stream.live.getLiveUsers";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetLiveUsers;
-    type Response = GetLiveUsersResponse;
 }

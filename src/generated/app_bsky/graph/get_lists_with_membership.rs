@@ -6,17 +6,116 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 /// A list and an optional list item indicating membership of a target user to that list.
-#[jacquard_derive::lexicon]
+
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct ListWithMembership<'a> {
-    #[serde(borrow)]
-    pub list: crate::generated::app_bsky::graph::ListView<'a>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub list_item: std::option::Option<crate::generated::app_bsky::graph::ListItemView<'a>>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ListWithMembership<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub list: crate::generated::app_bsky::graph::ListView<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub list_item: core::option::Option<crate::generated::app_bsky::graph::ListItemView<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetListsWithMembership<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub actor: jacquard_common::types::ident::AtIdentifier<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    /// Defaults to `50`. Min: 1. Max: 100.
+    #[serde(default = "_default_limit")]
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub limit: core::option::Option<i64>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub purposes: core::option::Option<Vec<S>>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetListsWithMembershipOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    pub lists_with_membership:
+        Vec<crate::generated::app_bsky::graph::get_lists_with_membership::ListWithMembership<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ListWithMembership<S> {
+    fn nsid() -> &'static str {
+        "app.bsky.graph.getListsWithMembership"
+    }
+    fn def_name() -> &'static str {
+        "listWithMembership"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_app_bsky_graph_getListsWithMembership()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+/** Response marker for the `app.bsky.graph.getListsWithMembership` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetListsWithMembershipOutput<S>` for this endpoint.*/
+pub struct GetListsWithMembershipResponse;
+impl jacquard_common::xrpc::XrpcResp for GetListsWithMembershipResponse {
+    const NSID: &'static str = "app.bsky.graph.getListsWithMembership";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = GetListsWithMembershipOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetListsWithMembership<S> {
+    const NSID: &'static str = "app.bsky.graph.getListsWithMembership";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = GetListsWithMembershipResponse;
+}
+
+/** Endpoint marker for the `app.bsky.graph.getListsWithMembership` query.
+
+Path: `/xrpc/app.bsky.graph.getListsWithMembership`. The request payload type is `GetListsWithMembership<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct GetListsWithMembershipRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for GetListsWithMembershipRequest {
+    const PATH: &'static str = "/xrpc/app.bsky.graph.getListsWithMembership";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = GetListsWithMembership<S>;
+    type Response = GetListsWithMembershipResponse;
 }
 
 pub mod list_with_membership_state {
@@ -38,9 +137,9 @@ pub mod list_with_membership_state {
         type List = Unset;
     }
     ///State transition - sets the `list` field to Set
-    pub struct SetList<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetList<S> {}
-    impl<S: State> State for SetList<S> {
+    pub struct SetList<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetList<St> {}
+    impl<St: State> State for SetList<St> {
         type List = Set<members::list>;
     }
     /// Marker types for field names
@@ -51,112 +150,137 @@ pub mod list_with_membership_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct ListWithMembershipBuilder<'a, S: list_with_membership_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<crate::generated::app_bsky::graph::ListView<'a>>,
-        ::core::option::Option<crate::generated::app_bsky::graph::ListItemView<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct ListWithMembershipBuilder<
+    St: list_with_membership_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<crate::generated::app_bsky::graph::ListView<S>>,
+        core::option::Option<crate::generated::app_bsky::graph::ListItemView<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> ListWithMembership<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> ListWithMembershipBuilder<'a, list_with_membership_state::Empty> {
+impl ListWithMembership<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> ListWithMembershipBuilder<list_with_membership_state::Empty, jacquard_common::DefaultStr>
+    {
         ListWithMembershipBuilder::new()
     }
 }
 
-impl<'a> ListWithMembershipBuilder<'a, list_with_membership_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> ListWithMembership<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> ListWithMembershipBuilder<list_with_membership_state::Empty, S> {
+        ListWithMembershipBuilder::builder()
+    }
+}
+
+impl ListWithMembershipBuilder<list_with_membership_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ListWithMembershipBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ListWithMembershipBuilder<'a, S>
+impl<S: jacquard_common::BosStr> ListWithMembershipBuilder<list_with_membership_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        ListWithMembershipBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ListWithMembershipBuilder<St, S>
 where
-    S: list_with_membership_state::State,
-    S::List: list_with_membership_state::IsUnset,
+    St: list_with_membership_state::State,
+    St::List: list_with_membership_state::IsUnset,
 {
     /// Set the `list` field (required)
     pub fn list(
         mut self,
-        value: impl Into<crate::generated::app_bsky::graph::ListView<'a>>,
-    ) -> ListWithMembershipBuilder<'a, list_with_membership_state::SetList<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<crate::generated::app_bsky::graph::ListView<S>>,
+    ) -> ListWithMembershipBuilder<list_with_membership_state::SetList<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         ListWithMembershipBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: list_with_membership_state::State> ListWithMembershipBuilder<'a, S> {
+impl<St: list_with_membership_state::State, S: jacquard_common::BosStr>
+    ListWithMembershipBuilder<St, S>
+{
     /// Set the `listItem` field (optional)
     pub fn list_item(
         mut self,
-        value: impl Into<Option<crate::generated::app_bsky::graph::ListItemView<'a>>>,
+        value: impl Into<Option<crate::generated::app_bsky::graph::ListItemView<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self._fields.1 = value.into();
         self
     }
     /// Set the `listItem` field to an Option value (optional)
     pub fn maybe_list_item(
         mut self,
-        value: Option<crate::generated::app_bsky::graph::ListItemView<'a>>,
+        value: Option<crate::generated::app_bsky::graph::ListItemView<S>>,
     ) -> Self {
-        self.__unsafe_private_named.1 = value;
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S> ListWithMembershipBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ListWithMembershipBuilder<St, S>
 where
-    S: list_with_membership_state::State,
-    S::List: list_with_membership_state::IsSet,
+    St: list_with_membership_state::State,
+    St::List: list_with_membership_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> ListWithMembership<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> ListWithMembership<S> {
         ListWithMembership {
-            list: self.__unsafe_private_named.0.unwrap(),
-            list_item: self.__unsafe_private_named.1,
+            list: self._fields.0.unwrap(),
+            list_item: self._fields.1,
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> ListWithMembership<'a> {
+    ) -> ListWithMembership<S> {
         ListWithMembership {
-            list: self.__unsafe_private_named.0.unwrap(),
-            list_item: self.__unsafe_private_named.1,
+            list: self._fields.0.unwrap(),
+            list_item: self._fields.1,
             extra_data: Some(extra_data),
         }
     }
 }
 
 fn lexicon_doc_app_bsky_graph_getListsWithMembership(
-) -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+) -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("app.bsky.graph.getListsWithMembership"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("listWithMembership"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "listWithMembership",
+                ),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
@@ -164,51 +288,57 @@ fn lexicon_doc_app_bsky_graph_getListsWithMembership(
                         ),
                     ),
                     required: Some(
-                        vec![::jacquard_common::smol_str::SmolStr::new_static("list")],
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("list")
+                        ],
                     ),
-                    nullable: None,
                     properties: {
                         #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
+                        let mut map = ::alloc::collections::BTreeMap::new();
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("list"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "list",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                description: None,
                                 r#ref: ::jacquard_common::CowStr::new_static(
                                     "app.bsky.graph.defs#listView",
                                 ),
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("listItem"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "listItem",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                description: None,
                                 r#ref: ::jacquard_common::CowStr::new_static(
                                     "app.bsky.graph.defs#listItemView",
                                 ),
+                                ..Default::default()
                             }),
                         );
                         map
                     },
+                    ..Default::default()
                 }),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
                 ::jacquard_lexicon::lexicon::LexUserType::XrpcQuery(::jacquard_lexicon::lexicon::LexXrpcQuery {
-                    description: None,
                     parameters: Some(
                         ::jacquard_lexicon::lexicon::LexXrpcQueryParameter::Params(::jacquard_lexicon::lexicon::LexXrpcParameters {
-                            description: None,
                             required: Some(
                                 vec![
-                                    ::jacquard_common::smol_str::SmolStr::new_static("actor")
+                                    ::jacquard_common::deps::smol_str::SmolStr::new_static("actor")
                                 ],
                             ),
                             properties: {
                                 #[allow(unused_mut)]
-                                let mut map = ::std::collections::BTreeMap::new();
+                                let mut map = ::alloc::collections::BTreeMap::new();
                                 map.insert(
-                                    ::jacquard_common::smol_str::SmolStr::new_static("actor"),
+                                    ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                        "actor",
+                                    ),
                                     ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::String(::jacquard_lexicon::lexicon::LexString {
                                         description: Some(
                                             ::jacquard_common::CowStr::new_static(
@@ -218,110 +348,52 @@ fn lexicon_doc_app_bsky_graph_getListsWithMembership(
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::AtIdentifier,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     }),
                                 );
                                 map.insert(
-                                    ::jacquard_common::smol_str::SmolStr::new_static("cursor"),
+                                    ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                        "cursor",
+                                    ),
                                     ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     }),
                                 );
                                 map.insert(
-                                    ::jacquard_common::smol_str::SmolStr::new_static("limit"),
+                                    ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                        "limit",
+                                    ),
                                     ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
-                                        minimum: None,
-                                        maximum: None,
-                                        r#enum: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     }),
                                 );
                                 map.insert(
-                                    ::jacquard_common::smol_str::SmolStr::new_static(
+                                    ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                         "purposes",
                                     ),
                                     ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::Array(::jacquard_lexicon::lexicon::LexPrimitiveArray {
-                                        description: None,
                                         items: ::jacquard_lexicon::lexicon::LexPrimitiveArrayItem::String(::jacquard_lexicon::lexicon::LexString {
-                                            description: None,
-                                            format: None,
-                                            default: None,
-                                            min_length: None,
-                                            max_length: None,
-                                            min_graphemes: None,
-                                            max_graphemes: None,
-                                            r#enum: None,
-                                            r#const: None,
-                                            known_values: None,
+                                            ..Default::default()
                                         }),
-                                        min_length: None,
-                                        max_length: None,
+                                        ..Default::default()
                                     }),
                                 );
                                 map
                             },
+                            ..Default::default()
                         }),
                     ),
-                    output: None,
-                    errors: None,
+                    ..Default::default()
                 }),
             );
             map
         },
+        ..Default::default()
     }
 }
 
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ListWithMembership<'a> {
-    fn nsid() -> &'static str {
-        "app.bsky.graph.getListsWithMembership"
-    }
-    fn def_name() -> &'static str {
-        "listWithMembership"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_app_bsky_graph_getListsWithMembership()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GetListsWithMembership<'a> {
-    #[serde(borrow)]
-    pub actor: jacquard_common::types::ident::AtIdentifier<'a>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    ///(default: 50, min: 1, max: 100)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub limit: std::option::Option<i64>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub purposes: std::option::Option<Vec<jacquard_common::CowStr<'a>>>,
+fn _default_limit() -> core::option::Option<i64> {
+    Some(50i64)
 }
 
 pub mod get_lists_with_membership_state {
@@ -343,9 +415,9 @@ pub mod get_lists_with_membership_state {
         type Actor = Unset;
     }
     ///State transition - sets the `actor` field to Set
-    pub struct SetActor<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetActor<S> {}
-    impl<S: State> State for SetActor<S> {
+    pub struct SetActor<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetActor<St> {}
+    impl<St: State> State for SetActor<St> {
         type Actor = Set<members::actor>;
     }
     /// Marker types for field names
@@ -356,146 +428,143 @@ pub mod get_lists_with_membership_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct GetListsWithMembershipBuilder<'a, S: get_lists_with_membership_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::ident::AtIdentifier<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<Vec<jacquard_common::CowStr<'a>>>,
+/// Builder for constructing an instance of this type.
+pub struct GetListsWithMembershipBuilder<
+    St: get_lists_with_membership_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::ident::AtIdentifier<S>>,
+        core::option::Option<S>,
+        core::option::Option<i64>,
+        core::option::Option<Vec<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> GetListsWithMembership<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> GetListsWithMembershipBuilder<'a, get_lists_with_membership_state::Empty> {
+impl GetListsWithMembership<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> GetListsWithMembershipBuilder<
+        get_lists_with_membership_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         GetListsWithMembershipBuilder::new()
     }
 }
 
-impl<'a> GetListsWithMembershipBuilder<'a, get_lists_with_membership_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> GetListsWithMembership<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> GetListsWithMembershipBuilder<get_lists_with_membership_state::Empty, S> {
+        GetListsWithMembershipBuilder::builder()
+    }
+}
+
+impl
+    GetListsWithMembershipBuilder<
+        get_lists_with_membership_state::Empty,
+        jacquard_common::DefaultStr,
+    >
+{
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetListsWithMembershipBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GetListsWithMembershipBuilder<'a, S>
+impl<S: jacquard_common::BosStr>
+    GetListsWithMembershipBuilder<get_lists_with_membership_state::Empty, S>
+{
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GetListsWithMembershipBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> GetListsWithMembershipBuilder<St, S>
 where
-    S: get_lists_with_membership_state::State,
-    S::Actor: get_lists_with_membership_state::IsUnset,
+    St: get_lists_with_membership_state::State,
+    St::Actor: get_lists_with_membership_state::IsUnset,
 {
     /// Set the `actor` field (required)
     pub fn actor(
         mut self,
-        value: impl Into<jacquard_common::types::ident::AtIdentifier<'a>>,
-    ) -> GetListsWithMembershipBuilder<'a, get_lists_with_membership_state::SetActor<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::ident::AtIdentifier<S>>,
+    ) -> GetListsWithMembershipBuilder<get_lists_with_membership_state::SetActor<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         GetListsWithMembershipBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: get_lists_with_membership_state::State> GetListsWithMembershipBuilder<'a, S> {
+impl<St: get_lists_with_membership_state::State, S: jacquard_common::BosStr>
+    GetListsWithMembershipBuilder<St, S>
+{
     /// Set the `cursor` field (optional)
-    pub fn cursor(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+    pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.1 = value.into();
         self
     }
     /// Set the `cursor` field to an Option value (optional)
-    pub fn maybe_cursor(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.1 = value;
+    pub fn maybe_cursor(mut self, value: Option<S>) -> Self {
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S: get_lists_with_membership_state::State> GetListsWithMembershipBuilder<'a, S> {
+impl<St: get_lists_with_membership_state::State, S: jacquard_common::BosStr>
+    GetListsWithMembershipBuilder<St, S>
+{
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.2 = value.into();
+        self._fields.2 = value.into();
         self
     }
     /// Set the `limit` field to an Option value (optional)
     pub fn maybe_limit(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.2 = value;
+        self._fields.2 = value;
         self
     }
 }
 
-impl<'a, S: get_lists_with_membership_state::State> GetListsWithMembershipBuilder<'a, S> {
+impl<St: get_lists_with_membership_state::State, S: jacquard_common::BosStr>
+    GetListsWithMembershipBuilder<St, S>
+{
     /// Set the `purposes` field (optional)
-    pub fn purposes(mut self, value: impl Into<Option<Vec<jacquard_common::CowStr<'a>>>>) -> Self {
-        self.__unsafe_private_named.3 = value.into();
+    pub fn purposes(mut self, value: impl Into<Option<Vec<S>>>) -> Self {
+        self._fields.3 = value.into();
         self
     }
     /// Set the `purposes` field to an Option value (optional)
-    pub fn maybe_purposes(mut self, value: Option<Vec<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.3 = value;
+    pub fn maybe_purposes(mut self, value: Option<Vec<S>>) -> Self {
+        self._fields.3 = value;
         self
     }
 }
 
-impl<'a, S> GetListsWithMembershipBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GetListsWithMembershipBuilder<St, S>
 where
-    S: get_lists_with_membership_state::State,
-    S::Actor: get_lists_with_membership_state::IsSet,
+    St: get_lists_with_membership_state::State,
+    St::Actor: get_lists_with_membership_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> GetListsWithMembership<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> GetListsWithMembership<S> {
         GetListsWithMembership {
-            actor: self.__unsafe_private_named.0.unwrap(),
-            cursor: self.__unsafe_private_named.1,
-            limit: self.__unsafe_private_named.2,
-            purposes: self.__unsafe_private_named.3,
+            actor: self._fields.0.unwrap(),
+            cursor: self._fields.1,
+            limit: self._fields.2,
+            purposes: self._fields.3,
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GetListsWithMembershipOutput<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(borrow)]
-    pub lists_with_membership:
-        Vec<crate::generated::app_bsky::graph::get_lists_with_membership::ListWithMembership<'a>>,
-}
-
-/// Response type for
-///app.bsky.graph.getListsWithMembership
-pub struct GetListsWithMembershipResponse;
-impl jacquard_common::xrpc::XrpcResp for GetListsWithMembershipResponse {
-    const NSID: &'static str = "app.bsky.graph.getListsWithMembership";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetListsWithMembershipOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for GetListsWithMembership<'a> {
-    const NSID: &'static str = "app.bsky.graph.getListsWithMembership";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = GetListsWithMembershipResponse;
-}
-
-/// Endpoint type for
-///app.bsky.graph.getListsWithMembership
-pub struct GetListsWithMembershipRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for GetListsWithMembershipRequest {
-    const PATH: &'static str = "/xrpc/app.bsky.graph.getListsWithMembership";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetListsWithMembership<'de>;
-    type Response = GetListsWithMembershipResponse;
 }

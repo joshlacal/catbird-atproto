@@ -8,14 +8,79 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetSuggestions<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    ///(default: 50, min: 1, max: 100)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub limit: std::option::Option<i64>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetSuggestions<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    /// Defaults to `50`. Min: 1. Max: 100.
+    #[serde(default = "_default_limit")]
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub limit: core::option::Option<i64>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetSuggestionsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub actors: Vec<crate::generated::app_bsky::actor::ProfileView<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    ///DEPRECATED: use recIdStr instead.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub rec_id: core::option::Option<i64>,
+    ///Snowflake for this recommendation, use when submitting recommendation events.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub rec_id_str: core::option::Option<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `app.bsky.actor.getSuggestions` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetSuggestionsOutput<S>` for this endpoint.*/
+pub struct GetSuggestionsResponse;
+impl jacquard_common::xrpc::XrpcResp for GetSuggestionsResponse {
+    const NSID: &'static str = "app.bsky.actor.getSuggestions";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = GetSuggestionsOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetSuggestions<S> {
+    const NSID: &'static str = "app.bsky.actor.getSuggestions";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = GetSuggestionsResponse;
+}
+
+/** Endpoint marker for the `app.bsky.actor.getSuggestions` query.
+
+Path: `/xrpc/app.bsky.actor.getSuggestions`. The request payload type is `GetSuggestions<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct GetSuggestionsRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for GetSuggestionsRequest {
+    const PATH: &'static str = "/xrpc/app.bsky.actor.getSuggestions";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = GetSuggestions<S>;
+    type Response = GetSuggestionsResponse;
+}
+
+fn _default_limit() -> core::option::Option<i64> {
+    Some(50i64)
 }
 
 pub mod get_suggestions_state {
@@ -37,115 +102,88 @@ pub mod get_suggestions_state {
     pub mod members {}
 }
 
-/// Builder for constructing an instance of this type
-pub struct GetSuggestionsBuilder<'a, S: get_suggestions_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<i64>,
-    ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct GetSuggestionsBuilder<
+    St: get_suggestions_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<S>, core::option::Option<i64>),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> GetSuggestions<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> GetSuggestionsBuilder<'a, get_suggestions_state::Empty> {
+impl GetSuggestions<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> GetSuggestionsBuilder<get_suggestions_state::Empty, jacquard_common::DefaultStr>
+    {
         GetSuggestionsBuilder::new()
     }
 }
 
-impl<'a> GetSuggestionsBuilder<'a, get_suggestions_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> GetSuggestions<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> GetSuggestionsBuilder<get_suggestions_state::Empty, S> {
+        GetSuggestionsBuilder::builder()
+    }
+}
+
+impl GetSuggestionsBuilder<get_suggestions_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetSuggestionsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: get_suggestions_state::State> GetSuggestionsBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> GetSuggestionsBuilder<get_suggestions_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GetSuggestionsBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: get_suggestions_state::State, S: jacquard_common::BosStr> GetSuggestionsBuilder<St, S> {
     /// Set the `cursor` field (optional)
-    pub fn cursor(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+    pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.0 = value.into();
         self
     }
     /// Set the `cursor` field to an Option value (optional)
-    pub fn maybe_cursor(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.0 = value;
+    pub fn maybe_cursor(mut self, value: Option<S>) -> Self {
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S: get_suggestions_state::State> GetSuggestionsBuilder<'a, S> {
+impl<St: get_suggestions_state::State, S: jacquard_common::BosStr> GetSuggestionsBuilder<St, S> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self._fields.1 = value.into();
         self
     }
     /// Set the `limit` field to an Option value (optional)
     pub fn maybe_limit(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.1 = value;
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S> GetSuggestionsBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GetSuggestionsBuilder<St, S>
 where
-    S: get_suggestions_state::State,
+    St: get_suggestions_state::State,
 {
-    /// Build the final struct
-    pub fn build(self) -> GetSuggestions<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> GetSuggestions<S> {
         GetSuggestions {
-            cursor: self.__unsafe_private_named.0,
-            limit: self.__unsafe_private_named.1,
+            cursor: self._fields.0,
+            limit: self._fields.1,
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GetSuggestionsOutput<'a> {
-    #[serde(borrow)]
-    pub actors: Vec<crate::generated::app_bsky::actor::ProfileView<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// DEPRECATED: use recIdStr instead.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub rec_id: std::option::Option<i64>,
-    /// Snowflake for this recommendation, use when submitting recommendation events.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub rec_id_str: std::option::Option<jacquard_common::CowStr<'a>>,
-}
-
-/// Response type for
-///app.bsky.actor.getSuggestions
-pub struct GetSuggestionsResponse;
-impl jacquard_common::xrpc::XrpcResp for GetSuggestionsResponse {
-    const NSID: &'static str = "app.bsky.actor.getSuggestions";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetSuggestionsOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for GetSuggestions<'a> {
-    const NSID: &'static str = "app.bsky.actor.getSuggestions";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = GetSuggestionsResponse;
-}
-
-/// Endpoint type for
-///app.bsky.actor.getSuggestions
-pub struct GetSuggestionsRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for GetSuggestionsRequest {
-    const PATH: &'static str = "/xrpc/app.bsky.actor.getSuggestions";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetSuggestions<'de>;
-    type Response = GetSuggestionsResponse;
 }

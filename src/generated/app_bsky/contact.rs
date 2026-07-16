@@ -5,6 +5,7 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
+//! Generated bindings for the `app.bsky.contact` Lexicon namespace/module.
 pub mod dismiss_match;
 pub mod get_matches;
 pub mod get_sync_status;
@@ -15,17 +16,159 @@ pub mod start_phone_verification;
 pub mod verify_phone;
 
 /// Associates a profile with the positional index of the contact import input in the call to `app.bsky.contact.importContacts`, so clients can know which phone caused a particular match.
-#[jacquard_derive::lexicon]
+
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct MatchAndContactIndex<'a> {
-    /// The index of this match in the import contact input.
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct MatchAndContactIndex<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///The index of this match in the import contact input.
     pub contact_index: i64,
-    /// Profile of the matched user.
-    #[serde(borrow)]
-    pub r#match: crate::generated::app_bsky::actor::ProfileView<'a>,
+    ///Profile of the matched user.
+    pub r#match: crate::generated::app_bsky::actor::ProfileView<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// A stash object to be sent via bsync representing a notification to be created.
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct Notification<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///The DID of who this notification comes from.
+    pub from: jacquard_common::types::string::Did<S>,
+    ///The DID of who this notification should go to.
+    pub to: jacquard_common::types::string::Did<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct SyncStatus<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Number of existing contact matches resulting of the user imports and of their imported contacts having imported the user. Matches stop being counted when the user either follows the matched contact or dismisses the match.
+    pub matches_count: i64,
+    ///Last date when contacts where imported.
+    pub synced_at: jacquard_common::types::string::Datetime,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+    for MatchAndContactIndex<S>
+{
+    fn nsid() -> &'static str {
+        "app.bsky.contact.defs"
+    }
+    fn def_name() -> &'static str {
+        "matchAndContactIndex"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_app_bsky_contact_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.contact_index;
+            if *value > 999i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("contact_index"),
+                    max: 999i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.contact_index;
+            if *value < 0i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("contact_index"),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Notification<S> {
+    fn nsid() -> &'static str {
+        "app.bsky.contact.defs"
+    }
+    fn def_name() -> &'static str {
+        "notification"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_app_bsky_contact_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for SyncStatus<S> {
+    fn nsid() -> &'static str {
+        "app.bsky.contact.defs"
+    }
+    fn def_name() -> &'static str {
+        "syncStatus"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_app_bsky_contact_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.matches_count;
+            if *value < 0i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("matches_count"),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
+        Ok(())
+    }
 }
 
 pub mod match_and_contact_index_state {
@@ -38,146 +181,174 @@ pub mod match_and_contact_index_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Match;
         type ContactIndex;
+        type Match;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Match = Unset;
         type ContactIndex = Unset;
-    }
-    ///State transition - sets the `match` field to Set
-    pub struct SetMatch<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetMatch<S> {}
-    impl<S: State> State for SetMatch<S> {
-        type Match = Set<members::r#match>;
-        type ContactIndex = S::ContactIndex;
+        type Match = Unset;
     }
     ///State transition - sets the `contact_index` field to Set
-    pub struct SetContactIndex<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetContactIndex<S> {}
-    impl<S: State> State for SetContactIndex<S> {
-        type Match = S::Match;
+    pub struct SetContactIndex<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetContactIndex<St> {}
+    impl<St: State> State for SetContactIndex<St> {
         type ContactIndex = Set<members::contact_index>;
+        type Match = St::Match;
+    }
+    ///State transition - sets the `match` field to Set
+    pub struct SetMatch<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetMatch<St> {}
+    impl<St: State> State for SetMatch<St> {
+        type ContactIndex = St::ContactIndex;
+        type Match = Set<members::r#match>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `match` field
-        pub struct r#match(());
         ///Marker type for the `contact_index` field
         pub struct contact_index(());
+        ///Marker type for the `match` field
+        pub struct r#match(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct MatchAndContactIndexBuilder<'a, S: match_and_contact_index_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<i64>,
-        ::core::option::Option<crate::generated::app_bsky::actor::ProfileView<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct MatchAndContactIndexBuilder<
+    St: match_and_contact_index_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<i64>,
+        core::option::Option<crate::generated::app_bsky::actor::ProfileView<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> MatchAndContactIndex<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> MatchAndContactIndexBuilder<'a, match_and_contact_index_state::Empty> {
+impl MatchAndContactIndex<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> MatchAndContactIndexBuilder<
+        match_and_contact_index_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         MatchAndContactIndexBuilder::new()
     }
 }
 
-impl<'a> MatchAndContactIndexBuilder<'a, match_and_contact_index_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> MatchAndContactIndex<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> MatchAndContactIndexBuilder<match_and_contact_index_state::Empty, S> {
+        MatchAndContactIndexBuilder::builder()
+    }
+}
+
+impl
+    MatchAndContactIndexBuilder<match_and_contact_index_state::Empty, jacquard_common::DefaultStr>
+{
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         MatchAndContactIndexBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> MatchAndContactIndexBuilder<'a, S>
+impl<S: jacquard_common::BosStr>
+    MatchAndContactIndexBuilder<match_and_contact_index_state::Empty, S>
+{
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        MatchAndContactIndexBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> MatchAndContactIndexBuilder<St, S>
 where
-    S: match_and_contact_index_state::State,
-    S::ContactIndex: match_and_contact_index_state::IsUnset,
+    St: match_and_contact_index_state::State,
+    St::ContactIndex: match_and_contact_index_state::IsUnset,
 {
     /// Set the `contactIndex` field (required)
     pub fn contact_index(
         mut self,
         value: impl Into<i64>,
-    ) -> MatchAndContactIndexBuilder<'a, match_and_contact_index_state::SetContactIndex<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+    ) -> MatchAndContactIndexBuilder<match_and_contact_index_state::SetContactIndex<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         MatchAndContactIndexBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> MatchAndContactIndexBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> MatchAndContactIndexBuilder<St, S>
 where
-    S: match_and_contact_index_state::State,
-    S::Match: match_and_contact_index_state::IsUnset,
+    St: match_and_contact_index_state::State,
+    St::Match: match_and_contact_index_state::IsUnset,
 {
     /// Set the `match` field (required)
     pub fn r#match(
         mut self,
-        value: impl Into<crate::generated::app_bsky::actor::ProfileView<'a>>,
-    ) -> MatchAndContactIndexBuilder<'a, match_and_contact_index_state::SetMatch<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<crate::generated::app_bsky::actor::ProfileView<S>>,
+    ) -> MatchAndContactIndexBuilder<match_and_contact_index_state::SetMatch<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         MatchAndContactIndexBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> MatchAndContactIndexBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> MatchAndContactIndexBuilder<St, S>
 where
-    S: match_and_contact_index_state::State,
-    S::Match: match_and_contact_index_state::IsSet,
-    S::ContactIndex: match_and_contact_index_state::IsSet,
+    St: match_and_contact_index_state::State,
+    St::ContactIndex: match_and_contact_index_state::IsSet,
+    St::Match: match_and_contact_index_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> MatchAndContactIndex<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> MatchAndContactIndex<S> {
         MatchAndContactIndex {
-            contact_index: self.__unsafe_private_named.0.unwrap(),
-            r#match: self.__unsafe_private_named.1.unwrap(),
+            contact_index: self._fields.0.unwrap(),
+            r#match: self._fields.1.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> MatchAndContactIndex<'a> {
+    ) -> MatchAndContactIndex<S> {
         MatchAndContactIndex {
-            contact_index: self.__unsafe_private_named.0.unwrap(),
-            r#match: self.__unsafe_private_named.1.unwrap(),
+            contact_index: self._fields.0.unwrap(),
+            r#match: self._fields.1.unwrap(),
             extra_data: Some(extra_data),
         }
     }
 }
 
-fn lexicon_doc_app_bsky_contact_defs() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_app_bsky_contact_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("app.bsky.contact.defs"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("matchAndContactIndex"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "matchAndContactIndex",
+                ),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
@@ -186,42 +357,41 @@ fn lexicon_doc_app_bsky_contact_defs() -> ::jacquard_lexicon::lexicon::LexiconDo
                     ),
                     required: Some(
                         vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("match"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("contactIndex")
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("match"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("contactIndex")
                         ],
                     ),
-                    nullable: None,
                     properties: {
                         #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
+                        let mut map = ::alloc::collections::BTreeMap::new();
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "contactIndex",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                description: None,
-                                default: None,
                                 minimum: Some(0i64),
                                 maximum: Some(999i64),
-                                r#enum: None,
-                                r#const: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("match"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "match",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                description: None,
                                 r#ref: ::jacquard_common::CowStr::new_static(
                                     "app.bsky.actor.defs#profileView",
                                 ),
+                                ..Default::default()
                             }),
                         );
                         map
                     },
+                    ..Default::default()
                 }),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("notification"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("notification"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
@@ -230,16 +400,17 @@ fn lexicon_doc_app_bsky_contact_defs() -> ::jacquard_lexicon::lexicon::LexiconDo
                     ),
                     required: Some(
                         vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("from"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("to")
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("from"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("to")
                         ],
                     ),
-                    nullable: None,
                     properties: {
                         #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
+                        let mut map = ::alloc::collections::BTreeMap::new();
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("from"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "from",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
@@ -249,18 +420,11 @@ fn lexicon_doc_app_bsky_contact_defs() -> ::jacquard_lexicon::lexicon::LexiconDo
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("to"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("to"),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
@@ -270,48 +434,38 @@ fn lexicon_doc_app_bsky_contact_defs() -> ::jacquard_lexicon::lexicon::LexiconDo
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map
                     },
+                    ..Default::default()
                 }),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("syncStatus"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("syncStatus"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("syncedAt"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("matchesCount"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("syncedAt"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("matchesCount"),
                         ]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("matchesCount"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "matchesCount",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
                                     ::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
                                         minimum: Some(0i64),
-                                        maximum: None,
-                                        r#enum: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("syncedAt"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("syncedAt"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
@@ -320,81 +474,20 @@ fn lexicon_doc_app_bsky_contact_defs() -> ::jacquard_lexicon::lexicon::LexiconDo
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map
         },
+        ..Default::default()
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for MatchAndContactIndex<'a> {
-    fn nsid() -> &'static str {
-        "app.bsky.contact.defs"
-    }
-    fn def_name() -> &'static str {
-        "matchAndContactIndex"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_app_bsky_contact_defs()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        {
-            let value = &self.contact_index;
-            if *value > 999i64 {
-                return Err(::jacquard_lexicon::validation::ConstraintError::Maximum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
-                        "contact_index",
-                    ),
-                    max: 999i64,
-                    actual: *value,
-                });
-            }
-        }
-        {
-            let value = &self.contact_index;
-            if *value < 0i64 {
-                return Err(::jacquard_lexicon::validation::ConstraintError::Minimum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
-                        "contact_index",
-                    ),
-                    min: 0i64,
-                    actual: *value,
-                });
-            }
-        }
-        Ok(())
-    }
-}
-
-/// A stash object to be sent via bsync representing a notification to be created.
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct Notification<'a> {
-    /// The DID of who this notification comes from.
-    #[serde(borrow)]
-    pub from: jacquard_common::types::string::Did<'a>,
-    /// The DID of who this notification should go to.
-    #[serde(borrow)]
-    pub to: jacquard_common::types::string::Did<'a>,
 }
 
 pub mod notification_state {
@@ -418,17 +511,17 @@ pub mod notification_state {
         type To = Unset;
     }
     ///State transition - sets the `from` field to Set
-    pub struct SetFrom<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetFrom<S> {}
-    impl<S: State> State for SetFrom<S> {
+    pub struct SetFrom<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetFrom<St> {}
+    impl<St: State> State for SetFrom<St> {
         type From = Set<members::from>;
-        type To = S::To;
+        type To = St::To;
     }
     ///State transition - sets the `to` field to Set
-    pub struct SetTo<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetTo<S> {}
-    impl<S: State> State for SetTo<S> {
-        type From = S::From;
+    pub struct SetTo<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetTo<St> {}
+    impl<St: State> State for SetTo<St> {
+        type From = St::From;
         type To = Set<members::to>;
     }
     /// Marker types for field names
@@ -441,129 +534,121 @@ pub mod notification_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct NotificationBuilder<'a, S: notification_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct NotificationBuilder<
+    St: notification_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> Notification<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> NotificationBuilder<'a, notification_state::Empty> {
+impl Notification<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> NotificationBuilder<notification_state::Empty, jacquard_common::DefaultStr> {
         NotificationBuilder::new()
     }
 }
 
-impl<'a> NotificationBuilder<'a, notification_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> Notification<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> NotificationBuilder<notification_state::Empty, S> {
+        NotificationBuilder::builder()
+    }
+}
+
+impl NotificationBuilder<notification_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         NotificationBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> NotificationBuilder<'a, S>
+impl<S: jacquard_common::BosStr> NotificationBuilder<notification_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        NotificationBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> NotificationBuilder<St, S>
 where
-    S: notification_state::State,
-    S::From: notification_state::IsUnset,
+    St: notification_state::State,
+    St::From: notification_state::IsUnset,
 {
     /// Set the `from` field (required)
     pub fn from(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> NotificationBuilder<'a, notification_state::SetFrom<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> NotificationBuilder<notification_state::SetFrom<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         NotificationBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> NotificationBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> NotificationBuilder<St, S>
 where
-    S: notification_state::State,
-    S::To: notification_state::IsUnset,
+    St: notification_state::State,
+    St::To: notification_state::IsUnset,
 {
     /// Set the `to` field (required)
     pub fn to(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> NotificationBuilder<'a, notification_state::SetTo<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> NotificationBuilder<notification_state::SetTo<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         NotificationBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> NotificationBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> NotificationBuilder<St, S>
 where
-    S: notification_state::State,
-    S::From: notification_state::IsSet,
-    S::To: notification_state::IsSet,
+    St: notification_state::State,
+    St::From: notification_state::IsSet,
+    St::To: notification_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> Notification<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> Notification<S> {
         Notification {
-            from: self.__unsafe_private_named.0.unwrap(),
-            to: self.__unsafe_private_named.1.unwrap(),
+            from: self._fields.0.unwrap(),
+            to: self._fields.1.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> Notification<'a> {
+    ) -> Notification<S> {
         Notification {
-            from: self.__unsafe_private_named.0.unwrap(),
-            to: self.__unsafe_private_named.1.unwrap(),
+            from: self._fields.0.unwrap(),
+            to: self._fields.1.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Notification<'a> {
-    fn nsid() -> &'static str {
-        "app.bsky.contact.defs"
-    }
-    fn def_name() -> &'static str {
-        "notification"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_app_bsky_contact_defs()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct SyncStatus<'a> {
-    /// Number of existing contact matches resulting of the user imports and of their imported contacts having imported the user. Matches stop being counted when the user either follows the matched contact or dismisses the match.
-    pub matches_count: i64,
-    /// Last date when contacts where imported.
-    pub synced_at: jacquard_common::types::string::Datetime,
 }
 
 pub mod sync_status_state {
@@ -576,161 +661,153 @@ pub mod sync_status_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type SyncedAt;
         type MatchesCount;
+        type SyncedAt;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type SyncedAt = Unset;
         type MatchesCount = Unset;
-    }
-    ///State transition - sets the `synced_at` field to Set
-    pub struct SetSyncedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetSyncedAt<S> {}
-    impl<S: State> State for SetSyncedAt<S> {
-        type SyncedAt = Set<members::synced_at>;
-        type MatchesCount = S::MatchesCount;
+        type SyncedAt = Unset;
     }
     ///State transition - sets the `matches_count` field to Set
-    pub struct SetMatchesCount<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetMatchesCount<S> {}
-    impl<S: State> State for SetMatchesCount<S> {
-        type SyncedAt = S::SyncedAt;
+    pub struct SetMatchesCount<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetMatchesCount<St> {}
+    impl<St: State> State for SetMatchesCount<St> {
         type MatchesCount = Set<members::matches_count>;
+        type SyncedAt = St::SyncedAt;
+    }
+    ///State transition - sets the `synced_at` field to Set
+    pub struct SetSyncedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSyncedAt<St> {}
+    impl<St: State> State for SetSyncedAt<St> {
+        type MatchesCount = St::MatchesCount;
+        type SyncedAt = Set<members::synced_at>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `synced_at` field
-        pub struct synced_at(());
         ///Marker type for the `matches_count` field
         pub struct matches_count(());
+        ///Marker type for the `synced_at` field
+        pub struct synced_at(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct SyncStatusBuilder<'a, S: sync_status_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<i64>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
+/// Builder for constructing an instance of this type.
+pub struct SyncStatusBuilder<
+    St: sync_status_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<i64>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> SyncStatus<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> SyncStatusBuilder<'a, sync_status_state::Empty> {
+impl SyncStatus<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> SyncStatusBuilder<sync_status_state::Empty, jacquard_common::DefaultStr> {
         SyncStatusBuilder::new()
     }
 }
 
-impl<'a> SyncStatusBuilder<'a, sync_status_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> SyncStatus<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> SyncStatusBuilder<sync_status_state::Empty, S> {
+        SyncStatusBuilder::builder()
+    }
+}
+
+impl SyncStatusBuilder<sync_status_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         SyncStatusBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> SyncStatusBuilder<'a, S>
+impl<S: jacquard_common::BosStr> SyncStatusBuilder<sync_status_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        SyncStatusBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> SyncStatusBuilder<St, S>
 where
-    S: sync_status_state::State,
-    S::MatchesCount: sync_status_state::IsUnset,
+    St: sync_status_state::State,
+    St::MatchesCount: sync_status_state::IsUnset,
 {
     /// Set the `matchesCount` field (required)
     pub fn matches_count(
         mut self,
         value: impl Into<i64>,
-    ) -> SyncStatusBuilder<'a, sync_status_state::SetMatchesCount<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+    ) -> SyncStatusBuilder<sync_status_state::SetMatchesCount<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         SyncStatusBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> SyncStatusBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> SyncStatusBuilder<St, S>
 where
-    S: sync_status_state::State,
-    S::SyncedAt: sync_status_state::IsUnset,
+    St: sync_status_state::State,
+    St::SyncedAt: sync_status_state::IsUnset,
 {
     /// Set the `syncedAt` field (required)
     pub fn synced_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> SyncStatusBuilder<'a, sync_status_state::SetSyncedAt<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+    ) -> SyncStatusBuilder<sync_status_state::SetSyncedAt<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         SyncStatusBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> SyncStatusBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> SyncStatusBuilder<St, S>
 where
-    S: sync_status_state::State,
-    S::SyncedAt: sync_status_state::IsSet,
-    S::MatchesCount: sync_status_state::IsSet,
+    St: sync_status_state::State,
+    St::MatchesCount: sync_status_state::IsSet,
+    St::SyncedAt: sync_status_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> SyncStatus<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> SyncStatus<S> {
         SyncStatus {
-            matches_count: self.__unsafe_private_named.0.unwrap(),
-            synced_at: self.__unsafe_private_named.1.unwrap(),
+            matches_count: self._fields.0.unwrap(),
+            synced_at: self._fields.1.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> SyncStatus<'a> {
+    ) -> SyncStatus<S> {
         SyncStatus {
-            matches_count: self.__unsafe_private_named.0.unwrap(),
-            synced_at: self.__unsafe_private_named.1.unwrap(),
+            matches_count: self._fields.0.unwrap(),
+            synced_at: self._fields.1.unwrap(),
             extra_data: Some(extra_data),
         }
-    }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for SyncStatus<'a> {
-    fn nsid() -> &'static str {
-        "app.bsky.contact.defs"
-    }
-    fn def_name() -> &'static str {
-        "syncStatus"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_app_bsky_contact_defs()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        {
-            let value = &self.matches_count;
-            if *value < 0i64 {
-                return Err(::jacquard_lexicon::validation::ConstraintError::Minimum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
-                        "matches_count",
-                    ),
-                    min: 0i64,
-                    actual: *value,
-                });
-            }
-        }
-        Ok(())
     }
 }

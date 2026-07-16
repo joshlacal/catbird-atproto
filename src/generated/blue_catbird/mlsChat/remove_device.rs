@@ -5,7 +5,6 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -16,30 +15,55 @@
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct RemoveDevice<'a> {
-    /// The device ID to remove.
-    #[serde(borrow)]
-    pub device_id: jacquard_common::CowStr<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct RemoveDevice<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///The device ID to remove.
+    pub device_id: S,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct RemoveDeviceOutput<'a> {
-    /// Number of conversations the device was removed from.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub conversations_left: std::option::Option<i64>,
-    /// Whether the device was successfully deleted.
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct RemoveDeviceOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Number of conversations the device was removed from.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub conversations_left: core::option::Option<i64>,
+    ///Whether the device was successfully deleted.
     pub deleted: bool,
-    /// Number of key packages that were removed.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub key_packages_deleted: std::option::Option<i64>,
+    ///Number of key packages that were removed.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub key_packages_deleted: core::option::Option<i64>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::open_union]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -49,17 +73,21 @@ pub struct RemoveDeviceOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum RemoveDeviceError<'a> {
+pub enum RemoveDeviceError {
     #[serde(rename = "DeviceNotFound")]
-    DeviceNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
+    DeviceNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
 }
 
-impl std::fmt::Display for RemoveDeviceError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for RemoveDeviceError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             Self::DeviceNotFound(msg) => {
                 write!(f, "DeviceNotFound")?;
@@ -68,35 +96,43 @@ impl std::fmt::Display for RemoveDeviceError<'_> {
                 }
                 Ok(())
             }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
         }
     }
 }
 
-/// Response type for
-///blue.catbird.mlsChat.removeDevice
+/** Response marker for the `blue.catbird.mlsChat.removeDevice` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `RemoveDeviceOutput<S>` for this endpoint.*/
 pub struct RemoveDeviceResponse;
 impl jacquard_common::xrpc::XrpcResp for RemoveDeviceResponse {
     const NSID: &'static str = "blue.catbird.mlsChat.removeDevice";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = RemoveDeviceOutput<'de>;
-    type Err<'de> = RemoveDeviceError<'de>;
+    type Output<S: jacquard_common::BosStr> = RemoveDeviceOutput<S>;
+    type Err = RemoveDeviceError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for RemoveDevice<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for RemoveDevice<S> {
     const NSID: &'static str = "blue.catbird.mlsChat.removeDevice";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = RemoveDeviceResponse;
 }
 
-/// Endpoint type for
-///blue.catbird.mlsChat.removeDevice
+/** Endpoint marker for the `blue.catbird.mlsChat.removeDevice` procedure.
+
+Path: `/xrpc/blue.catbird.mlsChat.removeDevice`. The request payload type is `RemoveDevice<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct RemoveDeviceRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for RemoveDeviceRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.removeDevice";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = RemoveDevice<'de>;
+    type Request<S: jacquard_common::BosStr> = RemoveDevice<S>;
     type Response = RemoveDeviceResponse;
 }

@@ -5,39 +5,56 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct CheckSignupQueueOutput<'a> {
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct CheckSignupQueueOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub activated: bool,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub estimated_time_ms: std::option::Option<i64>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub place_in_queue: std::option::Option<i64>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub estimated_time_ms: core::option::Option<i64>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub place_in_queue: core::option::Option<i64>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-/// XRPC request marker type
+/** Request marker for the `com.atproto.temp.checkSignupQueue` query.
+
+This endpoint has no request parameters or input body; send this marker with `jacquard::Client`.*/
+
 #[derive(
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
     serde::Serialize,
     serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
     jacquard_derive::IntoStatic,
+    Copy,
 )]
 pub struct CheckSignupQueue;
-/// Response type for
-///com.atproto.temp.checkSignupQueue
+/** Response marker for the `com.atproto.temp.checkSignupQueue` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `CheckSignupQueueOutput<S>` for this endpoint.*/
 pub struct CheckSignupQueueResponse;
 impl jacquard_common::xrpc::XrpcResp for CheckSignupQueueResponse {
     const NSID: &'static str = "com.atproto.temp.checkSignupQueue";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = CheckSignupQueueOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
+    type Output<S: jacquard_common::BosStr> = CheckSignupQueueOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
 }
 
 impl jacquard_common::xrpc::XrpcRequest for CheckSignupQueue {
@@ -46,12 +63,13 @@ impl jacquard_common::xrpc::XrpcRequest for CheckSignupQueue {
     type Response = CheckSignupQueueResponse;
 }
 
-/// Endpoint type for
-///com.atproto.temp.checkSignupQueue
+/** Endpoint marker for the `com.atproto.temp.checkSignupQueue` query.
+
+Path: `/xrpc/com.atproto.temp.checkSignupQueue`. The request payload type is `CheckSignupQueue`; use this marker with lower-level `XrpcEndpoint` APIs when you need endpoint metadata.*/
 pub struct CheckSignupQueueRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for CheckSignupQueueRequest {
     const PATH: &'static str = "/xrpc/com.atproto.temp.checkSignupQueue";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = CheckSignupQueue;
+    type Request<S: jacquard_common::BosStr> = CheckSignupQueue;
     type Response = CheckSignupQueueResponse;
 }

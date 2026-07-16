@@ -5,24 +5,250 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct UpsertOption<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub description: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(borrow)]
-    pub key: jacquard_common::types::string::Nsid<'a>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub manager_role: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(borrow)]
-    pub scope: jacquard_common::CowStr<'a>,
-    #[serde(borrow)]
-    pub value: jacquard_common::types::value::Data<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct UpsertOption<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub description: core::option::Option<S>,
+    pub key: jacquard_common::types::string::Nsid<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub manager_role: core::option::Option<UpsertOptionManagerRole<S>>,
+    pub scope: UpsertOptionScope<S>,
+    pub value: jacquard_common::types::value::Data<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum UpsertOptionManagerRole<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    RoleModerator,
+    RoleTriage,
+    RoleVerifier,
+    RoleAdmin,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> UpsertOptionManagerRole<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::RoleModerator => "tools.ozone.team.defs#roleModerator",
+            Self::RoleTriage => "tools.ozone.team.defs#roleTriage",
+            Self::RoleVerifier => "tools.ozone.team.defs#roleVerifier",
+            Self::RoleAdmin => "tools.ozone.team.defs#roleAdmin",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "tools.ozone.team.defs#roleModerator" => Self::RoleModerator,
+            "tools.ozone.team.defs#roleTriage" => Self::RoleTriage,
+            "tools.ozone.team.defs#roleVerifier" => Self::RoleVerifier,
+            "tools.ozone.team.defs#roleAdmin" => Self::RoleAdmin,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for UpsertOptionManagerRole<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for UpsertOptionManagerRole<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for UpsertOptionManagerRole<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for UpsertOptionManagerRole<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for UpsertOptionManagerRole<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for UpsertOptionManagerRole<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = UpsertOptionManagerRole<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            UpsertOptionManagerRole::RoleModerator => UpsertOptionManagerRole::RoleModerator,
+            UpsertOptionManagerRole::RoleTriage => UpsertOptionManagerRole::RoleTriage,
+            UpsertOptionManagerRole::RoleVerifier => UpsertOptionManagerRole::RoleVerifier,
+            UpsertOptionManagerRole::RoleAdmin => UpsertOptionManagerRole::RoleAdmin,
+            UpsertOptionManagerRole::Other(v) => UpsertOptionManagerRole::Other(v.into_static()),
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum UpsertOptionScope<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    Instance,
+    Personal,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> UpsertOptionScope<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Instance => "instance",
+            Self::Personal => "personal",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "instance" => Self::Instance,
+            "personal" => Self::Personal,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for UpsertOptionScope<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for UpsertOptionScope<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for UpsertOptionScope<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for UpsertOptionScope<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for UpsertOptionScope<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for UpsertOptionScope<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = UpsertOptionScope<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            UpsertOptionScope::Instance => UpsertOptionScope::Instance,
+            UpsertOptionScope::Personal => UpsertOptionScope::Personal,
+            UpsertOptionScope::Other(v) => UpsertOptionScope::Other(v.into_static()),
+        }
+    }
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct UpsertOptionOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub option: crate::generated::tools_ozone::setting::DefsOption<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `tools.ozone.setting.upsertOption` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `UpsertOptionOutput<S>` for this endpoint.*/
+pub struct UpsertOptionResponse;
+impl jacquard_common::xrpc::XrpcResp for UpsertOptionResponse {
+    const NSID: &'static str = "tools.ozone.setting.upsertOption";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = UpsertOptionOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for UpsertOption<S> {
+    const NSID: &'static str = "tools.ozone.setting.upsertOption";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Response = UpsertOptionResponse;
+}
+
+/** Endpoint marker for the `tools.ozone.setting.upsertOption` procedure.
+
+Path: `/xrpc/tools.ozone.setting.upsertOption`. The request payload type is `UpsertOption<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct UpsertOptionRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for UpsertOptionRequest {
+    const PATH: &'static str = "/xrpc/tools.ozone.setting.upsertOption";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Request<S: jacquard_common::BosStr> = UpsertOption<S>;
+    type Response = UpsertOptionResponse;
 }
 
 pub mod upsert_option_state {
@@ -48,27 +274,27 @@ pub mod upsert_option_state {
         type Value = Unset;
     }
     ///State transition - sets the `key` field to Set
-    pub struct SetKey<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetKey<S> {}
-    impl<S: State> State for SetKey<S> {
+    pub struct SetKey<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetKey<St> {}
+    impl<St: State> State for SetKey<St> {
         type Key = Set<members::key>;
-        type Scope = S::Scope;
-        type Value = S::Value;
+        type Scope = St::Scope;
+        type Value = St::Value;
     }
     ///State transition - sets the `scope` field to Set
-    pub struct SetScope<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetScope<S> {}
-    impl<S: State> State for SetScope<S> {
-        type Key = S::Key;
+    pub struct SetScope<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetScope<St> {}
+    impl<St: State> State for SetScope<St> {
+        type Key = St::Key;
         type Scope = Set<members::scope>;
-        type Value = S::Value;
+        type Value = St::Value;
     }
     ///State transition - sets the `value` field to Set
-    pub struct SetValue<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetValue<S> {}
-    impl<S: State> State for SetValue<S> {
-        type Key = S::Key;
-        type Scope = S::Scope;
+    pub struct SetValue<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetValue<St> {}
+    impl<St: State> State for SetValue<St> {
+        type Key = St::Key;
+        type Scope = St::Scope;
         type Value = Set<members::value>;
     }
     /// Marker types for field names
@@ -83,191 +309,174 @@ pub mod upsert_option_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct UpsertOptionBuilder<'a, S: upsert_option_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Nsid<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::value::Data<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct UpsertOptionBuilder<
+    St: upsert_option_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Nsid<S>>,
+        core::option::Option<UpsertOptionManagerRole<S>>,
+        core::option::Option<UpsertOptionScope<S>>,
+        core::option::Option<jacquard_common::types::value::Data<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> UpsertOption<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> UpsertOptionBuilder<'a, upsert_option_state::Empty> {
+impl UpsertOption<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> UpsertOptionBuilder<upsert_option_state::Empty, jacquard_common::DefaultStr> {
         UpsertOptionBuilder::new()
     }
 }
 
-impl<'a> UpsertOptionBuilder<'a, upsert_option_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> UpsertOption<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> UpsertOptionBuilder<upsert_option_state::Empty, S> {
+        UpsertOptionBuilder::builder()
+    }
+}
+
+impl UpsertOptionBuilder<upsert_option_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         UpsertOptionBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: upsert_option_state::State> UpsertOptionBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> UpsertOptionBuilder<upsert_option_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        UpsertOptionBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: upsert_option_state::State, S: jacquard_common::BosStr> UpsertOptionBuilder<St, S> {
     /// Set the `description` field (optional)
-    pub fn description(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+    pub fn description(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.0 = value.into();
         self
     }
     /// Set the `description` field to an Option value (optional)
-    pub fn maybe_description(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.0 = value;
+    pub fn maybe_description(mut self, value: Option<S>) -> Self {
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S> UpsertOptionBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> UpsertOptionBuilder<St, S>
 where
-    S: upsert_option_state::State,
-    S::Key: upsert_option_state::IsUnset,
+    St: upsert_option_state::State,
+    St::Key: upsert_option_state::IsUnset,
 {
     /// Set the `key` field (required)
     pub fn key(
         mut self,
-        value: impl Into<jacquard_common::types::string::Nsid<'a>>,
-    ) -> UpsertOptionBuilder<'a, upsert_option_state::SetKey<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Nsid<S>>,
+    ) -> UpsertOptionBuilder<upsert_option_state::SetKey<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         UpsertOptionBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: upsert_option_state::State> UpsertOptionBuilder<'a, S> {
+impl<St: upsert_option_state::State, S: jacquard_common::BosStr> UpsertOptionBuilder<St, S> {
     /// Set the `managerRole` field (optional)
-    pub fn manager_role(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.2 = value.into();
+    pub fn manager_role(mut self, value: impl Into<Option<UpsertOptionManagerRole<S>>>) -> Self {
+        self._fields.2 = value.into();
         self
     }
     /// Set the `managerRole` field to an Option value (optional)
-    pub fn maybe_manager_role(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.2 = value;
+    pub fn maybe_manager_role(mut self, value: Option<UpsertOptionManagerRole<S>>) -> Self {
+        self._fields.2 = value;
         self
     }
 }
 
-impl<'a, S> UpsertOptionBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> UpsertOptionBuilder<St, S>
 where
-    S: upsert_option_state::State,
-    S::Scope: upsert_option_state::IsUnset,
+    St: upsert_option_state::State,
+    St::Scope: upsert_option_state::IsUnset,
 {
     /// Set the `scope` field (required)
     pub fn scope(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> UpsertOptionBuilder<'a, upsert_option_state::SetScope<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        value: impl Into<UpsertOptionScope<S>>,
+    ) -> UpsertOptionBuilder<upsert_option_state::SetScope<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
         UpsertOptionBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> UpsertOptionBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> UpsertOptionBuilder<St, S>
 where
-    S: upsert_option_state::State,
-    S::Value: upsert_option_state::IsUnset,
+    St: upsert_option_state::State,
+    St::Value: upsert_option_state::IsUnset,
 {
     /// Set the `value` field (required)
     pub fn value(
         mut self,
-        value: impl Into<jacquard_common::types::value::Data<'a>>,
-    ) -> UpsertOptionBuilder<'a, upsert_option_state::SetValue<S>> {
-        self.__unsafe_private_named.4 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::value::Data<S>>,
+    ) -> UpsertOptionBuilder<upsert_option_state::SetValue<St>, S> {
+        self._fields.4 = ::core::option::Option::Some(value.into());
         UpsertOptionBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> UpsertOptionBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> UpsertOptionBuilder<St, S>
 where
-    S: upsert_option_state::State,
-    S::Key: upsert_option_state::IsSet,
-    S::Scope: upsert_option_state::IsSet,
-    S::Value: upsert_option_state::IsSet,
+    St: upsert_option_state::State,
+    St::Key: upsert_option_state::IsSet,
+    St::Scope: upsert_option_state::IsSet,
+    St::Value: upsert_option_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> UpsertOption<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> UpsertOption<S> {
         UpsertOption {
-            description: self.__unsafe_private_named.0,
-            key: self.__unsafe_private_named.1.unwrap(),
-            manager_role: self.__unsafe_private_named.2,
-            scope: self.__unsafe_private_named.3.unwrap(),
-            value: self.__unsafe_private_named.4.unwrap(),
+            description: self._fields.0,
+            key: self._fields.1.unwrap(),
+            manager_role: self._fields.2,
+            scope: self._fields.3.unwrap(),
+            value: self._fields.4.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> UpsertOption<'a> {
+    ) -> UpsertOption<S> {
         UpsertOption {
-            description: self.__unsafe_private_named.0,
-            key: self.__unsafe_private_named.1.unwrap(),
-            manager_role: self.__unsafe_private_named.2,
-            scope: self.__unsafe_private_named.3.unwrap(),
-            value: self.__unsafe_private_named.4.unwrap(),
+            description: self._fields.0,
+            key: self._fields.1.unwrap(),
+            manager_role: self._fields.2,
+            scope: self._fields.3.unwrap(),
+            value: self._fields.4.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct UpsertOptionOutput<'a> {
-    #[serde(borrow)]
-    pub option: crate::generated::tools_ozone::setting::DefsOption<'a>,
-}
-
-/// Response type for
-///tools.ozone.setting.upsertOption
-pub struct UpsertOptionResponse;
-impl jacquard_common::xrpc::XrpcResp for UpsertOptionResponse {
-    const NSID: &'static str = "tools.ozone.setting.upsertOption";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = UpsertOptionOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for UpsertOption<'a> {
-    const NSID: &'static str = "tools.ozone.setting.upsertOption";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Response = UpsertOptionResponse;
-}
-
-/// Endpoint type for
-///tools.ozone.setting.upsertOption
-pub struct UpsertOptionRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for UpsertOptionRequest {
-    const PATH: &'static str = "/xrpc/tools.ozone.setting.upsertOption";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = UpsertOption<'de>;
-    type Response = UpsertOptionResponse;
 }

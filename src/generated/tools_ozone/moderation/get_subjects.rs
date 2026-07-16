@@ -8,10 +8,62 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetSubjects<'a> {
-    #[serde(borrow)]
-    pub subjects: Vec<jacquard_common::CowStr<'a>>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetSubjects<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub subjects: Vec<S>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetSubjectsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub subjects: Vec<crate::generated::tools_ozone::moderation::SubjectView<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `tools.ozone.moderation.getSubjects` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetSubjectsOutput<S>` for this endpoint.*/
+pub struct GetSubjectsResponse;
+impl jacquard_common::xrpc::XrpcResp for GetSubjectsResponse {
+    const NSID: &'static str = "tools.ozone.moderation.getSubjects";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = GetSubjectsOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetSubjects<S> {
+    const NSID: &'static str = "tools.ozone.moderation.getSubjects";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = GetSubjectsResponse;
+}
+
+/** Endpoint marker for the `tools.ozone.moderation.getSubjects` query.
+
+Path: `/xrpc/tools.ozone.moderation.getSubjects`. The request payload type is `GetSubjects<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct GetSubjectsRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for GetSubjectsRequest {
+    const PATH: &'static str = "/xrpc/tools.ozone.moderation.getSubjects";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = GetSubjects<S>;
+    type Response = GetSubjectsResponse;
 }
 
 pub mod get_subjects_state {
@@ -33,9 +85,9 @@ pub mod get_subjects_state {
         type Subjects = Unset;
     }
     ///State transition - sets the `subjects` field to Set
-    pub struct SetSubjects<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetSubjects<S> {}
-    impl<S: State> State for SetSubjects<S> {
+    pub struct SetSubjects<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSubjects<St> {}
+    impl<St: State> State for SetSubjects<St> {
         type Subjects = Set<members::subjects>;
     }
     /// Marker types for field names
@@ -46,95 +98,80 @@ pub mod get_subjects_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct GetSubjectsBuilder<'a, S: get_subjects_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<Vec<jacquard_common::CowStr<'a>>>,),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct GetSubjectsBuilder<
+    St: get_subjects_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<Vec<S>>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> GetSubjects<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> GetSubjectsBuilder<'a, get_subjects_state::Empty> {
+impl GetSubjects<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> GetSubjectsBuilder<get_subjects_state::Empty, jacquard_common::DefaultStr> {
         GetSubjectsBuilder::new()
     }
 }
 
-impl<'a> GetSubjectsBuilder<'a, get_subjects_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> GetSubjects<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> GetSubjectsBuilder<get_subjects_state::Empty, S> {
+        GetSubjectsBuilder::builder()
+    }
+}
+
+impl GetSubjectsBuilder<get_subjects_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetSubjectsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GetSubjectsBuilder<'a, S>
+impl<S: jacquard_common::BosStr> GetSubjectsBuilder<get_subjects_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GetSubjectsBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> GetSubjectsBuilder<St, S>
 where
-    S: get_subjects_state::State,
-    S::Subjects: get_subjects_state::IsUnset,
+    St: get_subjects_state::State,
+    St::Subjects: get_subjects_state::IsUnset,
 {
     /// Set the `subjects` field (required)
     pub fn subjects(
         mut self,
-        value: impl Into<Vec<jacquard_common::CowStr<'a>>>,
-    ) -> GetSubjectsBuilder<'a, get_subjects_state::SetSubjects<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<Vec<S>>,
+    ) -> GetSubjectsBuilder<get_subjects_state::SetSubjects<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         GetSubjectsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GetSubjectsBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GetSubjectsBuilder<St, S>
 where
-    S: get_subjects_state::State,
-    S::Subjects: get_subjects_state::IsSet,
+    St: get_subjects_state::State,
+    St::Subjects: get_subjects_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> GetSubjects<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> GetSubjects<S> {
         GetSubjects {
-            subjects: self.__unsafe_private_named.0.unwrap(),
+            subjects: self._fields.0.unwrap(),
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GetSubjectsOutput<'a> {
-    #[serde(borrow)]
-    pub subjects: Vec<crate::generated::tools_ozone::moderation::SubjectView<'a>>,
-}
-
-/// Response type for
-///tools.ozone.moderation.getSubjects
-pub struct GetSubjectsResponse;
-impl jacquard_common::xrpc::XrpcResp for GetSubjectsResponse {
-    const NSID: &'static str = "tools.ozone.moderation.getSubjects";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetSubjectsOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for GetSubjects<'a> {
-    const NSID: &'static str = "tools.ozone.moderation.getSubjects";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = GetSubjectsResponse;
-}
-
-/// Endpoint type for
-///tools.ozone.moderation.getSubjects
-pub struct GetSubjectsRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for GetSubjectsRequest {
-    const PATH: &'static str = "/xrpc/tools.ozone.moderation.getSubjects";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetSubjects<'de>;
-    type Response = GetSubjectsResponse;
 }

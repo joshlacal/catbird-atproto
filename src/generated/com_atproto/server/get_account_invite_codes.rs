@@ -10,12 +10,115 @@
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetAccountInviteCodes {
-    /// (default: true)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub create_available: std::option::Option<bool>,
-    /// (default: true)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub include_used: std::option::Option<bool>,
+    ///  Defaults to `true`.
+    #[serde(default = "_default_create_available")]
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub create_available: core::option::Option<bool>,
+    ///  Defaults to `true`.
+    #[serde(default = "_default_include_used")]
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub include_used: core::option::Option<bool>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetAccountInviteCodesOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub codes: Vec<crate::generated::com_atproto::server::InviteCode<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    thiserror::Error,
+    miette::Diagnostic,
+)]
+#[serde(tag = "error", content = "message")]
+pub enum GetAccountInviteCodesError {
+    #[serde(rename = "DuplicateCreate")]
+    DuplicateCreate(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
+}
+
+impl core::fmt::Display for GetAccountInviteCodesError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+            Self::DuplicateCreate(msg) => {
+                write!(f, "DuplicateCreate")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+        }
+    }
+}
+
+/** Response marker for the `com.atproto.server.getAccountInviteCodes` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetAccountInviteCodesOutput<S>` for this endpoint.*/
+pub struct GetAccountInviteCodesResponse;
+impl jacquard_common::xrpc::XrpcResp for GetAccountInviteCodesResponse {
+    const NSID: &'static str = "com.atproto.server.getAccountInviteCodes";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = GetAccountInviteCodesOutput<S>;
+    type Err = GetAccountInviteCodesError;
+}
+
+impl jacquard_common::xrpc::XrpcRequest for GetAccountInviteCodes {
+    const NSID: &'static str = "com.atproto.server.getAccountInviteCodes";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = GetAccountInviteCodesResponse;
+}
+
+/** Endpoint marker for the `com.atproto.server.getAccountInviteCodes` query.
+
+Path: `/xrpc/com.atproto.server.getAccountInviteCodes`. The request payload type is `GetAccountInviteCodes`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct GetAccountInviteCodesRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for GetAccountInviteCodesRequest {
+    const PATH: &'static str = "/xrpc/com.atproto.server.getAccountInviteCodes";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = GetAccountInviteCodes;
+    type Response = GetAccountInviteCodesResponse;
+}
+
+fn _default_create_available() -> core::option::Option<bool> {
+    Some(true)
+}
+
+fn _default_include_used() -> core::option::Option<bool> {
+    Some(true)
 }
 
 pub mod get_account_invite_codes_state {
@@ -37,134 +140,74 @@ pub mod get_account_invite_codes_state {
     pub mod members {}
 }
 
-/// Builder for constructing an instance of this type
-pub struct GetAccountInviteCodesBuilder<S: get_account_invite_codes_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<bool>, ::core::option::Option<bool>),
+/// Builder for constructing an instance of this type.
+pub struct GetAccountInviteCodesBuilder<St: get_account_invite_codes_state::State> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<bool>, core::option::Option<bool>),
 }
 
 impl GetAccountInviteCodes {
-    /// Create a new builder for this type
+    /// Create a new builder for this type.
     pub fn new() -> GetAccountInviteCodesBuilder<get_account_invite_codes_state::Empty> {
         GetAccountInviteCodesBuilder::new()
     }
 }
 
 impl GetAccountInviteCodesBuilder<get_account_invite_codes_state::Empty> {
-    /// Create a new builder with all fields unset
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetAccountInviteCodesBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
         }
     }
 }
 
-impl<S: get_account_invite_codes_state::State> GetAccountInviteCodesBuilder<S> {
+impl GetAccountInviteCodesBuilder<get_account_invite_codes_state::Empty> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GetAccountInviteCodesBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+        }
+    }
+}
+
+impl<St: get_account_invite_codes_state::State> GetAccountInviteCodesBuilder<St> {
     /// Set the `createAvailable` field (optional)
     pub fn create_available(mut self, value: impl Into<Option<bool>>) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+        self._fields.0 = value.into();
         self
     }
     /// Set the `createAvailable` field to an Option value (optional)
     pub fn maybe_create_available(mut self, value: Option<bool>) -> Self {
-        self.__unsafe_private_named.0 = value;
+        self._fields.0 = value;
         self
     }
 }
 
-impl<S: get_account_invite_codes_state::State> GetAccountInviteCodesBuilder<S> {
+impl<St: get_account_invite_codes_state::State> GetAccountInviteCodesBuilder<St> {
     /// Set the `includeUsed` field (optional)
     pub fn include_used(mut self, value: impl Into<Option<bool>>) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self._fields.1 = value.into();
         self
     }
     /// Set the `includeUsed` field to an Option value (optional)
     pub fn maybe_include_used(mut self, value: Option<bool>) -> Self {
-        self.__unsafe_private_named.1 = value;
+        self._fields.1 = value;
         self
     }
 }
 
-impl<S> GetAccountInviteCodesBuilder<S>
+impl<St> GetAccountInviteCodesBuilder<St>
 where
-    S: get_account_invite_codes_state::State,
+    St: get_account_invite_codes_state::State,
 {
-    /// Build the final struct
+    /// Build the final struct.
     pub fn build(self) -> GetAccountInviteCodes {
         GetAccountInviteCodes {
-            create_available: self.__unsafe_private_named.0,
-            include_used: self.__unsafe_private_named.1,
+            create_available: self._fields.0,
+            include_used: self._fields.1,
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GetAccountInviteCodesOutput<'a> {
-    #[serde(borrow)]
-    pub codes: Vec<crate::generated::com_atproto::server::InviteCode<'a>>,
-}
-
-#[jacquard_derive::open_union]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    thiserror::Error,
-    miette::Diagnostic,
-    jacquard_derive::IntoStatic,
-)]
-#[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum GetAccountInviteCodesError<'a> {
-    #[serde(rename = "DuplicateCreate")]
-    DuplicateCreate(std::option::Option<jacquard_common::CowStr<'a>>),
-}
-
-impl std::fmt::Display for GetAccountInviteCodesError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::DuplicateCreate(msg) => {
-                write!(f, "DuplicateCreate")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
-        }
-    }
-}
-
-/// Response type for
-///com.atproto.server.getAccountInviteCodes
-pub struct GetAccountInviteCodesResponse;
-impl jacquard_common::xrpc::XrpcResp for GetAccountInviteCodesResponse {
-    const NSID: &'static str = "com.atproto.server.getAccountInviteCodes";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetAccountInviteCodesOutput<'de>;
-    type Err<'de> = GetAccountInviteCodesError<'de>;
-}
-
-impl jacquard_common::xrpc::XrpcRequest for GetAccountInviteCodes {
-    const NSID: &'static str = "com.atproto.server.getAccountInviteCodes";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = GetAccountInviteCodesResponse;
-}
-
-/// Endpoint type for
-///com.atproto.server.getAccountInviteCodes
-pub struct GetAccountInviteCodesRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for GetAccountInviteCodesRequest {
-    const PATH: &'static str = "/xrpc/com.atproto.server.getAccountInviteCodes";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetAccountInviteCodes;
-    type Response = GetAccountInviteCodesResponse;
 }

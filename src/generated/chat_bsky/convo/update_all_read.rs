@@ -5,7 +5,6 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -16,47 +15,154 @@
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct UpdateAllRead<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub status: std::option::Option<jacquard_common::CowStr<'a>>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct UpdateAllRead<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub status: core::option::Option<UpdateAllReadStatus<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::lexicon]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum UpdateAllReadStatus<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    Request,
+    Accepted,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> UpdateAllReadStatus<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Request => "request",
+            Self::Accepted => "accepted",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "request" => Self::Request,
+            "accepted" => Self::Accepted,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for UpdateAllReadStatus<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for UpdateAllReadStatus<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for UpdateAllReadStatus<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for UpdateAllReadStatus<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for UpdateAllReadStatus<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for UpdateAllReadStatus<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = UpdateAllReadStatus<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            UpdateAllReadStatus::Request => UpdateAllReadStatus::Request,
+            UpdateAllReadStatus::Accepted => UpdateAllReadStatus::Accepted,
+            UpdateAllReadStatus::Other(v) => UpdateAllReadStatus::Other(v.into_static()),
+        }
+    }
+}
+
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct UpdateAllReadOutput<'a> {
-    /// The count of updated convos.
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct UpdateAllReadOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///The count of updated convos.
     pub updated_count: i64,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-/// Response type for
-///chat.bsky.convo.updateAllRead
+/** Response marker for the `chat.bsky.convo.updateAllRead` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `UpdateAllReadOutput<S>` for this endpoint.*/
 pub struct UpdateAllReadResponse;
 impl jacquard_common::xrpc::XrpcResp for UpdateAllReadResponse {
     const NSID: &'static str = "chat.bsky.convo.updateAllRead";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = UpdateAllReadOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
+    type Output<S: jacquard_common::BosStr> = UpdateAllReadOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for UpdateAllRead<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for UpdateAllRead<S> {
     const NSID: &'static str = "chat.bsky.convo.updateAllRead";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = UpdateAllReadResponse;
 }
 
-/// Endpoint type for
-///chat.bsky.convo.updateAllRead
+/** Endpoint marker for the `chat.bsky.convo.updateAllRead` procedure.
+
+Path: `/xrpc/chat.bsky.convo.updateAllRead`. The request payload type is `UpdateAllRead<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct UpdateAllReadRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for UpdateAllReadRequest {
     const PATH: &'static str = "/xrpc/chat.bsky.convo.updateAllRead";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = UpdateAllRead<'de>;
+    type Request<S: jacquard_common::BosStr> = UpdateAllRead<S>;
     type Response = UpdateAllReadResponse;
 }

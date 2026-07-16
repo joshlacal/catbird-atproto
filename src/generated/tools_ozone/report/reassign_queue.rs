@@ -5,189 +5,56 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct ReassignQueue<'a> {
-    /// Optional moderator-only note recorded on the resulting queueActivity as internalNote.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub comment: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// Target queue ID. Use -1 to unassign from any queue.
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ReassignQueue<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Optional moderator-only note recorded on the resulting queueActivity as internalNote.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub comment: core::option::Option<S>,
+    ///Target queue ID. Use -1 to unassign from any queue.
     pub queue_id: i64,
-    /// ID of the report to reassign
+    ///ID of the report to reassign
     pub report_id: i64,
-}
-
-pub mod reassign_queue_state {
-
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
-    #[allow(unused)]
-    use core::marker::PhantomData;
-    mod sealed {
-        pub trait Sealed {}
-    }
-    /// State trait tracking which required fields have been set
-    pub trait State: sealed::Sealed {
-        type ReportId;
-        type QueueId;
-    }
-    /// Empty state - all required fields are unset
-    pub struct Empty(());
-    impl sealed::Sealed for Empty {}
-    impl State for Empty {
-        type ReportId = Unset;
-        type QueueId = Unset;
-    }
-    ///State transition - sets the `report_id` field to Set
-    pub struct SetReportId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetReportId<S> {}
-    impl<S: State> State for SetReportId<S> {
-        type ReportId = Set<members::report_id>;
-        type QueueId = S::QueueId;
-    }
-    ///State transition - sets the `queue_id` field to Set
-    pub struct SetQueueId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetQueueId<S> {}
-    impl<S: State> State for SetQueueId<S> {
-        type ReportId = S::ReportId;
-        type QueueId = Set<members::queue_id>;
-    }
-    /// Marker types for field names
-    #[allow(non_camel_case_types)]
-    pub mod members {
-        ///Marker type for the `report_id` field
-        pub struct report_id(());
-        ///Marker type for the `queue_id` field
-        pub struct queue_id(());
-    }
-}
-
-/// Builder for constructing an instance of this type
-pub struct ReassignQueueBuilder<'a, S: reassign_queue_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<i64>,
-    ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
-}
-
-impl<'a> ReassignQueue<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> ReassignQueueBuilder<'a, reassign_queue_state::Empty> {
-        ReassignQueueBuilder::new()
-    }
-}
-
-impl<'a> ReassignQueueBuilder<'a, reassign_queue_state::Empty> {
-    /// Create a new builder with all fields unset
-    pub fn new() -> Self {
-        ReassignQueueBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None),
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S: reassign_queue_state::State> ReassignQueueBuilder<'a, S> {
-    /// Set the `comment` field (optional)
-    pub fn comment(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.0 = value.into();
-        self
-    }
-    /// Set the `comment` field to an Option value (optional)
-    pub fn maybe_comment(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.0 = value;
-        self
-    }
-}
-
-impl<'a, S> ReassignQueueBuilder<'a, S>
-where
-    S: reassign_queue_state::State,
-    S::QueueId: reassign_queue_state::IsUnset,
-{
-    /// Set the `queueId` field (required)
-    pub fn queue_id(
-        mut self,
-        value: impl Into<i64>,
-    ) -> ReassignQueueBuilder<'a, reassign_queue_state::SetQueueId<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
-        ReassignQueueBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> ReassignQueueBuilder<'a, S>
-where
-    S: reassign_queue_state::State,
-    S::ReportId: reassign_queue_state::IsUnset,
-{
-    /// Set the `reportId` field (required)
-    pub fn report_id(
-        mut self,
-        value: impl Into<i64>,
-    ) -> ReassignQueueBuilder<'a, reassign_queue_state::SetReportId<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
-        ReassignQueueBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> ReassignQueueBuilder<'a, S>
-where
-    S: reassign_queue_state::State,
-    S::ReportId: reassign_queue_state::IsSet,
-    S::QueueId: reassign_queue_state::IsSet,
-{
-    /// Build the final struct
-    pub fn build(self) -> ReassignQueue<'a> {
-        ReassignQueue {
-            comment: self.__unsafe_private_named.0,
-            queue_id: self.__unsafe_private_named.1.unwrap(),
-            report_id: self.__unsafe_private_named.2.unwrap(),
-            extra_data: Default::default(),
-        }
-    }
-    /// Build the final struct with custom extra_data
-    pub fn build_with_data(
-        self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> ReassignQueue<'a> {
-        ReassignQueue {
-            comment: self.__unsafe_private_named.0,
-            queue_id: self.__unsafe_private_named.1.unwrap(),
-            report_id: self.__unsafe_private_named.2.unwrap(),
-            extra_data: Some(extra_data),
-        }
-    }
+    >,
 }
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct ReassignQueueOutput<'a> {
-    #[serde(borrow)]
-    pub report: crate::generated::tools_ozone::report::ReportView<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ReassignQueueOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub report: crate::generated::tools_ozone::report::ReportView<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::open_union]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -197,30 +64,34 @@ pub struct ReassignQueueOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum ReassignQueueError<'a> {
+pub enum ReassignQueueError {
     /// No report exists with the given reportId
     #[serde(rename = "ReportNotFound")]
-    ReportNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
+    ReportNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// The report is closed and cannot be reassigned
     #[serde(rename = "ReportClosed")]
-    ReportClosed(std::option::Option<jacquard_common::CowStr<'a>>),
+    ReportClosed(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// The report is already assigned to the target queue
     #[serde(rename = "AlreadyInTargetQueue")]
-    AlreadyInTargetQueue(std::option::Option<jacquard_common::CowStr<'a>>),
+    AlreadyInTargetQueue(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// No active queue exists with the given queueId
     #[serde(rename = "QueueNotFound")]
-    QueueNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
+    QueueNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// The target queue is disabled and cannot receive new assignments
     #[serde(rename = "QueueDisabled")]
-    QueueDisabled(std::option::Option<jacquard_common::CowStr<'a>>),
+    QueueDisabled(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
 }
 
-impl std::fmt::Display for ReassignQueueError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for ReassignQueueError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             Self::ReportNotFound(msg) => {
                 write!(f, "ReportNotFound")?;
@@ -257,35 +128,220 @@ impl std::fmt::Display for ReassignQueueError<'_> {
                 }
                 Ok(())
             }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
         }
     }
 }
 
-/// Response type for
-///tools.ozone.report.reassignQueue
+/** Response marker for the `tools.ozone.report.reassignQueue` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `ReassignQueueOutput<S>` for this endpoint.*/
 pub struct ReassignQueueResponse;
 impl jacquard_common::xrpc::XrpcResp for ReassignQueueResponse {
     const NSID: &'static str = "tools.ozone.report.reassignQueue";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = ReassignQueueOutput<'de>;
-    type Err<'de> = ReassignQueueError<'de>;
+    type Output<S: jacquard_common::BosStr> = ReassignQueueOutput<S>;
+    type Err = ReassignQueueError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for ReassignQueue<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for ReassignQueue<S> {
     const NSID: &'static str = "tools.ozone.report.reassignQueue";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = ReassignQueueResponse;
 }
 
-/// Endpoint type for
-///tools.ozone.report.reassignQueue
+/** Endpoint marker for the `tools.ozone.report.reassignQueue` procedure.
+
+Path: `/xrpc/tools.ozone.report.reassignQueue`. The request payload type is `ReassignQueue<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct ReassignQueueRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for ReassignQueueRequest {
     const PATH: &'static str = "/xrpc/tools.ozone.report.reassignQueue";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = ReassignQueue<'de>;
+    type Request<S: jacquard_common::BosStr> = ReassignQueue<S>;
     type Response = ReassignQueueResponse;
+}
+
+pub mod reassign_queue_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type QueueId;
+        type ReportId;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type QueueId = Unset;
+        type ReportId = Unset;
+    }
+    ///State transition - sets the `queue_id` field to Set
+    pub struct SetQueueId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetQueueId<St> {}
+    impl<St: State> State for SetQueueId<St> {
+        type QueueId = Set<members::queue_id>;
+        type ReportId = St::ReportId;
+    }
+    ///State transition - sets the `report_id` field to Set
+    pub struct SetReportId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetReportId<St> {}
+    impl<St: State> State for SetReportId<St> {
+        type QueueId = St::QueueId;
+        type ReportId = Set<members::report_id>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `queue_id` field
+        pub struct queue_id(());
+        ///Marker type for the `report_id` field
+        pub struct report_id(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct ReassignQueueBuilder<
+    St: reassign_queue_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<i64>,
+        core::option::Option<i64>,
+    ),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl ReassignQueue<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> ReassignQueueBuilder<reassign_queue_state::Empty, jacquard_common::DefaultStr> {
+        ReassignQueueBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> ReassignQueue<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> ReassignQueueBuilder<reassign_queue_state::Empty, S> {
+        ReassignQueueBuilder::builder()
+    }
+}
+
+impl ReassignQueueBuilder<reassign_queue_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        ReassignQueueBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> ReassignQueueBuilder<reassign_queue_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        ReassignQueueBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: reassign_queue_state::State, S: jacquard_common::BosStr> ReassignQueueBuilder<St, S> {
+    /// Set the `comment` field (optional)
+    pub fn comment(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.0 = value.into();
+        self
+    }
+    /// Set the `comment` field to an Option value (optional)
+    pub fn maybe_comment(mut self, value: Option<S>) -> Self {
+        self._fields.0 = value;
+        self
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ReassignQueueBuilder<St, S>
+where
+    St: reassign_queue_state::State,
+    St::QueueId: reassign_queue_state::IsUnset,
+{
+    /// Set the `queueId` field (required)
+    pub fn queue_id(
+        mut self,
+        value: impl Into<i64>,
+    ) -> ReassignQueueBuilder<reassign_queue_state::SetQueueId<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
+        ReassignQueueBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ReassignQueueBuilder<St, S>
+where
+    St: reassign_queue_state::State,
+    St::ReportId: reassign_queue_state::IsUnset,
+{
+    /// Set the `reportId` field (required)
+    pub fn report_id(
+        mut self,
+        value: impl Into<i64>,
+    ) -> ReassignQueueBuilder<reassign_queue_state::SetReportId<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
+        ReassignQueueBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ReassignQueueBuilder<St, S>
+where
+    St: reassign_queue_state::State,
+    St::QueueId: reassign_queue_state::IsSet,
+    St::ReportId: reassign_queue_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> ReassignQueue<S> {
+        ReassignQueue {
+            comment: self._fields.0,
+            queue_id: self._fields.1.unwrap(),
+            report_id: self._fields.2.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> ReassignQueue<S> {
+        ReassignQueue {
+            comment: self._fields.0,
+            queue_id: self._fields.1.unwrap(),
+            report_id: self._fields.2.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
 }

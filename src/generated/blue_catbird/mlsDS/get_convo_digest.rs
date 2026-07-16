@@ -8,10 +8,129 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetConvoDigest<'a> {
-    #[serde(borrow)]
-    pub convo_id: jacquard_common::CowStr<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetConvoDigest<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub convo_id: S,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetConvoDigestOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Conversation ID
+    pub convo_id: S,
+    ///Hex-encoded SHA-256 digest over all messages
+    pub digest_sha256: S,
+    ///Current MLS epoch
+    pub epoch: i64,
+    ///Total number of events/messages
+    pub event_count: i64,
+    ///Timestamp when the digest was generated
+    pub generated_at: jacquard_common::types::string::Datetime,
+    ///Highest sequence number
+    pub last_seq: i64,
+    ///DID of the current sequencer DS
+    pub sequencer_ds_did: S,
+    ///Current sequencer term
+    pub sequencer_term: i64,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    thiserror::Error,
+    miette::Diagnostic,
+)]
+#[serde(tag = "error", content = "message")]
+pub enum GetConvoDigestError {
+    #[serde(rename = "ConversationNotFound")]
+    ConversationNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    #[serde(rename = "NotAuthorized")]
+    NotAuthorized(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
+}
+
+impl core::fmt::Display for GetConvoDigestError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+            Self::ConversationNotFound(msg) => {
+                write!(f, "ConversationNotFound")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::NotAuthorized(msg) => {
+                write!(f, "NotAuthorized")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+        }
+    }
+}
+
+/** Response marker for the `blue.catbird.mlsDS.getConvoDigest` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetConvoDigestOutput<S>` for this endpoint.*/
+pub struct GetConvoDigestResponse;
+impl jacquard_common::xrpc::XrpcResp for GetConvoDigestResponse {
+    const NSID: &'static str = "blue.catbird.mlsDS.getConvoDigest";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = GetConvoDigestOutput<S>;
+    type Err = GetConvoDigestError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetConvoDigest<S> {
+    const NSID: &'static str = "blue.catbird.mlsDS.getConvoDigest";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = GetConvoDigestResponse;
+}
+
+/** Endpoint marker for the `blue.catbird.mlsDS.getConvoDigest` query.
+
+Path: `/xrpc/blue.catbird.mlsDS.getConvoDigest`. The request payload type is `GetConvoDigest<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct GetConvoDigestRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for GetConvoDigestRequest {
+    const PATH: &'static str = "/xrpc/blue.catbird.mlsDS.getConvoDigest";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = GetConvoDigest<S>;
+    type Response = GetConvoDigestResponse;
 }
 
 pub mod get_convo_digest_state {
@@ -33,9 +152,9 @@ pub mod get_convo_digest_state {
         type ConvoId = Unset;
     }
     ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
+    pub struct SetConvoId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetConvoId<St> {}
+    impl<St: State> State for SetConvoId<St> {
         type ConvoId = Set<members::convo_id>;
     }
     /// Marker types for field names
@@ -46,155 +165,81 @@ pub mod get_convo_digest_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct GetConvoDigestBuilder<'a, S: get_convo_digest_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<jacquard_common::CowStr<'a>>,),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct GetConvoDigestBuilder<
+    St: get_convo_digest_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<S>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> GetConvoDigest<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> GetConvoDigestBuilder<'a, get_convo_digest_state::Empty> {
+impl GetConvoDigest<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> GetConvoDigestBuilder<get_convo_digest_state::Empty, jacquard_common::DefaultStr>
+    {
         GetConvoDigestBuilder::new()
     }
 }
 
-impl<'a> GetConvoDigestBuilder<'a, get_convo_digest_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> GetConvoDigest<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> GetConvoDigestBuilder<get_convo_digest_state::Empty, S> {
+        GetConvoDigestBuilder::builder()
+    }
+}
+
+impl GetConvoDigestBuilder<get_convo_digest_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetConvoDigestBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GetConvoDigestBuilder<'a, S>
+impl<S: jacquard_common::BosStr> GetConvoDigestBuilder<get_convo_digest_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GetConvoDigestBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> GetConvoDigestBuilder<St, S>
 where
-    S: get_convo_digest_state::State,
-    S::ConvoId: get_convo_digest_state::IsUnset,
+    St: get_convo_digest_state::State,
+    St::ConvoId: get_convo_digest_state::IsUnset,
 {
     /// Set the `convoId` field (required)
     pub fn convo_id(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> GetConvoDigestBuilder<'a, get_convo_digest_state::SetConvoId<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> GetConvoDigestBuilder<get_convo_digest_state::SetConvoId<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         GetConvoDigestBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GetConvoDigestBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GetConvoDigestBuilder<St, S>
 where
-    S: get_convo_digest_state::State,
-    S::ConvoId: get_convo_digest_state::IsSet,
+    St: get_convo_digest_state::State,
+    St::ConvoId: get_convo_digest_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> GetConvoDigest<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> GetConvoDigest<S> {
         GetConvoDigest {
-            convo_id: self.__unsafe_private_named.0.unwrap(),
+            convo_id: self._fields.0.unwrap(),
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GetConvoDigestOutput<'a> {
-    /// Conversation ID
-    #[serde(borrow)]
-    pub convo_id: jacquard_common::CowStr<'a>,
-    /// Hex-encoded SHA-256 digest over all messages
-    #[serde(borrow)]
-    pub digest_sha256: jacquard_common::CowStr<'a>,
-    /// Current MLS epoch
-    pub epoch: i64,
-    /// Total number of events/messages
-    pub event_count: i64,
-    /// Timestamp when the digest was generated
-    pub generated_at: jacquard_common::types::string::Datetime,
-    /// Highest sequence number
-    pub last_seq: i64,
-    /// DID of the current sequencer DS
-    #[serde(borrow)]
-    pub sequencer_ds_did: jacquard_common::CowStr<'a>,
-    /// Current sequencer term
-    pub sequencer_term: i64,
-}
-
-#[jacquard_derive::open_union]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    thiserror::Error,
-    miette::Diagnostic,
-    jacquard_derive::IntoStatic,
-)]
-#[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum GetConvoDigestError<'a> {
-    #[serde(rename = "ConversationNotFound")]
-    ConversationNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
-    #[serde(rename = "NotAuthorized")]
-    NotAuthorized(std::option::Option<jacquard_common::CowStr<'a>>),
-}
-
-impl std::fmt::Display for GetConvoDigestError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::ConversationNotFound(msg) => {
-                write!(f, "ConversationNotFound")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
-            Self::NotAuthorized(msg) => {
-                write!(f, "NotAuthorized")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
-        }
-    }
-}
-
-/// Response type for
-///blue.catbird.mlsDS.getConvoDigest
-pub struct GetConvoDigestResponse;
-impl jacquard_common::xrpc::XrpcResp for GetConvoDigestResponse {
-    const NSID: &'static str = "blue.catbird.mlsDS.getConvoDigest";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetConvoDigestOutput<'de>;
-    type Err<'de> = GetConvoDigestError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for GetConvoDigest<'a> {
-    const NSID: &'static str = "blue.catbird.mlsDS.getConvoDigest";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = GetConvoDigestResponse;
-}
-
-/// Endpoint type for
-///blue.catbird.mlsDS.getConvoDigest
-pub struct GetConvoDigestRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for GetConvoDigestRequest {
-    const PATH: &'static str = "/xrpc/blue.catbird.mlsDS.getConvoDigest";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetConvoDigest<'de>;
-    type Response = GetConvoDigestResponse;
 }

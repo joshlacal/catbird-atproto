@@ -5,16 +5,211 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct AddMember<'a> {
-    #[serde(borrow)]
-    pub did: jacquard_common::types::string::Did<'a>,
-    #[serde(borrow)]
-    pub role: jacquard_common::CowStr<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct AddMember<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub did: jacquard_common::types::string::Did<S>,
+    pub role: AddMemberRole<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum AddMemberRole<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    RoleAdmin,
+    RoleModerator,
+    RoleVerifier,
+    RoleTriage,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> AddMemberRole<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::RoleAdmin => "tools.ozone.team.defs#roleAdmin",
+            Self::RoleModerator => "tools.ozone.team.defs#roleModerator",
+            Self::RoleVerifier => "tools.ozone.team.defs#roleVerifier",
+            Self::RoleTriage => "tools.ozone.team.defs#roleTriage",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "tools.ozone.team.defs#roleAdmin" => Self::RoleAdmin,
+            "tools.ozone.team.defs#roleModerator" => Self::RoleModerator,
+            "tools.ozone.team.defs#roleVerifier" => Self::RoleVerifier,
+            "tools.ozone.team.defs#roleTriage" => Self::RoleTriage,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for AddMemberRole<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for AddMemberRole<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for AddMemberRole<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for AddMemberRole<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for AddMemberRole<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for AddMemberRole<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = AddMemberRole<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            AddMemberRole::RoleAdmin => AddMemberRole::RoleAdmin,
+            AddMemberRole::RoleModerator => AddMemberRole::RoleModerator,
+            AddMemberRole::RoleVerifier => AddMemberRole::RoleVerifier,
+            AddMemberRole::RoleTriage => AddMemberRole::RoleTriage,
+            AddMemberRole::Other(v) => AddMemberRole::Other(v.into_static()),
+        }
+    }
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct AddMemberOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(flatten)]
+    pub value: crate::generated::tools_ozone::team::Member<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    thiserror::Error,
+    miette::Diagnostic,
+)]
+#[serde(tag = "error", content = "message")]
+pub enum AddMemberError {
+    /// Member already exists in the team.
+    #[serde(rename = "MemberAlreadyExists")]
+    MemberAlreadyExists(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
+}
+
+impl core::fmt::Display for AddMemberError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+            Self::MemberAlreadyExists(msg) => {
+                write!(f, "MemberAlreadyExists")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+        }
+    }
+}
+
+/** Response marker for the `tools.ozone.team.addMember` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `AddMemberOutput<S>` for this endpoint.*/
+pub struct AddMemberResponse;
+impl jacquard_common::xrpc::XrpcResp for AddMemberResponse {
+    const NSID: &'static str = "tools.ozone.team.addMember";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = AddMemberOutput<S>;
+    type Err = AddMemberError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for AddMember<S> {
+    const NSID: &'static str = "tools.ozone.team.addMember";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Response = AddMemberResponse;
+}
+
+/** Endpoint marker for the `tools.ozone.team.addMember` procedure.
+
+Path: `/xrpc/tools.ozone.team.addMember`. The request payload type is `AddMember<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct AddMemberRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for AddMemberRequest {
+    const PATH: &'static str = "/xrpc/tools.ozone.team.addMember";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Request<S: jacquard_common::BosStr> = AddMember<S>;
+    type Response = AddMemberResponse;
 }
 
 pub mod add_member_state {
@@ -38,17 +233,17 @@ pub mod add_member_state {
         type Role = Unset;
     }
     ///State transition - sets the `did` field to Set
-    pub struct SetDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDid<S> {}
-    impl<S: State> State for SetDid<S> {
+    pub struct SetDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetDid<St> {}
+    impl<St: State> State for SetDid<St> {
         type Did = Set<members::did>;
-        type Role = S::Role;
+        type Role = St::Role;
     }
     ///State transition - sets the `role` field to Set
-    pub struct SetRole<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRole<S> {}
-    impl<S: State> State for SetRole<S> {
-        type Did = S::Did;
+    pub struct SetRole<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRole<St> {}
+    impl<St: State> State for SetRole<St> {
+        type Did = St::Did;
         type Role = Set<members::role>;
     }
     /// Marker types for field names
@@ -61,172 +256,119 @@ pub mod add_member_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct AddMemberBuilder<'a, S: add_member_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct AddMemberBuilder<
+    St: add_member_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<AddMemberRole<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> AddMember<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> AddMemberBuilder<'a, add_member_state::Empty> {
+impl AddMember<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> AddMemberBuilder<add_member_state::Empty, jacquard_common::DefaultStr> {
         AddMemberBuilder::new()
     }
 }
 
-impl<'a> AddMemberBuilder<'a, add_member_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> AddMember<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> AddMemberBuilder<add_member_state::Empty, S> {
+        AddMemberBuilder::builder()
+    }
+}
+
+impl AddMemberBuilder<add_member_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         AddMemberBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> AddMemberBuilder<'a, S>
+impl<S: jacquard_common::BosStr> AddMemberBuilder<add_member_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        AddMemberBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> AddMemberBuilder<St, S>
 where
-    S: add_member_state::State,
-    S::Did: add_member_state::IsUnset,
+    St: add_member_state::State,
+    St::Did: add_member_state::IsUnset,
 {
     /// Set the `did` field (required)
     pub fn did(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> AddMemberBuilder<'a, add_member_state::SetDid<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> AddMemberBuilder<add_member_state::SetDid<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         AddMemberBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> AddMemberBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> AddMemberBuilder<St, S>
 where
-    S: add_member_state::State,
-    S::Role: add_member_state::IsUnset,
+    St: add_member_state::State,
+    St::Role: add_member_state::IsUnset,
 {
     /// Set the `role` field (required)
     pub fn role(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> AddMemberBuilder<'a, add_member_state::SetRole<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<AddMemberRole<S>>,
+    ) -> AddMemberBuilder<add_member_state::SetRole<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         AddMemberBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> AddMemberBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> AddMemberBuilder<St, S>
 where
-    S: add_member_state::State,
-    S::Did: add_member_state::IsSet,
-    S::Role: add_member_state::IsSet,
+    St: add_member_state::State,
+    St::Did: add_member_state::IsSet,
+    St::Role: add_member_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> AddMember<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> AddMember<S> {
         AddMember {
-            did: self.__unsafe_private_named.0.unwrap(),
-            role: self.__unsafe_private_named.1.unwrap(),
+            did: self._fields.0.unwrap(),
+            role: self._fields.1.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> AddMember<'a> {
+    ) -> AddMember<S> {
         AddMember {
-            did: self.__unsafe_private_named.0.unwrap(),
-            role: self.__unsafe_private_named.1.unwrap(),
+            did: self._fields.0.unwrap(),
+            role: self._fields.1.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct AddMemberOutput<'a> {
-    #[serde(flatten)]
-    #[serde(borrow)]
-    pub value: crate::generated::tools_ozone::team::Member<'a>,
-}
-
-#[jacquard_derive::open_union]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    thiserror::Error,
-    miette::Diagnostic,
-    jacquard_derive::IntoStatic,
-)]
-#[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum AddMemberError<'a> {
-    /// Member already exists in the team.
-    #[serde(rename = "MemberAlreadyExists")]
-    MemberAlreadyExists(std::option::Option<jacquard_common::CowStr<'a>>),
-}
-
-impl std::fmt::Display for AddMemberError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::MemberAlreadyExists(msg) => {
-                write!(f, "MemberAlreadyExists")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
-        }
-    }
-}
-
-/// Response type for
-///tools.ozone.team.addMember
-pub struct AddMemberResponse;
-impl jacquard_common::xrpc::XrpcResp for AddMemberResponse {
-    const NSID: &'static str = "tools.ozone.team.addMember";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = AddMemberOutput<'de>;
-    type Err<'de> = AddMemberError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for AddMember<'a> {
-    const NSID: &'static str = "tools.ozone.team.addMember";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Response = AddMemberResponse;
-}
-
-/// Endpoint type for
-///tools.ozone.team.addMember
-pub struct AddMemberRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for AddMemberRequest {
-    const PATH: &'static str = "/xrpc/tools.ozone.team.addMember";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = AddMember<'de>;
-    type Response = AddMemberResponse;
 }

@@ -5,7 +5,6 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -16,186 +15,391 @@
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct Info<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub message: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(borrow)]
-    pub name: jacquard_common::CowStr<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct Info<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub message: core::option::Option<S>,
+    pub name: InfoName<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-fn lexicon_doc_com_atproto_label_subscribeLabels(
-) -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-    ::jacquard_lexicon::lexicon::LexiconDoc {
-        lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
-        id: ::jacquard_common::CowStr::new_static("com.atproto.label.subscribeLabels"),
-        revision: None,
-        description: None,
-        defs: {
-            let mut map = ::std::collections::BTreeMap::new();
-            map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("info"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
-                        required: Some(vec![::jacquard_common::smol_str::SmolStr::new_static(
-                            "name",
-                        )]),
-                        nullable: None,
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("message"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("name"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                    },
-                ),
-            );
-            map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("labels"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
-                        required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("seq"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("labels"),
-                        ]),
-                        nullable: None,
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("labels"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Array(
-                                    ::jacquard_lexicon::lexicon::LexArray {
-                                        description: None,
-                                        items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(
-                                            ::jacquard_lexicon::lexicon::LexRef {
-                                                description: None,
-                                                r#ref: ::jacquard_common::CowStr::new_static(
-                                                    "com.atproto.label.defs#label",
-                                                ),
-                                            },
-                                        ),
-                                        min_length: None,
-                                        max_length: None,
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("seq"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                    ::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
-                                        minimum: None,
-                                        maximum: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                    },
-                ),
-            );
-            map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
-                ::jacquard_lexicon::lexicon::LexUserType::XrpcSubscription(::jacquard_lexicon::lexicon::LexXrpcSubscription {
-                    description: None,
-                    parameters: Some(
-                        ::jacquard_lexicon::lexicon::LexXrpcSubscriptionParameter::Params(::jacquard_lexicon::lexicon::LexXrpcParameters {
-                            description: None,
-                            required: None,
-                            properties: {
-                                #[allow(unused_mut)]
-                                let mut map = ::std::collections::BTreeMap::new();
-                                map.insert(
-                                    ::jacquard_common::smol_str::SmolStr::new_static("cursor"),
-                                    ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
-                                        minimum: None,
-                                        maximum: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                    }),
-                                );
-                                map
-                            },
-                        }),
-                    ),
-                    message: None,
-                    infos: None,
-                    errors: None,
-                }),
-            );
-            map
-        },
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum InfoName<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    OutdatedCursor,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> InfoName<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::OutdatedCursor => "OutdatedCursor",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "OutdatedCursor" => Self::OutdatedCursor,
+            _ => Self::Other(s),
+        }
     }
 }
 
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Info<'a> {
+impl<S: jacquard_common::BosStr> core::fmt::Display for InfoName<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for InfoName<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for InfoName<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for InfoName<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for InfoName<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for InfoName<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = InfoName<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            InfoName::OutdatedCursor => InfoName::OutdatedCursor,
+            InfoName::Other(v) => InfoName::Other(v.into_static()),
+        }
+    }
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct Labels<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub labels: Vec<crate::generated::com_atproto::label::Label<S>>,
+    pub seq: i64,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(rename_all = "camelCase")]
+pub struct SubscribeLabels {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<i64>,
+}
+
+#[jacquard_derive::open_union]
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub enum SubscribeLabelsMessage<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(rename = "#labels")]
+    Labels(Box<crate::generated::com_atproto::label::subscribe_labels::Labels<S>>),
+    #[serde(rename = "#info")]
+    Info(Box<crate::generated::com_atproto::label::subscribe_labels::Info<S>>),
+}
+
+impl<S: jacquard_common::BosStr> SubscribeLabelsMessage<S> {
+    /// Decode a framed DAG-CBOR message (header + body).
+    pub fn decode_framed<'de>(
+        bytes: &'de [u8],
+    ) -> Result<SubscribeLabelsMessage<S>, jacquard_common::error::DecodeError>
+    where
+        S: serde::Deserialize<'de>,
+    {
+        let (header, body) = jacquard_common::xrpc::subscription::parse_event_header(bytes)?;
+        match header.t.as_str() {
+            "#labels" => {
+                let variant = jacquard_common::deps::codegen::serde_ipld_dagcbor::from_slice(body)?;
+                Ok(Self::Labels(Box::new(variant)))
+            }
+            "#info" => {
+                let variant = jacquard_common::deps::codegen::serde_ipld_dagcbor::from_slice(body)?;
+                Ok(Self::Info(Box::new(variant)))
+            }
+            unknown => Err(jacquard_common::error::DecodeError::UnknownEventType(
+                unknown.into(),
+            )),
+        }
+    }
+}
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    thiserror::Error,
+    miette::Diagnostic,
+)]
+#[serde(tag = "error", content = "message")]
+pub enum SubscribeLabelsError {
+    #[serde(rename = "FutureCursor")]
+    FutureCursor(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
+}
+
+impl core::fmt::Display for SubscribeLabelsError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+            Self::FutureCursor(msg) => {
+                write!(f, "FutureCursor")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Info<S> {
     fn nsid() -> &'static str {
         "com.atproto.label.subscribeLabels"
     }
     fn def_name() -> &'static str {
         "info"
     }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
         lexicon_doc_com_atproto_label_subscribeLabels()
     }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
         Ok(())
     }
 }
 
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct Labels<'a> {
-    #[serde(borrow)]
-    pub labels: Vec<crate::generated::com_atproto::label::Label<'a>>,
-    pub seq: i64,
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Labels<S> {
+    fn nsid() -> &'static str {
+        "com.atproto.label.subscribeLabels"
+    }
+    fn def_name() -> &'static str {
+        "labels"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_com_atproto_label_subscribeLabels()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+///Stream response type for
+///com.atproto.label.subscribeLabels
+pub struct SubscribeLabelsStream;
+impl jacquard_common::xrpc::SubscriptionResp for SubscribeLabelsStream {
+    const NSID: &'static str = "com.atproto.label.subscribeLabels";
+    const ENCODING: jacquard_common::xrpc::MessageEncoding =
+        jacquard_common::xrpc::MessageEncoding::DagCbor;
+    type Message<S: jacquard_common::BosStr> = SubscribeLabelsMessage<S>;
+    type Error = SubscribeLabelsError;
+    fn decode_message<'de, S>(
+        bytes: &'de [u8],
+    ) -> Result<Self::Message<S>, jacquard_common::error::DecodeError>
+    where
+        S: jacquard_common::BosStr + serde::Deserialize<'de>,
+        Self::Message<S>: serde::Deserialize<'de>,
+    {
+        SubscribeLabelsMessage::decode_framed(bytes)
+    }
+}
+
+impl jacquard_common::xrpc::XrpcSubscription for SubscribeLabels {
+    const NSID: &'static str = "com.atproto.label.subscribeLabels";
+    const ENCODING: jacquard_common::xrpc::MessageEncoding =
+        jacquard_common::xrpc::MessageEncoding::DagCbor;
+    type Stream = SubscribeLabelsStream;
+}
+
+pub struct SubscribeLabelsEndpoint;
+impl jacquard_common::xrpc::SubscriptionEndpoint for SubscribeLabelsEndpoint {
+    const PATH: &'static str = "/xrpc/com.atproto.label.subscribeLabels";
+    const ENCODING: jacquard_common::xrpc::MessageEncoding =
+        jacquard_common::xrpc::MessageEncoding::DagCbor;
+    type Params<S: jacquard_common::BosStr> = SubscribeLabels;
+    type Stream = SubscribeLabelsStream;
+}
+
+fn lexicon_doc_com_atproto_label_subscribeLabels() -> jacquard_lexicon::lexicon::LexiconDoc<'static>
+{
+    ::jacquard_lexicon::lexicon::LexiconDoc {
+        lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
+        id: ::jacquard_common::CowStr::new_static("com.atproto.label.subscribeLabels"),
+        defs: {
+            let mut map = ::alloc::collections::BTreeMap::new();
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("info"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        required: Some(vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("name"),
+                        ]),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("message"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("name"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map
+                        },
+                        ..Default::default()
+                    },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("labels"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        required: Some(vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("seq"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("labels"),
+                        ]),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("labels"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Array(
+                                    ::jacquard_lexicon::lexicon::LexArray {
+                                        items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(
+                                            ::jacquard_lexicon::lexicon::LexRef {
+                                                r#ref: ::jacquard_common::CowStr::new_static(
+                                                    "com.atproto.label.defs#label",
+                                                ),
+                                                ..Default::default()
+                                            },
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("seq"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map
+                        },
+                        ..Default::default()
+                    },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
+                ::jacquard_lexicon::lexicon::LexUserType::XrpcSubscription(::jacquard_lexicon::lexicon::LexXrpcSubscription {
+                    parameters: Some(
+                        ::jacquard_lexicon::lexicon::LexXrpcSubscriptionParameter::Params(::jacquard_lexicon::lexicon::LexXrpcParameters {
+                            properties: {
+                                #[allow(unused_mut)]
+                                let mut map = ::alloc::collections::BTreeMap::new();
+                                map.insert(
+                                    ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                        "cursor",
+                                    ),
+                                    ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                        ..Default::default()
+                                    }),
+                                );
+                                map
+                            },
+                            ..Default::default()
+                        }),
+                    ),
+                    ..Default::default()
+                }),
+            );
+            map
+        },
+        ..Default::default()
+    }
 }
 
 pub mod labels_state {
@@ -208,157 +412,152 @@ pub mod labels_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Seq;
         type Labels;
+        type Seq;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Seq = Unset;
         type Labels = Unset;
-    }
-    ///State transition - sets the `seq` field to Set
-    pub struct SetSeq<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetSeq<S> {}
-    impl<S: State> State for SetSeq<S> {
-        type Seq = Set<members::seq>;
-        type Labels = S::Labels;
+        type Seq = Unset;
     }
     ///State transition - sets the `labels` field to Set
-    pub struct SetLabels<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetLabels<S> {}
-    impl<S: State> State for SetLabels<S> {
-        type Seq = S::Seq;
+    pub struct SetLabels<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetLabels<St> {}
+    impl<St: State> State for SetLabels<St> {
         type Labels = Set<members::labels>;
+        type Seq = St::Seq;
+    }
+    ///State transition - sets the `seq` field to Set
+    pub struct SetSeq<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSeq<St> {}
+    impl<St: State> State for SetSeq<St> {
+        type Labels = St::Labels;
+        type Seq = Set<members::seq>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `seq` field
-        pub struct seq(());
         ///Marker type for the `labels` field
         pub struct labels(());
+        ///Marker type for the `seq` field
+        pub struct seq(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct LabelsBuilder<'a, S: labels_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<Vec<crate::generated::com_atproto::label::Label<'a>>>,
-        ::core::option::Option<i64>,
+/// Builder for constructing an instance of this type.
+pub struct LabelsBuilder<
+    St: labels_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<Vec<crate::generated::com_atproto::label::Label<S>>>,
+        core::option::Option<i64>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> Labels<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> LabelsBuilder<'a, labels_state::Empty> {
+impl Labels<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> LabelsBuilder<labels_state::Empty, jacquard_common::DefaultStr> {
         LabelsBuilder::new()
     }
 }
 
-impl<'a> LabelsBuilder<'a, labels_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> Labels<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> LabelsBuilder<labels_state::Empty, S> {
+        LabelsBuilder::builder()
+    }
+}
+
+impl LabelsBuilder<labels_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         LabelsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> LabelsBuilder<'a, S>
+impl<S: jacquard_common::BosStr> LabelsBuilder<labels_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        LabelsBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> LabelsBuilder<St, S>
 where
-    S: labels_state::State,
-    S::Labels: labels_state::IsUnset,
+    St: labels_state::State,
+    St::Labels: labels_state::IsUnset,
 {
     /// Set the `labels` field (required)
     pub fn labels(
         mut self,
-        value: impl Into<Vec<crate::generated::com_atproto::label::Label<'a>>>,
-    ) -> LabelsBuilder<'a, labels_state::SetLabels<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<Vec<crate::generated::com_atproto::label::Label<S>>>,
+    ) -> LabelsBuilder<labels_state::SetLabels<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         LabelsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> LabelsBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> LabelsBuilder<St, S>
 where
-    S: labels_state::State,
-    S::Seq: labels_state::IsUnset,
+    St: labels_state::State,
+    St::Seq: labels_state::IsUnset,
 {
     /// Set the `seq` field (required)
-    pub fn seq(mut self, value: impl Into<i64>) -> LabelsBuilder<'a, labels_state::SetSeq<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+    pub fn seq(mut self, value: impl Into<i64>) -> LabelsBuilder<labels_state::SetSeq<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         LabelsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> LabelsBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> LabelsBuilder<St, S>
 where
-    S: labels_state::State,
-    S::Seq: labels_state::IsSet,
-    S::Labels: labels_state::IsSet,
+    St: labels_state::State,
+    St::Labels: labels_state::IsSet,
+    St::Seq: labels_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> Labels<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> Labels<S> {
         Labels {
-            labels: self.__unsafe_private_named.0.unwrap(),
-            seq: self.__unsafe_private_named.1.unwrap(),
+            labels: self._fields.0.unwrap(),
+            seq: self._fields.1.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> Labels<'a> {
+    ) -> Labels<S> {
         Labels {
-            labels: self.__unsafe_private_named.0.unwrap(),
-            seq: self.__unsafe_private_named.1.unwrap(),
+            labels: self._fields.0.unwrap(),
+            seq: self._fields.1.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Labels<'a> {
-    fn nsid() -> &'static str {
-        "com.atproto.label.subscribeLabels"
-    }
-    fn def_name() -> &'static str {
-        "labels"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_com_atproto_label_subscribeLabels()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct SubscribeLabels {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub cursor: std::option::Option<i64>,
 }
 
 pub mod subscribe_labels_state {
@@ -380,151 +579,60 @@ pub mod subscribe_labels_state {
     pub mod members {}
 }
 
-/// Builder for constructing an instance of this type
-pub struct SubscribeLabelsBuilder<S: subscribe_labels_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<i64>,),
+/// Builder for constructing an instance of this type.
+pub struct SubscribeLabelsBuilder<St: subscribe_labels_state::State> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<i64>,),
 }
 
 impl SubscribeLabels {
-    /// Create a new builder for this type
+    /// Create a new builder for this type.
     pub fn new() -> SubscribeLabelsBuilder<subscribe_labels_state::Empty> {
         SubscribeLabelsBuilder::new()
     }
 }
 
 impl SubscribeLabelsBuilder<subscribe_labels_state::Empty> {
-    /// Create a new builder with all fields unset
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         SubscribeLabelsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
         }
     }
 }
 
-impl<S: subscribe_labels_state::State> SubscribeLabelsBuilder<S> {
+impl SubscribeLabelsBuilder<subscribe_labels_state::Empty> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        SubscribeLabelsBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+        }
+    }
+}
+
+impl<St: subscribe_labels_state::State> SubscribeLabelsBuilder<St> {
     /// Set the `cursor` field (optional)
     pub fn cursor(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+        self._fields.0 = value.into();
         self
     }
     /// Set the `cursor` field to an Option value (optional)
     pub fn maybe_cursor(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.0 = value;
+        self._fields.0 = value;
         self
     }
 }
 
-impl<S> SubscribeLabelsBuilder<S>
+impl<St> SubscribeLabelsBuilder<St>
 where
-    S: subscribe_labels_state::State,
+    St: subscribe_labels_state::State,
 {
-    /// Build the final struct
+    /// Build the final struct.
     pub fn build(self) -> SubscribeLabels {
         SubscribeLabels {
-            cursor: self.__unsafe_private_named.0,
+            cursor: self._fields.0,
         }
     }
-}
-
-#[jacquard_derive::open_union]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(tag = "$type")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum SubscribeLabelsMessage<'a> {
-    #[serde(rename = "#labels")]
-    Labels(Box<crate::generated::com_atproto::label::subscribe_labels::Labels<'a>>),
-    #[serde(rename = "#info")]
-    Info(Box<crate::generated::com_atproto::label::subscribe_labels::Info<'a>>),
-}
-
-impl<'a> SubscribeLabelsMessage<'a> {
-    /// Decode a framed DAG-CBOR message (header + body).
-    pub fn decode_framed<'de: 'a>(
-        bytes: &'de [u8],
-    ) -> Result<SubscribeLabelsMessage<'a>, jacquard_common::error::DecodeError> {
-        let (header, body) = jacquard_common::xrpc::subscription::parse_event_header(bytes)?;
-        match header.t.as_str() {
-            "#labels" => {
-                let variant = serde_ipld_dagcbor::from_slice(body)?;
-                Ok(Self::Labels(Box::new(variant)))
-            }
-            "#info" => {
-                let variant = serde_ipld_dagcbor::from_slice(body)?;
-                Ok(Self::Info(Box::new(variant)))
-            }
-            unknown => Err(jacquard_common::error::DecodeError::UnknownEventType(
-                unknown.into(),
-            )),
-        }
-    }
-}
-
-#[jacquard_derive::open_union]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    thiserror::Error,
-    miette::Diagnostic,
-    jacquard_derive::IntoStatic,
-)]
-#[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum SubscribeLabelsError<'a> {
-    #[serde(rename = "FutureCursor")]
-    FutureCursor(std::option::Option<jacquard_common::CowStr<'a>>),
-}
-
-impl std::fmt::Display for SubscribeLabelsError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::FutureCursor(msg) => {
-                write!(f, "FutureCursor")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
-        }
-    }
-}
-
-///Stream response type for
-///com.atproto.label.subscribeLabels
-pub struct SubscribeLabelsStream;
-impl jacquard_common::xrpc::SubscriptionResp for SubscribeLabelsStream {
-    const NSID: &'static str = "com.atproto.label.subscribeLabels";
-    const ENCODING: jacquard_common::xrpc::MessageEncoding =
-        jacquard_common::xrpc::MessageEncoding::DagCbor;
-    type Message<'de> = SubscribeLabelsMessage<'de>;
-    type Error<'de> = SubscribeLabelsError<'de>;
-    fn decode_message<'de>(
-        bytes: &'de [u8],
-    ) -> Result<Self::Message<'de>, jacquard_common::error::DecodeError> {
-        SubscribeLabelsMessage::decode_framed(bytes)
-    }
-}
-
-impl jacquard_common::xrpc::XrpcSubscription for SubscribeLabels {
-    const NSID: &'static str = "com.atproto.label.subscribeLabels";
-    const ENCODING: jacquard_common::xrpc::MessageEncoding =
-        jacquard_common::xrpc::MessageEncoding::DagCbor;
-    type Stream = SubscribeLabelsStream;
-}
-
-pub struct SubscribeLabelsEndpoint;
-impl jacquard_common::xrpc::SubscriptionEndpoint for SubscribeLabelsEndpoint {
-    const PATH: &'static str = "/xrpc/com.atproto.label.subscribeLabels";
-    const ENCODING: jacquard_common::xrpc::MessageEncoding =
-        jacquard_common::xrpc::MessageEncoding::DagCbor;
-    type Params<'de> = SubscribeLabels;
-    type Stream = SubscribeLabelsStream;
 }

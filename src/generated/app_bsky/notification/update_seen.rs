@@ -5,13 +5,56 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct UpdateSeen<'a> {
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct UpdateSeen<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub seen_at: jacquard_common::types::string::Datetime,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `app.bsky.notification.updateSeen` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `()` for this endpoint.*/
+pub struct UpdateSeenResponse;
+impl jacquard_common::xrpc::XrpcResp for UpdateSeenResponse {
+    const NSID: &'static str = "app.bsky.notification.updateSeen";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = ();
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for UpdateSeen<S> {
+    const NSID: &'static str = "app.bsky.notification.updateSeen";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Response = UpdateSeenResponse;
+}
+
+/** Endpoint marker for the `app.bsky.notification.updateSeen` procedure.
+
+Path: `/xrpc/app.bsky.notification.updateSeen`. The request payload type is `UpdateSeen<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct UpdateSeenRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for UpdateSeenRequest {
+    const PATH: &'static str = "/xrpc/app.bsky.notification.updateSeen";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Request<S: jacquard_common::BosStr> = UpdateSeen<S>;
+    type Response = UpdateSeenResponse;
 }
 
 pub mod update_seen_state {
@@ -33,9 +76,9 @@ pub mod update_seen_state {
         type SeenAt = Unset;
     }
     ///State transition - sets the `seen_at` field to Set
-    pub struct SetSeenAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetSeenAt<S> {}
-    impl<S: State> State for SetSeenAt<S> {
+    pub struct SetSeenAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSeenAt<St> {}
+    impl<St: State> State for SetSeenAt<St> {
         type SeenAt = Set<members::seen_at>;
     }
     /// Marker types for field names
@@ -46,101 +89,94 @@ pub mod update_seen_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct UpdateSeenBuilder<'a, S: update_seen_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<jacquard_common::types::string::Datetime>,),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct UpdateSeenBuilder<
+    St: update_seen_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<jacquard_common::types::string::Datetime>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> UpdateSeen<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> UpdateSeenBuilder<'a, update_seen_state::Empty> {
+impl UpdateSeen<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> UpdateSeenBuilder<update_seen_state::Empty, jacquard_common::DefaultStr> {
         UpdateSeenBuilder::new()
     }
 }
 
-impl<'a> UpdateSeenBuilder<'a, update_seen_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> UpdateSeen<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> UpdateSeenBuilder<update_seen_state::Empty, S> {
+        UpdateSeenBuilder::builder()
+    }
+}
+
+impl UpdateSeenBuilder<update_seen_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         UpdateSeenBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> UpdateSeenBuilder<'a, S>
+impl<S: jacquard_common::BosStr> UpdateSeenBuilder<update_seen_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        UpdateSeenBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> UpdateSeenBuilder<St, S>
 where
-    S: update_seen_state::State,
-    S::SeenAt: update_seen_state::IsUnset,
+    St: update_seen_state::State,
+    St::SeenAt: update_seen_state::IsUnset,
 {
     /// Set the `seenAt` field (required)
     pub fn seen_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> UpdateSeenBuilder<'a, update_seen_state::SetSeenAt<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+    ) -> UpdateSeenBuilder<update_seen_state::SetSeenAt<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         UpdateSeenBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> UpdateSeenBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> UpdateSeenBuilder<St, S>
 where
-    S: update_seen_state::State,
-    S::SeenAt: update_seen_state::IsSet,
+    St: update_seen_state::State,
+    St::SeenAt: update_seen_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> UpdateSeen<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> UpdateSeen<S> {
         UpdateSeen {
-            seen_at: self.__unsafe_private_named.0.unwrap(),
+            seen_at: self._fields.0.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> UpdateSeen<'a> {
+    ) -> UpdateSeen<S> {
         UpdateSeen {
-            seen_at: self.__unsafe_private_named.0.unwrap(),
+            seen_at: self._fields.0.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-/// Response type for
-///app.bsky.notification.updateSeen
-pub struct UpdateSeenResponse;
-impl jacquard_common::xrpc::XrpcResp for UpdateSeenResponse {
-    const NSID: &'static str = "app.bsky.notification.updateSeen";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = ();
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for UpdateSeen<'a> {
-    const NSID: &'static str = "app.bsky.notification.updateSeen";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Response = UpdateSeenResponse;
-}
-
-/// Endpoint type for
-///app.bsky.notification.updateSeen
-pub struct UpdateSeenRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for UpdateSeenRequest {
-    const PATH: &'static str = "/xrpc/app.bsky.notification.updateSeen";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = UpdateSeen<'de>;
-    type Response = UpdateSeenResponse;
 }

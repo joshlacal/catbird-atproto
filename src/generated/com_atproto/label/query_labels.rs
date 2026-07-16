@@ -8,19 +8,76 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct QueryLabels<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    ///(default: 50, min: 1, max: 250)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub limit: std::option::Option<i64>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub sources: std::option::Option<Vec<jacquard_common::types::string::Did<'a>>>,
-    #[serde(borrow)]
-    pub uri_patterns: Vec<jacquard_common::CowStr<'a>>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct QueryLabels<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    /// Defaults to `50`. Min: 1. Max: 250.
+    #[serde(default = "_default_limit")]
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub limit: core::option::Option<i64>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub sources: core::option::Option<Vec<jacquard_common::types::string::Did<S>>>,
+    pub uri_patterns: Vec<S>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct QueryLabelsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    pub labels: Vec<crate::generated::com_atproto::label::Label<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `com.atproto.label.queryLabels` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `QueryLabelsOutput<S>` for this endpoint.*/
+pub struct QueryLabelsResponse;
+impl jacquard_common::xrpc::XrpcResp for QueryLabelsResponse {
+    const NSID: &'static str = "com.atproto.label.queryLabels";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = QueryLabelsOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for QueryLabels<S> {
+    const NSID: &'static str = "com.atproto.label.queryLabels";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = QueryLabelsResponse;
+}
+
+/** Endpoint marker for the `com.atproto.label.queryLabels` query.
+
+Path: `/xrpc/com.atproto.label.queryLabels`. The request payload type is `QueryLabels<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct QueryLabelsRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for QueryLabelsRequest {
+    const PATH: &'static str = "/xrpc/com.atproto.label.queryLabels";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = QueryLabels<S>;
+    type Response = QueryLabelsResponse;
+}
+
+fn _default_limit() -> core::option::Option<i64> {
+    Some(50i64)
 }
 
 pub mod query_labels_state {
@@ -42,9 +99,9 @@ pub mod query_labels_state {
         type UriPatterns = Unset;
     }
     ///State transition - sets the `uri_patterns` field to Set
-    pub struct SetUriPatterns<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUriPatterns<S> {}
-    impl<S: State> State for SetUriPatterns<S> {
+    pub struct SetUriPatterns<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetUriPatterns<St> {}
+    impl<St: State> State for SetUriPatterns<St> {
         type UriPatterns = Set<members::uri_patterns>;
     }
     /// Marker types for field names
@@ -55,151 +112,133 @@ pub mod query_labels_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct QueryLabelsBuilder<'a, S: query_labels_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<Vec<jacquard_common::types::string::Did<'a>>>,
-        ::core::option::Option<Vec<jacquard_common::CowStr<'a>>>,
+/// Builder for constructing an instance of this type.
+pub struct QueryLabelsBuilder<
+    St: query_labels_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<i64>,
+        core::option::Option<Vec<jacquard_common::types::string::Did<S>>>,
+        core::option::Option<Vec<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> QueryLabels<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> QueryLabelsBuilder<'a, query_labels_state::Empty> {
+impl QueryLabels<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> QueryLabelsBuilder<query_labels_state::Empty, jacquard_common::DefaultStr> {
         QueryLabelsBuilder::new()
     }
 }
 
-impl<'a> QueryLabelsBuilder<'a, query_labels_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> QueryLabels<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> QueryLabelsBuilder<query_labels_state::Empty, S> {
+        QueryLabelsBuilder::builder()
+    }
+}
+
+impl QueryLabelsBuilder<query_labels_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         QueryLabelsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: query_labels_state::State> QueryLabelsBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> QueryLabelsBuilder<query_labels_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        QueryLabelsBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: query_labels_state::State, S: jacquard_common::BosStr> QueryLabelsBuilder<St, S> {
     /// Set the `cursor` field (optional)
-    pub fn cursor(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+    pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.0 = value.into();
         self
     }
     /// Set the `cursor` field to an Option value (optional)
-    pub fn maybe_cursor(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.0 = value;
+    pub fn maybe_cursor(mut self, value: Option<S>) -> Self {
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S: query_labels_state::State> QueryLabelsBuilder<'a, S> {
+impl<St: query_labels_state::State, S: jacquard_common::BosStr> QueryLabelsBuilder<St, S> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self._fields.1 = value.into();
         self
     }
     /// Set the `limit` field to an Option value (optional)
     pub fn maybe_limit(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.1 = value;
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S: query_labels_state::State> QueryLabelsBuilder<'a, S> {
+impl<St: query_labels_state::State, S: jacquard_common::BosStr> QueryLabelsBuilder<St, S> {
     /// Set the `sources` field (optional)
     pub fn sources(
         mut self,
-        value: impl Into<Option<Vec<jacquard_common::types::string::Did<'a>>>>,
+        value: impl Into<Option<Vec<jacquard_common::types::string::Did<S>>>>,
     ) -> Self {
-        self.__unsafe_private_named.2 = value.into();
+        self._fields.2 = value.into();
         self
     }
     /// Set the `sources` field to an Option value (optional)
     pub fn maybe_sources(
         mut self,
-        value: Option<Vec<jacquard_common::types::string::Did<'a>>>,
+        value: Option<Vec<jacquard_common::types::string::Did<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.2 = value;
+        self._fields.2 = value;
         self
     }
 }
 
-impl<'a, S> QueryLabelsBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> QueryLabelsBuilder<St, S>
 where
-    S: query_labels_state::State,
-    S::UriPatterns: query_labels_state::IsUnset,
+    St: query_labels_state::State,
+    St::UriPatterns: query_labels_state::IsUnset,
 {
     /// Set the `uriPatterns` field (required)
     pub fn uri_patterns(
         mut self,
-        value: impl Into<Vec<jacquard_common::CowStr<'a>>>,
-    ) -> QueryLabelsBuilder<'a, query_labels_state::SetUriPatterns<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        value: impl Into<Vec<S>>,
+    ) -> QueryLabelsBuilder<query_labels_state::SetUriPatterns<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
         QueryLabelsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> QueryLabelsBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> QueryLabelsBuilder<St, S>
 where
-    S: query_labels_state::State,
-    S::UriPatterns: query_labels_state::IsSet,
+    St: query_labels_state::State,
+    St::UriPatterns: query_labels_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> QueryLabels<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> QueryLabels<S> {
         QueryLabels {
-            cursor: self.__unsafe_private_named.0,
-            limit: self.__unsafe_private_named.1,
-            sources: self.__unsafe_private_named.2,
-            uri_patterns: self.__unsafe_private_named.3.unwrap(),
+            cursor: self._fields.0,
+            limit: self._fields.1,
+            sources: self._fields.2,
+            uri_patterns: self._fields.3.unwrap(),
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct QueryLabelsOutput<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(borrow)]
-    pub labels: Vec<crate::generated::com_atproto::label::Label<'a>>,
-}
-
-/// Response type for
-///com.atproto.label.queryLabels
-pub struct QueryLabelsResponse;
-impl jacquard_common::xrpc::XrpcResp for QueryLabelsResponse {
-    const NSID: &'static str = "com.atproto.label.queryLabels";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = QueryLabelsOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for QueryLabels<'a> {
-    const NSID: &'static str = "com.atproto.label.queryLabels";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = QueryLabelsResponse;
-}
-
-/// Endpoint type for
-///com.atproto.label.queryLabels
-pub struct QueryLabelsRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for QueryLabelsRequest {
-    const PATH: &'static str = "/xrpc/com.atproto.label.queryLabels";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = QueryLabels<'de>;
-    type Response = QueryLabelsResponse;
 }

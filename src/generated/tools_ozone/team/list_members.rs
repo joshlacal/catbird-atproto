@@ -8,22 +8,79 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct ListMembers<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub disabled: std::option::Option<bool>,
-    ///(default: 50, min: 1, max: 100)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub limit: std::option::Option<i64>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub q: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub roles: std::option::Option<Vec<jacquard_common::CowStr<'a>>>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ListMembers<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub disabled: core::option::Option<bool>,
+    /// Defaults to `50`. Min: 1. Max: 100.
+    #[serde(default = "_default_limit")]
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub limit: core::option::Option<i64>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub q: core::option::Option<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub roles: core::option::Option<Vec<S>>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ListMembersOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    pub members: Vec<crate::generated::tools_ozone::team::Member<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `tools.ozone.team.listMembers` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `ListMembersOutput<S>` for this endpoint.*/
+pub struct ListMembersResponse;
+impl jacquard_common::xrpc::XrpcResp for ListMembersResponse {
+    const NSID: &'static str = "tools.ozone.team.listMembers";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = ListMembersOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for ListMembers<S> {
+    const NSID: &'static str = "tools.ozone.team.listMembers";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = ListMembersResponse;
+}
+
+/** Endpoint marker for the `tools.ozone.team.listMembers` query.
+
+Path: `/xrpc/tools.ozone.team.listMembers`. The request payload type is `ListMembers<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct ListMembersRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for ListMembersRequest {
+    const PATH: &'static str = "/xrpc/tools.ozone.team.listMembers";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = ListMembers<S>;
+    type Response = ListMembersResponse;
+}
+
+fn _default_limit() -> core::option::Option<i64> {
+    Some(50i64)
 }
 
 pub mod list_members_state {
@@ -45,153 +102,135 @@ pub mod list_members_state {
     pub mod members {}
 }
 
-/// Builder for constructing an instance of this type
-pub struct ListMembersBuilder<'a, S: list_members_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<bool>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<Vec<jacquard_common::CowStr<'a>>>,
+/// Builder for constructing an instance of this type.
+pub struct ListMembersBuilder<
+    St: list_members_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<bool>,
+        core::option::Option<i64>,
+        core::option::Option<S>,
+        core::option::Option<Vec<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> ListMembers<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> ListMembersBuilder<'a, list_members_state::Empty> {
+impl ListMembers<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> ListMembersBuilder<list_members_state::Empty, jacquard_common::DefaultStr> {
         ListMembersBuilder::new()
     }
 }
 
-impl<'a> ListMembersBuilder<'a, list_members_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> ListMembers<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> ListMembersBuilder<list_members_state::Empty, S> {
+        ListMembersBuilder::builder()
+    }
+}
+
+impl ListMembersBuilder<list_members_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ListMembersBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: list_members_state::State> ListMembersBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> ListMembersBuilder<list_members_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        ListMembersBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: list_members_state::State, S: jacquard_common::BosStr> ListMembersBuilder<St, S> {
     /// Set the `cursor` field (optional)
-    pub fn cursor(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+    pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.0 = value.into();
         self
     }
     /// Set the `cursor` field to an Option value (optional)
-    pub fn maybe_cursor(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.0 = value;
+    pub fn maybe_cursor(mut self, value: Option<S>) -> Self {
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S: list_members_state::State> ListMembersBuilder<'a, S> {
+impl<St: list_members_state::State, S: jacquard_common::BosStr> ListMembersBuilder<St, S> {
     /// Set the `disabled` field (optional)
     pub fn disabled(mut self, value: impl Into<Option<bool>>) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self._fields.1 = value.into();
         self
     }
     /// Set the `disabled` field to an Option value (optional)
     pub fn maybe_disabled(mut self, value: Option<bool>) -> Self {
-        self.__unsafe_private_named.1 = value;
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S: list_members_state::State> ListMembersBuilder<'a, S> {
+impl<St: list_members_state::State, S: jacquard_common::BosStr> ListMembersBuilder<St, S> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.2 = value.into();
+        self._fields.2 = value.into();
         self
     }
     /// Set the `limit` field to an Option value (optional)
     pub fn maybe_limit(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.2 = value;
+        self._fields.2 = value;
         self
     }
 }
 
-impl<'a, S: list_members_state::State> ListMembersBuilder<'a, S> {
+impl<St: list_members_state::State, S: jacquard_common::BosStr> ListMembersBuilder<St, S> {
     /// Set the `q` field (optional)
-    pub fn q(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.3 = value.into();
+    pub fn q(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.3 = value.into();
         self
     }
     /// Set the `q` field to an Option value (optional)
-    pub fn maybe_q(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.3 = value;
+    pub fn maybe_q(mut self, value: Option<S>) -> Self {
+        self._fields.3 = value;
         self
     }
 }
 
-impl<'a, S: list_members_state::State> ListMembersBuilder<'a, S> {
+impl<St: list_members_state::State, S: jacquard_common::BosStr> ListMembersBuilder<St, S> {
     /// Set the `roles` field (optional)
-    pub fn roles(mut self, value: impl Into<Option<Vec<jacquard_common::CowStr<'a>>>>) -> Self {
-        self.__unsafe_private_named.4 = value.into();
+    pub fn roles(mut self, value: impl Into<Option<Vec<S>>>) -> Self {
+        self._fields.4 = value.into();
         self
     }
     /// Set the `roles` field to an Option value (optional)
-    pub fn maybe_roles(mut self, value: Option<Vec<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.4 = value;
+    pub fn maybe_roles(mut self, value: Option<Vec<S>>) -> Self {
+        self._fields.4 = value;
         self
     }
 }
 
-impl<'a, S> ListMembersBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ListMembersBuilder<St, S>
 where
-    S: list_members_state::State,
+    St: list_members_state::State,
 {
-    /// Build the final struct
-    pub fn build(self) -> ListMembers<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> ListMembers<S> {
         ListMembers {
-            cursor: self.__unsafe_private_named.0,
-            disabled: self.__unsafe_private_named.1,
-            limit: self.__unsafe_private_named.2,
-            q: self.__unsafe_private_named.3,
-            roles: self.__unsafe_private_named.4,
+            cursor: self._fields.0,
+            disabled: self._fields.1,
+            limit: self._fields.2,
+            q: self._fields.3,
+            roles: self._fields.4,
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct ListMembersOutput<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(borrow)]
-    pub members: Vec<crate::generated::tools_ozone::team::Member<'a>>,
-}
-
-/// Response type for
-///tools.ozone.team.listMembers
-pub struct ListMembersResponse;
-impl jacquard_common::xrpc::XrpcResp for ListMembersResponse {
-    const NSID: &'static str = "tools.ozone.team.listMembers";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = ListMembersOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for ListMembers<'a> {
-    const NSID: &'static str = "tools.ozone.team.listMembers";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = ListMembersResponse;
-}
-
-/// Endpoint type for
-///tools.ozone.team.listMembers
-pub struct ListMembersRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for ListMembersRequest {
-    const PATH: &'static str = "/xrpc/tools.ozone.team.listMembers";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = ListMembers<'de>;
-    type Response = ListMembersResponse;
 }

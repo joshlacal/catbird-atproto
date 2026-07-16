@@ -5,7 +5,6 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -16,31 +15,134 @@
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct OptIn<'a> {
-    /// Action to perform: 'optIn' enables MLS chat, 'optOut' disables it, 'getStatus' checks opt-in status for one or more DIDs, 'getSettings' retrieves chat request settings, 'updateSettings' updates chat request settings
-    #[serde(borrow)]
-    pub action: jacquard_common::CowStr<'a>,
-    /// Allow followers to bypass chat request approval (for 'updateSettings' action)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub allow_followers_bypass: std::option::Option<bool>,
-    /// Allow accounts you follow to bypass chat request approval (for 'updateSettings' action)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub allow_following_bypass: std::option::Option<bool>,
-    /// Auto-expire pending chat requests after N days, 0 = no expiry (for 'updateSettings' action)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub auto_expire_days: std::option::Option<i64>,
-    /// Device identifier (optional, for 'optIn' action)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub device_id: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// DIDs to check status for (used with 'getStatus' action)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub dids: std::option::Option<Vec<jacquard_common::types::string::Did<'a>>>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct OptIn<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Action to perform: 'optIn' enables MLS chat, 'optOut' disables it, 'getStatus' checks opt-in status for one or more DIDs, 'getSettings' retrieves chat request settings, 'updateSettings' updates chat request settings
+    pub action: OptInAction<S>,
+    ///Allow followers to bypass chat request approval (for 'updateSettings' action)
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub allow_followers_bypass: core::option::Option<bool>,
+    ///Allow accounts you follow to bypass chat request approval (for 'updateSettings' action)
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub allow_following_bypass: core::option::Option<bool>,
+    ///Auto-expire pending chat requests after N days, 0 = no expiry (for 'updateSettings' action)
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub auto_expire_days: core::option::Option<i64>,
+    ///Device identifier (optional, for 'optIn' action)
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub device_id: core::option::Option<S>,
+    ///DIDs to check status for (used with 'getStatus' action)
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub dids: core::option::Option<Vec<jacquard_common::types::string::Did<S>>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::lexicon]
+/// Action to perform: 'optIn' enables MLS chat, 'optOut' disables it, 'getStatus' checks opt-in status for one or more DIDs, 'getSettings' retrieves chat request settings, 'updateSettings' updates chat request settings
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum OptInAction<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    OptIn,
+    OptOut,
+    GetStatus,
+    GetSettings,
+    UpdateSettings,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> OptInAction<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::OptIn => "optIn",
+            Self::OptOut => "optOut",
+            Self::GetStatus => "getStatus",
+            Self::GetSettings => "getSettings",
+            Self::UpdateSettings => "updateSettings",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "optIn" => Self::OptIn,
+            "optOut" => Self::OptOut,
+            "getStatus" => Self::GetStatus,
+            "getSettings" => Self::GetSettings,
+            "updateSettings" => Self::UpdateSettings,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for OptInAction<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for OptInAction<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for OptInAction<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for OptInAction<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for OptInAction<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for OptInAction<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = OptInAction<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            OptInAction::OptIn => OptInAction::OptIn,
+            OptInAction::OptOut => OptInAction::OptOut,
+            OptInAction::GetStatus => OptInAction::GetStatus,
+            OptInAction::GetSettings => OptInAction::GetSettings,
+            OptInAction::UpdateSettings => OptInAction::UpdateSettings,
+            OptInAction::Other(v) => OptInAction::Other(v.into_static()),
+        }
+    }
+}
+
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -51,34 +153,46 @@ pub struct OptIn<'a> {
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct OptInOutput<'a> {
-    /// Whether followers can bypass chat request approval (for 'getSettings'/'updateSettings')
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub allow_followers_bypass: std::option::Option<bool>,
-    /// Whether accounts you follow can bypass chat request approval (for 'getSettings'/'updateSettings')
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub allow_following_bypass: std::option::Option<bool>,
-    /// Auto-expire pending chat requests after N days (for 'getSettings'/'updateSettings')
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub auto_expire_days: std::option::Option<i64>,
-    /// Current opt-in status of the caller (for 'optIn'/'optOut')
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub opted_in: std::option::Option<bool>,
-    /// When the user opted in (for 'optIn')
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub opted_in_at: std::option::Option<jacquard_common::types::string::Datetime>,
-    /// Opt-in statuses for requested DIDs (for 'getStatus')
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct OptInOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Whether followers can bypass chat request approval (for 'getSettings'/'updateSettings')
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub allow_followers_bypass: core::option::Option<bool>,
+    ///Whether accounts you follow can bypass chat request approval (for 'getSettings'/'updateSettings')
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub allow_following_bypass: core::option::Option<bool>,
+    ///Auto-expire pending chat requests after N days (for 'getSettings'/'updateSettings')
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub auto_expire_days: core::option::Option<i64>,
+    ///Current opt-in status of the caller (for 'optIn'/'optOut')
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub opted_in: core::option::Option<bool>,
+    ///When the user opted in (for 'optIn')
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub opted_in_at: core::option::Option<jacquard_common::types::string::Datetime>,
+    ///Opt-in statuses for requested DIDs (for 'getStatus')
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub statuses:
-        std::option::Option<Vec<crate::generated::blue_catbird::mlsChat::opt_in::OptInStatus<'a>>>,
-    /// Whether the opt-in/opt-out operation succeeded
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub success: std::option::Option<bool>,
+        core::option::Option<Vec<crate::generated::blue_catbird::mlsChat::opt_in::OptInStatus<S>>>,
+    ///Whether the opt-in/opt-out operation succeeded
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub success: core::option::Option<bool>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::open_union]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -88,27 +202,31 @@ pub struct OptInOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum OptInError<'a> {
+pub enum OptInError {
     /// Unknown action value
     #[serde(rename = "InvalidAction")]
-    InvalidAction(std::option::Option<jacquard_common::CowStr<'a>>),
+    InvalidAction(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// User is already opted in
     #[serde(rename = "AlreadyOptedIn")]
-    AlreadyOptedIn(std::option::Option<jacquard_common::CowStr<'a>>),
+    AlreadyOptedIn(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// User is already opted out
     #[serde(rename = "AlreadyOptedOut")]
-    AlreadyOptedOut(std::option::Option<jacquard_common::CowStr<'a>>),
+    AlreadyOptedOut(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// Too many DIDs requested (max 100)
     #[serde(rename = "TooManyDids")]
-    TooManyDids(std::option::Option<jacquard_common::CowStr<'a>>),
+    TooManyDids(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
 }
 
-impl std::fmt::Display for OptInError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for OptInError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             Self::InvalidAction(msg) => {
                 write!(f, "InvalidAction")?;
@@ -138,53 +256,88 @@ impl std::fmt::Display for OptInError<'_> {
                 }
                 Ok(())
             }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
         }
     }
 }
 
-/// Response type for
-///blue.catbird.mlsChat.optIn
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct OptInStatus<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///User DID
+    pub did: jacquard_common::types::string::Did<S>,
+    ///Whether the user has opted into MLS chat
+    pub opted_in: bool,
+    ///When the user opted in (if applicable)
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub opted_in_at: core::option::Option<jacquard_common::types::string::Datetime>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `blue.catbird.mlsChat.optIn` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `OptInOutput<S>` for this endpoint.*/
 pub struct OptInResponse;
 impl jacquard_common::xrpc::XrpcResp for OptInResponse {
     const NSID: &'static str = "blue.catbird.mlsChat.optIn";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = OptInOutput<'de>;
-    type Err<'de> = OptInError<'de>;
+    type Output<S: jacquard_common::BosStr> = OptInOutput<S>;
+    type Err = OptInError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for OptIn<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for OptIn<S> {
     const NSID: &'static str = "blue.catbird.mlsChat.optIn";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = OptInResponse;
 }
 
-/// Endpoint type for
-///blue.catbird.mlsChat.optIn
+/** Endpoint marker for the `blue.catbird.mlsChat.optIn` procedure.
+
+Path: `/xrpc/blue.catbird.mlsChat.optIn`. The request payload type is `OptIn<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct OptInRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for OptInRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.optIn";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = OptIn<'de>;
+    type Request<S: jacquard_common::BosStr> = OptIn<S>;
     type Response = OptInResponse;
 }
 
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct OptInStatus<'a> {
-    /// User DID
-    #[serde(borrow)]
-    pub did: jacquard_common::types::string::Did<'a>,
-    /// Whether the user has opted into MLS chat
-    pub opted_in: bool,
-    /// When the user opted in (if applicable)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub opted_in_at: std::option::Option<jacquard_common::types::string::Datetime>,
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for OptInStatus<S> {
+    fn nsid() -> &'static str {
+        "blue.catbird.mlsChat.optIn"
+    }
+    fn def_name() -> &'static str {
+        "optInStatus"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_blue_catbird_mlsChat_optIn()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
 }
 
 pub mod opt_in_status_state {
@@ -208,17 +361,17 @@ pub mod opt_in_status_state {
         type OptedIn = Unset;
     }
     ///State transition - sets the `did` field to Set
-    pub struct SetDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDid<S> {}
-    impl<S: State> State for SetDid<S> {
+    pub struct SetDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetDid<St> {}
+    impl<St: State> State for SetDid<St> {
         type Did = Set<members::did>;
-        type OptedIn = S::OptedIn;
+        type OptedIn = St::OptedIn;
     }
     ///State transition - sets the `opted_in` field to Set
-    pub struct SetOptedIn<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetOptedIn<S> {}
-    impl<S: State> State for SetOptedIn<S> {
-        type Did = S::Did;
+    pub struct SetOptedIn<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetOptedIn<St> {}
+    impl<St: State> State for SetOptedIn<St> {
+        type Did = St::Did;
         type OptedIn = Set<members::opted_in>;
     }
     /// Marker types for field names
@@ -231,80 +384,101 @@ pub mod opt_in_status_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct OptInStatusBuilder<'a, S: opt_in_status_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<bool>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
+/// Builder for constructing an instance of this type.
+pub struct OptInStatusBuilder<
+    St: opt_in_status_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<bool>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> OptInStatus<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> OptInStatusBuilder<'a, opt_in_status_state::Empty> {
+impl OptInStatus<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> OptInStatusBuilder<opt_in_status_state::Empty, jacquard_common::DefaultStr> {
         OptInStatusBuilder::new()
     }
 }
 
-impl<'a> OptInStatusBuilder<'a, opt_in_status_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> OptInStatus<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> OptInStatusBuilder<opt_in_status_state::Empty, S> {
+        OptInStatusBuilder::builder()
+    }
+}
+
+impl OptInStatusBuilder<opt_in_status_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         OptInStatusBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> OptInStatusBuilder<'a, S>
+impl<S: jacquard_common::BosStr> OptInStatusBuilder<opt_in_status_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        OptInStatusBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> OptInStatusBuilder<St, S>
 where
-    S: opt_in_status_state::State,
-    S::Did: opt_in_status_state::IsUnset,
+    St: opt_in_status_state::State,
+    St::Did: opt_in_status_state::IsUnset,
 {
     /// Set the `did` field (required)
     pub fn did(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> OptInStatusBuilder<'a, opt_in_status_state::SetDid<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> OptInStatusBuilder<opt_in_status_state::SetDid<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         OptInStatusBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> OptInStatusBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> OptInStatusBuilder<St, S>
 where
-    S: opt_in_status_state::State,
-    S::OptedIn: opt_in_status_state::IsUnset,
+    St: opt_in_status_state::State,
+    St::OptedIn: opt_in_status_state::IsUnset,
 {
     /// Set the `optedIn` field (required)
     pub fn opted_in(
         mut self,
         value: impl Into<bool>,
-    ) -> OptInStatusBuilder<'a, opt_in_status_state::SetOptedIn<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+    ) -> OptInStatusBuilder<opt_in_status_state::SetOptedIn<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         OptInStatusBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: opt_in_status_state::State> OptInStatusBuilder<'a, S> {
+impl<St: opt_in_status_state::State, S: jacquard_common::BosStr> OptInStatusBuilder<St, S> {
     /// Set the `optedInAt` field (optional)
     pub fn opted_in_at(
         mut self,
         value: impl Into<Option<jacquard_common::types::string::Datetime>>,
     ) -> Self {
-        self.__unsafe_private_named.2 = value.into();
+        self._fields.2 = value.into();
         self
     }
     /// Set the `optedInAt` field to an Option value (optional)
@@ -312,127 +486,106 @@ impl<'a, S: opt_in_status_state::State> OptInStatusBuilder<'a, S> {
         mut self,
         value: Option<jacquard_common::types::string::Datetime>,
     ) -> Self {
-        self.__unsafe_private_named.2 = value;
+        self._fields.2 = value;
         self
     }
 }
 
-impl<'a, S> OptInStatusBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> OptInStatusBuilder<St, S>
 where
-    S: opt_in_status_state::State,
-    S::Did: opt_in_status_state::IsSet,
-    S::OptedIn: opt_in_status_state::IsSet,
+    St: opt_in_status_state::State,
+    St::Did: opt_in_status_state::IsSet,
+    St::OptedIn: opt_in_status_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> OptInStatus<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> OptInStatus<S> {
         OptInStatus {
-            did: self.__unsafe_private_named.0.unwrap(),
-            opted_in: self.__unsafe_private_named.1.unwrap(),
-            opted_in_at: self.__unsafe_private_named.2,
+            did: self._fields.0.unwrap(),
+            opted_in: self._fields.1.unwrap(),
+            opted_in_at: self._fields.2,
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> OptInStatus<'a> {
+    ) -> OptInStatus<S> {
         OptInStatus {
-            did: self.__unsafe_private_named.0.unwrap(),
-            opted_in: self.__unsafe_private_named.1.unwrap(),
-            opted_in_at: self.__unsafe_private_named.2,
+            did: self._fields.0.unwrap(),
+            opted_in: self._fields.1.unwrap(),
+            opted_in_at: self._fields.2,
             extra_data: Some(extra_data),
         }
     }
 }
 
-fn lexicon_doc_blue_catbird_mlsChat_optIn() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_blue_catbird_mlsChat_optIn() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("blue.catbird.mlsChat.optIn"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
                 ::jacquard_lexicon::lexicon::LexUserType::XrpcProcedure(::jacquard_lexicon::lexicon::LexXrpcProcedure {
-                    description: None,
-                    parameters: None,
                     input: Some(::jacquard_lexicon::lexicon::LexXrpcBody {
-                        description: None,
                         encoding: ::jacquard_common::CowStr::new_static(
                             "application/json",
                         ),
                         schema: Some(
                             ::jacquard_lexicon::lexicon::LexXrpcBodySchema::Object(::jacquard_lexicon::lexicon::LexObject {
-                                description: None,
                                 required: Some(
                                     vec![
-                                        ::jacquard_common::smol_str::SmolStr::new_static("action")
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static("action")
                                     ],
                                 ),
-                                nullable: None,
                                 properties: {
                                     #[allow(unused_mut)]
-                                    let mut map = ::std::collections::BTreeMap::new();
+                                    let mut map = ::alloc::collections::BTreeMap::new();
                                     map.insert(
-                                        ::jacquard_common::smol_str::SmolStr::new_static("action"),
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "action",
+                                        ),
                                         ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                             description: Some(
                                                 ::jacquard_common::CowStr::new_static(
                                                     "Action to perform: 'optIn' enables MLS chat, 'optOut' disables it, 'getStatus' checks opt-in status for one or more DIDs, 'getSettings' retrieves chat request settings, 'updateSettings' updates chat request settings",
                                                 ),
                                             ),
-                                            format: None,
-                                            default: None,
-                                            min_length: None,
-                                            max_length: None,
-                                            min_graphemes: None,
-                                            max_graphemes: None,
-                                            r#enum: None,
-                                            r#const: None,
-                                            known_values: None,
+                                            ..Default::default()
                                         }),
                                     );
                                     map.insert(
-                                        ::jacquard_common::smol_str::SmolStr::new_static(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                             "allowFollowersBypass",
                                         ),
                                         ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
-                                            description: None,
-                                            default: None,
-                                            r#const: None,
+                                            ..Default::default()
                                         }),
                                     );
                                     map.insert(
-                                        ::jacquard_common::smol_str::SmolStr::new_static(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                             "allowFollowingBypass",
                                         ),
                                         ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
-                                            description: None,
-                                            default: None,
-                                            r#const: None,
+                                            ..Default::default()
                                         }),
                                     );
                                     map.insert(
-                                        ::jacquard_common::smol_str::SmolStr::new_static(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                             "autoExpireDays",
                                         ),
                                         ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                            description: None,
-                                            default: None,
                                             minimum: Some(0i64),
-                                            maximum: None,
-                                            r#enum: None,
-                                            r#const: None,
+                                            ..Default::default()
                                         }),
                                     );
                                     map.insert(
-                                        ::jacquard_common::smol_str::SmolStr::new_static(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                             "deviceId",
                                         ),
                                         ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -441,19 +594,13 @@ fn lexicon_doc_blue_catbird_mlsChat_optIn() -> ::jacquard_lexicon::lexicon::Lexi
                                                     "Device identifier (optional, for 'optIn' action)",
                                                 ),
                                             ),
-                                            format: None,
-                                            default: None,
-                                            min_length: None,
-                                            max_length: None,
-                                            min_graphemes: None,
-                                            max_graphemes: None,
-                                            r#enum: None,
-                                            r#const: None,
-                                            known_values: None,
+                                            ..Default::default()
                                         }),
                                     );
                                     map.insert(
-                                        ::jacquard_common::smol_str::SmolStr::new_static("dids"),
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "dids",
+                                        ),
                                         ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
                                             description: Some(
                                                 ::jacquard_common::CowStr::new_static(
@@ -461,47 +608,38 @@ fn lexicon_doc_blue_catbird_mlsChat_optIn() -> ::jacquard_lexicon::lexicon::Lexi
                                                 ),
                                             ),
                                             items: ::jacquard_lexicon::lexicon::LexArrayItem::String(::jacquard_lexicon::lexicon::LexString {
-                                                description: None,
                                                 format: Some(
                                                     ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                                 ),
-                                                default: None,
-                                                min_length: None,
-                                                max_length: None,
-                                                min_graphemes: None,
-                                                max_graphemes: None,
-                                                r#enum: None,
-                                                r#const: None,
-                                                known_values: None,
+                                                ..Default::default()
                                             }),
-                                            min_length: None,
                                             max_length: Some(100usize),
+                                            ..Default::default()
                                         }),
                                     );
                                     map
                                 },
+                                ..Default::default()
                             }),
                         ),
+                        ..Default::default()
                     }),
-                    output: None,
-                    errors: None,
+                    ..Default::default()
                 }),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("optInStatus"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("optInStatus"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("did"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("optedIn"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("optedIn"),
                         ]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("did"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
@@ -510,29 +648,20 @@ fn lexicon_doc_blue_catbird_mlsChat_optIn() -> ::jacquard_lexicon::lexicon::Lexi
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("optedIn"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("optedIn"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(
                                     ::jacquard_lexicon::lexicon::LexBoolean {
-                                        description: None,
-                                        default: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("optedInAt"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("optedInAt"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
@@ -541,40 +670,18 @@ fn lexicon_doc_blue_catbird_mlsChat_optIn() -> ::jacquard_lexicon::lexicon::Lexi
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map
         },
-    }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for OptInStatus<'a> {
-    fn nsid() -> &'static str {
-        "blue.catbird.mlsChat.optIn"
-    }
-    fn def_name() -> &'static str {
-        "optInStatus"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_blue_catbird_mlsChat_optIn()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
+        ..Default::default()
     }
 }

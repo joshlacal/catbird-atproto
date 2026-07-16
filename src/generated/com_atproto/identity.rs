@@ -5,6 +5,7 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
+//! Generated bindings for the `com.atproto.identity` Lexicon namespace/module.
 pub mod get_recommended_did_credentials;
 pub mod refresh_identity;
 pub mod request_plc_operation_signature;
@@ -15,20 +16,45 @@ pub mod sign_plc_operation;
 pub mod submit_plc_operation;
 pub mod update_handle;
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct IdentityInfo<'a> {
-    #[serde(borrow)]
-    pub did: jacquard_common::types::string::Did<'a>,
-    /// The complete DID document for the identity.
-    #[serde(borrow)]
-    pub did_doc: jacquard_common::types::value::Data<'a>,
-    /// The validated handle of the account; or 'handle.invalid' if the handle did not bi-directionally match the DID document.
-    #[serde(borrow)]
-    pub handle: jacquard_common::types::string::Handle<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct IdentityInfo<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub did: jacquard_common::types::string::Did<S>,
+    ///The complete DID document for the identity.
+    pub did_doc: jacquard_common::types::value::Data<S>,
+    ///The validated handle of the account; or 'handle.invalid' if the handle did not bi-directionally match the DID document.
+    pub handle: jacquard_common::types::string::Handle<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for IdentityInfo<S> {
+    fn nsid() -> &'static str {
+        "com.atproto.identity.defs"
+    }
+    fn def_name() -> &'static str {
+        "identityInfo"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_com_atproto_identity_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
 }
 
 pub mod identity_info_state {
@@ -42,220 +68,235 @@ pub mod identity_info_state {
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
         type Did;
-        type Handle;
         type DidDoc;
+        type Handle;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
         type Did = Unset;
-        type Handle = Unset;
         type DidDoc = Unset;
+        type Handle = Unset;
     }
     ///State transition - sets the `did` field to Set
-    pub struct SetDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDid<S> {}
-    impl<S: State> State for SetDid<S> {
+    pub struct SetDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetDid<St> {}
+    impl<St: State> State for SetDid<St> {
         type Did = Set<members::did>;
-        type Handle = S::Handle;
-        type DidDoc = S::DidDoc;
-    }
-    ///State transition - sets the `handle` field to Set
-    pub struct SetHandle<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetHandle<S> {}
-    impl<S: State> State for SetHandle<S> {
-        type Did = S::Did;
-        type Handle = Set<members::handle>;
-        type DidDoc = S::DidDoc;
+        type DidDoc = St::DidDoc;
+        type Handle = St::Handle;
     }
     ///State transition - sets the `did_doc` field to Set
-    pub struct SetDidDoc<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDidDoc<S> {}
-    impl<S: State> State for SetDidDoc<S> {
-        type Did = S::Did;
-        type Handle = S::Handle;
+    pub struct SetDidDoc<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetDidDoc<St> {}
+    impl<St: State> State for SetDidDoc<St> {
+        type Did = St::Did;
         type DidDoc = Set<members::did_doc>;
+        type Handle = St::Handle;
+    }
+    ///State transition - sets the `handle` field to Set
+    pub struct SetHandle<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetHandle<St> {}
+    impl<St: State> State for SetHandle<St> {
+        type Did = St::Did;
+        type DidDoc = St::DidDoc;
+        type Handle = Set<members::handle>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
         ///Marker type for the `did` field
         pub struct did(());
-        ///Marker type for the `handle` field
-        pub struct handle(());
         ///Marker type for the `did_doc` field
         pub struct did_doc(());
+        ///Marker type for the `handle` field
+        pub struct handle(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct IdentityInfoBuilder<'a, S: identity_info_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<jacquard_common::types::value::Data<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Handle<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct IdentityInfoBuilder<
+    St: identity_info_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<jacquard_common::types::value::Data<S>>,
+        core::option::Option<jacquard_common::types::string::Handle<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> IdentityInfo<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> IdentityInfoBuilder<'a, identity_info_state::Empty> {
+impl IdentityInfo<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> IdentityInfoBuilder<identity_info_state::Empty, jacquard_common::DefaultStr> {
         IdentityInfoBuilder::new()
     }
 }
 
-impl<'a> IdentityInfoBuilder<'a, identity_info_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> IdentityInfo<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> IdentityInfoBuilder<identity_info_state::Empty, S> {
+        IdentityInfoBuilder::builder()
+    }
+}
+
+impl IdentityInfoBuilder<identity_info_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         IdentityInfoBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> IdentityInfoBuilder<'a, S>
+impl<S: jacquard_common::BosStr> IdentityInfoBuilder<identity_info_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        IdentityInfoBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> IdentityInfoBuilder<St, S>
 where
-    S: identity_info_state::State,
-    S::Did: identity_info_state::IsUnset,
+    St: identity_info_state::State,
+    St::Did: identity_info_state::IsUnset,
 {
     /// Set the `did` field (required)
     pub fn did(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> IdentityInfoBuilder<'a, identity_info_state::SetDid<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> IdentityInfoBuilder<identity_info_state::SetDid<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         IdentityInfoBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> IdentityInfoBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> IdentityInfoBuilder<St, S>
 where
-    S: identity_info_state::State,
-    S::DidDoc: identity_info_state::IsUnset,
+    St: identity_info_state::State,
+    St::DidDoc: identity_info_state::IsUnset,
 {
     /// Set the `didDoc` field (required)
     pub fn did_doc(
         mut self,
-        value: impl Into<jacquard_common::types::value::Data<'a>>,
-    ) -> IdentityInfoBuilder<'a, identity_info_state::SetDidDoc<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::value::Data<S>>,
+    ) -> IdentityInfoBuilder<identity_info_state::SetDidDoc<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         IdentityInfoBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> IdentityInfoBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> IdentityInfoBuilder<St, S>
 where
-    S: identity_info_state::State,
-    S::Handle: identity_info_state::IsUnset,
+    St: identity_info_state::State,
+    St::Handle: identity_info_state::IsUnset,
 {
     /// Set the `handle` field (required)
     pub fn handle(
         mut self,
-        value: impl Into<jacquard_common::types::string::Handle<'a>>,
-    ) -> IdentityInfoBuilder<'a, identity_info_state::SetHandle<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Handle<S>>,
+    ) -> IdentityInfoBuilder<identity_info_state::SetHandle<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         IdentityInfoBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> IdentityInfoBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> IdentityInfoBuilder<St, S>
 where
-    S: identity_info_state::State,
-    S::Did: identity_info_state::IsSet,
-    S::Handle: identity_info_state::IsSet,
-    S::DidDoc: identity_info_state::IsSet,
+    St: identity_info_state::State,
+    St::Did: identity_info_state::IsSet,
+    St::DidDoc: identity_info_state::IsSet,
+    St::Handle: identity_info_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> IdentityInfo<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> IdentityInfo<S> {
         IdentityInfo {
-            did: self.__unsafe_private_named.0.unwrap(),
-            did_doc: self.__unsafe_private_named.1.unwrap(),
-            handle: self.__unsafe_private_named.2.unwrap(),
+            did: self._fields.0.unwrap(),
+            did_doc: self._fields.1.unwrap(),
+            handle: self._fields.2.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> IdentityInfo<'a> {
+    ) -> IdentityInfo<S> {
         IdentityInfo {
-            did: self.__unsafe_private_named.0.unwrap(),
-            did_doc: self.__unsafe_private_named.1.unwrap(),
-            handle: self.__unsafe_private_named.2.unwrap(),
+            did: self._fields.0.unwrap(),
+            did_doc: self._fields.1.unwrap(),
+            handle: self._fields.2.unwrap(),
             extra_data: Some(extra_data),
         }
     }
 }
 
-fn lexicon_doc_com_atproto_identity_defs() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_com_atproto_identity_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("com.atproto.identity.defs"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("identityInfo"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("identityInfo"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: None,
                     required: Some(
                         vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("did"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("handle"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("didDoc")
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("handle"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("didDoc")
                         ],
                     ),
-                    nullable: None,
                     properties: {
                         #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
+                        let mut map = ::alloc::collections::BTreeMap::new();
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("did"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "did",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("didDoc"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "didDoc",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Unknown(::jacquard_lexicon::lexicon::LexUnknown {
-                                description: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("handle"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "handle",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
@@ -265,38 +306,16 @@ fn lexicon_doc_com_atproto_identity_defs() -> ::jacquard_lexicon::lexicon::Lexic
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Handle,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map
                     },
+                    ..Default::default()
                 }),
             );
             map
         },
-    }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for IdentityInfo<'a> {
-    fn nsid() -> &'static str {
-        "com.atproto.identity.defs"
-    }
-    fn def_name() -> &'static str {
-        "identityInfo"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_com_atproto_identity_defs()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
+        ..Default::default()
     }
 }

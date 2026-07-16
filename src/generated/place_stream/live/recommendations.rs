@@ -6,17 +6,125 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 /// A list of recommended streamers, in order of preference
-#[jacquard_derive::lexicon]
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    rename = "place.stream.live.recommendations",
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct Recommendations<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Client-declared timestamp when this list was created.
+    pub created_at: jacquard_common::types::string::Datetime,
+    ///Ordered list of recommended streamer DIDs
+    pub streamers: Vec<jacquard_common::types::string::Did<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// Typed wrapper for GetRecord response with this collection's record type.
+
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
-pub struct Recommendations<'a> {
-    /// Client-declared timestamp when this list was created.
-    pub created_at: jacquard_common::types::string::Datetime,
-    /// Ordered list of recommended streamer DIDs
-    #[serde(borrow)]
-    pub streamers: Vec<jacquard_common::types::string::Did<'a>>,
+pub struct RecommendationsGetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
+{
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
+    pub uri: jacquard_common::types::string::AtUri<S>,
+    pub value: Recommendations<S>,
+}
+
+impl<S: jacquard_common::BosStr> Recommendations<S> {
+    pub fn uri(
+        uri: S,
+    ) -> Result<
+        jacquard_common::types::uri::RecordUri<S, RecommendationsRecord>,
+        jacquard_common::types::uri::UriError,
+    > {
+        jacquard_common::types::uri::RecordUri::try_from_uri(
+            jacquard_common::types::string::AtUri::new(uri)?,
+        )
+    }
+}
+
+/// Marker type for deserializing records from this collection.
+
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+pub struct RecommendationsRecord;
+impl jacquard_common::xrpc::XrpcResp for RecommendationsRecord {
+    const NSID: &'static str = "place.stream.live.recommendations";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = RecommendationsGetRecordOutput<S>;
+    type Err = jacquard_common::types::collection::RecordError;
+}
+
+impl<S: jacquard_common::BosStr> From<RecommendationsGetRecordOutput<S>> for Recommendations<S> {
+    fn from(output: RecommendationsGetRecordOutput<S>) -> Self {
+        output.value
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection
+    for Recommendations<S>
+{
+    const NSID: &'static str = "place.stream.live.recommendations";
+    type Record = RecommendationsRecord;
+}
+
+impl jacquard_common::types::collection::Collection for RecommendationsRecord {
+    const NSID: &'static str = "place.stream.live.recommendations";
+    type Record = RecommendationsRecord;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Recommendations<S> {
+    fn nsid() -> &'static str {
+        "place.stream.live.recommendations"
+    }
+    fn def_name() -> &'static str {
+        "main"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_place_stream_live_recommendations()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.streamers;
+            #[allow(unused_comparisons)]
+            if value.len() > 8usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("streamers"),
+                    max: 8usize,
+                    actual: value.len(),
+                });
+            }
+        }
+        {
+            let value = &self.streamers;
+            #[allow(unused_comparisons)]
+            if value.len() < 0usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("streamers"),
+                    min: 0usize,
+                    actual: value.len(),
+                });
+            }
+        }
+        Ok(())
+    }
 }
 
 pub mod recommendations_state {
@@ -29,241 +137,167 @@ pub mod recommendations_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Streamers;
         type CreatedAt;
+        type Streamers;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Streamers = Unset;
         type CreatedAt = Unset;
-    }
-    ///State transition - sets the `streamers` field to Set
-    pub struct SetStreamers<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetStreamers<S> {}
-    impl<S: State> State for SetStreamers<S> {
-        type Streamers = Set<members::streamers>;
-        type CreatedAt = S::CreatedAt;
+        type Streamers = Unset;
     }
     ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type Streamers = S::Streamers;
+    pub struct SetCreatedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCreatedAt<St> {}
+    impl<St: State> State for SetCreatedAt<St> {
         type CreatedAt = Set<members::created_at>;
+        type Streamers = St::Streamers;
+    }
+    ///State transition - sets the `streamers` field to Set
+    pub struct SetStreamers<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetStreamers<St> {}
+    impl<St: State> State for SetStreamers<St> {
+        type CreatedAt = St::CreatedAt;
+        type Streamers = Set<members::streamers>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `streamers` field
-        pub struct streamers(());
         ///Marker type for the `created_at` field
         pub struct created_at(());
+        ///Marker type for the `streamers` field
+        pub struct streamers(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct RecommendationsBuilder<'a, S: recommendations_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<Vec<jacquard_common::types::string::Did<'a>>>,
+/// Builder for constructing an instance of this type.
+pub struct RecommendationsBuilder<
+    St: recommendations_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<Vec<jacquard_common::types::string::Did<S>>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> Recommendations<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> RecommendationsBuilder<'a, recommendations_state::Empty> {
+impl Recommendations<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> RecommendationsBuilder<recommendations_state::Empty, jacquard_common::DefaultStr>
+    {
         RecommendationsBuilder::new()
     }
 }
 
-impl<'a> RecommendationsBuilder<'a, recommendations_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> Recommendations<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> RecommendationsBuilder<recommendations_state::Empty, S> {
+        RecommendationsBuilder::builder()
+    }
+}
+
+impl RecommendationsBuilder<recommendations_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         RecommendationsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> RecommendationsBuilder<'a, S>
+impl<S: jacquard_common::BosStr> RecommendationsBuilder<recommendations_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        RecommendationsBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> RecommendationsBuilder<St, S>
 where
-    S: recommendations_state::State,
-    S::CreatedAt: recommendations_state::IsUnset,
+    St: recommendations_state::State,
+    St::CreatedAt: recommendations_state::IsUnset,
 {
     /// Set the `createdAt` field (required)
     pub fn created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> RecommendationsBuilder<'a, recommendations_state::SetCreatedAt<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+    ) -> RecommendationsBuilder<recommendations_state::SetCreatedAt<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         RecommendationsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> RecommendationsBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> RecommendationsBuilder<St, S>
 where
-    S: recommendations_state::State,
-    S::Streamers: recommendations_state::IsUnset,
+    St: recommendations_state::State,
+    St::Streamers: recommendations_state::IsUnset,
 {
     /// Set the `streamers` field (required)
     pub fn streamers(
         mut self,
-        value: impl Into<Vec<jacquard_common::types::string::Did<'a>>>,
-    ) -> RecommendationsBuilder<'a, recommendations_state::SetStreamers<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<Vec<jacquard_common::types::string::Did<S>>>,
+    ) -> RecommendationsBuilder<recommendations_state::SetStreamers<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         RecommendationsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> RecommendationsBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> RecommendationsBuilder<St, S>
 where
-    S: recommendations_state::State,
-    S::Streamers: recommendations_state::IsSet,
-    S::CreatedAt: recommendations_state::IsSet,
+    St: recommendations_state::State,
+    St::CreatedAt: recommendations_state::IsSet,
+    St::Streamers: recommendations_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> Recommendations<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> Recommendations<S> {
         Recommendations {
-            created_at: self.__unsafe_private_named.0.unwrap(),
-            streamers: self.__unsafe_private_named.1.unwrap(),
+            created_at: self._fields.0.unwrap(),
+            streamers: self._fields.1.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> Recommendations<'a> {
+    ) -> Recommendations<S> {
         Recommendations {
-            created_at: self.__unsafe_private_named.0.unwrap(),
-            streamers: self.__unsafe_private_named.1.unwrap(),
+            created_at: self._fields.0.unwrap(),
+            streamers: self._fields.1.unwrap(),
             extra_data: Some(extra_data),
         }
     }
 }
 
-impl<'a> Recommendations<'a> {
-    pub fn uri(
-        uri: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> Result<
-        jacquard_common::types::uri::RecordUri<'a, RecommendationsRecord>,
-        jacquard_common::types::uri::UriError,
-    > {
-        jacquard_common::types::uri::RecordUri::try_from_uri(
-            jacquard_common::types::string::AtUri::new_cow(uri.into())?,
-        )
-    }
-}
-
-/// Typed wrapper for GetRecord response with this collection's record type.
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct RecommendationsGetRecordOutput<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cid: std::option::Option<jacquard_common::types::string::Cid<'a>>,
-    #[serde(borrow)]
-    pub uri: jacquard_common::types::string::AtUri<'a>,
-    #[serde(borrow)]
-    pub value: Recommendations<'a>,
-}
-
-impl From<RecommendationsGetRecordOutput<'_>> for Recommendations<'_> {
-    fn from(output: RecommendationsGetRecordOutput<'_>) -> Self {
-        use jacquard_common::IntoStatic;
-        output.value.into_static()
-    }
-}
-
-impl jacquard_common::types::collection::Collection for Recommendations<'_> {
-    const NSID: &'static str = "place.stream.live.recommendations";
-    type Record = RecommendationsRecord;
-}
-
-/// Marker type for deserializing records from this collection.
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
-pub struct RecommendationsRecord;
-impl jacquard_common::xrpc::XrpcResp for RecommendationsRecord {
-    const NSID: &'static str = "place.stream.live.recommendations";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = RecommendationsGetRecordOutput<'de>;
-    type Err<'de> = jacquard_common::types::collection::RecordError<'de>;
-}
-
-impl jacquard_common::types::collection::Collection for RecommendationsRecord {
-    const NSID: &'static str = "place.stream.live.recommendations";
-    type Record = RecommendationsRecord;
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Recommendations<'a> {
-    fn nsid() -> &'static str {
-        "place.stream.live.recommendations"
-    }
-    fn def_name() -> &'static str {
-        "main"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_place_stream_live_recommendations()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        {
-            let value = &self.streamers;
-            #[allow(unused_comparisons)]
-            if value.len() > 8usize {
-                return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("streamers"),
-                    max: 8usize,
-                    actual: value.len(),
-                });
-            }
-        }
-        {
-            let value = &self.streamers;
-            #[allow(unused_comparisons)]
-            if value.len() < 0usize {
-                return Err(::jacquard_lexicon::validation::ConstraintError::MinLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("streamers"),
-                    min: 0usize,
-                    actual: value.len(),
-                });
-            }
-        }
-        Ok(())
-    }
-}
-
-fn lexicon_doc_place_stream_live_recommendations(
-) -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_place_stream_live_recommendations() -> jacquard_lexicon::lexicon::LexiconDoc<'static>
+{
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("place.stream.live.recommendations"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
                 ::jacquard_lexicon::lexicon::LexUserType::Record(::jacquard_lexicon::lexicon::LexRecord {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
@@ -272,19 +306,17 @@ fn lexicon_doc_place_stream_live_recommendations(
                     ),
                     key: Some(::jacquard_common::CowStr::new_static("literal:self")),
                     record: ::jacquard_lexicon::lexicon::LexRecordRecord::Object(::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(
                             vec![
-                                ::jacquard_common::smol_str::SmolStr::new_static("streamers"),
-                                ::jacquard_common::smol_str::SmolStr::new_static("createdAt")
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("streamers"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt")
                             ],
                         ),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "createdAt",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -296,18 +328,11 @@ fn lexicon_doc_place_stream_live_recommendations(
                                     format: Some(
                                         ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                     ),
-                                    default: None,
-                                    min_length: None,
-                                    max_length: None,
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "streamers",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
@@ -317,29 +342,25 @@ fn lexicon_doc_place_stream_live_recommendations(
                                         ),
                                     ),
                                     items: ::jacquard_lexicon::lexicon::LexArrayItem::String(::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     }),
                                     min_length: Some(0usize),
                                     max_length: Some(8usize),
+                                    ..Default::default()
                                 }),
                             );
                             map
                         },
+                        ..Default::default()
                     }),
+                    ..Default::default()
                 }),
             );
             map
         },
+        ..Default::default()
     }
 }

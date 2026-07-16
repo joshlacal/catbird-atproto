@@ -5,6 +5,7 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
+//! Generated bindings for the `chat.bsky.moderation` Lexicon namespace/module.
 pub mod get_actor_metadata;
 pub mod get_convo;
 pub mod get_convo_members;
@@ -16,7 +17,7 @@ pub mod subscribe_mod_events;
 pub mod update_actor_access;
 
 /// A view of a conversation for moderation purposes. Unlike chat.bsky.convo.defs#convoView, it does not include viewer-specific data (such as muted, unreadCount, status, lastMessage, lastReaction), since the requester is a moderator and not a member of the conversation. The member list is not included; use chat.bsky.moderation.getConvoMembers to list members.
-#[jacquard_derive::lexicon]
+
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -27,41 +28,193 @@ pub mod update_actor_access;
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct ConvoView<'a> {
-    #[serde(borrow)]
-    pub id: jacquard_common::CowStr<'a>,
-    /// Union field that has data specific to different kinds of convos.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub kind: std::option::Option<ConvoViewKind<'a>>,
-    #[serde(borrow)]
-    pub rev: jacquard_common::CowStr<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ConvoView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub id: S,
+    ///Union field that has data specific to different kinds of convos.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub kind: core::option::Option<ConvoViewKind<S>>,
+    pub rev: S,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
 #[jacquard_derive::open_union]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(tag = "$type")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum ConvoViewKind<'a> {
+#[serde(
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub enum ConvoViewKind<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(rename = "chat.bsky.moderation.defs#directConvo")]
-    DirectConvo(Box<crate::generated::chat_bsky::moderation::DirectConvo<'a>>),
+    DirectConvo(Box<crate::generated::chat_bsky::moderation::DirectConvo<S>>),
     #[serde(rename = "chat.bsky.moderation.defs#groupConvo")]
-    GroupConvo(Box<crate::generated::chat_bsky::moderation::GroupConvo<'a>>),
+    GroupConvo(Box<crate::generated::chat_bsky::moderation::GroupConvo<S>>),
 }
 
-fn lexicon_doc_chat_bsky_moderation_defs() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+/// Data specific to a direct conversation, for moderation purposes.
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic,
+    Default,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct DirectConvo<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// Data specific to a group conversation, for moderation purposes. Unlike chat.bsky.convo.defs#groupConvo, it does not include viewer-specific data (such as unreadJoinRequestCount), since the requester is a moderator and not a member of the conversation.
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GroupConvo<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub created_at: jacquard_common::types::string::Datetime,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub join_link: core::option::Option<crate::generated::chat_bsky::group::JoinLinkView<S>>,
+    ///The total number of pending join requests for the group conversation. This information is only visible to the owner and to moderators. Capped at 21.
+    pub join_request_count: i64,
+    ///The lock status of the conversation.
+    pub lock_status: crate::generated::chat_bsky::convo::ConvoLockStatus<S>,
+    ///The total number of members in the group conversation.
+    pub member_count: i64,
+    ///The maximum number of members allowed in the group conversation.
+    pub member_limit: i64,
+    ///The display name of the group conversation.
+    pub name: S,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ConvoView<S> {
+    fn nsid() -> &'static str {
+        "chat.bsky.moderation.defs"
+    }
+    fn def_name() -> &'static str {
+        "convoView"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_chat_bsky_moderation_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for DirectConvo<S> {
+    fn nsid() -> &'static str {
+        "chat.bsky.moderation.defs"
+    }
+    fn def_name() -> &'static str {
+        "directConvo"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_chat_bsky_moderation_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for GroupConvo<S> {
+    fn nsid() -> &'static str {
+        "chat.bsky.moderation.defs"
+    }
+    fn def_name() -> &'static str {
+        "groupConvo"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_chat_bsky_moderation_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.name;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 500usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("name"),
+                    max: 500usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.name;
+            {
+                let count = jacquard_common::deps::codegen::unicode_segmentation::UnicodeSegmentation::graphemes(
+                        value.as_ref(),
+                        true,
+                    )
+                    .count();
+                if count > 50usize {
+                    return Err(
+                        jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field("name"),
+                            max: 50usize,
+                            actual: count,
+                        },
+                    );
+                }
+            }
+        }
+        Ok(())
+    }
+}
+
+fn lexicon_doc_chat_bsky_moderation_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("chat.bsky.moderation.defs"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("convoView"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("convoView"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
@@ -70,31 +223,23 @@ fn lexicon_doc_chat_bsky_moderation_defs() -> ::jacquard_lexicon::lexicon::Lexic
                     ),
                     required: Some(
                         vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("id"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("rev")
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("id"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("rev")
                         ],
                     ),
-                    nullable: None,
                     properties: {
                         #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
+                        let mut map = ::alloc::collections::BTreeMap::new();
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("id"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("id"),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("kind"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "kind",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Union(::jacquard_lexicon::lexicon::LexRefUnion {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
@@ -105,47 +250,40 @@ fn lexicon_doc_chat_bsky_moderation_defs() -> ::jacquard_lexicon::lexicon::Lexic
                                     ::jacquard_common::CowStr::new_static("#directConvo"),
                                     ::jacquard_common::CowStr::new_static("#groupConvo")
                                 ],
-                                closed: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("rev"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "rev",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map
                     },
+                    ..Default::default()
                 }),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("directConvo"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("directConvo"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
                         description: Some(::jacquard_common::CowStr::new_static(
                             "Data specific to a direct conversation, for moderation purposes.",
                         )),
-                        required: None,
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("groupConvo"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("groupConvo"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
@@ -154,195 +292,98 @@ fn lexicon_doc_chat_bsky_moderation_defs() -> ::jacquard_lexicon::lexicon::Lexic
                     ),
                     required: Some(
                         vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("createdAt"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("joinRequestCount"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("lockStatus"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("memberCount"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("memberLimit"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("name")
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("joinRequestCount"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("lockStatus"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("memberCount"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("memberLimit"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("name")
                         ],
                     ),
-                    nullable: None,
                     properties: {
                         #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
+                        let mut map = ::alloc::collections::BTreeMap::new();
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "createdAt",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("joinLink"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "joinLink",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                description: None,
                                 r#ref: ::jacquard_common::CowStr::new_static(
                                     "chat.bsky.group.defs#joinLinkView",
                                 ),
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "joinRequestCount",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                description: None,
-                                default: None,
-                                minimum: None,
-                                maximum: None,
-                                r#enum: None,
-                                r#const: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "lockStatus",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                description: None,
                                 r#ref: ::jacquard_common::CowStr::new_static(
                                     "chat.bsky.convo.defs#convoLockStatus",
                                 ),
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "memberCount",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                description: None,
-                                default: None,
-                                minimum: None,
-                                maximum: None,
-                                r#enum: None,
-                                r#const: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "memberLimit",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                description: None,
-                                default: None,
-                                minimum: None,
-                                maximum: None,
-                                r#enum: None,
-                                r#const: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("name"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "name",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
                                         "The display name of the group conversation.",
                                     ),
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
                                 max_length: Some(500usize),
-                                min_graphemes: None,
                                 max_graphemes: Some(50usize),
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map
                     },
+                    ..Default::default()
                 }),
             );
             map
         },
+        ..Default::default()
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ConvoView<'a> {
-    fn nsid() -> &'static str {
-        "chat.bsky.moderation.defs"
-    }
-    fn def_name() -> &'static str {
-        "convoView"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_chat_bsky_moderation_defs()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-/// Data specific to a direct conversation, for moderation purposes.
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic,
-    Default,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct DirectConvo<'a> {}
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for DirectConvo<'a> {
-    fn nsid() -> &'static str {
-        "chat.bsky.moderation.defs"
-    }
-    fn def_name() -> &'static str {
-        "directConvo"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_chat_bsky_moderation_defs()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-/// Data specific to a group conversation, for moderation purposes. Unlike chat.bsky.convo.defs#groupConvo, it does not include viewer-specific data (such as unreadJoinRequestCount), since the requester is a moderator and not a member of the conversation.
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GroupConvo<'a> {
-    pub created_at: jacquard_common::types::string::Datetime,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub join_link: std::option::Option<crate::generated::chat_bsky::group::JoinLinkView<'a>>,
-    /// The total number of pending join requests for the group conversation. This information is only visible to the owner and to moderators. Capped at 21.
-    pub join_request_count: i64,
-    /// The lock status of the conversation.
-    #[serde(borrow)]
-    pub lock_status: crate::generated::chat_bsky::convo::ConvoLockStatus<'a>,
-    /// The total number of members in the group conversation.
-    pub member_count: i64,
-    /// The maximum number of members allowed in the group conversation.
-    pub member_limit: i64,
-    /// The display name of the group conversation.
-    #[serde(borrow)]
-    pub name: jacquard_common::CowStr<'a>,
 }
 
 pub mod group_convo_state {
@@ -374,69 +415,69 @@ pub mod group_convo_state {
         type Name = Unset;
     }
     ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
+    pub struct SetCreatedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCreatedAt<St> {}
+    impl<St: State> State for SetCreatedAt<St> {
         type CreatedAt = Set<members::created_at>;
-        type JoinRequestCount = S::JoinRequestCount;
-        type LockStatus = S::LockStatus;
-        type MemberCount = S::MemberCount;
-        type MemberLimit = S::MemberLimit;
-        type Name = S::Name;
+        type JoinRequestCount = St::JoinRequestCount;
+        type LockStatus = St::LockStatus;
+        type MemberCount = St::MemberCount;
+        type MemberLimit = St::MemberLimit;
+        type Name = St::Name;
     }
     ///State transition - sets the `join_request_count` field to Set
-    pub struct SetJoinRequestCount<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetJoinRequestCount<S> {}
-    impl<S: State> State for SetJoinRequestCount<S> {
-        type CreatedAt = S::CreatedAt;
+    pub struct SetJoinRequestCount<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetJoinRequestCount<St> {}
+    impl<St: State> State for SetJoinRequestCount<St> {
+        type CreatedAt = St::CreatedAt;
         type JoinRequestCount = Set<members::join_request_count>;
-        type LockStatus = S::LockStatus;
-        type MemberCount = S::MemberCount;
-        type MemberLimit = S::MemberLimit;
-        type Name = S::Name;
+        type LockStatus = St::LockStatus;
+        type MemberCount = St::MemberCount;
+        type MemberLimit = St::MemberLimit;
+        type Name = St::Name;
     }
     ///State transition - sets the `lock_status` field to Set
-    pub struct SetLockStatus<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetLockStatus<S> {}
-    impl<S: State> State for SetLockStatus<S> {
-        type CreatedAt = S::CreatedAt;
-        type JoinRequestCount = S::JoinRequestCount;
+    pub struct SetLockStatus<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetLockStatus<St> {}
+    impl<St: State> State for SetLockStatus<St> {
+        type CreatedAt = St::CreatedAt;
+        type JoinRequestCount = St::JoinRequestCount;
         type LockStatus = Set<members::lock_status>;
-        type MemberCount = S::MemberCount;
-        type MemberLimit = S::MemberLimit;
-        type Name = S::Name;
+        type MemberCount = St::MemberCount;
+        type MemberLimit = St::MemberLimit;
+        type Name = St::Name;
     }
     ///State transition - sets the `member_count` field to Set
-    pub struct SetMemberCount<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetMemberCount<S> {}
-    impl<S: State> State for SetMemberCount<S> {
-        type CreatedAt = S::CreatedAt;
-        type JoinRequestCount = S::JoinRequestCount;
-        type LockStatus = S::LockStatus;
+    pub struct SetMemberCount<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetMemberCount<St> {}
+    impl<St: State> State for SetMemberCount<St> {
+        type CreatedAt = St::CreatedAt;
+        type JoinRequestCount = St::JoinRequestCount;
+        type LockStatus = St::LockStatus;
         type MemberCount = Set<members::member_count>;
-        type MemberLimit = S::MemberLimit;
-        type Name = S::Name;
+        type MemberLimit = St::MemberLimit;
+        type Name = St::Name;
     }
     ///State transition - sets the `member_limit` field to Set
-    pub struct SetMemberLimit<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetMemberLimit<S> {}
-    impl<S: State> State for SetMemberLimit<S> {
-        type CreatedAt = S::CreatedAt;
-        type JoinRequestCount = S::JoinRequestCount;
-        type LockStatus = S::LockStatus;
-        type MemberCount = S::MemberCount;
+    pub struct SetMemberLimit<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetMemberLimit<St> {}
+    impl<St: State> State for SetMemberLimit<St> {
+        type CreatedAt = St::CreatedAt;
+        type JoinRequestCount = St::JoinRequestCount;
+        type LockStatus = St::LockStatus;
+        type MemberCount = St::MemberCount;
         type MemberLimit = Set<members::member_limit>;
-        type Name = S::Name;
+        type Name = St::Name;
     }
     ///State transition - sets the `name` field to Set
-    pub struct SetName<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetName<S> {}
-    impl<S: State> State for SetName<S> {
-        type CreatedAt = S::CreatedAt;
-        type JoinRequestCount = S::JoinRequestCount;
-        type LockStatus = S::LockStatus;
-        type MemberCount = S::MemberCount;
-        type MemberLimit = S::MemberLimit;
+    pub struct SetName<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetName<St> {}
+    impl<St: State> State for SetName<St> {
+        type CreatedAt = St::CreatedAt;
+        type JoinRequestCount = St::JoinRequestCount;
+        type LockStatus = St::LockStatus;
+        type MemberCount = St::MemberCount;
+        type MemberLimit = St::MemberLimit;
         type Name = Set<members::name>;
     }
     /// Marker types for field names
@@ -457,259 +498,233 @@ pub mod group_convo_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct GroupConvoBuilder<'a, S: group_convo_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<crate::generated::chat_bsky::group::JoinLinkView<'a>>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<crate::generated::chat_bsky::convo::ConvoLockStatus<'a>>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct GroupConvoBuilder<
+    St: group_convo_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<crate::generated::chat_bsky::group::JoinLinkView<S>>,
+        core::option::Option<i64>,
+        core::option::Option<crate::generated::chat_bsky::convo::ConvoLockStatus<S>>,
+        core::option::Option<i64>,
+        core::option::Option<i64>,
+        core::option::Option<S>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> GroupConvo<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> GroupConvoBuilder<'a, group_convo_state::Empty> {
+impl GroupConvo<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> GroupConvoBuilder<group_convo_state::Empty, jacquard_common::DefaultStr> {
         GroupConvoBuilder::new()
     }
 }
 
-impl<'a> GroupConvoBuilder<'a, group_convo_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> GroupConvo<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> GroupConvoBuilder<group_convo_state::Empty, S> {
+        GroupConvoBuilder::builder()
+    }
+}
+
+impl GroupConvoBuilder<group_convo_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GroupConvoBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GroupConvoBuilder<'a, S>
+impl<S: jacquard_common::BosStr> GroupConvoBuilder<group_convo_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GroupConvoBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> GroupConvoBuilder<St, S>
 where
-    S: group_convo_state::State,
-    S::CreatedAt: group_convo_state::IsUnset,
+    St: group_convo_state::State,
+    St::CreatedAt: group_convo_state::IsUnset,
 {
     /// Set the `createdAt` field (required)
     pub fn created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> GroupConvoBuilder<'a, group_convo_state::SetCreatedAt<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+    ) -> GroupConvoBuilder<group_convo_state::SetCreatedAt<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         GroupConvoBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: group_convo_state::State> GroupConvoBuilder<'a, S> {
+impl<St: group_convo_state::State, S: jacquard_common::BosStr> GroupConvoBuilder<St, S> {
     /// Set the `joinLink` field (optional)
     pub fn join_link(
         mut self,
-        value: impl Into<Option<crate::generated::chat_bsky::group::JoinLinkView<'a>>>,
+        value: impl Into<Option<crate::generated::chat_bsky::group::JoinLinkView<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self._fields.1 = value.into();
         self
     }
     /// Set the `joinLink` field to an Option value (optional)
     pub fn maybe_join_link(
         mut self,
-        value: Option<crate::generated::chat_bsky::group::JoinLinkView<'a>>,
+        value: Option<crate::generated::chat_bsky::group::JoinLinkView<S>>,
     ) -> Self {
-        self.__unsafe_private_named.1 = value;
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S> GroupConvoBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GroupConvoBuilder<St, S>
 where
-    S: group_convo_state::State,
-    S::JoinRequestCount: group_convo_state::IsUnset,
+    St: group_convo_state::State,
+    St::JoinRequestCount: group_convo_state::IsUnset,
 {
     /// Set the `joinRequestCount` field (required)
     pub fn join_request_count(
         mut self,
         value: impl Into<i64>,
-    ) -> GroupConvoBuilder<'a, group_convo_state::SetJoinRequestCount<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+    ) -> GroupConvoBuilder<group_convo_state::SetJoinRequestCount<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         GroupConvoBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GroupConvoBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GroupConvoBuilder<St, S>
 where
-    S: group_convo_state::State,
-    S::LockStatus: group_convo_state::IsUnset,
+    St: group_convo_state::State,
+    St::LockStatus: group_convo_state::IsUnset,
 {
     /// Set the `lockStatus` field (required)
     pub fn lock_status(
         mut self,
-        value: impl Into<crate::generated::chat_bsky::convo::ConvoLockStatus<'a>>,
-    ) -> GroupConvoBuilder<'a, group_convo_state::SetLockStatus<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        value: impl Into<crate::generated::chat_bsky::convo::ConvoLockStatus<S>>,
+    ) -> GroupConvoBuilder<group_convo_state::SetLockStatus<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
         GroupConvoBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GroupConvoBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GroupConvoBuilder<St, S>
 where
-    S: group_convo_state::State,
-    S::MemberCount: group_convo_state::IsUnset,
+    St: group_convo_state::State,
+    St::MemberCount: group_convo_state::IsUnset,
 {
     /// Set the `memberCount` field (required)
     pub fn member_count(
         mut self,
         value: impl Into<i64>,
-    ) -> GroupConvoBuilder<'a, group_convo_state::SetMemberCount<S>> {
-        self.__unsafe_private_named.4 = ::core::option::Option::Some(value.into());
+    ) -> GroupConvoBuilder<group_convo_state::SetMemberCount<St>, S> {
+        self._fields.4 = ::core::option::Option::Some(value.into());
         GroupConvoBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GroupConvoBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GroupConvoBuilder<St, S>
 where
-    S: group_convo_state::State,
-    S::MemberLimit: group_convo_state::IsUnset,
+    St: group_convo_state::State,
+    St::MemberLimit: group_convo_state::IsUnset,
 {
     /// Set the `memberLimit` field (required)
     pub fn member_limit(
         mut self,
         value: impl Into<i64>,
-    ) -> GroupConvoBuilder<'a, group_convo_state::SetMemberLimit<S>> {
-        self.__unsafe_private_named.5 = ::core::option::Option::Some(value.into());
+    ) -> GroupConvoBuilder<group_convo_state::SetMemberLimit<St>, S> {
+        self._fields.5 = ::core::option::Option::Some(value.into());
         GroupConvoBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GroupConvoBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GroupConvoBuilder<St, S>
 where
-    S: group_convo_state::State,
-    S::Name: group_convo_state::IsUnset,
+    St: group_convo_state::State,
+    St::Name: group_convo_state::IsUnset,
 {
     /// Set the `name` field (required)
     pub fn name(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> GroupConvoBuilder<'a, group_convo_state::SetName<S>> {
-        self.__unsafe_private_named.6 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> GroupConvoBuilder<group_convo_state::SetName<St>, S> {
+        self._fields.6 = ::core::option::Option::Some(value.into());
         GroupConvoBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GroupConvoBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GroupConvoBuilder<St, S>
 where
-    S: group_convo_state::State,
-    S::CreatedAt: group_convo_state::IsSet,
-    S::JoinRequestCount: group_convo_state::IsSet,
-    S::LockStatus: group_convo_state::IsSet,
-    S::MemberCount: group_convo_state::IsSet,
-    S::MemberLimit: group_convo_state::IsSet,
-    S::Name: group_convo_state::IsSet,
+    St: group_convo_state::State,
+    St::CreatedAt: group_convo_state::IsSet,
+    St::JoinRequestCount: group_convo_state::IsSet,
+    St::LockStatus: group_convo_state::IsSet,
+    St::MemberCount: group_convo_state::IsSet,
+    St::MemberLimit: group_convo_state::IsSet,
+    St::Name: group_convo_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> GroupConvo<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> GroupConvo<S> {
         GroupConvo {
-            created_at: self.__unsafe_private_named.0.unwrap(),
-            join_link: self.__unsafe_private_named.1,
-            join_request_count: self.__unsafe_private_named.2.unwrap(),
-            lock_status: self.__unsafe_private_named.3.unwrap(),
-            member_count: self.__unsafe_private_named.4.unwrap(),
-            member_limit: self.__unsafe_private_named.5.unwrap(),
-            name: self.__unsafe_private_named.6.unwrap(),
+            created_at: self._fields.0.unwrap(),
+            join_link: self._fields.1,
+            join_request_count: self._fields.2.unwrap(),
+            lock_status: self._fields.3.unwrap(),
+            member_count: self._fields.4.unwrap(),
+            member_limit: self._fields.5.unwrap(),
+            name: self._fields.6.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> GroupConvo<'a> {
+    ) -> GroupConvo<S> {
         GroupConvo {
-            created_at: self.__unsafe_private_named.0.unwrap(),
-            join_link: self.__unsafe_private_named.1,
-            join_request_count: self.__unsafe_private_named.2.unwrap(),
-            lock_status: self.__unsafe_private_named.3.unwrap(),
-            member_count: self.__unsafe_private_named.4.unwrap(),
-            member_limit: self.__unsafe_private_named.5.unwrap(),
-            name: self.__unsafe_private_named.6.unwrap(),
+            created_at: self._fields.0.unwrap(),
+            join_link: self._fields.1,
+            join_request_count: self._fields.2.unwrap(),
+            lock_status: self._fields.3.unwrap(),
+            member_count: self._fields.4.unwrap(),
+            member_limit: self._fields.5.unwrap(),
+            name: self._fields.6.unwrap(),
             extra_data: Some(extra_data),
         }
-    }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for GroupConvo<'a> {
-    fn nsid() -> &'static str {
-        "chat.bsky.moderation.defs"
-    }
-    fn def_name() -> &'static str {
-        "groupConvo"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_chat_bsky_moderation_defs()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        {
-            let value = &self.name;
-            #[allow(unused_comparisons)]
-            if <str>::len(value.as_ref()) > 500usize {
-                return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("name"),
-                    max: 500usize,
-                    actual: <str>::len(value.as_ref()),
-                });
-            }
-        }
-        {
-            let value = &self.name;
-            {
-                let count =
-                    ::unicode_segmentation::UnicodeSegmentation::graphemes(value.as_ref(), true)
-                        .count();
-                if count > 50usize {
-                    return Err(
-                        ::jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
-                            path: ::jacquard_lexicon::validation::ValidationPath::from_field(
-                                "name",
-                            ),
-                            max: 50usize,
-                            actual: count,
-                        },
-                    );
-                }
-            }
-        }
-        Ok(())
     }
 }

@@ -5,16 +5,101 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct CreateBookmark<'a> {
-    #[serde(borrow)]
-    pub cid: jacquard_common::types::string::Cid<'a>,
-    #[serde(borrow)]
-    pub uri: jacquard_common::types::string::AtUri<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct CreateBookmark<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub cid: jacquard_common::types::string::Cid<S>,
+    pub uri: jacquard_common::types::string::AtUri<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    thiserror::Error,
+    miette::Diagnostic,
+)]
+#[serde(tag = "error", content = "message")]
+pub enum CreateBookmarkError {
+    /// The URI to be bookmarked is for an unsupported collection.
+    #[serde(rename = "UnsupportedCollection")]
+    UnsupportedCollection(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
+}
+
+impl core::fmt::Display for CreateBookmarkError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+            Self::UnsupportedCollection(msg) => {
+                write!(f, "UnsupportedCollection")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+        }
+    }
+}
+
+/** Response marker for the `app.bsky.bookmark.createBookmark` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `()` for this endpoint.*/
+pub struct CreateBookmarkResponse;
+impl jacquard_common::xrpc::XrpcResp for CreateBookmarkResponse {
+    const NSID: &'static str = "app.bsky.bookmark.createBookmark";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = ();
+    type Err = CreateBookmarkError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for CreateBookmark<S> {
+    const NSID: &'static str = "app.bsky.bookmark.createBookmark";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Response = CreateBookmarkResponse;
+}
+
+/** Endpoint marker for the `app.bsky.bookmark.createBookmark` procedure.
+
+Path: `/xrpc/app.bsky.bookmark.createBookmark`. The request payload type is `CreateBookmark<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct CreateBookmarkRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for CreateBookmarkRequest {
+    const PATH: &'static str = "/xrpc/app.bsky.bookmark.createBookmark";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Request<S: jacquard_common::BosStr> = CreateBookmark<S>;
+    type Response = CreateBookmarkResponse;
 }
 
 pub mod create_bookmark_state {
@@ -27,195 +112,154 @@ pub mod create_bookmark_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Uri;
         type Cid;
+        type Uri;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Uri = Unset;
         type Cid = Unset;
-    }
-    ///State transition - sets the `uri` field to Set
-    pub struct SetUri<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUri<S> {}
-    impl<S: State> State for SetUri<S> {
-        type Uri = Set<members::uri>;
-        type Cid = S::Cid;
+        type Uri = Unset;
     }
     ///State transition - sets the `cid` field to Set
-    pub struct SetCid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCid<S> {}
-    impl<S: State> State for SetCid<S> {
-        type Uri = S::Uri;
+    pub struct SetCid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCid<St> {}
+    impl<St: State> State for SetCid<St> {
         type Cid = Set<members::cid>;
+        type Uri = St::Uri;
+    }
+    ///State transition - sets the `uri` field to Set
+    pub struct SetUri<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetUri<St> {}
+    impl<St: State> State for SetUri<St> {
+        type Cid = St::Cid;
+        type Uri = Set<members::uri>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `uri` field
-        pub struct uri(());
         ///Marker type for the `cid` field
         pub struct cid(());
+        ///Marker type for the `uri` field
+        pub struct uri(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct CreateBookmarkBuilder<'a, S: create_bookmark_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Cid<'a>>,
-        ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct CreateBookmarkBuilder<
+    St: create_bookmark_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Cid<S>>,
+        core::option::Option<jacquard_common::types::string::AtUri<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> CreateBookmark<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> CreateBookmarkBuilder<'a, create_bookmark_state::Empty> {
+impl CreateBookmark<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> CreateBookmarkBuilder<create_bookmark_state::Empty, jacquard_common::DefaultStr>
+    {
         CreateBookmarkBuilder::new()
     }
 }
 
-impl<'a> CreateBookmarkBuilder<'a, create_bookmark_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> CreateBookmark<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> CreateBookmarkBuilder<create_bookmark_state::Empty, S> {
+        CreateBookmarkBuilder::builder()
+    }
+}
+
+impl CreateBookmarkBuilder<create_bookmark_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         CreateBookmarkBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> CreateBookmarkBuilder<'a, S>
+impl<S: jacquard_common::BosStr> CreateBookmarkBuilder<create_bookmark_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        CreateBookmarkBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> CreateBookmarkBuilder<St, S>
 where
-    S: create_bookmark_state::State,
-    S::Cid: create_bookmark_state::IsUnset,
+    St: create_bookmark_state::State,
+    St::Cid: create_bookmark_state::IsUnset,
 {
     /// Set the `cid` field (required)
     pub fn cid(
         mut self,
-        value: impl Into<jacquard_common::types::string::Cid<'a>>,
-    ) -> CreateBookmarkBuilder<'a, create_bookmark_state::SetCid<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Cid<S>>,
+    ) -> CreateBookmarkBuilder<create_bookmark_state::SetCid<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         CreateBookmarkBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> CreateBookmarkBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> CreateBookmarkBuilder<St, S>
 where
-    S: create_bookmark_state::State,
-    S::Uri: create_bookmark_state::IsUnset,
+    St: create_bookmark_state::State,
+    St::Uri: create_bookmark_state::IsUnset,
 {
     /// Set the `uri` field (required)
     pub fn uri(
         mut self,
-        value: impl Into<jacquard_common::types::string::AtUri<'a>>,
-    ) -> CreateBookmarkBuilder<'a, create_bookmark_state::SetUri<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::AtUri<S>>,
+    ) -> CreateBookmarkBuilder<create_bookmark_state::SetUri<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         CreateBookmarkBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> CreateBookmarkBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> CreateBookmarkBuilder<St, S>
 where
-    S: create_bookmark_state::State,
-    S::Uri: create_bookmark_state::IsSet,
-    S::Cid: create_bookmark_state::IsSet,
+    St: create_bookmark_state::State,
+    St::Cid: create_bookmark_state::IsSet,
+    St::Uri: create_bookmark_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> CreateBookmark<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> CreateBookmark<S> {
         CreateBookmark {
-            cid: self.__unsafe_private_named.0.unwrap(),
-            uri: self.__unsafe_private_named.1.unwrap(),
+            cid: self._fields.0.unwrap(),
+            uri: self._fields.1.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> CreateBookmark<'a> {
+    ) -> CreateBookmark<S> {
         CreateBookmark {
-            cid: self.__unsafe_private_named.0.unwrap(),
-            uri: self.__unsafe_private_named.1.unwrap(),
+            cid: self._fields.0.unwrap(),
+            uri: self._fields.1.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-#[jacquard_derive::open_union]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    thiserror::Error,
-    miette::Diagnostic,
-    jacquard_derive::IntoStatic,
-)]
-#[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum CreateBookmarkError<'a> {
-    /// The URI to be bookmarked is for an unsupported collection.
-    #[serde(rename = "UnsupportedCollection")]
-    UnsupportedCollection(std::option::Option<jacquard_common::CowStr<'a>>),
-}
-
-impl std::fmt::Display for CreateBookmarkError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::UnsupportedCollection(msg) => {
-                write!(f, "UnsupportedCollection")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
-        }
-    }
-}
-
-/// Response type for
-///app.bsky.bookmark.createBookmark
-pub struct CreateBookmarkResponse;
-impl jacquard_common::xrpc::XrpcResp for CreateBookmarkResponse {
-    const NSID: &'static str = "app.bsky.bookmark.createBookmark";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = ();
-    type Err<'de> = CreateBookmarkError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for CreateBookmark<'a> {
-    const NSID: &'static str = "app.bsky.bookmark.createBookmark";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Response = CreateBookmarkResponse;
-}
-
-/// Endpoint type for
-///app.bsky.bookmark.createBookmark
-pub struct CreateBookmarkRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for CreateBookmarkRequest {
-    const PATH: &'static str = "/xrpc/app.bsky.bookmark.createBookmark";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = CreateBookmark<'de>;
-    type Response = CreateBookmarkResponse;
 }

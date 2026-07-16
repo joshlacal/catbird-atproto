@@ -3,6 +3,7 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
+//! Generated bindings for the `blue.catbird` Lexicon namespace/module.
 pub mod bskychat;
 pub mod mlsChat;
 pub mod mlsDS;

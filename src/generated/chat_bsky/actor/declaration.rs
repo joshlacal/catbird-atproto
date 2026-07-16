@@ -6,18 +6,270 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 /// A declaration of a Bluesky chat account.
-#[jacquard_derive::lexicon]
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    rename = "chat.bsky.actor.declaration",
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct Declaration<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Declaration about group chat invitation preferences for the record owner.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub allow_group_invites: core::option::Option<DeclarationAllowGroupInvites<S>>,
+    pub allow_incoming: DeclarationAllowIncoming<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// Declaration about group chat invitation preferences for the record owner.
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum DeclarationAllowGroupInvites<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    All,
+    None,
+    Following,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> DeclarationAllowGroupInvites<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::All => "all",
+            Self::None => "none",
+            Self::Following => "following",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "all" => Self::All,
+            "none" => Self::None,
+            "following" => Self::Following,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for DeclarationAllowGroupInvites<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for DeclarationAllowGroupInvites<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for DeclarationAllowGroupInvites<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for DeclarationAllowGroupInvites<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for DeclarationAllowGroupInvites<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for DeclarationAllowGroupInvites<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = DeclarationAllowGroupInvites<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            DeclarationAllowGroupInvites::All => DeclarationAllowGroupInvites::All,
+            DeclarationAllowGroupInvites::None => DeclarationAllowGroupInvites::None,
+            DeclarationAllowGroupInvites::Following => DeclarationAllowGroupInvites::Following,
+            DeclarationAllowGroupInvites::Other(v) => {
+                DeclarationAllowGroupInvites::Other(v.into_static())
+            }
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum DeclarationAllowIncoming<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    All,
+    None,
+    Following,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> DeclarationAllowIncoming<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::All => "all",
+            Self::None => "none",
+            Self::Following => "following",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "all" => Self::All,
+            "none" => Self::None,
+            "following" => Self::Following,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for DeclarationAllowIncoming<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for DeclarationAllowIncoming<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for DeclarationAllowIncoming<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for DeclarationAllowIncoming<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for DeclarationAllowIncoming<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for DeclarationAllowIncoming<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = DeclarationAllowIncoming<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            DeclarationAllowIncoming::All => DeclarationAllowIncoming::All,
+            DeclarationAllowIncoming::None => DeclarationAllowIncoming::None,
+            DeclarationAllowIncoming::Following => DeclarationAllowIncoming::Following,
+            DeclarationAllowIncoming::Other(v) => DeclarationAllowIncoming::Other(v.into_static()),
+        }
+    }
+}
+
+/// Typed wrapper for GetRecord response with this collection's record type.
+
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
-pub struct Declaration<'a> {
-    /// Declaration about group chat invitation preferences for the record owner.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub allow_group_invites: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(borrow)]
-    pub allow_incoming: jacquard_common::CowStr<'a>,
+pub struct DeclarationGetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
+    pub uri: jacquard_common::types::string::AtUri<S>,
+    pub value: Declaration<S>,
+}
+
+impl<S: jacquard_common::BosStr> Declaration<S> {
+    pub fn uri(
+        uri: S,
+    ) -> Result<
+        jacquard_common::types::uri::RecordUri<S, DeclarationRecord>,
+        jacquard_common::types::uri::UriError,
+    > {
+        jacquard_common::types::uri::RecordUri::try_from_uri(
+            jacquard_common::types::string::AtUri::new(uri)?,
+        )
+    }
+}
+
+/// Marker type for deserializing records from this collection.
+
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+pub struct DeclarationRecord;
+impl jacquard_common::xrpc::XrpcResp for DeclarationRecord {
+    const NSID: &'static str = "chat.bsky.actor.declaration";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = DeclarationGetRecordOutput<S>;
+    type Err = jacquard_common::types::collection::RecordError;
+}
+
+impl<S: jacquard_common::BosStr> From<DeclarationGetRecordOutput<S>> for Declaration<S> {
+    fn from(output: DeclarationGetRecordOutput<S>) -> Self {
+        output.value
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection for Declaration<S> {
+    const NSID: &'static str = "chat.bsky.actor.declaration";
+    type Record = DeclarationRecord;
+}
+
+impl jacquard_common::types::collection::Collection for DeclarationRecord {
+    const NSID: &'static str = "chat.bsky.actor.declaration";
+    type Record = DeclarationRecord;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Declaration<S> {
+    fn nsid() -> &'static str {
+        "chat.bsky.actor.declaration"
+    }
+    fn def_name() -> &'static str {
+        "main"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_chat_bsky_actor_declaration()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
 }
 
 pub mod declaration_state {
@@ -39,9 +291,9 @@ pub mod declaration_state {
         type AllowIncoming = Unset;
     }
     ///State transition - sets the `allow_incoming` field to Set
-    pub struct SetAllowIncoming<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetAllowIncoming<S> {}
-    impl<S: State> State for SetAllowIncoming<S> {
+    pub struct SetAllowIncoming<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetAllowIncoming<St> {}
+    impl<St: State> State for SetAllowIncoming<St> {
         type AllowIncoming = Set<members::allow_incoming>;
     }
     /// Marker types for field names
@@ -52,180 +304,130 @@ pub mod declaration_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct DeclarationBuilder<'a, S: declaration_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct DeclarationBuilder<
+    St: declaration_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<DeclarationAllowGroupInvites<S>>,
+        core::option::Option<DeclarationAllowIncoming<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> Declaration<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> DeclarationBuilder<'a, declaration_state::Empty> {
+impl Declaration<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> DeclarationBuilder<declaration_state::Empty, jacquard_common::DefaultStr> {
         DeclarationBuilder::new()
     }
 }
 
-impl<'a> DeclarationBuilder<'a, declaration_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> Declaration<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> DeclarationBuilder<declaration_state::Empty, S> {
+        DeclarationBuilder::builder()
+    }
+}
+
+impl DeclarationBuilder<declaration_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         DeclarationBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: declaration_state::State> DeclarationBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> DeclarationBuilder<declaration_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        DeclarationBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: declaration_state::State, S: jacquard_common::BosStr> DeclarationBuilder<St, S> {
     /// Set the `allowGroupInvites` field (optional)
     pub fn allow_group_invites(
         mut self,
-        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
+        value: impl Into<Option<DeclarationAllowGroupInvites<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+        self._fields.0 = value.into();
         self
     }
     /// Set the `allowGroupInvites` field to an Option value (optional)
-    pub fn maybe_allow_group_invites(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.0 = value;
+    pub fn maybe_allow_group_invites(
+        mut self,
+        value: Option<DeclarationAllowGroupInvites<S>>,
+    ) -> Self {
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S> DeclarationBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> DeclarationBuilder<St, S>
 where
-    S: declaration_state::State,
-    S::AllowIncoming: declaration_state::IsUnset,
+    St: declaration_state::State,
+    St::AllowIncoming: declaration_state::IsUnset,
 {
     /// Set the `allowIncoming` field (required)
     pub fn allow_incoming(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> DeclarationBuilder<'a, declaration_state::SetAllowIncoming<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<DeclarationAllowIncoming<S>>,
+    ) -> DeclarationBuilder<declaration_state::SetAllowIncoming<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         DeclarationBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> DeclarationBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> DeclarationBuilder<St, S>
 where
-    S: declaration_state::State,
-    S::AllowIncoming: declaration_state::IsSet,
+    St: declaration_state::State,
+    St::AllowIncoming: declaration_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> Declaration<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> Declaration<S> {
         Declaration {
-            allow_group_invites: self.__unsafe_private_named.0,
-            allow_incoming: self.__unsafe_private_named.1.unwrap(),
+            allow_group_invites: self._fields.0,
+            allow_incoming: self._fields.1.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> Declaration<'a> {
+    ) -> Declaration<S> {
         Declaration {
-            allow_group_invites: self.__unsafe_private_named.0,
-            allow_incoming: self.__unsafe_private_named.1.unwrap(),
+            allow_group_invites: self._fields.0,
+            allow_incoming: self._fields.1.unwrap(),
             extra_data: Some(extra_data),
         }
     }
 }
 
-impl<'a> Declaration<'a> {
-    pub fn uri(
-        uri: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> Result<
-        jacquard_common::types::uri::RecordUri<'a, DeclarationRecord>,
-        jacquard_common::types::uri::UriError,
-    > {
-        jacquard_common::types::uri::RecordUri::try_from_uri(
-            jacquard_common::types::string::AtUri::new_cow(uri.into())?,
-        )
-    }
-}
-
-/// Typed wrapper for GetRecord response with this collection's record type.
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct DeclarationGetRecordOutput<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cid: std::option::Option<jacquard_common::types::string::Cid<'a>>,
-    #[serde(borrow)]
-    pub uri: jacquard_common::types::string::AtUri<'a>,
-    #[serde(borrow)]
-    pub value: Declaration<'a>,
-}
-
-impl From<DeclarationGetRecordOutput<'_>> for Declaration<'_> {
-    fn from(output: DeclarationGetRecordOutput<'_>) -> Self {
-        use jacquard_common::IntoStatic;
-        output.value.into_static()
-    }
-}
-
-impl jacquard_common::types::collection::Collection for Declaration<'_> {
-    const NSID: &'static str = "chat.bsky.actor.declaration";
-    type Record = DeclarationRecord;
-}
-
-/// Marker type for deserializing records from this collection.
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
-pub struct DeclarationRecord;
-impl jacquard_common::xrpc::XrpcResp for DeclarationRecord {
-    const NSID: &'static str = "chat.bsky.actor.declaration";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = DeclarationGetRecordOutput<'de>;
-    type Err<'de> = jacquard_common::types::collection::RecordError<'de>;
-}
-
-impl jacquard_common::types::collection::Collection for DeclarationRecord {
-    const NSID: &'static str = "chat.bsky.actor.declaration";
-    type Record = DeclarationRecord;
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Declaration<'a> {
-    fn nsid() -> &'static str {
-        "chat.bsky.actor.declaration"
-    }
-    fn def_name() -> &'static str {
-        "main"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_chat_bsky_actor_declaration()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-fn lexicon_doc_chat_bsky_actor_declaration() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_chat_bsky_actor_declaration() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("chat.bsky.actor.declaration"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
                 ::jacquard_lexicon::lexicon::LexUserType::Record(::jacquard_lexicon::lexicon::LexRecord {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
@@ -234,18 +436,16 @@ fn lexicon_doc_chat_bsky_actor_declaration() -> ::jacquard_lexicon::lexicon::Lex
                     ),
                     key: Some(::jacquard_common::CowStr::new_static("literal:self")),
                     record: ::jacquard_lexicon::lexicon::LexRecordRecord::Object(::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(
                             vec![
-                                ::jacquard_common::smol_str::SmolStr::new_static("allowIncoming")
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("allowIncoming")
                             ],
                         ),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "allowGroupInvites",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -254,40 +454,26 @@ fn lexicon_doc_chat_bsky_actor_declaration() -> ::jacquard_lexicon::lexicon::Lex
                                             "Declaration about group chat invitation preferences for the record owner.",
                                         ),
                                     ),
-                                    format: None,
-                                    default: None,
-                                    min_length: None,
-                                    max_length: None,
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "allowIncoming",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                    description: None,
-                                    format: None,
-                                    default: None,
-                                    min_length: None,
-                                    max_length: None,
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
                             );
                             map
                         },
+                        ..Default::default()
                     }),
+                    ..Default::default()
                 }),
             );
             map
         },
+        ..Default::default()
     }
 }

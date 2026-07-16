@@ -5,36 +5,52 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetPreferencesOutput<'a> {
-    #[serde(borrow)]
-    pub preferences: crate::generated::chat_bsky::notification::Preferences<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetPreferencesOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub preferences: crate::generated::chat_bsky::notification::Preferences<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-/// XRPC request marker type
+/** Request marker for the `chat.bsky.notification.getPreferences` query.
+
+This endpoint has no request parameters or input body; send this marker with `jacquard::Client`.*/
+
 #[derive(
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
     serde::Serialize,
     serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
     jacquard_derive::IntoStatic,
+    Copy,
 )]
 pub struct GetPreferences;
-/// Response type for
-///chat.bsky.notification.getPreferences
+/** Response marker for the `chat.bsky.notification.getPreferences` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetPreferencesOutput<S>` for this endpoint.*/
 pub struct GetPreferencesResponse;
 impl jacquard_common::xrpc::XrpcResp for GetPreferencesResponse {
     const NSID: &'static str = "chat.bsky.notification.getPreferences";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetPreferencesOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
+    type Output<S: jacquard_common::BosStr> = GetPreferencesOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
 }
 
 impl jacquard_common::xrpc::XrpcRequest for GetPreferences {
@@ -43,12 +59,13 @@ impl jacquard_common::xrpc::XrpcRequest for GetPreferences {
     type Response = GetPreferencesResponse;
 }
 
-/// Endpoint type for
-///chat.bsky.notification.getPreferences
+/** Endpoint marker for the `chat.bsky.notification.getPreferences` query.
+
+Path: `/xrpc/chat.bsky.notification.getPreferences`. The request payload type is `GetPreferences`; use this marker with lower-level `XrpcEndpoint` APIs when you need endpoint metadata.*/
 pub struct GetPreferencesRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for GetPreferencesRequest {
     const PATH: &'static str = "/xrpc/chat.bsky.notification.getPreferences";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetPreferences;
+    type Request<S: jacquard_common::BosStr> = GetPreferences;
     type Response = GetPreferencesResponse;
 }

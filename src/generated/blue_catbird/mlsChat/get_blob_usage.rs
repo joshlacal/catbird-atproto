@@ -5,40 +5,57 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetBlobUsageOutput<'a> {
-    /// Number of active blobs
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetBlobUsageOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Number of active blobs
     pub blob_count: i64,
-    /// Maximum allowed bytes (500MB)
+    ///Maximum allowed bytes (500MB)
     pub quota_bytes: i64,
-    /// Total bytes used by the user's active blobs
+    ///Total bytes used by the user's active blobs
     pub used_bytes: i64,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-/// XRPC request marker type
+/** Request marker for the `blue.catbird.mlsChat.getBlobUsage` query.
+
+This endpoint has no request parameters or input body; send this marker with `jacquard::Client`.*/
+
 #[derive(
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
     serde::Serialize,
     serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
     jacquard_derive::IntoStatic,
+    Copy,
 )]
 pub struct GetBlobUsage;
-/// Response type for
-///blue.catbird.mlsChat.getBlobUsage
+/** Response marker for the `blue.catbird.mlsChat.getBlobUsage` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetBlobUsageOutput<S>` for this endpoint.*/
 pub struct GetBlobUsageResponse;
 impl jacquard_common::xrpc::XrpcResp for GetBlobUsageResponse {
     const NSID: &'static str = "blue.catbird.mlsChat.getBlobUsage";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetBlobUsageOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
+    type Output<S: jacquard_common::BosStr> = GetBlobUsageOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
 }
 
 impl jacquard_common::xrpc::XrpcRequest for GetBlobUsage {
@@ -47,12 +64,13 @@ impl jacquard_common::xrpc::XrpcRequest for GetBlobUsage {
     type Response = GetBlobUsageResponse;
 }
 
-/// Endpoint type for
-///blue.catbird.mlsChat.getBlobUsage
+/** Endpoint marker for the `blue.catbird.mlsChat.getBlobUsage` query.
+
+Path: `/xrpc/blue.catbird.mlsChat.getBlobUsage`. The request payload type is `GetBlobUsage`; use this marker with lower-level `XrpcEndpoint` APIs when you need endpoint metadata.*/
 pub struct GetBlobUsageRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for GetBlobUsageRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.getBlobUsage";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetBlobUsage;
+    type Request<S: jacquard_common::BosStr> = GetBlobUsage;
     type Response = GetBlobUsageResponse;
 }

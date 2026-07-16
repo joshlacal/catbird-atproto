@@ -5,7 +5,6 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -16,14 +15,26 @@
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct RequestCrawl<'a> {
-    /// Hostname of the current service (eg, PDS) that is requesting to be crawled.
-    #[serde(borrow)]
-    pub hostname: jacquard_common::CowStr<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct RequestCrawl<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Hostname of the current service (eg, PDS) that is requesting to be crawled.
+    pub hostname: S,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::open_union]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -33,17 +44,21 @@ pub struct RequestCrawl<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum RequestCrawlError<'a> {
+pub enum RequestCrawlError {
     #[serde(rename = "HostBanned")]
-    HostBanned(std::option::Option<jacquard_common::CowStr<'a>>),
+    HostBanned(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
 }
 
-impl std::fmt::Display for RequestCrawlError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for RequestCrawlError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             Self::HostBanned(msg) => {
                 write!(f, "HostBanned")?;
@@ -52,35 +67,43 @@ impl std::fmt::Display for RequestCrawlError<'_> {
                 }
                 Ok(())
             }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
         }
     }
 }
 
-/// Response type for
-///com.atproto.sync.requestCrawl
+/** Response marker for the `com.atproto.sync.requestCrawl` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `()` for this endpoint.*/
 pub struct RequestCrawlResponse;
 impl jacquard_common::xrpc::XrpcResp for RequestCrawlResponse {
     const NSID: &'static str = "com.atproto.sync.requestCrawl";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = ();
-    type Err<'de> = RequestCrawlError<'de>;
+    type Output<S: jacquard_common::BosStr> = ();
+    type Err = RequestCrawlError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for RequestCrawl<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for RequestCrawl<S> {
     const NSID: &'static str = "com.atproto.sync.requestCrawl";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = RequestCrawlResponse;
 }
 
-/// Endpoint type for
-///com.atproto.sync.requestCrawl
+/** Endpoint marker for the `com.atproto.sync.requestCrawl` procedure.
+
+Path: `/xrpc/com.atproto.sync.requestCrawl`. The request payload type is `RequestCrawl<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct RequestCrawlRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for RequestCrawlRequest {
     const PATH: &'static str = "/xrpc/com.atproto.sync.requestCrawl";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = RequestCrawl<'de>;
+    type Request<S: jacquard_common::BosStr> = RequestCrawl<S>;
     type Response = RequestCrawlResponse;
 }

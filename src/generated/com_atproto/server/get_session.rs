@@ -5,54 +5,151 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetSessionOutput<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub active: std::option::Option<bool>,
-    #[serde(borrow)]
-    pub did: jacquard_common::types::string::Did<'a>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub did_doc: std::option::Option<jacquard_common::types::value::Data<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub email: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub email_auth_factor: std::option::Option<bool>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub email_confirmed: std::option::Option<bool>,
-    #[serde(borrow)]
-    pub handle: jacquard_common::types::string::Handle<'a>,
-    /// If active=false, this optional field indicates a possible reason for why the account is not active. If active=false and no status is supplied, then the host makes no claim for why the repository is no longer being hosted.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub status: std::option::Option<jacquard_common::CowStr<'a>>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetSessionOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub active: core::option::Option<bool>,
+    pub did: jacquard_common::types::string::Did<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub did_doc: core::option::Option<jacquard_common::types::value::Data<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub email: core::option::Option<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub email_auth_factor: core::option::Option<bool>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub email_confirmed: core::option::Option<bool>,
+    pub handle: jacquard_common::types::string::Handle<S>,
+    ///If active=false, this optional field indicates a possible reason for why the account is not active. If active=false and no status is supplied, then the host makes no claim for why the repository is no longer being hosted.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub status: core::option::Option<GetSessionOutputStatus<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-/// XRPC request marker type
+/// If active=false, this optional field indicates a possible reason for why the account is not active. If active=false and no status is supplied, then the host makes no claim for why the repository is no longer being hosted.
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum GetSessionOutputStatus<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    Takendown,
+    Suspended,
+    Deactivated,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> GetSessionOutputStatus<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Takendown => "takendown",
+            Self::Suspended => "suspended",
+            Self::Deactivated => "deactivated",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "takendown" => Self::Takendown,
+            "suspended" => Self::Suspended,
+            "deactivated" => Self::Deactivated,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for GetSessionOutputStatus<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for GetSessionOutputStatus<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for GetSessionOutputStatus<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for GetSessionOutputStatus<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for GetSessionOutputStatus<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for GetSessionOutputStatus<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = GetSessionOutputStatus<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            GetSessionOutputStatus::Takendown => GetSessionOutputStatus::Takendown,
+            GetSessionOutputStatus::Suspended => GetSessionOutputStatus::Suspended,
+            GetSessionOutputStatus::Deactivated => GetSessionOutputStatus::Deactivated,
+            GetSessionOutputStatus::Other(v) => GetSessionOutputStatus::Other(v.into_static()),
+        }
+    }
+}
+
+/** Request marker for the `com.atproto.server.getSession` query.
+
+This endpoint has no request parameters or input body; send this marker with `jacquard::Client`.*/
+
 #[derive(
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
     serde::Serialize,
     serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
     jacquard_derive::IntoStatic,
+    Copy,
 )]
 pub struct GetSession;
-/// Response type for
-///com.atproto.server.getSession
+/** Response marker for the `com.atproto.server.getSession` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetSessionOutput<S>` for this endpoint.*/
 pub struct GetSessionResponse;
 impl jacquard_common::xrpc::XrpcResp for GetSessionResponse {
     const NSID: &'static str = "com.atproto.server.getSession";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetSessionOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
+    type Output<S: jacquard_common::BosStr> = GetSessionOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
 }
 
 impl jacquard_common::xrpc::XrpcRequest for GetSession {
@@ -61,12 +158,13 @@ impl jacquard_common::xrpc::XrpcRequest for GetSession {
     type Response = GetSessionResponse;
 }
 
-/// Endpoint type for
-///com.atproto.server.getSession
+/** Endpoint marker for the `com.atproto.server.getSession` query.
+
+Path: `/xrpc/com.atproto.server.getSession`. The request payload type is `GetSession`; use this marker with lower-level `XrpcEndpoint` APIs when you need endpoint metadata.*/
 pub struct GetSessionRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for GetSessionRequest {
     const PATH: &'static str = "/xrpc/com.atproto.server.getSession";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetSession;
+    type Request<S: jacquard_common::BosStr> = GetSession;
     type Response = GetSessionResponse;
 }

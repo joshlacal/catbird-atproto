@@ -8,10 +8,63 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetAccountInfo<'a> {
-    #[serde(borrow)]
-    pub did: jacquard_common::types::string::Did<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetAccountInfo<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub did: jacquard_common::types::string::Did<S>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetAccountInfoOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(flatten)]
+    pub value: crate::generated::com_atproto::admin::AccountView<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `com.atproto.admin.getAccountInfo` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetAccountInfoOutput<S>` for this endpoint.*/
+pub struct GetAccountInfoResponse;
+impl jacquard_common::xrpc::XrpcResp for GetAccountInfoResponse {
+    const NSID: &'static str = "com.atproto.admin.getAccountInfo";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = GetAccountInfoOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetAccountInfo<S> {
+    const NSID: &'static str = "com.atproto.admin.getAccountInfo";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = GetAccountInfoResponse;
+}
+
+/** Endpoint marker for the `com.atproto.admin.getAccountInfo` query.
+
+Path: `/xrpc/com.atproto.admin.getAccountInfo`. The request payload type is `GetAccountInfo<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct GetAccountInfoRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for GetAccountInfoRequest {
+    const PATH: &'static str = "/xrpc/com.atproto.admin.getAccountInfo";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = GetAccountInfo<S>;
+    type Response = GetAccountInfoResponse;
 }
 
 pub mod get_account_info_state {
@@ -33,9 +86,9 @@ pub mod get_account_info_state {
         type Did = Unset;
     }
     ///State transition - sets the `did` field to Set
-    pub struct SetDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDid<S> {}
-    impl<S: State> State for SetDid<S> {
+    pub struct SetDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetDid<St> {}
+    impl<St: State> State for SetDid<St> {
         type Did = Set<members::did>;
     }
     /// Marker types for field names
@@ -46,96 +99,81 @@ pub mod get_account_info_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct GetAccountInfoBuilder<'a, S: get_account_info_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<jacquard_common::types::string::Did<'a>>,),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct GetAccountInfoBuilder<
+    St: get_account_info_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<jacquard_common::types::string::Did<S>>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> GetAccountInfo<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> GetAccountInfoBuilder<'a, get_account_info_state::Empty> {
+impl GetAccountInfo<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> GetAccountInfoBuilder<get_account_info_state::Empty, jacquard_common::DefaultStr>
+    {
         GetAccountInfoBuilder::new()
     }
 }
 
-impl<'a> GetAccountInfoBuilder<'a, get_account_info_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> GetAccountInfo<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> GetAccountInfoBuilder<get_account_info_state::Empty, S> {
+        GetAccountInfoBuilder::builder()
+    }
+}
+
+impl GetAccountInfoBuilder<get_account_info_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetAccountInfoBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GetAccountInfoBuilder<'a, S>
+impl<S: jacquard_common::BosStr> GetAccountInfoBuilder<get_account_info_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GetAccountInfoBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> GetAccountInfoBuilder<St, S>
 where
-    S: get_account_info_state::State,
-    S::Did: get_account_info_state::IsUnset,
+    St: get_account_info_state::State,
+    St::Did: get_account_info_state::IsUnset,
 {
     /// Set the `did` field (required)
     pub fn did(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> GetAccountInfoBuilder<'a, get_account_info_state::SetDid<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> GetAccountInfoBuilder<get_account_info_state::SetDid<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         GetAccountInfoBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GetAccountInfoBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GetAccountInfoBuilder<St, S>
 where
-    S: get_account_info_state::State,
-    S::Did: get_account_info_state::IsSet,
+    St: get_account_info_state::State,
+    St::Did: get_account_info_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> GetAccountInfo<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> GetAccountInfo<S> {
         GetAccountInfo {
-            did: self.__unsafe_private_named.0.unwrap(),
+            did: self._fields.0.unwrap(),
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GetAccountInfoOutput<'a> {
-    #[serde(flatten)]
-    #[serde(borrow)]
-    pub value: crate::generated::com_atproto::admin::AccountView<'a>,
-}
-
-/// Response type for
-///com.atproto.admin.getAccountInfo
-pub struct GetAccountInfoResponse;
-impl jacquard_common::xrpc::XrpcResp for GetAccountInfoResponse {
-    const NSID: &'static str = "com.atproto.admin.getAccountInfo";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetAccountInfoOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for GetAccountInfo<'a> {
-    const NSID: &'static str = "com.atproto.admin.getAccountInfo";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = GetAccountInfoResponse;
-}
-
-/// Endpoint type for
-///com.atproto.admin.getAccountInfo
-pub struct GetAccountInfoRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for GetAccountInfoRequest {
-    const PATH: &'static str = "/xrpc/com.atproto.admin.getAccountInfo";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetAccountInfo<'de>;
-    type Response = GetAccountInfoResponse;
 }

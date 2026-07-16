@@ -5,21 +5,49 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
+//! Generated bindings for the `place.stream.ingest` Lexicon namespace/module.
 pub mod get_ingest_urls;
 
 /// An ingest URL for a Streamplace station.
-#[jacquard_derive::lexicon]
+
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct Ingest<'a> {
-    /// The type of ingest endpoint, currently 'rtmp' and 'whip' are supported.
-    #[serde(borrow)]
-    pub r#type: jacquard_common::CowStr<'a>,
-    /// The URL of the ingest endpoint.
-    #[serde(borrow)]
-    pub url: jacquard_common::types::string::Uri<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct Ingest<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///The type of ingest endpoint, currently 'rtmp' and 'whip' are supported.
+    pub r#type: S,
+    ///The URL of the ingest endpoint.
+    pub url: jacquard_common::types::string::UriValue<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Ingest<S> {
+    fn nsid() -> &'static str {
+        "place.stream.ingest.defs"
+    }
+    fn def_name() -> &'static str {
+        "ingest"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_place_stream_ingest_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
 }
 
 pub mod ingest_state {
@@ -43,17 +71,17 @@ pub mod ingest_state {
         type Url = Unset;
     }
     ///State transition - sets the `type` field to Set
-    pub struct SetType<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetType<S> {}
-    impl<S: State> State for SetType<S> {
+    pub struct SetType<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetType<St> {}
+    impl<St: State> State for SetType<St> {
         type Type = Set<members::r#type>;
-        type Url = S::Url;
+        type Url = St::Url;
     }
     ///State transition - sets the `url` field to Set
-    pub struct SetUrl<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUrl<S> {}
-    impl<S: State> State for SetUrl<S> {
-        type Type = S::Type;
+    pub struct SetUrl<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetUrl<St> {}
+    impl<St: State> State for SetUrl<St> {
+        type Type = St::Type;
         type Url = Set<members::url>;
     }
     /// Marker types for field names
@@ -66,112 +94,128 @@ pub mod ingest_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct IngestBuilder<'a, S: ingest_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Uri<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct IngestBuilder<
+    St: ingest_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::UriValue<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> Ingest<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> IngestBuilder<'a, ingest_state::Empty> {
+impl Ingest<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> IngestBuilder<ingest_state::Empty, jacquard_common::DefaultStr> {
         IngestBuilder::new()
     }
 }
 
-impl<'a> IngestBuilder<'a, ingest_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> Ingest<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> IngestBuilder<ingest_state::Empty, S> {
+        IngestBuilder::builder()
+    }
+}
+
+impl IngestBuilder<ingest_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         IngestBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> IngestBuilder<'a, S>
+impl<S: jacquard_common::BosStr> IngestBuilder<ingest_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        IngestBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> IngestBuilder<St, S>
 where
-    S: ingest_state::State,
-    S::Type: ingest_state::IsUnset,
+    St: ingest_state::State,
+    St::Type: ingest_state::IsUnset,
 {
     /// Set the `type` field (required)
-    pub fn r#type(
-        mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> IngestBuilder<'a, ingest_state::SetType<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+    pub fn r#type(mut self, value: impl Into<S>) -> IngestBuilder<ingest_state::SetType<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         IngestBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> IngestBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> IngestBuilder<St, S>
 where
-    S: ingest_state::State,
-    S::Url: ingest_state::IsUnset,
+    St: ingest_state::State,
+    St::Url: ingest_state::IsUnset,
 {
     /// Set the `url` field (required)
     pub fn url(
         mut self,
-        value: impl Into<jacquard_common::types::string::Uri<'a>>,
-    ) -> IngestBuilder<'a, ingest_state::SetUrl<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::UriValue<S>>,
+    ) -> IngestBuilder<ingest_state::SetUrl<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         IngestBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> IngestBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> IngestBuilder<St, S>
 where
-    S: ingest_state::State,
-    S::Type: ingest_state::IsSet,
-    S::Url: ingest_state::IsSet,
+    St: ingest_state::State,
+    St::Type: ingest_state::IsSet,
+    St::Url: ingest_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> Ingest<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> Ingest<S> {
         Ingest {
-            r#type: self.__unsafe_private_named.0.unwrap(),
-            url: self.__unsafe_private_named.1.unwrap(),
+            r#type: self._fields.0.unwrap(),
+            url: self._fields.1.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> Ingest<'a> {
+    ) -> Ingest<S> {
         Ingest {
-            r#type: self.__unsafe_private_named.0.unwrap(),
-            url: self.__unsafe_private_named.1.unwrap(),
+            r#type: self._fields.0.unwrap(),
+            url: self._fields.1.unwrap(),
             extra_data: Some(extra_data),
         }
     }
 }
 
-fn lexicon_doc_place_stream_ingest_defs() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_place_stream_ingest_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("place.stream.ingest.defs"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("ingest"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("ingest"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
@@ -180,35 +224,30 @@ fn lexicon_doc_place_stream_ingest_defs() -> ::jacquard_lexicon::lexicon::Lexico
                     ),
                     required: Some(
                         vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("type"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("url")
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("type"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("url")
                         ],
                     ),
-                    nullable: None,
                     properties: {
                         #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
+                        let mut map = ::alloc::collections::BTreeMap::new();
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("type"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "type",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
                                         "The type of ingest endpoint, currently 'rtmp' and 'whip' are supported.",
                                     ),
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("url"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "url",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
@@ -218,38 +257,16 @@ fn lexicon_doc_place_stream_ingest_defs() -> ::jacquard_lexicon::lexicon::Lexico
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Uri,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map
                     },
+                    ..Default::default()
                 }),
             );
             map
         },
-    }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Ingest<'a> {
-    fn nsid() -> &'static str {
-        "place.stream.ingest.defs"
-    }
-    fn def_name() -> &'static str {
-        "ingest"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_place_stream_ingest_defs()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
+        ..Default::default()
     }
 }

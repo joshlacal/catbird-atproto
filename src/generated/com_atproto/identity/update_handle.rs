@@ -5,15 +5,57 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct UpdateHandle<'a> {
-    /// The new handle.
-    #[serde(borrow)]
-    pub handle: jacquard_common::types::string::Handle<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct UpdateHandle<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///The new handle.
+    pub handle: jacquard_common::types::string::Handle<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `com.atproto.identity.updateHandle` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `()` for this endpoint.*/
+pub struct UpdateHandleResponse;
+impl jacquard_common::xrpc::XrpcResp for UpdateHandleResponse {
+    const NSID: &'static str = "com.atproto.identity.updateHandle";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = ();
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for UpdateHandle<S> {
+    const NSID: &'static str = "com.atproto.identity.updateHandle";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Response = UpdateHandleResponse;
+}
+
+/** Endpoint marker for the `com.atproto.identity.updateHandle` procedure.
+
+Path: `/xrpc/com.atproto.identity.updateHandle`. The request payload type is `UpdateHandle<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct UpdateHandleRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for UpdateHandleRequest {
+    const PATH: &'static str = "/xrpc/com.atproto.identity.updateHandle";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Request<S: jacquard_common::BosStr> = UpdateHandle<S>;
+    type Response = UpdateHandleResponse;
 }
 
 pub mod update_handle_state {
@@ -35,9 +77,9 @@ pub mod update_handle_state {
         type Handle = Unset;
     }
     ///State transition - sets the `handle` field to Set
-    pub struct SetHandle<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetHandle<S> {}
-    impl<S: State> State for SetHandle<S> {
+    pub struct SetHandle<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetHandle<St> {}
+    impl<St: State> State for SetHandle<St> {
         type Handle = Set<members::handle>;
     }
     /// Marker types for field names
@@ -48,101 +90,94 @@ pub mod update_handle_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct UpdateHandleBuilder<'a, S: update_handle_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<jacquard_common::types::string::Handle<'a>>,),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct UpdateHandleBuilder<
+    St: update_handle_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<jacquard_common::types::string::Handle<S>>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> UpdateHandle<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> UpdateHandleBuilder<'a, update_handle_state::Empty> {
+impl UpdateHandle<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> UpdateHandleBuilder<update_handle_state::Empty, jacquard_common::DefaultStr> {
         UpdateHandleBuilder::new()
     }
 }
 
-impl<'a> UpdateHandleBuilder<'a, update_handle_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> UpdateHandle<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> UpdateHandleBuilder<update_handle_state::Empty, S> {
+        UpdateHandleBuilder::builder()
+    }
+}
+
+impl UpdateHandleBuilder<update_handle_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         UpdateHandleBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> UpdateHandleBuilder<'a, S>
+impl<S: jacquard_common::BosStr> UpdateHandleBuilder<update_handle_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        UpdateHandleBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> UpdateHandleBuilder<St, S>
 where
-    S: update_handle_state::State,
-    S::Handle: update_handle_state::IsUnset,
+    St: update_handle_state::State,
+    St::Handle: update_handle_state::IsUnset,
 {
     /// Set the `handle` field (required)
     pub fn handle(
         mut self,
-        value: impl Into<jacquard_common::types::string::Handle<'a>>,
-    ) -> UpdateHandleBuilder<'a, update_handle_state::SetHandle<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Handle<S>>,
+    ) -> UpdateHandleBuilder<update_handle_state::SetHandle<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         UpdateHandleBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> UpdateHandleBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> UpdateHandleBuilder<St, S>
 where
-    S: update_handle_state::State,
-    S::Handle: update_handle_state::IsSet,
+    St: update_handle_state::State,
+    St::Handle: update_handle_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> UpdateHandle<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> UpdateHandle<S> {
         UpdateHandle {
-            handle: self.__unsafe_private_named.0.unwrap(),
+            handle: self._fields.0.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> UpdateHandle<'a> {
+    ) -> UpdateHandle<S> {
         UpdateHandle {
-            handle: self.__unsafe_private_named.0.unwrap(),
+            handle: self._fields.0.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-/// Response type for
-///com.atproto.identity.updateHandle
-pub struct UpdateHandleResponse;
-impl jacquard_common::xrpc::XrpcResp for UpdateHandleResponse {
-    const NSID: &'static str = "com.atproto.identity.updateHandle";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = ();
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for UpdateHandle<'a> {
-    const NSID: &'static str = "com.atproto.identity.updateHandle";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Response = UpdateHandleResponse;
-}
-
-/// Endpoint type for
-///com.atproto.identity.updateHandle
-pub struct UpdateHandleRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for UpdateHandleRequest {
-    const PATH: &'static str = "/xrpc/com.atproto.identity.updateHandle";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = UpdateHandle<'de>;
-    type Response = UpdateHandleResponse;
 }

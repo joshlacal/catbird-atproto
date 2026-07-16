@@ -8,16 +8,75 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetList<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    ///(default: 50, min: 1, max: 100)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub limit: std::option::Option<i64>,
-    #[serde(borrow)]
-    pub list: jacquard_common::types::string::AtUri<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetList<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    /// Defaults to `50`. Min: 1. Max: 100.
+    #[serde(default = "_default_limit")]
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub limit: core::option::Option<i64>,
+    pub list: jacquard_common::types::string::AtUri<S>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetListOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    pub items: Vec<crate::generated::app_bsky::graph::ListItemView<S>>,
+    pub list: crate::generated::app_bsky::graph::ListView<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `app.bsky.graph.getList` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetListOutput<S>` for this endpoint.*/
+pub struct GetListResponse;
+impl jacquard_common::xrpc::XrpcResp for GetListResponse {
+    const NSID: &'static str = "app.bsky.graph.getList";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = GetListOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetList<S> {
+    const NSID: &'static str = "app.bsky.graph.getList";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = GetListResponse;
+}
+
+/** Endpoint marker for the `app.bsky.graph.getList` query.
+
+Path: `/xrpc/app.bsky.graph.getList`. The request payload type is `GetList<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct GetListRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for GetListRequest {
+    const PATH: &'static str = "/xrpc/app.bsky.graph.getList";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = GetList<S>;
+    type Response = GetListResponse;
+}
+
+fn _default_limit() -> core::option::Option<i64> {
+    Some(50i64)
 }
 
 pub mod get_list_state {
@@ -39,9 +98,9 @@ pub mod get_list_state {
         type List = Unset;
     }
     ///State transition - sets the `list` field to Set
-    pub struct SetList<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetList<S> {}
-    impl<S: State> State for SetList<S> {
+    pub struct SetList<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetList<St> {}
+    impl<St: State> State for SetList<St> {
         type List = Set<members::list>;
     }
     /// Marker types for field names
@@ -52,132 +111,112 @@ pub mod get_list_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct GetListBuilder<'a, S: get_list_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct GetListBuilder<
+    St: get_list_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<i64>,
+        core::option::Option<jacquard_common::types::string::AtUri<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> GetList<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> GetListBuilder<'a, get_list_state::Empty> {
+impl GetList<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> GetListBuilder<get_list_state::Empty, jacquard_common::DefaultStr> {
         GetListBuilder::new()
     }
 }
 
-impl<'a> GetListBuilder<'a, get_list_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> GetList<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> GetListBuilder<get_list_state::Empty, S> {
+        GetListBuilder::builder()
+    }
+}
+
+impl GetListBuilder<get_list_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetListBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: get_list_state::State> GetListBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> GetListBuilder<get_list_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GetListBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: get_list_state::State, S: jacquard_common::BosStr> GetListBuilder<St, S> {
     /// Set the `cursor` field (optional)
-    pub fn cursor(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+    pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.0 = value.into();
         self
     }
     /// Set the `cursor` field to an Option value (optional)
-    pub fn maybe_cursor(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.0 = value;
+    pub fn maybe_cursor(mut self, value: Option<S>) -> Self {
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S: get_list_state::State> GetListBuilder<'a, S> {
+impl<St: get_list_state::State, S: jacquard_common::BosStr> GetListBuilder<St, S> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self._fields.1 = value.into();
         self
     }
     /// Set the `limit` field to an Option value (optional)
     pub fn maybe_limit(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.1 = value;
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S> GetListBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GetListBuilder<St, S>
 where
-    S: get_list_state::State,
-    S::List: get_list_state::IsUnset,
+    St: get_list_state::State,
+    St::List: get_list_state::IsUnset,
 {
     /// Set the `list` field (required)
     pub fn list(
         mut self,
-        value: impl Into<jacquard_common::types::string::AtUri<'a>>,
-    ) -> GetListBuilder<'a, get_list_state::SetList<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::AtUri<S>>,
+    ) -> GetListBuilder<get_list_state::SetList<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         GetListBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GetListBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GetListBuilder<St, S>
 where
-    S: get_list_state::State,
-    S::List: get_list_state::IsSet,
+    St: get_list_state::State,
+    St::List: get_list_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> GetList<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> GetList<S> {
         GetList {
-            cursor: self.__unsafe_private_named.0,
-            limit: self.__unsafe_private_named.1,
-            list: self.__unsafe_private_named.2.unwrap(),
+            cursor: self._fields.0,
+            limit: self._fields.1,
+            list: self._fields.2.unwrap(),
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GetListOutput<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(borrow)]
-    pub items: Vec<crate::generated::app_bsky::graph::ListItemView<'a>>,
-    #[serde(borrow)]
-    pub list: crate::generated::app_bsky::graph::ListView<'a>,
-}
-
-/// Response type for
-///app.bsky.graph.getList
-pub struct GetListResponse;
-impl jacquard_common::xrpc::XrpcResp for GetListResponse {
-    const NSID: &'static str = "app.bsky.graph.getList";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetListOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for GetList<'a> {
-    const NSID: &'static str = "app.bsky.graph.getList";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = GetListResponse;
-}
-
-/// Endpoint type for
-///app.bsky.graph.getList
-pub struct GetListRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for GetListRequest {
-    const PATH: &'static str = "/xrpc/app.bsky.graph.getList";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetList<'de>;
-    type Response = GetListResponse;
 }

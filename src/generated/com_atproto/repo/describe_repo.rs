@@ -8,10 +8,69 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct DescribeRepo<'a> {
-    #[serde(borrow)]
-    pub repo: jacquard_common::types::ident::AtIdentifier<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct DescribeRepo<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub repo: jacquard_common::types::ident::AtIdentifier<S>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct DescribeRepoOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///List of all the collections (NSIDs) for which this repo contains at least one record.
+    pub collections: Vec<jacquard_common::types::string::Nsid<S>>,
+    pub did: jacquard_common::types::string::Did<S>,
+    ///The complete DID document for this account.
+    pub did_doc: jacquard_common::types::value::Data<S>,
+    pub handle: jacquard_common::types::string::Handle<S>,
+    ///Indicates if handle is currently valid (resolves bi-directionally)
+    pub handle_is_correct: bool,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `com.atproto.repo.describeRepo` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `DescribeRepoOutput<S>` for this endpoint.*/
+pub struct DescribeRepoResponse;
+impl jacquard_common::xrpc::XrpcResp for DescribeRepoResponse {
+    const NSID: &'static str = "com.atproto.repo.describeRepo";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = DescribeRepoOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for DescribeRepo<S> {
+    const NSID: &'static str = "com.atproto.repo.describeRepo";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = DescribeRepoResponse;
+}
+
+/** Endpoint marker for the `com.atproto.repo.describeRepo` query.
+
+Path: `/xrpc/com.atproto.repo.describeRepo`. The request payload type is `DescribeRepo<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct DescribeRepoRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for DescribeRepoRequest {
+    const PATH: &'static str = "/xrpc/com.atproto.repo.describeRepo";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = DescribeRepo<S>;
+    type Response = DescribeRepoResponse;
 }
 
 pub mod describe_repo_state {
@@ -33,9 +92,9 @@ pub mod describe_repo_state {
         type Repo = Unset;
     }
     ///State transition - sets the `repo` field to Set
-    pub struct SetRepo<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRepo<S> {}
-    impl<S: State> State for SetRepo<S> {
+    pub struct SetRepo<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRepo<St> {}
+    impl<St: State> State for SetRepo<St> {
         type Repo = Set<members::repo>;
     }
     /// Marker types for field names
@@ -46,106 +105,80 @@ pub mod describe_repo_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct DescribeRepoBuilder<'a, S: describe_repo_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named:
-        (::core::option::Option<jacquard_common::types::ident::AtIdentifier<'a>>,),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct DescribeRepoBuilder<
+    St: describe_repo_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<jacquard_common::types::ident::AtIdentifier<S>>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> DescribeRepo<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> DescribeRepoBuilder<'a, describe_repo_state::Empty> {
+impl DescribeRepo<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> DescribeRepoBuilder<describe_repo_state::Empty, jacquard_common::DefaultStr> {
         DescribeRepoBuilder::new()
     }
 }
 
-impl<'a> DescribeRepoBuilder<'a, describe_repo_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> DescribeRepo<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> DescribeRepoBuilder<describe_repo_state::Empty, S> {
+        DescribeRepoBuilder::builder()
+    }
+}
+
+impl DescribeRepoBuilder<describe_repo_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         DescribeRepoBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> DescribeRepoBuilder<'a, S>
+impl<S: jacquard_common::BosStr> DescribeRepoBuilder<describe_repo_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        DescribeRepoBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DescribeRepoBuilder<St, S>
 where
-    S: describe_repo_state::State,
-    S::Repo: describe_repo_state::IsUnset,
+    St: describe_repo_state::State,
+    St::Repo: describe_repo_state::IsUnset,
 {
     /// Set the `repo` field (required)
     pub fn repo(
         mut self,
-        value: impl Into<jacquard_common::types::ident::AtIdentifier<'a>>,
-    ) -> DescribeRepoBuilder<'a, describe_repo_state::SetRepo<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::ident::AtIdentifier<S>>,
+    ) -> DescribeRepoBuilder<describe_repo_state::SetRepo<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         DescribeRepoBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> DescribeRepoBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> DescribeRepoBuilder<St, S>
 where
-    S: describe_repo_state::State,
-    S::Repo: describe_repo_state::IsSet,
+    St: describe_repo_state::State,
+    St::Repo: describe_repo_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> DescribeRepo<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> DescribeRepo<S> {
         DescribeRepo {
-            repo: self.__unsafe_private_named.0.unwrap(),
+            repo: self._fields.0.unwrap(),
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct DescribeRepoOutput<'a> {
-    /// List of all the collections (NSIDs) for which this repo contains at least one record.
-    #[serde(borrow)]
-    pub collections: Vec<jacquard_common::types::string::Nsid<'a>>,
-    #[serde(borrow)]
-    pub did: jacquard_common::types::string::Did<'a>,
-    /// The complete DID document for this account.
-    #[serde(borrow)]
-    pub did_doc: jacquard_common::types::value::Data<'a>,
-    #[serde(borrow)]
-    pub handle: jacquard_common::types::string::Handle<'a>,
-    /// Indicates if handle is currently valid (resolves bi-directionally)
-    pub handle_is_correct: bool,
-}
-
-/// Response type for
-///com.atproto.repo.describeRepo
-pub struct DescribeRepoResponse;
-impl jacquard_common::xrpc::XrpcResp for DescribeRepoResponse {
-    const NSID: &'static str = "com.atproto.repo.describeRepo";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = DescribeRepoOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for DescribeRepo<'a> {
-    const NSID: &'static str = "com.atproto.repo.describeRepo";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = DescribeRepoResponse;
-}
-
-/// Endpoint type for
-///com.atproto.repo.describeRepo
-pub struct DescribeRepoRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for DescribeRepoRequest {
-    const PATH: &'static str = "/xrpc/com.atproto.repo.describeRepo";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = DescribeRepo<'de>;
-    type Response = DescribeRepoResponse;
 }

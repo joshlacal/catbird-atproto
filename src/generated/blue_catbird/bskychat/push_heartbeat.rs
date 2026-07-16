@@ -5,7 +5,6 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -16,47 +15,75 @@
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct PushHeartbeat<'a> {
-    /// Client platform identifier (e.g., 'ios', 'macos')
-    #[serde(borrow)]
-    pub platform: jacquard_common::CowStr<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct PushHeartbeat<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Client platform identifier (e.g., 'ios', 'macos')
+    pub platform: S,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct PushHeartbeatOutput<'a> {
-    /// When the foreground lease expires
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct PushHeartbeatOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///When the foreground lease expires
     pub lease_expires_at: jacquard_common::types::string::Datetime,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-/// Response type for
-///blue.catbird.bskychat.pushHeartbeat
+/** Response marker for the `blue.catbird.bskychat.pushHeartbeat` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `PushHeartbeatOutput<S>` for this endpoint.*/
 pub struct PushHeartbeatResponse;
 impl jacquard_common::xrpc::XrpcResp for PushHeartbeatResponse {
     const NSID: &'static str = "blue.catbird.bskychat.pushHeartbeat";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = PushHeartbeatOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
+    type Output<S: jacquard_common::BosStr> = PushHeartbeatOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for PushHeartbeat<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for PushHeartbeat<S> {
     const NSID: &'static str = "blue.catbird.bskychat.pushHeartbeat";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = PushHeartbeatResponse;
 }
 
-/// Endpoint type for
-///blue.catbird.bskychat.pushHeartbeat
+/** Endpoint marker for the `blue.catbird.bskychat.pushHeartbeat` procedure.
+
+Path: `/xrpc/blue.catbird.bskychat.pushHeartbeat`. The request payload type is `PushHeartbeat<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct PushHeartbeatRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for PushHeartbeatRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.bskychat.pushHeartbeat";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = PushHeartbeat<'de>;
+    type Request<S: jacquard_common::BosStr> = PushHeartbeat<S>;
     type Response = PushHeartbeatResponse;
 }

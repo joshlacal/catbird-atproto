@@ -5,7 +5,6 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -16,13 +15,25 @@
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct RequestJoin<'a> {
-    #[serde(borrow)]
-    pub code: jacquard_common::CowStr<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct RequestJoin<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub code: S,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -33,17 +44,107 @@ pub struct RequestJoin<'a> {
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct RequestJoinOutput<'a> {
-    /// The group convo joined. This is only present in the case of status=joined
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub convo: std::option::Option<crate::generated::chat_bsky::convo::ConvoView<'a>>,
-    #[serde(borrow)]
-    pub status: jacquard_common::CowStr<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct RequestJoinOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///The group convo joined. This is only present in the case of status=joined
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub convo: core::option::Option<crate::generated::chat_bsky::convo::ConvoView<S>>,
+    pub status: RequestJoinOutputStatus<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::open_union]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum RequestJoinOutputStatus<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    Joined,
+    Pending,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> RequestJoinOutputStatus<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Joined => "joined",
+            Self::Pending => "pending",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "joined" => Self::Joined,
+            "pending" => Self::Pending,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for RequestJoinOutputStatus<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for RequestJoinOutputStatus<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for RequestJoinOutputStatus<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for RequestJoinOutputStatus<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for RequestJoinOutputStatus<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for RequestJoinOutputStatus<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = RequestJoinOutputStatus<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            RequestJoinOutputStatus::Joined => RequestJoinOutputStatus::Joined,
+            RequestJoinOutputStatus::Pending => RequestJoinOutputStatus::Pending,
+            RequestJoinOutputStatus::Other(v) => RequestJoinOutputStatus::Other(v.into_static()),
+        }
+    }
+}
+
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -53,27 +154,31 @@ pub struct RequestJoinOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum RequestJoinError<'a> {
+pub enum RequestJoinError {
     #[serde(rename = "ConvoLocked")]
-    ConvoLocked(std::option::Option<jacquard_common::CowStr<'a>>),
+    ConvoLocked(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "FollowRequired")]
-    FollowRequired(std::option::Option<jacquard_common::CowStr<'a>>),
+    FollowRequired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "InvalidCode")]
-    InvalidCode(std::option::Option<jacquard_common::CowStr<'a>>),
+    InvalidCode(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "LinkDisabled")]
-    LinkDisabled(std::option::Option<jacquard_common::CowStr<'a>>),
+    LinkDisabled(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "MemberLimitReached")]
-    MemberLimitReached(std::option::Option<jacquard_common::CowStr<'a>>),
+    MemberLimitReached(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "UserKicked")]
-    UserKicked(std::option::Option<jacquard_common::CowStr<'a>>),
+    UserKicked(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
 }
 
-impl std::fmt::Display for RequestJoinError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for RequestJoinError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             Self::ConvoLocked(msg) => {
                 write!(f, "ConvoLocked")?;
@@ -117,35 +222,43 @@ impl std::fmt::Display for RequestJoinError<'_> {
                 }
                 Ok(())
             }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
         }
     }
 }
 
-/// Response type for
-///chat.bsky.group.requestJoin
+/** Response marker for the `chat.bsky.group.requestJoin` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `RequestJoinOutput<S>` for this endpoint.*/
 pub struct RequestJoinResponse;
 impl jacquard_common::xrpc::XrpcResp for RequestJoinResponse {
     const NSID: &'static str = "chat.bsky.group.requestJoin";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = RequestJoinOutput<'de>;
-    type Err<'de> = RequestJoinError<'de>;
+    type Output<S: jacquard_common::BosStr> = RequestJoinOutput<S>;
+    type Err = RequestJoinError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for RequestJoin<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for RequestJoin<S> {
     const NSID: &'static str = "chat.bsky.group.requestJoin";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = RequestJoinResponse;
 }
 
-/// Endpoint type for
-///chat.bsky.group.requestJoin
+/** Endpoint marker for the `chat.bsky.group.requestJoin` procedure.
+
+Path: `/xrpc/chat.bsky.group.requestJoin`. The request payload type is `RequestJoin<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct RequestJoinRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for RequestJoinRequest {
     const PATH: &'static str = "/xrpc/chat.bsky.group.requestJoin";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = RequestJoin<'de>;
+    type Request<S: jacquard_common::BosStr> = RequestJoin<S>;
     type Response = RequestJoinResponse;
 }

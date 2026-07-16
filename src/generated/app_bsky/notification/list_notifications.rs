@@ -8,21 +8,257 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct ListNotifications<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    ///(default: 50, min: 1, max: 100)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub limit: std::option::Option<i64>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub priority: std::option::Option<bool>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub reasons: std::option::Option<Vec<jacquard_common::CowStr<'a>>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub seen_at: std::option::Option<jacquard_common::types::string::Datetime>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ListNotifications<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    /// Defaults to `50`. Min: 1. Max: 100.
+    #[serde(default = "_default_limit")]
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub limit: core::option::Option<i64>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub priority: core::option::Option<bool>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub reasons: core::option::Option<Vec<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub seen_at: core::option::Option<jacquard_common::types::string::Datetime>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ListNotificationsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    pub notifications:
+        Vec<crate::generated::app_bsky::notification::list_notifications::Notification<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub priority: core::option::Option<bool>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub seen_at: core::option::Option<jacquard_common::types::string::Datetime>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct Notification<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub author: crate::generated::app_bsky::actor::ProfileView<S>,
+    pub cid: jacquard_common::types::string::Cid<S>,
+    pub indexed_at: jacquard_common::types::string::Datetime,
+    pub is_read: bool,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub labels: core::option::Option<Vec<crate::generated::com_atproto::label::Label<S>>>,
+    ///The reason why this notification was delivered - e.g. your post was liked, or you received a new follower.
+    pub reason: NotificationReason<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub reason_subject: core::option::Option<jacquard_common::types::string::AtUri<S>>,
+    pub record: jacquard_common::types::value::Data<S>,
+    pub uri: jacquard_common::types::string::AtUri<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// The reason why this notification was delivered - e.g. your post was liked, or you received a new follower.
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum NotificationReason<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    Like,
+    Repost,
+    Follow,
+    Mention,
+    Reply,
+    Quote,
+    StarterpackJoined,
+    Verified,
+    Unverified,
+    LikeViaRepost,
+    RepostViaRepost,
+    SubscribedPost,
+    ContactMatch,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> NotificationReason<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Like => "like",
+            Self::Repost => "repost",
+            Self::Follow => "follow",
+            Self::Mention => "mention",
+            Self::Reply => "reply",
+            Self::Quote => "quote",
+            Self::StarterpackJoined => "starterpack-joined",
+            Self::Verified => "verified",
+            Self::Unverified => "unverified",
+            Self::LikeViaRepost => "like-via-repost",
+            Self::RepostViaRepost => "repost-via-repost",
+            Self::SubscribedPost => "subscribed-post",
+            Self::ContactMatch => "contact-match",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "like" => Self::Like,
+            "repost" => Self::Repost,
+            "follow" => Self::Follow,
+            "mention" => Self::Mention,
+            "reply" => Self::Reply,
+            "quote" => Self::Quote,
+            "starterpack-joined" => Self::StarterpackJoined,
+            "verified" => Self::Verified,
+            "unverified" => Self::Unverified,
+            "like-via-repost" => Self::LikeViaRepost,
+            "repost-via-repost" => Self::RepostViaRepost,
+            "subscribed-post" => Self::SubscribedPost,
+            "contact-match" => Self::ContactMatch,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for NotificationReason<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for NotificationReason<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for NotificationReason<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for NotificationReason<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for NotificationReason<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for NotificationReason<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = NotificationReason<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            NotificationReason::Like => NotificationReason::Like,
+            NotificationReason::Repost => NotificationReason::Repost,
+            NotificationReason::Follow => NotificationReason::Follow,
+            NotificationReason::Mention => NotificationReason::Mention,
+            NotificationReason::Reply => NotificationReason::Reply,
+            NotificationReason::Quote => NotificationReason::Quote,
+            NotificationReason::StarterpackJoined => NotificationReason::StarterpackJoined,
+            NotificationReason::Verified => NotificationReason::Verified,
+            NotificationReason::Unverified => NotificationReason::Unverified,
+            NotificationReason::LikeViaRepost => NotificationReason::LikeViaRepost,
+            NotificationReason::RepostViaRepost => NotificationReason::RepostViaRepost,
+            NotificationReason::SubscribedPost => NotificationReason::SubscribedPost,
+            NotificationReason::ContactMatch => NotificationReason::ContactMatch,
+            NotificationReason::Other(v) => NotificationReason::Other(v.into_static()),
+        }
+    }
+}
+
+/** Response marker for the `app.bsky.notification.listNotifications` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `ListNotificationsOutput<S>` for this endpoint.*/
+pub struct ListNotificationsResponse;
+impl jacquard_common::xrpc::XrpcResp for ListNotificationsResponse {
+    const NSID: &'static str = "app.bsky.notification.listNotifications";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = ListNotificationsOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for ListNotifications<S> {
+    const NSID: &'static str = "app.bsky.notification.listNotifications";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = ListNotificationsResponse;
+}
+
+/** Endpoint marker for the `app.bsky.notification.listNotifications` query.
+
+Path: `/xrpc/app.bsky.notification.listNotifications`. The request payload type is `ListNotifications<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct ListNotificationsRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for ListNotificationsRequest {
+    const PATH: &'static str = "/xrpc/app.bsky.notification.listNotifications";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = ListNotifications<S>;
+    type Response = ListNotificationsResponse;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Notification<S> {
+    fn nsid() -> &'static str {
+        "app.bsky.notification.listNotifications"
+    }
+    fn def_name() -> &'static str {
+        "notification"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_app_bsky_notification_listNotifications()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+fn _default_limit() -> core::option::Option<i64> {
+    Some(50i64)
 }
 
 pub mod list_notifications_state {
@@ -44,96 +280,129 @@ pub mod list_notifications_state {
     pub mod members {}
 }
 
-/// Builder for constructing an instance of this type
-pub struct ListNotificationsBuilder<'a, S: list_notifications_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<bool>,
-        ::core::option::Option<Vec<jacquard_common::CowStr<'a>>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
+/// Builder for constructing an instance of this type.
+pub struct ListNotificationsBuilder<
+    St: list_notifications_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<i64>,
+        core::option::Option<bool>,
+        core::option::Option<Vec<S>>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> ListNotifications<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> ListNotificationsBuilder<'a, list_notifications_state::Empty> {
+impl ListNotifications<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> ListNotificationsBuilder<list_notifications_state::Empty, jacquard_common::DefaultStr>
+    {
         ListNotificationsBuilder::new()
     }
 }
 
-impl<'a> ListNotificationsBuilder<'a, list_notifications_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> ListNotifications<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> ListNotificationsBuilder<list_notifications_state::Empty, S> {
+        ListNotificationsBuilder::builder()
+    }
+}
+
+impl ListNotificationsBuilder<list_notifications_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ListNotificationsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: list_notifications_state::State> ListNotificationsBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> ListNotificationsBuilder<list_notifications_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        ListNotificationsBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: list_notifications_state::State, S: jacquard_common::BosStr>
+    ListNotificationsBuilder<St, S>
+{
     /// Set the `cursor` field (optional)
-    pub fn cursor(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+    pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.0 = value.into();
         self
     }
     /// Set the `cursor` field to an Option value (optional)
-    pub fn maybe_cursor(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.0 = value;
+    pub fn maybe_cursor(mut self, value: Option<S>) -> Self {
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S: list_notifications_state::State> ListNotificationsBuilder<'a, S> {
+impl<St: list_notifications_state::State, S: jacquard_common::BosStr>
+    ListNotificationsBuilder<St, S>
+{
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self._fields.1 = value.into();
         self
     }
     /// Set the `limit` field to an Option value (optional)
     pub fn maybe_limit(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.1 = value;
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S: list_notifications_state::State> ListNotificationsBuilder<'a, S> {
+impl<St: list_notifications_state::State, S: jacquard_common::BosStr>
+    ListNotificationsBuilder<St, S>
+{
     /// Set the `priority` field (optional)
     pub fn priority(mut self, value: impl Into<Option<bool>>) -> Self {
-        self.__unsafe_private_named.2 = value.into();
+        self._fields.2 = value.into();
         self
     }
     /// Set the `priority` field to an Option value (optional)
     pub fn maybe_priority(mut self, value: Option<bool>) -> Self {
-        self.__unsafe_private_named.2 = value;
+        self._fields.2 = value;
         self
     }
 }
 
-impl<'a, S: list_notifications_state::State> ListNotificationsBuilder<'a, S> {
+impl<St: list_notifications_state::State, S: jacquard_common::BosStr>
+    ListNotificationsBuilder<St, S>
+{
     /// Set the `reasons` field (optional)
-    pub fn reasons(mut self, value: impl Into<Option<Vec<jacquard_common::CowStr<'a>>>>) -> Self {
-        self.__unsafe_private_named.3 = value.into();
+    pub fn reasons(mut self, value: impl Into<Option<Vec<S>>>) -> Self {
+        self._fields.3 = value.into();
         self
     }
     /// Set the `reasons` field to an Option value (optional)
-    pub fn maybe_reasons(mut self, value: Option<Vec<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.3 = value;
+    pub fn maybe_reasons(mut self, value: Option<Vec<S>>) -> Self {
+        self._fields.3 = value;
         self
     }
 }
 
-impl<'a, S: list_notifications_state::State> ListNotificationsBuilder<'a, S> {
+impl<St: list_notifications_state::State, S: jacquard_common::BosStr>
+    ListNotificationsBuilder<St, S>
+{
     /// Set the `seenAt` field (optional)
     pub fn seen_at(
         mut self,
         value: impl Into<Option<jacquard_common::types::string::Datetime>>,
     ) -> Self {
-        self.__unsafe_private_named.4 = value.into();
+        self._fields.4 = value.into();
         self
     }
     /// Set the `seenAt` field to an Option value (optional)
@@ -141,96 +410,25 @@ impl<'a, S: list_notifications_state::State> ListNotificationsBuilder<'a, S> {
         mut self,
         value: Option<jacquard_common::types::string::Datetime>,
     ) -> Self {
-        self.__unsafe_private_named.4 = value;
+        self._fields.4 = value;
         self
     }
 }
 
-impl<'a, S> ListNotificationsBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ListNotificationsBuilder<St, S>
 where
-    S: list_notifications_state::State,
+    St: list_notifications_state::State,
 {
-    /// Build the final struct
-    pub fn build(self) -> ListNotifications<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> ListNotifications<S> {
         ListNotifications {
-            cursor: self.__unsafe_private_named.0,
-            limit: self.__unsafe_private_named.1,
-            priority: self.__unsafe_private_named.2,
-            reasons: self.__unsafe_private_named.3,
-            seen_at: self.__unsafe_private_named.4,
+            cursor: self._fields.0,
+            limit: self._fields.1,
+            priority: self._fields.2,
+            reasons: self._fields.3,
+            seen_at: self._fields.4,
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct ListNotificationsOutput<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(borrow)]
-    pub notifications:
-        Vec<crate::generated::app_bsky::notification::list_notifications::Notification<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub priority: std::option::Option<bool>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub seen_at: std::option::Option<jacquard_common::types::string::Datetime>,
-}
-
-/// Response type for
-///app.bsky.notification.listNotifications
-pub struct ListNotificationsResponse;
-impl jacquard_common::xrpc::XrpcResp for ListNotificationsResponse {
-    const NSID: &'static str = "app.bsky.notification.listNotifications";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = ListNotificationsOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for ListNotifications<'a> {
-    const NSID: &'static str = "app.bsky.notification.listNotifications";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = ListNotificationsResponse;
-}
-
-/// Endpoint type for
-///app.bsky.notification.listNotifications
-pub struct ListNotificationsRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for ListNotificationsRequest {
-    const PATH: &'static str = "/xrpc/app.bsky.notification.listNotifications";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = ListNotifications<'de>;
-    type Response = ListNotificationsResponse;
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct Notification<'a> {
-    #[serde(borrow)]
-    pub author: crate::generated::app_bsky::actor::ProfileView<'a>,
-    #[serde(borrow)]
-    pub cid: jacquard_common::types::string::Cid<'a>,
-    pub indexed_at: jacquard_common::types::string::Datetime,
-    pub is_read: bool,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub labels: std::option::Option<Vec<crate::generated::com_atproto::label::Label<'a>>>,
-    /// The reason why this notification was delivered - e.g. your post was liked, or you received a new follower.
-    #[serde(borrow)]
-    pub reason: jacquard_common::CowStr<'a>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub reason_subject: std::option::Option<jacquard_common::types::string::AtUri<'a>>,
-    #[serde(borrow)]
-    pub record: jacquard_common::types::value::Data<'a>,
-    #[serde(borrow)]
-    pub uri: jacquard_common::types::string::AtUri<'a>,
 }
 
 pub mod notification_state {
@@ -243,659 +441,602 @@ pub mod notification_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Uri;
-        type Cid;
         type Author;
+        type Cid;
+        type IndexedAt;
+        type IsRead;
         type Reason;
         type Record;
-        type IsRead;
-        type IndexedAt;
+        type Uri;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Uri = Unset;
-        type Cid = Unset;
         type Author = Unset;
+        type Cid = Unset;
+        type IndexedAt = Unset;
+        type IsRead = Unset;
         type Reason = Unset;
         type Record = Unset;
-        type IsRead = Unset;
-        type IndexedAt = Unset;
-    }
-    ///State transition - sets the `uri` field to Set
-    pub struct SetUri<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUri<S> {}
-    impl<S: State> State for SetUri<S> {
-        type Uri = Set<members::uri>;
-        type Cid = S::Cid;
-        type Author = S::Author;
-        type Reason = S::Reason;
-        type Record = S::Record;
-        type IsRead = S::IsRead;
-        type IndexedAt = S::IndexedAt;
-    }
-    ///State transition - sets the `cid` field to Set
-    pub struct SetCid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCid<S> {}
-    impl<S: State> State for SetCid<S> {
-        type Uri = S::Uri;
-        type Cid = Set<members::cid>;
-        type Author = S::Author;
-        type Reason = S::Reason;
-        type Record = S::Record;
-        type IsRead = S::IsRead;
-        type IndexedAt = S::IndexedAt;
+        type Uri = Unset;
     }
     ///State transition - sets the `author` field to Set
-    pub struct SetAuthor<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetAuthor<S> {}
-    impl<S: State> State for SetAuthor<S> {
-        type Uri = S::Uri;
-        type Cid = S::Cid;
+    pub struct SetAuthor<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetAuthor<St> {}
+    impl<St: State> State for SetAuthor<St> {
         type Author = Set<members::author>;
-        type Reason = S::Reason;
-        type Record = S::Record;
-        type IsRead = S::IsRead;
-        type IndexedAt = S::IndexedAt;
+        type Cid = St::Cid;
+        type IndexedAt = St::IndexedAt;
+        type IsRead = St::IsRead;
+        type Reason = St::Reason;
+        type Record = St::Record;
+        type Uri = St::Uri;
     }
-    ///State transition - sets the `reason` field to Set
-    pub struct SetReason<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetReason<S> {}
-    impl<S: State> State for SetReason<S> {
-        type Uri = S::Uri;
-        type Cid = S::Cid;
-        type Author = S::Author;
-        type Reason = Set<members::reason>;
-        type Record = S::Record;
-        type IsRead = S::IsRead;
-        type IndexedAt = S::IndexedAt;
-    }
-    ///State transition - sets the `record` field to Set
-    pub struct SetRecord<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRecord<S> {}
-    impl<S: State> State for SetRecord<S> {
-        type Uri = S::Uri;
-        type Cid = S::Cid;
-        type Author = S::Author;
-        type Reason = S::Reason;
-        type Record = Set<members::record>;
-        type IsRead = S::IsRead;
-        type IndexedAt = S::IndexedAt;
-    }
-    ///State transition - sets the `is_read` field to Set
-    pub struct SetIsRead<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetIsRead<S> {}
-    impl<S: State> State for SetIsRead<S> {
-        type Uri = S::Uri;
-        type Cid = S::Cid;
-        type Author = S::Author;
-        type Reason = S::Reason;
-        type Record = S::Record;
-        type IsRead = Set<members::is_read>;
-        type IndexedAt = S::IndexedAt;
+    ///State transition - sets the `cid` field to Set
+    pub struct SetCid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCid<St> {}
+    impl<St: State> State for SetCid<St> {
+        type Author = St::Author;
+        type Cid = Set<members::cid>;
+        type IndexedAt = St::IndexedAt;
+        type IsRead = St::IsRead;
+        type Reason = St::Reason;
+        type Record = St::Record;
+        type Uri = St::Uri;
     }
     ///State transition - sets the `indexed_at` field to Set
-    pub struct SetIndexedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetIndexedAt<S> {}
-    impl<S: State> State for SetIndexedAt<S> {
-        type Uri = S::Uri;
-        type Cid = S::Cid;
-        type Author = S::Author;
-        type Reason = S::Reason;
-        type Record = S::Record;
-        type IsRead = S::IsRead;
+    pub struct SetIndexedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetIndexedAt<St> {}
+    impl<St: State> State for SetIndexedAt<St> {
+        type Author = St::Author;
+        type Cid = St::Cid;
         type IndexedAt = Set<members::indexed_at>;
+        type IsRead = St::IsRead;
+        type Reason = St::Reason;
+        type Record = St::Record;
+        type Uri = St::Uri;
+    }
+    ///State transition - sets the `is_read` field to Set
+    pub struct SetIsRead<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetIsRead<St> {}
+    impl<St: State> State for SetIsRead<St> {
+        type Author = St::Author;
+        type Cid = St::Cid;
+        type IndexedAt = St::IndexedAt;
+        type IsRead = Set<members::is_read>;
+        type Reason = St::Reason;
+        type Record = St::Record;
+        type Uri = St::Uri;
+    }
+    ///State transition - sets the `reason` field to Set
+    pub struct SetReason<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetReason<St> {}
+    impl<St: State> State for SetReason<St> {
+        type Author = St::Author;
+        type Cid = St::Cid;
+        type IndexedAt = St::IndexedAt;
+        type IsRead = St::IsRead;
+        type Reason = Set<members::reason>;
+        type Record = St::Record;
+        type Uri = St::Uri;
+    }
+    ///State transition - sets the `record` field to Set
+    pub struct SetRecord<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRecord<St> {}
+    impl<St: State> State for SetRecord<St> {
+        type Author = St::Author;
+        type Cid = St::Cid;
+        type IndexedAt = St::IndexedAt;
+        type IsRead = St::IsRead;
+        type Reason = St::Reason;
+        type Record = Set<members::record>;
+        type Uri = St::Uri;
+    }
+    ///State transition - sets the `uri` field to Set
+    pub struct SetUri<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetUri<St> {}
+    impl<St: State> State for SetUri<St> {
+        type Author = St::Author;
+        type Cid = St::Cid;
+        type IndexedAt = St::IndexedAt;
+        type IsRead = St::IsRead;
+        type Reason = St::Reason;
+        type Record = St::Record;
+        type Uri = Set<members::uri>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `uri` field
-        pub struct uri(());
-        ///Marker type for the `cid` field
-        pub struct cid(());
         ///Marker type for the `author` field
         pub struct author(());
+        ///Marker type for the `cid` field
+        pub struct cid(());
+        ///Marker type for the `indexed_at` field
+        pub struct indexed_at(());
+        ///Marker type for the `is_read` field
+        pub struct is_read(());
         ///Marker type for the `reason` field
         pub struct reason(());
         ///Marker type for the `record` field
         pub struct record(());
-        ///Marker type for the `is_read` field
-        pub struct is_read(());
-        ///Marker type for the `indexed_at` field
-        pub struct indexed_at(());
+        ///Marker type for the `uri` field
+        pub struct uri(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct NotificationBuilder<'a, S: notification_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<crate::generated::app_bsky::actor::ProfileView<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Cid<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<bool>,
-        ::core::option::Option<Vec<crate::generated::com_atproto::label::Label<'a>>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
-        ::core::option::Option<jacquard_common::types::value::Data<'a>>,
-        ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct NotificationBuilder<
+    St: notification_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<crate::generated::app_bsky::actor::ProfileView<S>>,
+        core::option::Option<jacquard_common::types::string::Cid<S>>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<bool>,
+        core::option::Option<Vec<crate::generated::com_atproto::label::Label<S>>>,
+        core::option::Option<NotificationReason<S>>,
+        core::option::Option<jacquard_common::types::string::AtUri<S>>,
+        core::option::Option<jacquard_common::types::value::Data<S>>,
+        core::option::Option<jacquard_common::types::string::AtUri<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> Notification<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> NotificationBuilder<'a, notification_state::Empty> {
+impl Notification<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> NotificationBuilder<notification_state::Empty, jacquard_common::DefaultStr> {
         NotificationBuilder::new()
     }
 }
 
-impl<'a> NotificationBuilder<'a, notification_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> Notification<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> NotificationBuilder<notification_state::Empty, S> {
+        NotificationBuilder::builder()
+    }
+}
+
+impl NotificationBuilder<notification_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         NotificationBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> NotificationBuilder<'a, S>
+impl<S: jacquard_common::BosStr> NotificationBuilder<notification_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        NotificationBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> NotificationBuilder<St, S>
 where
-    S: notification_state::State,
-    S::Author: notification_state::IsUnset,
+    St: notification_state::State,
+    St::Author: notification_state::IsUnset,
 {
     /// Set the `author` field (required)
     pub fn author(
         mut self,
-        value: impl Into<crate::generated::app_bsky::actor::ProfileView<'a>>,
-    ) -> NotificationBuilder<'a, notification_state::SetAuthor<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<crate::generated::app_bsky::actor::ProfileView<S>>,
+    ) -> NotificationBuilder<notification_state::SetAuthor<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         NotificationBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> NotificationBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> NotificationBuilder<St, S>
 where
-    S: notification_state::State,
-    S::Cid: notification_state::IsUnset,
+    St: notification_state::State,
+    St::Cid: notification_state::IsUnset,
 {
     /// Set the `cid` field (required)
     pub fn cid(
         mut self,
-        value: impl Into<jacquard_common::types::string::Cid<'a>>,
-    ) -> NotificationBuilder<'a, notification_state::SetCid<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Cid<S>>,
+    ) -> NotificationBuilder<notification_state::SetCid<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         NotificationBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> NotificationBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> NotificationBuilder<St, S>
 where
-    S: notification_state::State,
-    S::IndexedAt: notification_state::IsUnset,
+    St: notification_state::State,
+    St::IndexedAt: notification_state::IsUnset,
 {
     /// Set the `indexedAt` field (required)
     pub fn indexed_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> NotificationBuilder<'a, notification_state::SetIndexedAt<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+    ) -> NotificationBuilder<notification_state::SetIndexedAt<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         NotificationBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> NotificationBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> NotificationBuilder<St, S>
 where
-    S: notification_state::State,
-    S::IsRead: notification_state::IsUnset,
+    St: notification_state::State,
+    St::IsRead: notification_state::IsUnset,
 {
     /// Set the `isRead` field (required)
     pub fn is_read(
         mut self,
         value: impl Into<bool>,
-    ) -> NotificationBuilder<'a, notification_state::SetIsRead<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+    ) -> NotificationBuilder<notification_state::SetIsRead<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
         NotificationBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: notification_state::State> NotificationBuilder<'a, S> {
+impl<St: notification_state::State, S: jacquard_common::BosStr> NotificationBuilder<St, S> {
     /// Set the `labels` field (optional)
     pub fn labels(
         mut self,
-        value: impl Into<Option<Vec<crate::generated::com_atproto::label::Label<'a>>>>,
+        value: impl Into<Option<Vec<crate::generated::com_atproto::label::Label<S>>>>,
     ) -> Self {
-        self.__unsafe_private_named.4 = value.into();
+        self._fields.4 = value.into();
         self
     }
     /// Set the `labels` field to an Option value (optional)
     pub fn maybe_labels(
         mut self,
-        value: Option<Vec<crate::generated::com_atproto::label::Label<'a>>>,
+        value: Option<Vec<crate::generated::com_atproto::label::Label<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.4 = value;
+        self._fields.4 = value;
         self
     }
 }
 
-impl<'a, S> NotificationBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> NotificationBuilder<St, S>
 where
-    S: notification_state::State,
-    S::Reason: notification_state::IsUnset,
+    St: notification_state::State,
+    St::Reason: notification_state::IsUnset,
 {
     /// Set the `reason` field (required)
     pub fn reason(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> NotificationBuilder<'a, notification_state::SetReason<S>> {
-        self.__unsafe_private_named.5 = ::core::option::Option::Some(value.into());
+        value: impl Into<NotificationReason<S>>,
+    ) -> NotificationBuilder<notification_state::SetReason<St>, S> {
+        self._fields.5 = ::core::option::Option::Some(value.into());
         NotificationBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: notification_state::State> NotificationBuilder<'a, S> {
+impl<St: notification_state::State, S: jacquard_common::BosStr> NotificationBuilder<St, S> {
     /// Set the `reasonSubject` field (optional)
     pub fn reason_subject(
         mut self,
-        value: impl Into<Option<jacquard_common::types::string::AtUri<'a>>>,
+        value: impl Into<Option<jacquard_common::types::string::AtUri<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.6 = value.into();
+        self._fields.6 = value.into();
         self
     }
     /// Set the `reasonSubject` field to an Option value (optional)
     pub fn maybe_reason_subject(
         mut self,
-        value: Option<jacquard_common::types::string::AtUri<'a>>,
+        value: Option<jacquard_common::types::string::AtUri<S>>,
     ) -> Self {
-        self.__unsafe_private_named.6 = value;
+        self._fields.6 = value;
         self
     }
 }
 
-impl<'a, S> NotificationBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> NotificationBuilder<St, S>
 where
-    S: notification_state::State,
-    S::Record: notification_state::IsUnset,
+    St: notification_state::State,
+    St::Record: notification_state::IsUnset,
 {
     /// Set the `record` field (required)
     pub fn record(
         mut self,
-        value: impl Into<jacquard_common::types::value::Data<'a>>,
-    ) -> NotificationBuilder<'a, notification_state::SetRecord<S>> {
-        self.__unsafe_private_named.7 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::value::Data<S>>,
+    ) -> NotificationBuilder<notification_state::SetRecord<St>, S> {
+        self._fields.7 = ::core::option::Option::Some(value.into());
         NotificationBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> NotificationBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> NotificationBuilder<St, S>
 where
-    S: notification_state::State,
-    S::Uri: notification_state::IsUnset,
+    St: notification_state::State,
+    St::Uri: notification_state::IsUnset,
 {
     /// Set the `uri` field (required)
     pub fn uri(
         mut self,
-        value: impl Into<jacquard_common::types::string::AtUri<'a>>,
-    ) -> NotificationBuilder<'a, notification_state::SetUri<S>> {
-        self.__unsafe_private_named.8 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::AtUri<S>>,
+    ) -> NotificationBuilder<notification_state::SetUri<St>, S> {
+        self._fields.8 = ::core::option::Option::Some(value.into());
         NotificationBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> NotificationBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> NotificationBuilder<St, S>
 where
-    S: notification_state::State,
-    S::Uri: notification_state::IsSet,
-    S::Cid: notification_state::IsSet,
-    S::Author: notification_state::IsSet,
-    S::Reason: notification_state::IsSet,
-    S::Record: notification_state::IsSet,
-    S::IsRead: notification_state::IsSet,
-    S::IndexedAt: notification_state::IsSet,
+    St: notification_state::State,
+    St::Author: notification_state::IsSet,
+    St::Cid: notification_state::IsSet,
+    St::IndexedAt: notification_state::IsSet,
+    St::IsRead: notification_state::IsSet,
+    St::Reason: notification_state::IsSet,
+    St::Record: notification_state::IsSet,
+    St::Uri: notification_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> Notification<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> Notification<S> {
         Notification {
-            author: self.__unsafe_private_named.0.unwrap(),
-            cid: self.__unsafe_private_named.1.unwrap(),
-            indexed_at: self.__unsafe_private_named.2.unwrap(),
-            is_read: self.__unsafe_private_named.3.unwrap(),
-            labels: self.__unsafe_private_named.4,
-            reason: self.__unsafe_private_named.5.unwrap(),
-            reason_subject: self.__unsafe_private_named.6,
-            record: self.__unsafe_private_named.7.unwrap(),
-            uri: self.__unsafe_private_named.8.unwrap(),
+            author: self._fields.0.unwrap(),
+            cid: self._fields.1.unwrap(),
+            indexed_at: self._fields.2.unwrap(),
+            is_read: self._fields.3.unwrap(),
+            labels: self._fields.4,
+            reason: self._fields.5.unwrap(),
+            reason_subject: self._fields.6,
+            record: self._fields.7.unwrap(),
+            uri: self._fields.8.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> Notification<'a> {
+    ) -> Notification<S> {
         Notification {
-            author: self.__unsafe_private_named.0.unwrap(),
-            cid: self.__unsafe_private_named.1.unwrap(),
-            indexed_at: self.__unsafe_private_named.2.unwrap(),
-            is_read: self.__unsafe_private_named.3.unwrap(),
-            labels: self.__unsafe_private_named.4,
-            reason: self.__unsafe_private_named.5.unwrap(),
-            reason_subject: self.__unsafe_private_named.6,
-            record: self.__unsafe_private_named.7.unwrap(),
-            uri: self.__unsafe_private_named.8.unwrap(),
+            author: self._fields.0.unwrap(),
+            cid: self._fields.1.unwrap(),
+            indexed_at: self._fields.2.unwrap(),
+            is_read: self._fields.3.unwrap(),
+            labels: self._fields.4,
+            reason: self._fields.5.unwrap(),
+            reason_subject: self._fields.6,
+            record: self._fields.7.unwrap(),
+            uri: self._fields.8.unwrap(),
             extra_data: Some(extra_data),
         }
     }
 }
 
 fn lexicon_doc_app_bsky_notification_listNotifications(
-) -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+) -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("app.bsky.notification.listNotifications"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
                 ::jacquard_lexicon::lexicon::LexUserType::XrpcQuery(::jacquard_lexicon::lexicon::LexXrpcQuery {
-                    description: None,
                     parameters: Some(
                         ::jacquard_lexicon::lexicon::LexXrpcQueryParameter::Params(::jacquard_lexicon::lexicon::LexXrpcParameters {
-                            description: None,
-                            required: None,
                             properties: {
                                 #[allow(unused_mut)]
-                                let mut map = ::std::collections::BTreeMap::new();
+                                let mut map = ::alloc::collections::BTreeMap::new();
                                 map.insert(
-                                    ::jacquard_common::smol_str::SmolStr::new_static("cursor"),
+                                    ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                        "cursor",
+                                    ),
                                     ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     }),
                                 );
                                 map.insert(
-                                    ::jacquard_common::smol_str::SmolStr::new_static("limit"),
+                                    ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                        "limit",
+                                    ),
                                     ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
-                                        minimum: None,
-                                        maximum: None,
-                                        r#enum: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     }),
                                 );
                                 map.insert(
-                                    ::jacquard_common::smol_str::SmolStr::new_static(
+                                    ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                         "priority",
                                     ),
                                     ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
-                                        description: None,
-                                        default: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     }),
                                 );
                                 map.insert(
-                                    ::jacquard_common::smol_str::SmolStr::new_static("reasons"),
+                                    ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                        "reasons",
+                                    ),
                                     ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::Array(::jacquard_lexicon::lexicon::LexPrimitiveArray {
-                                        description: None,
                                         items: ::jacquard_lexicon::lexicon::LexPrimitiveArrayItem::String(::jacquard_lexicon::lexicon::LexString {
                                             description: Some(
                                                 ::jacquard_common::CowStr::new_static(
                                                     "A reason that matches the reason property of #notification.",
                                                 ),
                                             ),
-                                            format: None,
-                                            default: None,
-                                            min_length: None,
-                                            max_length: None,
-                                            min_graphemes: None,
-                                            max_graphemes: None,
-                                            r#enum: None,
-                                            r#const: None,
-                                            known_values: None,
+                                            ..Default::default()
                                         }),
-                                        min_length: None,
-                                        max_length: None,
+                                        ..Default::default()
                                     }),
                                 );
                                 map.insert(
-                                    ::jacquard_common::smol_str::SmolStr::new_static("seenAt"),
+                                    ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                        "seenAt",
+                                    ),
                                     ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     }),
                                 );
                                 map
                             },
+                            ..Default::default()
                         }),
                     ),
-                    output: None,
-                    errors: None,
+                    ..Default::default()
                 }),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("notification"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("notification"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: None,
                     required: Some(
                         vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("uri"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("cid"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("author"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("reason"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("record"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("isRead"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("indexedAt")
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("uri"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("cid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("author"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("reason"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("record"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("isRead"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("indexedAt")
                         ],
                     ),
-                    nullable: None,
                     properties: {
                         #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
+                        let mut map = ::alloc::collections::BTreeMap::new();
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("author"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "author",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                description: None,
                                 r#ref: ::jacquard_common::CowStr::new_static(
                                     "app.bsky.actor.defs#profileView",
                                 ),
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("cid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "cid",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Cid,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "indexedAt",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("isRead"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "isRead",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
-                                description: None,
-                                default: None,
-                                r#const: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("labels"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "labels",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
-                                description: None,
                                 items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                    description: None,
                                     r#ref: ::jacquard_common::CowStr::new_static(
                                         "com.atproto.label.defs#label",
                                     ),
+                                    ..Default::default()
                                 }),
-                                min_length: None,
-                                max_length: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("reason"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "reason",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
                                         "The reason why this notification was delivered - e.g. your post was liked, or you received a new follower.",
                                     ),
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "reasonSubject",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("record"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "record",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Unknown(::jacquard_lexicon::lexicon::LexUnknown {
-                                description: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("uri"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "uri",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map
                     },
+                    ..Default::default()
                 }),
             );
             map
         },
-    }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Notification<'a> {
-    fn nsid() -> &'static str {
-        "app.bsky.notification.listNotifications"
-    }
-    fn def_name() -> &'static str {
-        "notification"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_app_bsky_notification_listNotifications()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
+        ..Default::default()
     }
 }

@@ -5,7 +5,6 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -16,32 +15,55 @@
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct RequestFailover<'a> {
-    /// Conversation identifier
-    #[serde(borrow)]
-    pub convo_id: jacquard_common::CowStr<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct RequestFailover<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Conversation identifier
+    pub convo_id: S,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct RequestFailoverOutput<'a> {
-    /// Conversation identifier
-    #[serde(borrow)]
-    pub convo_id: jacquard_common::CowStr<'a>,
-    /// Current MLS epoch after failover
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct RequestFailoverOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Conversation identifier
+    pub convo_id: S,
+    ///Current MLS epoch after failover
     pub epoch: i64,
-    /// DID of the new sequencer that assumed the role
-    #[serde(borrow)]
-    pub new_sequencer_did: jacquard_common::types::string::Did<'a>,
-    /// New sequencer term number
+    ///DID of the new sequencer that assumed the role
+    pub new_sequencer_did: jacquard_common::types::string::Did<S>,
+    ///New sequencer term number
     pub sequencer_term: i64,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::open_union]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -51,24 +73,28 @@ pub struct RequestFailoverOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum RequestFailoverError<'a> {
+pub enum RequestFailoverError {
     /// Conversation not found
     #[serde(rename = "ConvoNotFound")]
-    ConvoNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
+    ConvoNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// Caller is not a member of the conversation
     #[serde(rename = "NotMember")]
-    NotMember(std::option::Option<jacquard_common::CowStr<'a>>),
+    NotMember(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// Current sequencer is still healthy, failover denied
     #[serde(rename = "SequencerHealthy")]
-    SequencerHealthy(std::option::Option<jacquard_common::CowStr<'a>>),
+    SequencerHealthy(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
 }
 
-impl std::fmt::Display for RequestFailoverError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for RequestFailoverError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             Self::ConvoNotFound(msg) => {
                 write!(f, "ConvoNotFound")?;
@@ -91,35 +117,43 @@ impl std::fmt::Display for RequestFailoverError<'_> {
                 }
                 Ok(())
             }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
         }
     }
 }
 
-/// Response type for
-///blue.catbird.mlsChat.requestFailover
+/** Response marker for the `blue.catbird.mlsChat.requestFailover` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `RequestFailoverOutput<S>` for this endpoint.*/
 pub struct RequestFailoverResponse;
 impl jacquard_common::xrpc::XrpcResp for RequestFailoverResponse {
     const NSID: &'static str = "blue.catbird.mlsChat.requestFailover";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = RequestFailoverOutput<'de>;
-    type Err<'de> = RequestFailoverError<'de>;
+    type Output<S: jacquard_common::BosStr> = RequestFailoverOutput<S>;
+    type Err = RequestFailoverError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for RequestFailover<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for RequestFailover<S> {
     const NSID: &'static str = "blue.catbird.mlsChat.requestFailover";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = RequestFailoverResponse;
 }
 
-/// Endpoint type for
-///blue.catbird.mlsChat.requestFailover
+/** Endpoint marker for the `blue.catbird.mlsChat.requestFailover` procedure.
+
+Path: `/xrpc/blue.catbird.mlsChat.requestFailover`. The request payload type is `RequestFailover<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct RequestFailoverRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for RequestFailoverRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.requestFailover";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = RequestFailover<'de>;
+    type Request<S: jacquard_common::BosStr> = RequestFailover<S>;
     type Response = RequestFailoverResponse;
 }

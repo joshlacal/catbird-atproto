@@ -5,7 +5,6 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -16,51 +15,173 @@
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct UpdateConvo<'a> {
-    /// Action to perform on the conversation
-    #[serde(borrow)]
-    pub action: jacquard_common::CowStr<'a>,
-    /// Conversation identifier
-    #[serde(borrow)]
-    pub convo_id: jacquard_common::CowStr<'a>,
-    /// MLS epoch the GroupInfo corresponds to (required for 'updateGroupInfo' action)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub epoch: std::option::Option<i64>,
-    /// Serialized GroupInfo bytes (required for 'updateGroupInfo' action)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct UpdateConvo<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Action to perform on the conversation
+    pub action: UpdateConvoAction<S>,
+    ///Conversation identifier
+    pub convo_id: S,
+    ///MLS epoch the GroupInfo corresponds to (required for 'updateGroupInfo' action)
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub epoch: core::option::Option<i64>,
+    ///Serialized GroupInfo bytes (required for 'updateGroupInfo' action)
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
     #[serde(default, with = "jacquard_common::opt_serde_bytes_helper")]
-    pub group_info: std::option::Option<bytes::Bytes>,
-    /// Policy settings to update (required for 'updatePolicy' action)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
+    pub group_info: core::option::Option<jacquard_common::deps::bytes::Bytes>,
+    ///Policy settings to update (required for 'updatePolicy' action)
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub policy:
-        std::option::Option<crate::generated::blue_catbird::mlsChat::update_convo::PolicyInput<'a>>,
-    /// Target member DID (required for promote/demote actions)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub target_did: std::option::Option<jacquard_common::types::string::Did<'a>>,
+        core::option::Option<crate::generated::blue_catbird::mlsChat::update_convo::PolicyInput<S>>,
+    ///Target member DID (required for promote/demote actions)
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub target_did: core::option::Option<jacquard_common::types::string::Did<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::lexicon]
+/// Action to perform on the conversation
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum UpdateConvoAction<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    UpdatePolicy,
+    PromoteAdmin,
+    DemoteAdmin,
+    PromoteModerator,
+    DemoteModerator,
+    UpdateGroupInfo,
+    RefreshGroupInfo,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> UpdateConvoAction<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::UpdatePolicy => "updatePolicy",
+            Self::PromoteAdmin => "promoteAdmin",
+            Self::DemoteAdmin => "demoteAdmin",
+            Self::PromoteModerator => "promoteModerator",
+            Self::DemoteModerator => "demoteModerator",
+            Self::UpdateGroupInfo => "updateGroupInfo",
+            Self::RefreshGroupInfo => "refreshGroupInfo",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "updatePolicy" => Self::UpdatePolicy,
+            "promoteAdmin" => Self::PromoteAdmin,
+            "demoteAdmin" => Self::DemoteAdmin,
+            "promoteModerator" => Self::PromoteModerator,
+            "demoteModerator" => Self::DemoteModerator,
+            "updateGroupInfo" => Self::UpdateGroupInfo,
+            "refreshGroupInfo" => Self::RefreshGroupInfo,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for UpdateConvoAction<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for UpdateConvoAction<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for UpdateConvoAction<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for UpdateConvoAction<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for UpdateConvoAction<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for UpdateConvoAction<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = UpdateConvoAction<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            UpdateConvoAction::UpdatePolicy => UpdateConvoAction::UpdatePolicy,
+            UpdateConvoAction::PromoteAdmin => UpdateConvoAction::PromoteAdmin,
+            UpdateConvoAction::DemoteAdmin => UpdateConvoAction::DemoteAdmin,
+            UpdateConvoAction::PromoteModerator => UpdateConvoAction::PromoteModerator,
+            UpdateConvoAction::DemoteModerator => UpdateConvoAction::DemoteModerator,
+            UpdateConvoAction::UpdateGroupInfo => UpdateConvoAction::UpdateGroupInfo,
+            UpdateConvoAction::RefreshGroupInfo => UpdateConvoAction::RefreshGroupInfo,
+            UpdateConvoAction::Other(v) => UpdateConvoAction::Other(v.into_static()),
+        }
+    }
+}
+
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct UpdateConvoOutput<'a> {
-    /// New epoch number (if the action caused an epoch change)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub new_epoch: std::option::Option<i64>,
-    /// Updated policy settings (present when action is 'updatePolicy')
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct UpdateConvoOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///New epoch number (if the action caused an epoch change)
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub new_epoch: core::option::Option<i64>,
+    ///Updated policy settings (present when action is 'updatePolicy')
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub policy:
-        std::option::Option<crate::generated::blue_catbird::mlsChat::update_convo::PolicyView<'a>>,
-    /// Whether the operation succeeded
+        core::option::Option<crate::generated::blue_catbird::mlsChat::update_convo::PolicyView<S>>,
+    ///Whether the operation succeeded
     pub success: bool,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::open_union]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -70,42 +191,46 @@ pub struct UpdateConvoOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum UpdateConvoError<'a> {
+pub enum UpdateConvoError {
     /// Conversation not found
     #[serde(rename = "ConvoNotFound")]
-    ConvoNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
+    ConvoNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// Caller is not a member of this conversation
     #[serde(rename = "NotMember")]
-    NotMember(std::option::Option<jacquard_common::CowStr<'a>>),
+    NotMember(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// Caller does not have required admin/moderator privileges
     #[serde(rename = "Unauthorized")]
-    Unauthorized(std::option::Option<jacquard_common::CowStr<'a>>),
+    Unauthorized(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// Unknown action value
     #[serde(rename = "InvalidAction")]
-    InvalidAction(std::option::Option<jacquard_common::CowStr<'a>>),
+    InvalidAction(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// targetDid is required for promote/demote actions
     #[serde(rename = "MissingTargetDid")]
-    MissingTargetDid(std::option::Option<jacquard_common::CowStr<'a>>),
+    MissingTargetDid(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// Target DID is not a member of the conversation
     #[serde(rename = "TargetNotMember")]
-    TargetNotMember(std::option::Option<jacquard_common::CowStr<'a>>),
+    TargetNotMember(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// At least one policy field must be provided for updatePolicy
     #[serde(rename = "NoFieldsProvided")]
-    NoFieldsProvided(std::option::Option<jacquard_common::CowStr<'a>>),
+    NoFieldsProvided(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// Provided GroupInfo is invalid or malformed
     #[serde(rename = "InvalidGroupInfo")]
-    InvalidGroupInfo(std::option::Option<jacquard_common::CowStr<'a>>),
+    InvalidGroupInfo(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// maxMembers is less than current member count
     #[serde(rename = "InvalidMaxMembers")]
-    InvalidMaxMembers(std::option::Option<jacquard_common::CowStr<'a>>),
+    InvalidMaxMembers(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
 }
 
-impl std::fmt::Display for UpdateConvoError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for UpdateConvoError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             Self::ConvoNotFound(msg) => {
                 write!(f, "ConvoNotFound")?;
@@ -170,41 +295,19 @@ impl std::fmt::Display for UpdateConvoError<'_> {
                 }
                 Ok(())
             }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
         }
     }
 }
 
-/// Response type for
-///blue.catbird.mlsChat.updateConvo
-pub struct UpdateConvoResponse;
-impl jacquard_common::xrpc::XrpcResp for UpdateConvoResponse {
-    const NSID: &'static str = "blue.catbird.mlsChat.updateConvo";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = UpdateConvoOutput<'de>;
-    type Err<'de> = UpdateConvoError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for UpdateConvo<'a> {
-    const NSID: &'static str = "blue.catbird.mlsChat.updateConvo";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Response = UpdateConvoResponse;
-}
-
-/// Endpoint type for
-///blue.catbird.mlsChat.updateConvo
-pub struct UpdateConvoRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for UpdateConvoRequest {
-    const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.updateConvo";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = UpdateConvo<'de>;
-    type Response = UpdateConvoResponse;
-}
-
 /// Policy settings to update (at least one field required)
-#[jacquard_derive::lexicon]
+
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -215,128 +318,255 @@ impl jacquard_common::xrpc::XrpcEndpoint for UpdateConvoRequest {
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct PolicyInput<'a> {
-    /// Whether only admins can create invite links
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub admin_only_invites: std::option::Option<bool>,
-    /// Whether invite links are enabled
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub allow_invites: std::option::Option<bool>,
-    /// Whether non-admin members can add other members
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub allow_member_add: std::option::Option<bool>,
-    /// Whether non-admin members can remove other members
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub allow_member_remove: std::option::Option<bool>,
-    /// Maximum number of members allowed
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub max_members: std::option::Option<i64>,
-    /// Whether new members require admin approval
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub require_admin_approval: std::option::Option<bool>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct PolicyInput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Whether only admins can create invite links
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub admin_only_invites: core::option::Option<bool>,
+    ///Whether invite links are enabled
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub allow_invites: core::option::Option<bool>,
+    ///Whether non-admin members can add other members
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub allow_member_add: core::option::Option<bool>,
+    ///Whether non-admin members can remove other members
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub allow_member_remove: core::option::Option<bool>,
+    ///Maximum number of members allowed
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub max_members: core::option::Option<i64>,
+    ///Whether new members require admin approval
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub require_admin_approval: core::option::Option<bool>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-fn lexicon_doc_blue_catbird_mlsChat_updateConvo() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static>
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct PolicyView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub admin_only_invites: bool,
+    pub allow_invites: bool,
+    pub allow_member_add: bool,
+    pub allow_member_remove: bool,
+    ///Conversation identifier
+    pub convo_id: S,
+    pub max_members: i64,
+    pub require_admin_approval: bool,
+    ///Timestamp of last policy update
+    pub updated_at: jacquard_common::types::string::Datetime,
+    ///DID of admin who last updated the policy
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub updated_by: core::option::Option<jacquard_common::types::string::Did<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `blue.catbird.mlsChat.updateConvo` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `UpdateConvoOutput<S>` for this endpoint.*/
+pub struct UpdateConvoResponse;
+impl jacquard_common::xrpc::XrpcResp for UpdateConvoResponse {
+    const NSID: &'static str = "blue.catbird.mlsChat.updateConvo";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = UpdateConvoOutput<S>;
+    type Err = UpdateConvoError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for UpdateConvo<S> {
+    const NSID: &'static str = "blue.catbird.mlsChat.updateConvo";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Response = UpdateConvoResponse;
+}
+
+/** Endpoint marker for the `blue.catbird.mlsChat.updateConvo` procedure.
+
+Path: `/xrpc/blue.catbird.mlsChat.updateConvo`. The request payload type is `UpdateConvo<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct UpdateConvoRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for UpdateConvoRequest {
+    const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.updateConvo";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Request<S: jacquard_common::BosStr> = UpdateConvo<S>;
+    type Response = UpdateConvoResponse;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for PolicyInput<S> {
+    fn nsid() -> &'static str {
+        "blue.catbird.mlsChat.updateConvo"
+    }
+    fn def_name() -> &'static str {
+        "policyInput"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_blue_catbird_mlsChat_updateConvo()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        if let Some(ref value) = self.max_members {
+            if *value > 1000i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("max_members"),
+                    max: 1000i64,
+                    actual: *value,
+                });
+            }
+        }
+        if let Some(ref value) = self.max_members {
+            if *value < 2i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("max_members"),
+                    min: 2i64,
+                    actual: *value,
+                });
+            }
+        }
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for PolicyView<S> {
+    fn nsid() -> &'static str {
+        "blue.catbird.mlsChat.updateConvo"
+    }
+    fn def_name() -> &'static str {
+        "policyView"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_blue_catbird_mlsChat_updateConvo()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.max_members;
+            if *value > 1000i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("max_members"),
+                    max: 1000i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.max_members;
+            if *value < 2i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("max_members"),
+                    min: 2i64,
+                    actual: *value,
+                });
+            }
+        }
+        Ok(())
+    }
+}
+
+fn lexicon_doc_blue_catbird_mlsChat_updateConvo() -> jacquard_lexicon::lexicon::LexiconDoc<'static>
 {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("blue.catbird.mlsChat.updateConvo"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
                 ::jacquard_lexicon::lexicon::LexUserType::XrpcProcedure(::jacquard_lexicon::lexicon::LexXrpcProcedure {
-                    description: None,
-                    parameters: None,
                     input: Some(::jacquard_lexicon::lexicon::LexXrpcBody {
-                        description: None,
                         encoding: ::jacquard_common::CowStr::new_static(
                             "application/json",
                         ),
                         schema: Some(
                             ::jacquard_lexicon::lexicon::LexXrpcBodySchema::Object(::jacquard_lexicon::lexicon::LexObject {
-                                description: None,
                                 required: Some(
                                     vec![
-                                        ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
-                                        ::jacquard_common::smol_str::SmolStr::new_static("action")
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static("action")
                                     ],
                                 ),
-                                nullable: None,
                                 properties: {
                                     #[allow(unused_mut)]
-                                    let mut map = ::std::collections::BTreeMap::new();
+                                    let mut map = ::alloc::collections::BTreeMap::new();
                                     map.insert(
-                                        ::jacquard_common::smol_str::SmolStr::new_static("action"),
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "action",
+                                        ),
                                         ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                             description: Some(
                                                 ::jacquard_common::CowStr::new_static(
                                                     "Action to perform on the conversation",
                                                 ),
                                             ),
-                                            format: None,
-                                            default: None,
-                                            min_length: None,
-                                            max_length: None,
-                                            min_graphemes: None,
-                                            max_graphemes: None,
-                                            r#enum: None,
-                                            r#const: None,
-                                            known_values: None,
+                                            ..Default::default()
                                         }),
                                     );
                                     map.insert(
-                                        ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "convoId",
+                                        ),
                                         ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                             description: Some(
                                                 ::jacquard_common::CowStr::new_static(
                                                     "Conversation identifier",
                                                 ),
                                             ),
-                                            format: None,
-                                            default: None,
-                                            min_length: None,
-                                            max_length: None,
-                                            min_graphemes: None,
-                                            max_graphemes: None,
-                                            r#enum: None,
-                                            r#const: None,
-                                            known_values: None,
+                                            ..Default::default()
                                         }),
                                     );
                                     map.insert(
-                                        ::jacquard_common::smol_str::SmolStr::new_static("epoch"),
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "epoch",
+                                        ),
                                         ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                            description: None,
-                                            default: None,
                                             minimum: Some(0i64),
-                                            maximum: None,
-                                            r#enum: None,
-                                            r#const: None,
+                                            ..Default::default()
                                         }),
                                     );
                                     map.insert(
-                                        ::jacquard_common::smol_str::SmolStr::new_static(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                             "groupInfo",
                                         ),
                                         ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
-                                            description: None,
-                                            max_length: None,
-                                            min_length: None,
+                                            ..Default::default()
                                         }),
                                     );
                                     map.insert(
-                                        ::jacquard_common::smol_str::SmolStr::new_static("policy"),
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "policy",
+                                        ),
                                         ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                            description: None,
-                                            r#ref: ::jacquard_common::CowStr::new_static("#policyInput"),
+                                            r#ref: ::jacquard_common::CowStr::new_static(
+                                                "#policyInput",
+                                            ),
+                                            ..Default::default()
                                         }),
                                     );
                                     map.insert(
-                                        ::jacquard_common::smol_str::SmolStr::new_static(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                             "targetDid",
                                         ),
                                         ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -348,222 +578,197 @@ fn lexicon_doc_blue_catbird_mlsChat_updateConvo() -> ::jacquard_lexicon::lexicon
                                             format: Some(
                                                 ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                             ),
-                                            default: None,
-                                            min_length: None,
-                                            max_length: None,
-                                            min_graphemes: None,
-                                            max_graphemes: None,
-                                            r#enum: None,
-                                            r#const: None,
-                                            known_values: None,
+                                            ..Default::default()
                                         }),
                                     );
                                     map
                                 },
+                                ..Default::default()
                             }),
                         ),
+                        ..Default::default()
                     }),
-                    output: None,
-                    errors: None,
+                    ..Default::default()
                 }),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("policyInput"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("policyInput"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
                         description: Some(::jacquard_common::CowStr::new_static(
                             "Policy settings to update (at least one field required)",
                         )),
-                        required: None,
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "adminOnlyInvites",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(
                                     ::jacquard_lexicon::lexicon::LexBoolean {
-                                        description: None,
-                                        default: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("allowInvites"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "allowInvites",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(
                                     ::jacquard_lexicon::lexicon::LexBoolean {
-                                        description: None,
-                                        default: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("allowMemberAdd"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "allowMemberAdd",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(
                                     ::jacquard_lexicon::lexicon::LexBoolean {
-                                        description: None,
-                                        default: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "allowMemberRemove",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(
                                     ::jacquard_lexicon::lexicon::LexBoolean {
-                                        description: None,
-                                        default: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("maxMembers"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "maxMembers",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
                                     ::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
                                         minimum: Some(2i64),
                                         maximum: Some(1000i64),
-                                        r#enum: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "requireAdminApproval",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(
                                     ::jacquard_lexicon::lexicon::LexBoolean {
-                                        description: None,
-                                        default: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("policyView"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("policyView"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("allowInvites"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("adminOnlyInvites"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("allowMemberAdd"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("allowMemberRemove"),
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("allowInvites"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "adminOnlyInvites",
+                            ),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "allowMemberAdd",
+                            ),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "allowMemberRemove",
+                            ),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "requireAdminApproval",
                             ),
-                            ::jacquard_common::smol_str::SmolStr::new_static("maxMembers"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("updatedAt"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("maxMembers"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("updatedAt"),
                         ]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "adminOnlyInvites",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(
                                     ::jacquard_lexicon::lexicon::LexBoolean {
-                                        description: None,
-                                        default: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("allowInvites"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "allowInvites",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(
                                     ::jacquard_lexicon::lexicon::LexBoolean {
-                                        description: None,
-                                        default: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("allowMemberAdd"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "allowMemberAdd",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(
                                     ::jacquard_lexicon::lexicon::LexBoolean {
-                                        description: None,
-                                        default: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "allowMemberRemove",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(
                                     ::jacquard_lexicon::lexicon::LexBoolean {
-                                        description: None,
-                                        default: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
                                             "Conversation identifier",
                                         )),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("maxMembers"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "maxMembers",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
                                     ::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
                                         minimum: Some(2i64),
                                         maximum: Some(1000i64),
-                                        r#enum: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "requireAdminApproval",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(
                                     ::jacquard_lexicon::lexicon::LexBoolean {
-                                        description: None,
-                                        default: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("updatedAt"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("updatedAt"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
@@ -572,19 +777,12 @@ fn lexicon_doc_blue_catbird_mlsChat_updateConvo() -> ::jacquard_lexicon::lexicon
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("updatedBy"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("updatedBy"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
@@ -593,83 +791,20 @@ fn lexicon_doc_blue_catbird_mlsChat_updateConvo() -> ::jacquard_lexicon::lexicon
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map
         },
+        ..Default::default()
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for PolicyInput<'a> {
-    fn nsid() -> &'static str {
-        "blue.catbird.mlsChat.updateConvo"
-    }
-    fn def_name() -> &'static str {
-        "policyInput"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_blue_catbird_mlsChat_updateConvo()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        if let Some(ref value) = self.max_members {
-            if *value > 1000i64 {
-                return Err(::jacquard_lexicon::validation::ConstraintError::Maximum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("max_members"),
-                    max: 1000i64,
-                    actual: *value,
-                });
-            }
-        }
-        if let Some(ref value) = self.max_members {
-            if *value < 2i64 {
-                return Err(::jacquard_lexicon::validation::ConstraintError::Minimum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("max_members"),
-                    min: 2i64,
-                    actual: *value,
-                });
-            }
-        }
-        Ok(())
-    }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct PolicyView<'a> {
-    pub admin_only_invites: bool,
-    pub allow_invites: bool,
-    pub allow_member_add: bool,
-    pub allow_member_remove: bool,
-    /// Conversation identifier
-    #[serde(borrow)]
-    pub convo_id: jacquard_common::CowStr<'a>,
-    pub max_members: i64,
-    pub require_admin_approval: bool,
-    /// Timestamp of last policy update
-    pub updated_at: jacquard_common::types::string::Datetime,
-    /// DID of admin who last updated the policy
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub updated_by: std::option::Option<jacquard_common::types::string::Did<'a>>,
 }
 
 pub mod policy_view_state {
@@ -682,443 +817,427 @@ pub mod policy_view_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type ConvoId;
-        type AllowInvites;
         type AdminOnlyInvites;
+        type AllowInvites;
         type AllowMemberAdd;
         type AllowMemberRemove;
-        type RequireAdminApproval;
+        type ConvoId;
         type MaxMembers;
+        type RequireAdminApproval;
         type UpdatedAt;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type ConvoId = Unset;
-        type AllowInvites = Unset;
         type AdminOnlyInvites = Unset;
+        type AllowInvites = Unset;
         type AllowMemberAdd = Unset;
         type AllowMemberRemove = Unset;
-        type RequireAdminApproval = Unset;
+        type ConvoId = Unset;
         type MaxMembers = Unset;
+        type RequireAdminApproval = Unset;
         type UpdatedAt = Unset;
     }
-    ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type ConvoId = Set<members::convo_id>;
-        type AllowInvites = S::AllowInvites;
-        type AdminOnlyInvites = S::AdminOnlyInvites;
-        type AllowMemberAdd = S::AllowMemberAdd;
-        type AllowMemberRemove = S::AllowMemberRemove;
-        type RequireAdminApproval = S::RequireAdminApproval;
-        type MaxMembers = S::MaxMembers;
-        type UpdatedAt = S::UpdatedAt;
+    ///State transition - sets the `admin_only_invites` field to Set
+    pub struct SetAdminOnlyInvites<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetAdminOnlyInvites<St> {}
+    impl<St: State> State for SetAdminOnlyInvites<St> {
+        type AdminOnlyInvites = Set<members::admin_only_invites>;
+        type AllowInvites = St::AllowInvites;
+        type AllowMemberAdd = St::AllowMemberAdd;
+        type AllowMemberRemove = St::AllowMemberRemove;
+        type ConvoId = St::ConvoId;
+        type MaxMembers = St::MaxMembers;
+        type RequireAdminApproval = St::RequireAdminApproval;
+        type UpdatedAt = St::UpdatedAt;
     }
     ///State transition - sets the `allow_invites` field to Set
-    pub struct SetAllowInvites<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetAllowInvites<S> {}
-    impl<S: State> State for SetAllowInvites<S> {
-        type ConvoId = S::ConvoId;
+    pub struct SetAllowInvites<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetAllowInvites<St> {}
+    impl<St: State> State for SetAllowInvites<St> {
+        type AdminOnlyInvites = St::AdminOnlyInvites;
         type AllowInvites = Set<members::allow_invites>;
-        type AdminOnlyInvites = S::AdminOnlyInvites;
-        type AllowMemberAdd = S::AllowMemberAdd;
-        type AllowMemberRemove = S::AllowMemberRemove;
-        type RequireAdminApproval = S::RequireAdminApproval;
-        type MaxMembers = S::MaxMembers;
-        type UpdatedAt = S::UpdatedAt;
-    }
-    ///State transition - sets the `admin_only_invites` field to Set
-    pub struct SetAdminOnlyInvites<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetAdminOnlyInvites<S> {}
-    impl<S: State> State for SetAdminOnlyInvites<S> {
-        type ConvoId = S::ConvoId;
-        type AllowInvites = S::AllowInvites;
-        type AdminOnlyInvites = Set<members::admin_only_invites>;
-        type AllowMemberAdd = S::AllowMemberAdd;
-        type AllowMemberRemove = S::AllowMemberRemove;
-        type RequireAdminApproval = S::RequireAdminApproval;
-        type MaxMembers = S::MaxMembers;
-        type UpdatedAt = S::UpdatedAt;
+        type AllowMemberAdd = St::AllowMemberAdd;
+        type AllowMemberRemove = St::AllowMemberRemove;
+        type ConvoId = St::ConvoId;
+        type MaxMembers = St::MaxMembers;
+        type RequireAdminApproval = St::RequireAdminApproval;
+        type UpdatedAt = St::UpdatedAt;
     }
     ///State transition - sets the `allow_member_add` field to Set
-    pub struct SetAllowMemberAdd<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetAllowMemberAdd<S> {}
-    impl<S: State> State for SetAllowMemberAdd<S> {
-        type ConvoId = S::ConvoId;
-        type AllowInvites = S::AllowInvites;
-        type AdminOnlyInvites = S::AdminOnlyInvites;
+    pub struct SetAllowMemberAdd<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetAllowMemberAdd<St> {}
+    impl<St: State> State for SetAllowMemberAdd<St> {
+        type AdminOnlyInvites = St::AdminOnlyInvites;
+        type AllowInvites = St::AllowInvites;
         type AllowMemberAdd = Set<members::allow_member_add>;
-        type AllowMemberRemove = S::AllowMemberRemove;
-        type RequireAdminApproval = S::RequireAdminApproval;
-        type MaxMembers = S::MaxMembers;
-        type UpdatedAt = S::UpdatedAt;
+        type AllowMemberRemove = St::AllowMemberRemove;
+        type ConvoId = St::ConvoId;
+        type MaxMembers = St::MaxMembers;
+        type RequireAdminApproval = St::RequireAdminApproval;
+        type UpdatedAt = St::UpdatedAt;
     }
     ///State transition - sets the `allow_member_remove` field to Set
-    pub struct SetAllowMemberRemove<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetAllowMemberRemove<S> {}
-    impl<S: State> State for SetAllowMemberRemove<S> {
-        type ConvoId = S::ConvoId;
-        type AllowInvites = S::AllowInvites;
-        type AdminOnlyInvites = S::AdminOnlyInvites;
-        type AllowMemberAdd = S::AllowMemberAdd;
+    pub struct SetAllowMemberRemove<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetAllowMemberRemove<St> {}
+    impl<St: State> State for SetAllowMemberRemove<St> {
+        type AdminOnlyInvites = St::AdminOnlyInvites;
+        type AllowInvites = St::AllowInvites;
+        type AllowMemberAdd = St::AllowMemberAdd;
         type AllowMemberRemove = Set<members::allow_member_remove>;
-        type RequireAdminApproval = S::RequireAdminApproval;
-        type MaxMembers = S::MaxMembers;
-        type UpdatedAt = S::UpdatedAt;
+        type ConvoId = St::ConvoId;
+        type MaxMembers = St::MaxMembers;
+        type RequireAdminApproval = St::RequireAdminApproval;
+        type UpdatedAt = St::UpdatedAt;
     }
-    ///State transition - sets the `require_admin_approval` field to Set
-    pub struct SetRequireAdminApproval<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRequireAdminApproval<S> {}
-    impl<S: State> State for SetRequireAdminApproval<S> {
-        type ConvoId = S::ConvoId;
-        type AllowInvites = S::AllowInvites;
-        type AdminOnlyInvites = S::AdminOnlyInvites;
-        type AllowMemberAdd = S::AllowMemberAdd;
-        type AllowMemberRemove = S::AllowMemberRemove;
-        type RequireAdminApproval = Set<members::require_admin_approval>;
-        type MaxMembers = S::MaxMembers;
-        type UpdatedAt = S::UpdatedAt;
+    ///State transition - sets the `convo_id` field to Set
+    pub struct SetConvoId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetConvoId<St> {}
+    impl<St: State> State for SetConvoId<St> {
+        type AdminOnlyInvites = St::AdminOnlyInvites;
+        type AllowInvites = St::AllowInvites;
+        type AllowMemberAdd = St::AllowMemberAdd;
+        type AllowMemberRemove = St::AllowMemberRemove;
+        type ConvoId = Set<members::convo_id>;
+        type MaxMembers = St::MaxMembers;
+        type RequireAdminApproval = St::RequireAdminApproval;
+        type UpdatedAt = St::UpdatedAt;
     }
     ///State transition - sets the `max_members` field to Set
-    pub struct SetMaxMembers<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetMaxMembers<S> {}
-    impl<S: State> State for SetMaxMembers<S> {
-        type ConvoId = S::ConvoId;
-        type AllowInvites = S::AllowInvites;
-        type AdminOnlyInvites = S::AdminOnlyInvites;
-        type AllowMemberAdd = S::AllowMemberAdd;
-        type AllowMemberRemove = S::AllowMemberRemove;
-        type RequireAdminApproval = S::RequireAdminApproval;
+    pub struct SetMaxMembers<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetMaxMembers<St> {}
+    impl<St: State> State for SetMaxMembers<St> {
+        type AdminOnlyInvites = St::AdminOnlyInvites;
+        type AllowInvites = St::AllowInvites;
+        type AllowMemberAdd = St::AllowMemberAdd;
+        type AllowMemberRemove = St::AllowMemberRemove;
+        type ConvoId = St::ConvoId;
         type MaxMembers = Set<members::max_members>;
-        type UpdatedAt = S::UpdatedAt;
+        type RequireAdminApproval = St::RequireAdminApproval;
+        type UpdatedAt = St::UpdatedAt;
+    }
+    ///State transition - sets the `require_admin_approval` field to Set
+    pub struct SetRequireAdminApproval<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRequireAdminApproval<St> {}
+    impl<St: State> State for SetRequireAdminApproval<St> {
+        type AdminOnlyInvites = St::AdminOnlyInvites;
+        type AllowInvites = St::AllowInvites;
+        type AllowMemberAdd = St::AllowMemberAdd;
+        type AllowMemberRemove = St::AllowMemberRemove;
+        type ConvoId = St::ConvoId;
+        type MaxMembers = St::MaxMembers;
+        type RequireAdminApproval = Set<members::require_admin_approval>;
+        type UpdatedAt = St::UpdatedAt;
     }
     ///State transition - sets the `updated_at` field to Set
-    pub struct SetUpdatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUpdatedAt<S> {}
-    impl<S: State> State for SetUpdatedAt<S> {
-        type ConvoId = S::ConvoId;
-        type AllowInvites = S::AllowInvites;
-        type AdminOnlyInvites = S::AdminOnlyInvites;
-        type AllowMemberAdd = S::AllowMemberAdd;
-        type AllowMemberRemove = S::AllowMemberRemove;
-        type RequireAdminApproval = S::RequireAdminApproval;
-        type MaxMembers = S::MaxMembers;
+    pub struct SetUpdatedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetUpdatedAt<St> {}
+    impl<St: State> State for SetUpdatedAt<St> {
+        type AdminOnlyInvites = St::AdminOnlyInvites;
+        type AllowInvites = St::AllowInvites;
+        type AllowMemberAdd = St::AllowMemberAdd;
+        type AllowMemberRemove = St::AllowMemberRemove;
+        type ConvoId = St::ConvoId;
+        type MaxMembers = St::MaxMembers;
+        type RequireAdminApproval = St::RequireAdminApproval;
         type UpdatedAt = Set<members::updated_at>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `convo_id` field
-        pub struct convo_id(());
-        ///Marker type for the `allow_invites` field
-        pub struct allow_invites(());
         ///Marker type for the `admin_only_invites` field
         pub struct admin_only_invites(());
+        ///Marker type for the `allow_invites` field
+        pub struct allow_invites(());
         ///Marker type for the `allow_member_add` field
         pub struct allow_member_add(());
         ///Marker type for the `allow_member_remove` field
         pub struct allow_member_remove(());
-        ///Marker type for the `require_admin_approval` field
-        pub struct require_admin_approval(());
+        ///Marker type for the `convo_id` field
+        pub struct convo_id(());
         ///Marker type for the `max_members` field
         pub struct max_members(());
+        ///Marker type for the `require_admin_approval` field
+        pub struct require_admin_approval(());
         ///Marker type for the `updated_at` field
         pub struct updated_at(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct PolicyViewBuilder<'a, S: policy_view_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<bool>,
-        ::core::option::Option<bool>,
-        ::core::option::Option<bool>,
-        ::core::option::Option<bool>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<bool>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct PolicyViewBuilder<
+    St: policy_view_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<bool>,
+        core::option::Option<bool>,
+        core::option::Option<bool>,
+        core::option::Option<bool>,
+        core::option::Option<S>,
+        core::option::Option<i64>,
+        core::option::Option<bool>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> PolicyView<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> PolicyViewBuilder<'a, policy_view_state::Empty> {
+impl PolicyView<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> PolicyViewBuilder<policy_view_state::Empty, jacquard_common::DefaultStr> {
         PolicyViewBuilder::new()
     }
 }
 
-impl<'a> PolicyViewBuilder<'a, policy_view_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> PolicyView<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> PolicyViewBuilder<policy_view_state::Empty, S> {
+        PolicyViewBuilder::builder()
+    }
+}
+
+impl PolicyViewBuilder<policy_view_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         PolicyViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> PolicyViewBuilder<'a, S>
+impl<S: jacquard_common::BosStr> PolicyViewBuilder<policy_view_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        PolicyViewBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> PolicyViewBuilder<St, S>
 where
-    S: policy_view_state::State,
-    S::AdminOnlyInvites: policy_view_state::IsUnset,
+    St: policy_view_state::State,
+    St::AdminOnlyInvites: policy_view_state::IsUnset,
 {
     /// Set the `adminOnlyInvites` field (required)
     pub fn admin_only_invites(
         mut self,
         value: impl Into<bool>,
-    ) -> PolicyViewBuilder<'a, policy_view_state::SetAdminOnlyInvites<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+    ) -> PolicyViewBuilder<policy_view_state::SetAdminOnlyInvites<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         PolicyViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> PolicyViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> PolicyViewBuilder<St, S>
 where
-    S: policy_view_state::State,
-    S::AllowInvites: policy_view_state::IsUnset,
+    St: policy_view_state::State,
+    St::AllowInvites: policy_view_state::IsUnset,
 {
     /// Set the `allowInvites` field (required)
     pub fn allow_invites(
         mut self,
         value: impl Into<bool>,
-    ) -> PolicyViewBuilder<'a, policy_view_state::SetAllowInvites<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+    ) -> PolicyViewBuilder<policy_view_state::SetAllowInvites<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         PolicyViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> PolicyViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> PolicyViewBuilder<St, S>
 where
-    S: policy_view_state::State,
-    S::AllowMemberAdd: policy_view_state::IsUnset,
+    St: policy_view_state::State,
+    St::AllowMemberAdd: policy_view_state::IsUnset,
 {
     /// Set the `allowMemberAdd` field (required)
     pub fn allow_member_add(
         mut self,
         value: impl Into<bool>,
-    ) -> PolicyViewBuilder<'a, policy_view_state::SetAllowMemberAdd<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+    ) -> PolicyViewBuilder<policy_view_state::SetAllowMemberAdd<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         PolicyViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> PolicyViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> PolicyViewBuilder<St, S>
 where
-    S: policy_view_state::State,
-    S::AllowMemberRemove: policy_view_state::IsUnset,
+    St: policy_view_state::State,
+    St::AllowMemberRemove: policy_view_state::IsUnset,
 {
     /// Set the `allowMemberRemove` field (required)
     pub fn allow_member_remove(
         mut self,
         value: impl Into<bool>,
-    ) -> PolicyViewBuilder<'a, policy_view_state::SetAllowMemberRemove<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+    ) -> PolicyViewBuilder<policy_view_state::SetAllowMemberRemove<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
         PolicyViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> PolicyViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> PolicyViewBuilder<St, S>
 where
-    S: policy_view_state::State,
-    S::ConvoId: policy_view_state::IsUnset,
+    St: policy_view_state::State,
+    St::ConvoId: policy_view_state::IsUnset,
 {
     /// Set the `convoId` field (required)
     pub fn convo_id(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> PolicyViewBuilder<'a, policy_view_state::SetConvoId<S>> {
-        self.__unsafe_private_named.4 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> PolicyViewBuilder<policy_view_state::SetConvoId<St>, S> {
+        self._fields.4 = ::core::option::Option::Some(value.into());
         PolicyViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> PolicyViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> PolicyViewBuilder<St, S>
 where
-    S: policy_view_state::State,
-    S::MaxMembers: policy_view_state::IsUnset,
+    St: policy_view_state::State,
+    St::MaxMembers: policy_view_state::IsUnset,
 {
     /// Set the `maxMembers` field (required)
     pub fn max_members(
         mut self,
         value: impl Into<i64>,
-    ) -> PolicyViewBuilder<'a, policy_view_state::SetMaxMembers<S>> {
-        self.__unsafe_private_named.5 = ::core::option::Option::Some(value.into());
+    ) -> PolicyViewBuilder<policy_view_state::SetMaxMembers<St>, S> {
+        self._fields.5 = ::core::option::Option::Some(value.into());
         PolicyViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> PolicyViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> PolicyViewBuilder<St, S>
 where
-    S: policy_view_state::State,
-    S::RequireAdminApproval: policy_view_state::IsUnset,
+    St: policy_view_state::State,
+    St::RequireAdminApproval: policy_view_state::IsUnset,
 {
     /// Set the `requireAdminApproval` field (required)
     pub fn require_admin_approval(
         mut self,
         value: impl Into<bool>,
-    ) -> PolicyViewBuilder<'a, policy_view_state::SetRequireAdminApproval<S>> {
-        self.__unsafe_private_named.6 = ::core::option::Option::Some(value.into());
+    ) -> PolicyViewBuilder<policy_view_state::SetRequireAdminApproval<St>, S> {
+        self._fields.6 = ::core::option::Option::Some(value.into());
         PolicyViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> PolicyViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> PolicyViewBuilder<St, S>
 where
-    S: policy_view_state::State,
-    S::UpdatedAt: policy_view_state::IsUnset,
+    St: policy_view_state::State,
+    St::UpdatedAt: policy_view_state::IsUnset,
 {
     /// Set the `updatedAt` field (required)
     pub fn updated_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> PolicyViewBuilder<'a, policy_view_state::SetUpdatedAt<S>> {
-        self.__unsafe_private_named.7 = ::core::option::Option::Some(value.into());
+    ) -> PolicyViewBuilder<policy_view_state::SetUpdatedAt<St>, S> {
+        self._fields.7 = ::core::option::Option::Some(value.into());
         PolicyViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: policy_view_state::State> PolicyViewBuilder<'a, S> {
+impl<St: policy_view_state::State, S: jacquard_common::BosStr> PolicyViewBuilder<St, S> {
     /// Set the `updatedBy` field (optional)
     pub fn updated_by(
         mut self,
-        value: impl Into<Option<jacquard_common::types::string::Did<'a>>>,
+        value: impl Into<Option<jacquard_common::types::string::Did<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.8 = value.into();
+        self._fields.8 = value.into();
         self
     }
     /// Set the `updatedBy` field to an Option value (optional)
     pub fn maybe_updated_by(
         mut self,
-        value: Option<jacquard_common::types::string::Did<'a>>,
+        value: Option<jacquard_common::types::string::Did<S>>,
     ) -> Self {
-        self.__unsafe_private_named.8 = value;
+        self._fields.8 = value;
         self
     }
 }
 
-impl<'a, S> PolicyViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> PolicyViewBuilder<St, S>
 where
-    S: policy_view_state::State,
-    S::ConvoId: policy_view_state::IsSet,
-    S::AllowInvites: policy_view_state::IsSet,
-    S::AdminOnlyInvites: policy_view_state::IsSet,
-    S::AllowMemberAdd: policy_view_state::IsSet,
-    S::AllowMemberRemove: policy_view_state::IsSet,
-    S::RequireAdminApproval: policy_view_state::IsSet,
-    S::MaxMembers: policy_view_state::IsSet,
-    S::UpdatedAt: policy_view_state::IsSet,
+    St: policy_view_state::State,
+    St::AdminOnlyInvites: policy_view_state::IsSet,
+    St::AllowInvites: policy_view_state::IsSet,
+    St::AllowMemberAdd: policy_view_state::IsSet,
+    St::AllowMemberRemove: policy_view_state::IsSet,
+    St::ConvoId: policy_view_state::IsSet,
+    St::MaxMembers: policy_view_state::IsSet,
+    St::RequireAdminApproval: policy_view_state::IsSet,
+    St::UpdatedAt: policy_view_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> PolicyView<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> PolicyView<S> {
         PolicyView {
-            admin_only_invites: self.__unsafe_private_named.0.unwrap(),
-            allow_invites: self.__unsafe_private_named.1.unwrap(),
-            allow_member_add: self.__unsafe_private_named.2.unwrap(),
-            allow_member_remove: self.__unsafe_private_named.3.unwrap(),
-            convo_id: self.__unsafe_private_named.4.unwrap(),
-            max_members: self.__unsafe_private_named.5.unwrap(),
-            require_admin_approval: self.__unsafe_private_named.6.unwrap(),
-            updated_at: self.__unsafe_private_named.7.unwrap(),
-            updated_by: self.__unsafe_private_named.8,
+            admin_only_invites: self._fields.0.unwrap(),
+            allow_invites: self._fields.1.unwrap(),
+            allow_member_add: self._fields.2.unwrap(),
+            allow_member_remove: self._fields.3.unwrap(),
+            convo_id: self._fields.4.unwrap(),
+            max_members: self._fields.5.unwrap(),
+            require_admin_approval: self._fields.6.unwrap(),
+            updated_at: self._fields.7.unwrap(),
+            updated_by: self._fields.8,
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> PolicyView<'a> {
+    ) -> PolicyView<S> {
         PolicyView {
-            admin_only_invites: self.__unsafe_private_named.0.unwrap(),
-            allow_invites: self.__unsafe_private_named.1.unwrap(),
-            allow_member_add: self.__unsafe_private_named.2.unwrap(),
-            allow_member_remove: self.__unsafe_private_named.3.unwrap(),
-            convo_id: self.__unsafe_private_named.4.unwrap(),
-            max_members: self.__unsafe_private_named.5.unwrap(),
-            require_admin_approval: self.__unsafe_private_named.6.unwrap(),
-            updated_at: self.__unsafe_private_named.7.unwrap(),
-            updated_by: self.__unsafe_private_named.8,
+            admin_only_invites: self._fields.0.unwrap(),
+            allow_invites: self._fields.1.unwrap(),
+            allow_member_add: self._fields.2.unwrap(),
+            allow_member_remove: self._fields.3.unwrap(),
+            convo_id: self._fields.4.unwrap(),
+            max_members: self._fields.5.unwrap(),
+            require_admin_approval: self._fields.6.unwrap(),
+            updated_at: self._fields.7.unwrap(),
+            updated_by: self._fields.8,
             extra_data: Some(extra_data),
         }
-    }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for PolicyView<'a> {
-    fn nsid() -> &'static str {
-        "blue.catbird.mlsChat.updateConvo"
-    }
-    fn def_name() -> &'static str {
-        "policyView"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_blue_catbird_mlsChat_updateConvo()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        {
-            let value = &self.max_members;
-            if *value > 1000i64 {
-                return Err(::jacquard_lexicon::validation::ConstraintError::Maximum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("max_members"),
-                    max: 1000i64,
-                    actual: *value,
-                });
-            }
-        }
-        {
-            let value = &self.max_members;
-            if *value < 2i64 {
-                return Err(::jacquard_lexicon::validation::ConstraintError::Minimum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("max_members"),
-                    min: 2i64,
-                    actual: *value,
-                });
-            }
-        }
-        Ok(())
     }
 }

@@ -5,20 +5,144 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct ReconcileKeyPackages<'a> {
-    /// Calling device identifier.
-    #[serde(borrow)]
-    pub device_id: jacquard_common::CowStr<'a>,
-    /// Hex-encoded SHA-256 hashes of every KP the client claims to have locally.
-    #[serde(borrow)]
-    pub local_hashes: Vec<jacquard_common::CowStr<'a>>,
-    /// Reconciliation protocol version. Always 2 for this endpoint.
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ReconcileKeyPackages<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Calling device identifier.
+    pub device_id: S,
+    ///Hex-encoded SHA-256 hashes of every KP the client claims to have locally.
+    pub local_hashes: Vec<S>,
+    ///Reconciliation protocol version. Always 2 for this endpoint.
     pub schema_version: i64,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ReconcileKeyPackagesOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///True iff local_hashes ⊆ server_hashes AND server_hashes ⊆ local_hashes ∪ {expired for this device}. Verified status is the green-light signal for inviters to use this device's KPs.
+    pub device_verified: bool,
+    ///Hashes client claims but server doesn't have. Client SHOULD re-publish via publishKeyPackages. Server will NOT auto-delete these.
+    pub local_only: Vec<S>,
+    ///Hashes server has but client did not claim. Client SHOULD delete from local manifest if it can't find them, OR notify user that account has stale key material from a previous install.
+    pub server_only: Vec<S>,
+    ///Total KP count on server for this device after the call (excluding dead KPs).
+    pub total: i64,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    thiserror::Error,
+    miette::Diagnostic,
+)]
+#[serde(tag = "error", content = "message")]
+pub enum ReconcileKeyPackagesError {
+    /// deviceId is not registered.
+    #[serde(rename = "DeviceNotFound")]
+    DeviceNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Caller is not the owner of deviceId.
+    #[serde(rename = "Unauthorized")]
+    Unauthorized(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
+}
+
+impl core::fmt::Display for ReconcileKeyPackagesError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+            Self::DeviceNotFound(msg) => {
+                write!(f, "DeviceNotFound")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::Unauthorized(msg) => {
+                write!(f, "Unauthorized")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+        }
+    }
+}
+
+/** Response marker for the `blue.catbird.mlsChat.reconcileKeyPackages` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `ReconcileKeyPackagesOutput<S>` for this endpoint.*/
+pub struct ReconcileKeyPackagesResponse;
+impl jacquard_common::xrpc::XrpcResp for ReconcileKeyPackagesResponse {
+    const NSID: &'static str = "blue.catbird.mlsChat.reconcileKeyPackages";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = ReconcileKeyPackagesOutput<S>;
+    type Err = ReconcileKeyPackagesError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for ReconcileKeyPackages<S> {
+    const NSID: &'static str = "blue.catbird.mlsChat.reconcileKeyPackages";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Response = ReconcileKeyPackagesResponse;
+}
+
+/** Endpoint marker for the `blue.catbird.mlsChat.reconcileKeyPackages` procedure.
+
+Path: `/xrpc/blue.catbird.mlsChat.reconcileKeyPackages`. The request payload type is `ReconcileKeyPackages<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct ReconcileKeyPackagesRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for ReconcileKeyPackagesRequest {
+    const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.reconcileKeyPackages";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Request<S: jacquard_common::BosStr> = ReconcileKeyPackages<S>;
+    type Response = ReconcileKeyPackagesResponse;
 }
 
 pub mod reconcile_key_packages_state {
@@ -44,27 +168,27 @@ pub mod reconcile_key_packages_state {
         type SchemaVersion = Unset;
     }
     ///State transition - sets the `device_id` field to Set
-    pub struct SetDeviceId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDeviceId<S> {}
-    impl<S: State> State for SetDeviceId<S> {
+    pub struct SetDeviceId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetDeviceId<St> {}
+    impl<St: State> State for SetDeviceId<St> {
         type DeviceId = Set<members::device_id>;
-        type LocalHashes = S::LocalHashes;
-        type SchemaVersion = S::SchemaVersion;
+        type LocalHashes = St::LocalHashes;
+        type SchemaVersion = St::SchemaVersion;
     }
     ///State transition - sets the `local_hashes` field to Set
-    pub struct SetLocalHashes<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetLocalHashes<S> {}
-    impl<S: State> State for SetLocalHashes<S> {
-        type DeviceId = S::DeviceId;
+    pub struct SetLocalHashes<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetLocalHashes<St> {}
+    impl<St: State> State for SetLocalHashes<St> {
+        type DeviceId = St::DeviceId;
         type LocalHashes = Set<members::local_hashes>;
-        type SchemaVersion = S::SchemaVersion;
+        type SchemaVersion = St::SchemaVersion;
     }
     ///State transition - sets the `schema_version` field to Set
-    pub struct SetSchemaVersion<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetSchemaVersion<S> {}
-    impl<S: State> State for SetSchemaVersion<S> {
-        type DeviceId = S::DeviceId;
-        type LocalHashes = S::LocalHashes;
+    pub struct SetSchemaVersion<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSchemaVersion<St> {}
+    impl<St: State> State for SetSchemaVersion<St> {
+        type DeviceId = St::DeviceId;
+        type LocalHashes = St::LocalHashes;
         type SchemaVersion = Set<members::schema_version>;
     }
     /// Marker types for field names
@@ -79,212 +203,146 @@ pub mod reconcile_key_packages_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct ReconcileKeyPackagesBuilder<'a, S: reconcile_key_packages_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<Vec<jacquard_common::CowStr<'a>>>,
-        ::core::option::Option<i64>,
+/// Builder for constructing an instance of this type.
+pub struct ReconcileKeyPackagesBuilder<
+    St: reconcile_key_packages_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<Vec<S>>,
+        core::option::Option<i64>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> ReconcileKeyPackages<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> ReconcileKeyPackagesBuilder<'a, reconcile_key_packages_state::Empty> {
+impl ReconcileKeyPackages<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> ReconcileKeyPackagesBuilder<reconcile_key_packages_state::Empty, jacquard_common::DefaultStr>
+    {
         ReconcileKeyPackagesBuilder::new()
     }
 }
 
-impl<'a> ReconcileKeyPackagesBuilder<'a, reconcile_key_packages_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> ReconcileKeyPackages<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> ReconcileKeyPackagesBuilder<reconcile_key_packages_state::Empty, S> {
+        ReconcileKeyPackagesBuilder::builder()
+    }
+}
+
+impl ReconcileKeyPackagesBuilder<reconcile_key_packages_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ReconcileKeyPackagesBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ReconcileKeyPackagesBuilder<'a, S>
+impl<S: jacquard_common::BosStr>
+    ReconcileKeyPackagesBuilder<reconcile_key_packages_state::Empty, S>
+{
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        ReconcileKeyPackagesBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ReconcileKeyPackagesBuilder<St, S>
 where
-    S: reconcile_key_packages_state::State,
-    S::DeviceId: reconcile_key_packages_state::IsUnset,
+    St: reconcile_key_packages_state::State,
+    St::DeviceId: reconcile_key_packages_state::IsUnset,
 {
     /// Set the `deviceId` field (required)
     pub fn device_id(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> ReconcileKeyPackagesBuilder<'a, reconcile_key_packages_state::SetDeviceId<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> ReconcileKeyPackagesBuilder<reconcile_key_packages_state::SetDeviceId<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         ReconcileKeyPackagesBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ReconcileKeyPackagesBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ReconcileKeyPackagesBuilder<St, S>
 where
-    S: reconcile_key_packages_state::State,
-    S::LocalHashes: reconcile_key_packages_state::IsUnset,
+    St: reconcile_key_packages_state::State,
+    St::LocalHashes: reconcile_key_packages_state::IsUnset,
 {
     /// Set the `localHashes` field (required)
     pub fn local_hashes(
         mut self,
-        value: impl Into<Vec<jacquard_common::CowStr<'a>>>,
-    ) -> ReconcileKeyPackagesBuilder<'a, reconcile_key_packages_state::SetLocalHashes<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<Vec<S>>,
+    ) -> ReconcileKeyPackagesBuilder<reconcile_key_packages_state::SetLocalHashes<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         ReconcileKeyPackagesBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ReconcileKeyPackagesBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ReconcileKeyPackagesBuilder<St, S>
 where
-    S: reconcile_key_packages_state::State,
-    S::SchemaVersion: reconcile_key_packages_state::IsUnset,
+    St: reconcile_key_packages_state::State,
+    St::SchemaVersion: reconcile_key_packages_state::IsUnset,
 {
     /// Set the `schemaVersion` field (required)
     pub fn schema_version(
         mut self,
         value: impl Into<i64>,
-    ) -> ReconcileKeyPackagesBuilder<'a, reconcile_key_packages_state::SetSchemaVersion<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+    ) -> ReconcileKeyPackagesBuilder<reconcile_key_packages_state::SetSchemaVersion<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         ReconcileKeyPackagesBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ReconcileKeyPackagesBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ReconcileKeyPackagesBuilder<St, S>
 where
-    S: reconcile_key_packages_state::State,
-    S::DeviceId: reconcile_key_packages_state::IsSet,
-    S::LocalHashes: reconcile_key_packages_state::IsSet,
-    S::SchemaVersion: reconcile_key_packages_state::IsSet,
+    St: reconcile_key_packages_state::State,
+    St::DeviceId: reconcile_key_packages_state::IsSet,
+    St::LocalHashes: reconcile_key_packages_state::IsSet,
+    St::SchemaVersion: reconcile_key_packages_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> ReconcileKeyPackages<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> ReconcileKeyPackages<S> {
         ReconcileKeyPackages {
-            device_id: self.__unsafe_private_named.0.unwrap(),
-            local_hashes: self.__unsafe_private_named.1.unwrap(),
-            schema_version: self.__unsafe_private_named.2.unwrap(),
+            device_id: self._fields.0.unwrap(),
+            local_hashes: self._fields.1.unwrap(),
+            schema_version: self._fields.2.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> ReconcileKeyPackages<'a> {
+    ) -> ReconcileKeyPackages<S> {
         ReconcileKeyPackages {
-            device_id: self.__unsafe_private_named.0.unwrap(),
-            local_hashes: self.__unsafe_private_named.1.unwrap(),
-            schema_version: self.__unsafe_private_named.2.unwrap(),
+            device_id: self._fields.0.unwrap(),
+            local_hashes: self._fields.1.unwrap(),
+            schema_version: self._fields.2.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct ReconcileKeyPackagesOutput<'a> {
-    /// True iff local_hashes ⊆ server_hashes AND server_hashes ⊆ local_hashes ∪ {expired for this device}. Verified status is the green-light signal for inviters to use this device's KPs.
-    pub device_verified: bool,
-    /// Hashes client claims but server doesn't have. Client SHOULD re-publish via publishKeyPackages. Server will NOT auto-delete these.
-    #[serde(borrow)]
-    pub local_only: Vec<jacquard_common::CowStr<'a>>,
-    /// Hashes server has but client did not claim. Client SHOULD delete from local manifest if it can't find them, OR notify user that account has stale key material from a previous install.
-    #[serde(borrow)]
-    pub server_only: Vec<jacquard_common::CowStr<'a>>,
-    /// Total KP count on server for this device after the call (excluding dead KPs).
-    pub total: i64,
-}
-
-#[jacquard_derive::open_union]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    thiserror::Error,
-    miette::Diagnostic,
-    jacquard_derive::IntoStatic,
-)]
-#[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum ReconcileKeyPackagesError<'a> {
-    /// deviceId is not registered.
-    #[serde(rename = "DeviceNotFound")]
-    DeviceNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
-    /// Caller is not the owner of deviceId.
-    #[serde(rename = "Unauthorized")]
-    Unauthorized(std::option::Option<jacquard_common::CowStr<'a>>),
-}
-
-impl std::fmt::Display for ReconcileKeyPackagesError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::DeviceNotFound(msg) => {
-                write!(f, "DeviceNotFound")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
-            Self::Unauthorized(msg) => {
-                write!(f, "Unauthorized")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
-        }
-    }
-}
-
-/// Response type for
-///blue.catbird.mlsChat.reconcileKeyPackages
-pub struct ReconcileKeyPackagesResponse;
-impl jacquard_common::xrpc::XrpcResp for ReconcileKeyPackagesResponse {
-    const NSID: &'static str = "blue.catbird.mlsChat.reconcileKeyPackages";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = ReconcileKeyPackagesOutput<'de>;
-    type Err<'de> = ReconcileKeyPackagesError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for ReconcileKeyPackages<'a> {
-    const NSID: &'static str = "blue.catbird.mlsChat.reconcileKeyPackages";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Response = ReconcileKeyPackagesResponse;
-}
-
-/// Endpoint type for
-///blue.catbird.mlsChat.reconcileKeyPackages
-pub struct ReconcileKeyPackagesRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for ReconcileKeyPackagesRequest {
-    const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.reconcileKeyPackages";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = ReconcileKeyPackages<'de>;
-    type Response = ReconcileKeyPackagesResponse;
 }

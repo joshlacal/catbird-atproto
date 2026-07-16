@@ -8,17 +8,112 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetRecord<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cid: std::option::Option<jacquard_common::types::string::Cid<'a>>,
-    #[serde(borrow)]
-    pub collection: jacquard_common::types::string::Nsid<'a>,
-    #[serde(borrow)]
-    pub repo: jacquard_common::types::ident::AtIdentifier<'a>,
-    #[serde(borrow)]
-    pub rkey: jacquard_common::types::string::RecordKey<jacquard_common::types::string::Rkey<'a>>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetRecord<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
+    pub collection: jacquard_common::types::string::Nsid<S>,
+    pub repo: jacquard_common::types::ident::AtIdentifier<S>,
+    pub rkey: jacquard_common::types::string::RecordKey<jacquard_common::types::string::Rkey<S>>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
+    pub uri: jacquard_common::types::string::AtUri<S>,
+    pub value: jacquard_common::types::value::Data<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    thiserror::Error,
+    miette::Diagnostic,
+)]
+#[serde(tag = "error", content = "message")]
+pub enum GetRecordError {
+    #[serde(rename = "RecordNotFound")]
+    RecordNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
+}
+
+impl core::fmt::Display for GetRecordError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+            Self::RecordNotFound(msg) => {
+                write!(f, "RecordNotFound")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+        }
+    }
+}
+
+/** Response marker for the `com.atproto.repo.getRecord` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetRecordOutput<S>` for this endpoint.*/
+pub struct GetRecordResponse;
+impl jacquard_common::xrpc::XrpcResp for GetRecordResponse {
+    const NSID: &'static str = "com.atproto.repo.getRecord";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = GetRecordOutput<S>;
+    type Err = GetRecordError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetRecord<S> {
+    const NSID: &'static str = "com.atproto.repo.getRecord";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = GetRecordResponse;
+}
+
+/** Endpoint marker for the `com.atproto.repo.getRecord` query.
+
+Path: `/xrpc/com.atproto.repo.getRecord`. The request payload type is `GetRecord<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct GetRecordRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for GetRecordRequest {
+    const PATH: &'static str = "/xrpc/com.atproto.repo.getRecord";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = GetRecord<S>;
+    type Response = GetRecordResponse;
 }
 
 pub mod get_record_state {
@@ -31,250 +126,193 @@ pub mod get_record_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Repo;
         type Collection;
+        type Repo;
         type Rkey;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Repo = Unset;
         type Collection = Unset;
+        type Repo = Unset;
         type Rkey = Unset;
     }
-    ///State transition - sets the `repo` field to Set
-    pub struct SetRepo<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRepo<S> {}
-    impl<S: State> State for SetRepo<S> {
-        type Repo = Set<members::repo>;
-        type Collection = S::Collection;
-        type Rkey = S::Rkey;
-    }
     ///State transition - sets the `collection` field to Set
-    pub struct SetCollection<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCollection<S> {}
-    impl<S: State> State for SetCollection<S> {
-        type Repo = S::Repo;
+    pub struct SetCollection<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCollection<St> {}
+    impl<St: State> State for SetCollection<St> {
         type Collection = Set<members::collection>;
-        type Rkey = S::Rkey;
+        type Repo = St::Repo;
+        type Rkey = St::Rkey;
+    }
+    ///State transition - sets the `repo` field to Set
+    pub struct SetRepo<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRepo<St> {}
+    impl<St: State> State for SetRepo<St> {
+        type Collection = St::Collection;
+        type Repo = Set<members::repo>;
+        type Rkey = St::Rkey;
     }
     ///State transition - sets the `rkey` field to Set
-    pub struct SetRkey<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRkey<S> {}
-    impl<S: State> State for SetRkey<S> {
-        type Repo = S::Repo;
-        type Collection = S::Collection;
+    pub struct SetRkey<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRkey<St> {}
+    impl<St: State> State for SetRkey<St> {
+        type Collection = St::Collection;
+        type Repo = St::Repo;
         type Rkey = Set<members::rkey>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `repo` field
-        pub struct repo(());
         ///Marker type for the `collection` field
         pub struct collection(());
+        ///Marker type for the `repo` field
+        pub struct repo(());
         ///Marker type for the `rkey` field
         pub struct rkey(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct GetRecordBuilder<'a, S: get_record_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Cid<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Nsid<'a>>,
-        ::core::option::Option<jacquard_common::types::ident::AtIdentifier<'a>>,
-        ::core::option::Option<
-            jacquard_common::types::string::RecordKey<jacquard_common::types::string::Rkey<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct GetRecordBuilder<
+    St: get_record_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Cid<S>>,
+        core::option::Option<jacquard_common::types::string::Nsid<S>>,
+        core::option::Option<jacquard_common::types::ident::AtIdentifier<S>>,
+        core::option::Option<
+            jacquard_common::types::string::RecordKey<jacquard_common::types::string::Rkey<S>>,
         >,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> GetRecord<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> GetRecordBuilder<'a, get_record_state::Empty> {
+impl GetRecord<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> GetRecordBuilder<get_record_state::Empty, jacquard_common::DefaultStr> {
         GetRecordBuilder::new()
     }
 }
 
-impl<'a> GetRecordBuilder<'a, get_record_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> GetRecord<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> GetRecordBuilder<get_record_state::Empty, S> {
+        GetRecordBuilder::builder()
+    }
+}
+
+impl GetRecordBuilder<get_record_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetRecordBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: get_record_state::State> GetRecordBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> GetRecordBuilder<get_record_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GetRecordBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: get_record_state::State, S: jacquard_common::BosStr> GetRecordBuilder<St, S> {
     /// Set the `cid` field (optional)
-    pub fn cid(
-        mut self,
-        value: impl Into<Option<jacquard_common::types::string::Cid<'a>>>,
-    ) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+    pub fn cid(mut self, value: impl Into<Option<jacquard_common::types::string::Cid<S>>>) -> Self {
+        self._fields.0 = value.into();
         self
     }
     /// Set the `cid` field to an Option value (optional)
-    pub fn maybe_cid(mut self, value: Option<jacquard_common::types::string::Cid<'a>>) -> Self {
-        self.__unsafe_private_named.0 = value;
+    pub fn maybe_cid(mut self, value: Option<jacquard_common::types::string::Cid<S>>) -> Self {
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S> GetRecordBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GetRecordBuilder<St, S>
 where
-    S: get_record_state::State,
-    S::Collection: get_record_state::IsUnset,
+    St: get_record_state::State,
+    St::Collection: get_record_state::IsUnset,
 {
     /// Set the `collection` field (required)
     pub fn collection(
         mut self,
-        value: impl Into<jacquard_common::types::string::Nsid<'a>>,
-    ) -> GetRecordBuilder<'a, get_record_state::SetCollection<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Nsid<S>>,
+    ) -> GetRecordBuilder<get_record_state::SetCollection<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         GetRecordBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GetRecordBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GetRecordBuilder<St, S>
 where
-    S: get_record_state::State,
-    S::Repo: get_record_state::IsUnset,
+    St: get_record_state::State,
+    St::Repo: get_record_state::IsUnset,
 {
     /// Set the `repo` field (required)
     pub fn repo(
         mut self,
-        value: impl Into<jacquard_common::types::ident::AtIdentifier<'a>>,
-    ) -> GetRecordBuilder<'a, get_record_state::SetRepo<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::ident::AtIdentifier<S>>,
+    ) -> GetRecordBuilder<get_record_state::SetRepo<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         GetRecordBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GetRecordBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GetRecordBuilder<St, S>
 where
-    S: get_record_state::State,
-    S::Rkey: get_record_state::IsUnset,
+    St: get_record_state::State,
+    St::Rkey: get_record_state::IsUnset,
 {
     /// Set the `rkey` field (required)
     pub fn rkey(
         mut self,
         value: impl Into<
-            jacquard_common::types::string::RecordKey<jacquard_common::types::string::Rkey<'a>>,
+            jacquard_common::types::string::RecordKey<jacquard_common::types::string::Rkey<S>>,
         >,
-    ) -> GetRecordBuilder<'a, get_record_state::SetRkey<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+    ) -> GetRecordBuilder<get_record_state::SetRkey<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
         GetRecordBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GetRecordBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GetRecordBuilder<St, S>
 where
-    S: get_record_state::State,
-    S::Repo: get_record_state::IsSet,
-    S::Collection: get_record_state::IsSet,
-    S::Rkey: get_record_state::IsSet,
+    St: get_record_state::State,
+    St::Collection: get_record_state::IsSet,
+    St::Repo: get_record_state::IsSet,
+    St::Rkey: get_record_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> GetRecord<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> GetRecord<S> {
         GetRecord {
-            cid: self.__unsafe_private_named.0,
-            collection: self.__unsafe_private_named.1.unwrap(),
-            repo: self.__unsafe_private_named.2.unwrap(),
-            rkey: self.__unsafe_private_named.3.unwrap(),
+            cid: self._fields.0,
+            collection: self._fields.1.unwrap(),
+            repo: self._fields.2.unwrap(),
+            rkey: self._fields.3.unwrap(),
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GetRecordOutput<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cid: std::option::Option<jacquard_common::types::string::Cid<'a>>,
-    #[serde(borrow)]
-    pub uri: jacquard_common::types::string::AtUri<'a>,
-    #[serde(borrow)]
-    pub value: jacquard_common::types::value::Data<'a>,
-}
-
-#[jacquard_derive::open_union]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    thiserror::Error,
-    miette::Diagnostic,
-    jacquard_derive::IntoStatic,
-)]
-#[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum GetRecordError<'a> {
-    #[serde(rename = "RecordNotFound")]
-    RecordNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
-}
-
-impl std::fmt::Display for GetRecordError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::RecordNotFound(msg) => {
-                write!(f, "RecordNotFound")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
-        }
-    }
-}
-
-/// Response type for
-///com.atproto.repo.getRecord
-pub struct GetRecordResponse;
-impl jacquard_common::xrpc::XrpcResp for GetRecordResponse {
-    const NSID: &'static str = "com.atproto.repo.getRecord";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetRecordOutput<'de>;
-    type Err<'de> = GetRecordError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for GetRecord<'a> {
-    const NSID: &'static str = "com.atproto.repo.getRecord";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = GetRecordResponse;
-}
-
-/// Endpoint type for
-///com.atproto.repo.getRecord
-pub struct GetRecordRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for GetRecordRequest {
-    const PATH: &'static str = "/xrpc/com.atproto.repo.getRecord";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetRecord<'de>;
-    type Response = GetRecordResponse;
 }

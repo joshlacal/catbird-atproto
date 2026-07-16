@@ -5,373 +5,112 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct EmitEvent<'a> {
-    #[serde(borrow)]
-    pub created_by: jacquard_common::types::string::Did<'a>,
-    #[serde(borrow)]
-    pub event: EmitEventEvent<'a>,
-    /// An optional external ID for the event, used to deduplicate events from external systems. Fails when an event of same type with the same external ID exists for the same subject.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub external_id: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub mod_tool: std::option::Option<crate::generated::tools_ozone::moderation::ModTool<'a>>,
-    /// Optional report-level targeting. If provided, this event will be linked to specific reports and reporters may be notified.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub report_action: std::option::Option<
-        crate::generated::tools_ozone::moderation::emit_event::ReportAction<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct EmitEvent<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub created_by: jacquard_common::types::string::Did<S>,
+    pub event: EmitEventEvent<S>,
+    ///An optional external ID for the event, used to deduplicate events from external systems. Fails when an event of same type with the same external ID exists for the same subject.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub external_id: core::option::Option<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub mod_tool: core::option::Option<crate::generated::tools_ozone::moderation::ModTool<S>>,
+    ///Optional report-level targeting. If provided, this event will be linked to specific reports and reporters may be notified.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub report_action: core::option::Option<
+        crate::generated::tools_ozone::moderation::emit_event::ReportAction<S>,
     >,
-    #[serde(borrow)]
-    pub subject: EmitEventSubject<'a>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub subject_blob_cids: std::option::Option<Vec<jacquard_common::types::string::Cid<'a>>>,
-}
-
-pub mod emit_event_state {
-
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
-    #[allow(unused)]
-    use core::marker::PhantomData;
-    mod sealed {
-        pub trait Sealed {}
-    }
-    /// State trait tracking which required fields have been set
-    pub trait State: sealed::Sealed {
-        type Event;
-        type Subject;
-        type CreatedBy;
-    }
-    /// Empty state - all required fields are unset
-    pub struct Empty(());
-    impl sealed::Sealed for Empty {}
-    impl State for Empty {
-        type Event = Unset;
-        type Subject = Unset;
-        type CreatedBy = Unset;
-    }
-    ///State transition - sets the `event` field to Set
-    pub struct SetEvent<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetEvent<S> {}
-    impl<S: State> State for SetEvent<S> {
-        type Event = Set<members::event>;
-        type Subject = S::Subject;
-        type CreatedBy = S::CreatedBy;
-    }
-    ///State transition - sets the `subject` field to Set
-    pub struct SetSubject<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetSubject<S> {}
-    impl<S: State> State for SetSubject<S> {
-        type Event = S::Event;
-        type Subject = Set<members::subject>;
-        type CreatedBy = S::CreatedBy;
-    }
-    ///State transition - sets the `created_by` field to Set
-    pub struct SetCreatedBy<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedBy<S> {}
-    impl<S: State> State for SetCreatedBy<S> {
-        type Event = S::Event;
-        type Subject = S::Subject;
-        type CreatedBy = Set<members::created_by>;
-    }
-    /// Marker types for field names
-    #[allow(non_camel_case_types)]
-    pub mod members {
-        ///Marker type for the `event` field
-        pub struct event(());
-        ///Marker type for the `subject` field
-        pub struct subject(());
-        ///Marker type for the `created_by` field
-        pub struct created_by(());
-    }
-}
-
-/// Builder for constructing an instance of this type
-pub struct EmitEventBuilder<'a, S: emit_event_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<EmitEventEvent<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<crate::generated::tools_ozone::moderation::ModTool<'a>>,
-        ::core::option::Option<
-            crate::generated::tools_ozone::moderation::emit_event::ReportAction<'a>,
+    pub subject: EmitEventSubject<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub subject_blob_cids: core::option::Option<Vec<jacquard_common::types::string::Cid<S>>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-        ::core::option::Option<EmitEventSubject<'a>>,
-        ::core::option::Option<Vec<jacquard_common::types::string::Cid<'a>>>,
-    ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
-}
-
-impl<'a> EmitEvent<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> EmitEventBuilder<'a, emit_event_state::Empty> {
-        EmitEventBuilder::new()
-    }
-}
-
-impl<'a> EmitEventBuilder<'a, emit_event_state::Empty> {
-    /// Create a new builder with all fields unset
-    pub fn new() -> Self {
-        EmitEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> EmitEventBuilder<'a, S>
-where
-    S: emit_event_state::State,
-    S::CreatedBy: emit_event_state::IsUnset,
-{
-    /// Set the `createdBy` field (required)
-    pub fn created_by(
-        mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> EmitEventBuilder<'a, emit_event_state::SetCreatedBy<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
-        EmitEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> EmitEventBuilder<'a, S>
-where
-    S: emit_event_state::State,
-    S::Event: emit_event_state::IsUnset,
-{
-    /// Set the `event` field (required)
-    pub fn event(
-        mut self,
-        value: impl Into<EmitEventEvent<'a>>,
-    ) -> EmitEventBuilder<'a, emit_event_state::SetEvent<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
-        EmitEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S: emit_event_state::State> EmitEventBuilder<'a, S> {
-    /// Set the `externalId` field (optional)
-    pub fn external_id(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.2 = value.into();
-        self
-    }
-    /// Set the `externalId` field to an Option value (optional)
-    pub fn maybe_external_id(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.2 = value;
-        self
-    }
-}
-
-impl<'a, S: emit_event_state::State> EmitEventBuilder<'a, S> {
-    /// Set the `modTool` field (optional)
-    pub fn mod_tool(
-        mut self,
-        value: impl Into<Option<crate::generated::tools_ozone::moderation::ModTool<'a>>>,
-    ) -> Self {
-        self.__unsafe_private_named.3 = value.into();
-        self
-    }
-    /// Set the `modTool` field to an Option value (optional)
-    pub fn maybe_mod_tool(
-        mut self,
-        value: Option<crate::generated::tools_ozone::moderation::ModTool<'a>>,
-    ) -> Self {
-        self.__unsafe_private_named.3 = value;
-        self
-    }
-}
-
-impl<'a, S: emit_event_state::State> EmitEventBuilder<'a, S> {
-    /// Set the `reportAction` field (optional)
-    pub fn report_action(
-        mut self,
-        value: impl Into<
-            Option<crate::generated::tools_ozone::moderation::emit_event::ReportAction<'a>>,
-        >,
-    ) -> Self {
-        self.__unsafe_private_named.4 = value.into();
-        self
-    }
-    /// Set the `reportAction` field to an Option value (optional)
-    pub fn maybe_report_action(
-        mut self,
-        value: Option<crate::generated::tools_ozone::moderation::emit_event::ReportAction<'a>>,
-    ) -> Self {
-        self.__unsafe_private_named.4 = value;
-        self
-    }
-}
-
-impl<'a, S> EmitEventBuilder<'a, S>
-where
-    S: emit_event_state::State,
-    S::Subject: emit_event_state::IsUnset,
-{
-    /// Set the `subject` field (required)
-    pub fn subject(
-        mut self,
-        value: impl Into<EmitEventSubject<'a>>,
-    ) -> EmitEventBuilder<'a, emit_event_state::SetSubject<S>> {
-        self.__unsafe_private_named.5 = ::core::option::Option::Some(value.into());
-        EmitEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S: emit_event_state::State> EmitEventBuilder<'a, S> {
-    /// Set the `subjectBlobCids` field (optional)
-    pub fn subject_blob_cids(
-        mut self,
-        value: impl Into<Option<Vec<jacquard_common::types::string::Cid<'a>>>>,
-    ) -> Self {
-        self.__unsafe_private_named.6 = value.into();
-        self
-    }
-    /// Set the `subjectBlobCids` field to an Option value (optional)
-    pub fn maybe_subject_blob_cids(
-        mut self,
-        value: Option<Vec<jacquard_common::types::string::Cid<'a>>>,
-    ) -> Self {
-        self.__unsafe_private_named.6 = value;
-        self
-    }
-}
-
-impl<'a, S> EmitEventBuilder<'a, S>
-where
-    S: emit_event_state::State,
-    S::Event: emit_event_state::IsSet,
-    S::Subject: emit_event_state::IsSet,
-    S::CreatedBy: emit_event_state::IsSet,
-{
-    /// Build the final struct
-    pub fn build(self) -> EmitEvent<'a> {
-        EmitEvent {
-            created_by: self.__unsafe_private_named.0.unwrap(),
-            event: self.__unsafe_private_named.1.unwrap(),
-            external_id: self.__unsafe_private_named.2,
-            mod_tool: self.__unsafe_private_named.3,
-            report_action: self.__unsafe_private_named.4,
-            subject: self.__unsafe_private_named.5.unwrap(),
-            subject_blob_cids: self.__unsafe_private_named.6,
-            extra_data: Default::default(),
-        }
-    }
-    /// Build the final struct with custom extra_data
-    pub fn build_with_data(
-        self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
-        >,
-    ) -> EmitEvent<'a> {
-        EmitEvent {
-            created_by: self.__unsafe_private_named.0.unwrap(),
-            event: self.__unsafe_private_named.1.unwrap(),
-            external_id: self.__unsafe_private_named.2,
-            mod_tool: self.__unsafe_private_named.3,
-            report_action: self.__unsafe_private_named.4,
-            subject: self.__unsafe_private_named.5.unwrap(),
-            subject_blob_cids: self.__unsafe_private_named.6,
-            extra_data: Some(extra_data),
-        }
-    }
+    >,
 }
 
 #[jacquard_derive::open_union]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(tag = "$type")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum EmitEventEvent<'a> {
+#[serde(
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub enum EmitEventEvent<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(rename = "tools.ozone.moderation.defs#modEventTakedown")]
-    ModEventTakedown(Box<crate::generated::tools_ozone::moderation::ModEventTakedown<'a>>),
+    ModEventTakedown(Box<crate::generated::tools_ozone::moderation::ModEventTakedown<S>>),
     #[serde(rename = "tools.ozone.moderation.defs#modEventAcknowledge")]
-    ModEventAcknowledge(Box<crate::generated::tools_ozone::moderation::ModEventAcknowledge<'a>>),
+    ModEventAcknowledge(Box<crate::generated::tools_ozone::moderation::ModEventAcknowledge<S>>),
     #[serde(rename = "tools.ozone.moderation.defs#modEventEscalate")]
-    ModEventEscalate(Box<crate::generated::tools_ozone::moderation::ModEventEscalate<'a>>),
+    ModEventEscalate(Box<crate::generated::tools_ozone::moderation::ModEventEscalate<S>>),
     #[serde(rename = "tools.ozone.moderation.defs#modEventComment")]
-    ModEventComment(Box<crate::generated::tools_ozone::moderation::ModEventComment<'a>>),
+    ModEventComment(Box<crate::generated::tools_ozone::moderation::ModEventComment<S>>),
     #[serde(rename = "tools.ozone.moderation.defs#modEventLabel")]
-    ModEventLabel(Box<crate::generated::tools_ozone::moderation::ModEventLabel<'a>>),
+    ModEventLabel(Box<crate::generated::tools_ozone::moderation::ModEventLabel<S>>),
     #[serde(rename = "tools.ozone.moderation.defs#modEventReport")]
-    ModEventReport(Box<crate::generated::tools_ozone::moderation::ModEventReport<'a>>),
+    ModEventReport(Box<crate::generated::tools_ozone::moderation::ModEventReport<S>>),
     #[serde(rename = "tools.ozone.moderation.defs#modEventMute")]
-    ModEventMute(Box<crate::generated::tools_ozone::moderation::ModEventMute<'a>>),
+    ModEventMute(Box<crate::generated::tools_ozone::moderation::ModEventMute<S>>),
     #[serde(rename = "tools.ozone.moderation.defs#modEventUnmute")]
-    ModEventUnmute(Box<crate::generated::tools_ozone::moderation::ModEventUnmute<'a>>),
+    ModEventUnmute(Box<crate::generated::tools_ozone::moderation::ModEventUnmute<S>>),
     #[serde(rename = "tools.ozone.moderation.defs#modEventMuteReporter")]
-    ModEventMuteReporter(Box<crate::generated::tools_ozone::moderation::ModEventMuteReporter<'a>>),
+    ModEventMuteReporter(Box<crate::generated::tools_ozone::moderation::ModEventMuteReporter<S>>),
     #[serde(rename = "tools.ozone.moderation.defs#modEventUnmuteReporter")]
     ModEventUnmuteReporter(
-        Box<crate::generated::tools_ozone::moderation::ModEventUnmuteReporter<'a>>,
+        Box<crate::generated::tools_ozone::moderation::ModEventUnmuteReporter<S>>,
     ),
     #[serde(rename = "tools.ozone.moderation.defs#modEventReverseTakedown")]
     ModEventReverseTakedown(
-        Box<crate::generated::tools_ozone::moderation::ModEventReverseTakedown<'a>>,
+        Box<crate::generated::tools_ozone::moderation::ModEventReverseTakedown<S>>,
     ),
     #[serde(rename = "tools.ozone.moderation.defs#modEventResolveAppeal")]
-    ModEventResolveAppeal(
-        Box<crate::generated::tools_ozone::moderation::ModEventResolveAppeal<'a>>,
-    ),
+    ModEventResolveAppeal(Box<crate::generated::tools_ozone::moderation::ModEventResolveAppeal<S>>),
     #[serde(rename = "tools.ozone.moderation.defs#modEventEmail")]
-    ModEventEmail(Box<crate::generated::tools_ozone::moderation::ModEventEmail<'a>>),
+    ModEventEmail(Box<crate::generated::tools_ozone::moderation::ModEventEmail<S>>),
     #[serde(rename = "tools.ozone.moderation.defs#modEventDivert")]
-    ModEventDivert(Box<crate::generated::tools_ozone::moderation::ModEventDivert<'a>>),
+    ModEventDivert(Box<crate::generated::tools_ozone::moderation::ModEventDivert<S>>),
     #[serde(rename = "tools.ozone.moderation.defs#modEventTag")]
-    ModEventTag(Box<crate::generated::tools_ozone::moderation::ModEventTag<'a>>),
+    ModEventTag(Box<crate::generated::tools_ozone::moderation::ModEventTag<S>>),
     #[serde(rename = "tools.ozone.moderation.defs#accountEvent")]
-    AccountEvent(Box<crate::generated::tools_ozone::moderation::AccountEvent<'a>>),
+    AccountEvent(Box<crate::generated::tools_ozone::moderation::AccountEvent<S>>),
     #[serde(rename = "tools.ozone.moderation.defs#identityEvent")]
-    IdentityEvent(Box<crate::generated::tools_ozone::moderation::IdentityEvent<'a>>),
+    IdentityEvent(Box<crate::generated::tools_ozone::moderation::IdentityEvent<S>>),
     #[serde(rename = "tools.ozone.moderation.defs#recordEvent")]
-    RecordEvent(Box<crate::generated::tools_ozone::moderation::RecordEvent<'a>>),
+    RecordEvent(Box<crate::generated::tools_ozone::moderation::RecordEvent<S>>),
     #[serde(rename = "tools.ozone.moderation.defs#modEventPriorityScore")]
-    ModEventPriorityScore(
-        Box<crate::generated::tools_ozone::moderation::ModEventPriorityScore<'a>>,
-    ),
+    ModEventPriorityScore(Box<crate::generated::tools_ozone::moderation::ModEventPriorityScore<S>>),
     #[serde(rename = "tools.ozone.moderation.defs#ageAssuranceEvent")]
-    AgeAssuranceEvent(Box<crate::generated::tools_ozone::moderation::AgeAssuranceEvent<'a>>),
+    AgeAssuranceEvent(Box<crate::generated::tools_ozone::moderation::AgeAssuranceEvent<S>>),
     #[serde(rename = "tools.ozone.moderation.defs#ageAssuranceOverrideEvent")]
     AgeAssuranceOverrideEvent(
-        Box<crate::generated::tools_ozone::moderation::AgeAssuranceOverrideEvent<'a>>,
+        Box<crate::generated::tools_ozone::moderation::AgeAssuranceOverrideEvent<S>>,
     ),
     #[serde(rename = "tools.ozone.moderation.defs#ageAssurancePurgeEvent")]
     AgeAssurancePurgeEvent(
-        Box<crate::generated::tools_ozone::moderation::AgeAssurancePurgeEvent<'a>>,
+        Box<crate::generated::tools_ozone::moderation::AgeAssurancePurgeEvent<S>>,
     ),
     #[serde(rename = "tools.ozone.moderation.defs#revokeAccountCredentialsEvent")]
     RevokeAccountCredentialsEvent(
-        Box<crate::generated::tools_ozone::moderation::RevokeAccountCredentialsEvent<'a>>,
+        Box<crate::generated::tools_ozone::moderation::RevokeAccountCredentialsEvent<S>>,
     ),
     #[serde(rename = "tools.ozone.moderation.defs#scheduleTakedownEvent")]
-    ScheduleTakedownEvent(
-        Box<crate::generated::tools_ozone::moderation::ScheduleTakedownEvent<'a>>,
-    ),
+    ScheduleTakedownEvent(Box<crate::generated::tools_ozone::moderation::ScheduleTakedownEvent<S>>),
     #[serde(rename = "tools.ozone.moderation.defs#cancelScheduledTakedownEvent")]
     CancelScheduledTakedownEvent(
-        Box<crate::generated::tools_ozone::moderation::CancelScheduledTakedownEvent<'a>>,
+        Box<crate::generated::tools_ozone::moderation::CancelScheduledTakedownEvent<S>>,
     ),
 }
 
@@ -379,27 +118,40 @@ pub enum EmitEventEvent<'a> {
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(tag = "$type")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum EmitEventSubject<'a> {
+#[serde(
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub enum EmitEventSubject<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(rename = "com.atproto.admin.defs#repoRef")]
-    RepoRef(Box<crate::generated::com_atproto::admin::RepoRef<'a>>),
+    RepoRef(Box<crate::generated::com_atproto::admin::RepoRef<S>>),
     #[serde(rename = "com.atproto.repo.strongRef")]
-    StrongRef(Box<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>),
+    StrongRef(Box<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>),
 }
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct EmitEventOutput<'a> {
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct EmitEventOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(flatten)]
-    #[serde(borrow)]
-    pub value: crate::generated::tools_ozone::moderation::ModEventView<'a>,
+    pub value: crate::generated::tools_ozone::moderation::ModEventView<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::open_union]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -409,20 +161,24 @@ pub struct EmitEventOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum EmitEventError<'a> {
+pub enum EmitEventError {
     #[serde(rename = "SubjectHasAction")]
-    SubjectHasAction(std::option::Option<jacquard_common::CowStr<'a>>),
+    SubjectHasAction(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// An event with the same external ID already exists for the subject.
     #[serde(rename = "DuplicateExternalId")]
-    DuplicateExternalId(std::option::Option<jacquard_common::CowStr<'a>>),
+    DuplicateExternalId(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
 }
 
-impl std::fmt::Display for EmitEventError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for EmitEventError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             Self::SubjectHasAction(msg) => {
                 write!(f, "SubjectHasAction")?;
@@ -438,41 +194,19 @@ impl std::fmt::Display for EmitEventError<'_> {
                 }
                 Ok(())
             }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
         }
     }
 }
 
-/// Response type for
-///tools.ozone.moderation.emitEvent
-pub struct EmitEventResponse;
-impl jacquard_common::xrpc::XrpcResp for EmitEventResponse {
-    const NSID: &'static str = "tools.ozone.moderation.emitEvent";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = EmitEventOutput<'de>;
-    type Err<'de> = EmitEventError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for EmitEvent<'a> {
-    const NSID: &'static str = "tools.ozone.moderation.emitEvent";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Response = EmitEventResponse;
-}
-
-/// Endpoint type for
-///tools.ozone.moderation.emitEvent
-pub struct EmitEventRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for EmitEventRequest {
-    const PATH: &'static str = "/xrpc/tools.ozone.moderation.emitEvent";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = EmitEvent<'de>;
-    type Response = EmitEventResponse;
-}
-
 /// Target specific reports when emitting a moderation event
-#[jacquard_derive::lexicon]
+
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -483,80 +217,405 @@ impl jacquard_common::xrpc::XrpcEndpoint for EmitEventRequest {
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct ReportAction<'a> {
-    /// Target ALL reports on the subject
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub all: std::option::Option<bool>,
-    /// Target specific report IDs
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub ids: std::option::Option<Vec<i64>>,
-    /// Note to send to reporter(s) when actioning their report
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub note: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// Target reports matching these report types on the subject (fully qualified NSIDs)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub types: std::option::Option<Vec<jacquard_common::CowStr<'a>>>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ReportAction<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Target ALL reports on the subject
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub all: core::option::Option<bool>,
+    ///Target specific report IDs
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub ids: core::option::Option<Vec<i64>>,
+    ///Note to send to reporter(s) when actioning their report
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub note: core::option::Option<S>,
+    ///Target reports matching these report types on the subject (fully qualified NSIDs)
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub types: core::option::Option<Vec<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-fn lexicon_doc_tools_ozone_moderation_emitEvent() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static>
+/** Response marker for the `tools.ozone.moderation.emitEvent` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `EmitEventOutput<S>` for this endpoint.*/
+pub struct EmitEventResponse;
+impl jacquard_common::xrpc::XrpcResp for EmitEventResponse {
+    const NSID: &'static str = "tools.ozone.moderation.emitEvent";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = EmitEventOutput<S>;
+    type Err = EmitEventError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for EmitEvent<S> {
+    const NSID: &'static str = "tools.ozone.moderation.emitEvent";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Response = EmitEventResponse;
+}
+
+/** Endpoint marker for the `tools.ozone.moderation.emitEvent` procedure.
+
+Path: `/xrpc/tools.ozone.moderation.emitEvent`. The request payload type is `EmitEvent<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct EmitEventRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for EmitEventRequest {
+    const PATH: &'static str = "/xrpc/tools.ozone.moderation.emitEvent";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Request<S: jacquard_common::BosStr> = EmitEvent<S>;
+    type Response = EmitEventResponse;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ReportAction<S> {
+    fn nsid() -> &'static str {
+        "tools.ozone.moderation.emitEvent"
+    }
+    fn def_name() -> &'static str {
+        "reportAction"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_tools_ozone_moderation_emitEvent()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+pub mod emit_event_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type CreatedBy;
+        type Event;
+        type Subject;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type CreatedBy = Unset;
+        type Event = Unset;
+        type Subject = Unset;
+    }
+    ///State transition - sets the `created_by` field to Set
+    pub struct SetCreatedBy<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCreatedBy<St> {}
+    impl<St: State> State for SetCreatedBy<St> {
+        type CreatedBy = Set<members::created_by>;
+        type Event = St::Event;
+        type Subject = St::Subject;
+    }
+    ///State transition - sets the `event` field to Set
+    pub struct SetEvent<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetEvent<St> {}
+    impl<St: State> State for SetEvent<St> {
+        type CreatedBy = St::CreatedBy;
+        type Event = Set<members::event>;
+        type Subject = St::Subject;
+    }
+    ///State transition - sets the `subject` field to Set
+    pub struct SetSubject<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSubject<St> {}
+    impl<St: State> State for SetSubject<St> {
+        type CreatedBy = St::CreatedBy;
+        type Event = St::Event;
+        type Subject = Set<members::subject>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `created_by` field
+        pub struct created_by(());
+        ///Marker type for the `event` field
+        pub struct event(());
+        ///Marker type for the `subject` field
+        pub struct subject(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct EmitEventBuilder<
+    St: emit_event_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<EmitEventEvent<S>>,
+        core::option::Option<S>,
+        core::option::Option<crate::generated::tools_ozone::moderation::ModTool<S>>,
+        core::option::Option<
+            crate::generated::tools_ozone::moderation::emit_event::ReportAction<S>,
+        >,
+        core::option::Option<EmitEventSubject<S>>,
+        core::option::Option<Vec<jacquard_common::types::string::Cid<S>>>,
+    ),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl EmitEvent<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> EmitEventBuilder<emit_event_state::Empty, jacquard_common::DefaultStr> {
+        EmitEventBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> EmitEvent<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> EmitEventBuilder<emit_event_state::Empty, S> {
+        EmitEventBuilder::builder()
+    }
+}
+
+impl EmitEventBuilder<emit_event_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        EmitEventBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> EmitEventBuilder<emit_event_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        EmitEventBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> EmitEventBuilder<St, S>
+where
+    St: emit_event_state::State,
+    St::CreatedBy: emit_event_state::IsUnset,
+{
+    /// Set the `createdBy` field (required)
+    pub fn created_by(
+        mut self,
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> EmitEventBuilder<emit_event_state::SetCreatedBy<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        EmitEventBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> EmitEventBuilder<St, S>
+where
+    St: emit_event_state::State,
+    St::Event: emit_event_state::IsUnset,
+{
+    /// Set the `event` field (required)
+    pub fn event(
+        mut self,
+        value: impl Into<EmitEventEvent<S>>,
+    ) -> EmitEventBuilder<emit_event_state::SetEvent<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
+        EmitEventBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: emit_event_state::State, S: jacquard_common::BosStr> EmitEventBuilder<St, S> {
+    /// Set the `externalId` field (optional)
+    pub fn external_id(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.2 = value.into();
+        self
+    }
+    /// Set the `externalId` field to an Option value (optional)
+    pub fn maybe_external_id(mut self, value: Option<S>) -> Self {
+        self._fields.2 = value;
+        self
+    }
+}
+
+impl<St: emit_event_state::State, S: jacquard_common::BosStr> EmitEventBuilder<St, S> {
+    /// Set the `modTool` field (optional)
+    pub fn mod_tool(
+        mut self,
+        value: impl Into<Option<crate::generated::tools_ozone::moderation::ModTool<S>>>,
+    ) -> Self {
+        self._fields.3 = value.into();
+        self
+    }
+    /// Set the `modTool` field to an Option value (optional)
+    pub fn maybe_mod_tool(
+        mut self,
+        value: Option<crate::generated::tools_ozone::moderation::ModTool<S>>,
+    ) -> Self {
+        self._fields.3 = value;
+        self
+    }
+}
+
+impl<St: emit_event_state::State, S: jacquard_common::BosStr> EmitEventBuilder<St, S> {
+    /// Set the `reportAction` field (optional)
+    pub fn report_action(
+        mut self,
+        value: impl Into<Option<crate::generated::tools_ozone::moderation::emit_event::ReportAction<S>>>,
+    ) -> Self {
+        self._fields.4 = value.into();
+        self
+    }
+    /// Set the `reportAction` field to an Option value (optional)
+    pub fn maybe_report_action(
+        mut self,
+        value: Option<crate::generated::tools_ozone::moderation::emit_event::ReportAction<S>>,
+    ) -> Self {
+        self._fields.4 = value;
+        self
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> EmitEventBuilder<St, S>
+where
+    St: emit_event_state::State,
+    St::Subject: emit_event_state::IsUnset,
+{
+    /// Set the `subject` field (required)
+    pub fn subject(
+        mut self,
+        value: impl Into<EmitEventSubject<S>>,
+    ) -> EmitEventBuilder<emit_event_state::SetSubject<St>, S> {
+        self._fields.5 = ::core::option::Option::Some(value.into());
+        EmitEventBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: emit_event_state::State, S: jacquard_common::BosStr> EmitEventBuilder<St, S> {
+    /// Set the `subjectBlobCids` field (optional)
+    pub fn subject_blob_cids(
+        mut self,
+        value: impl Into<Option<Vec<jacquard_common::types::string::Cid<S>>>>,
+    ) -> Self {
+        self._fields.6 = value.into();
+        self
+    }
+    /// Set the `subjectBlobCids` field to an Option value (optional)
+    pub fn maybe_subject_blob_cids(
+        mut self,
+        value: Option<Vec<jacquard_common::types::string::Cid<S>>>,
+    ) -> Self {
+        self._fields.6 = value;
+        self
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> EmitEventBuilder<St, S>
+where
+    St: emit_event_state::State,
+    St::CreatedBy: emit_event_state::IsSet,
+    St::Event: emit_event_state::IsSet,
+    St::Subject: emit_event_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> EmitEvent<S> {
+        EmitEvent {
+            created_by: self._fields.0.unwrap(),
+            event: self._fields.1.unwrap(),
+            external_id: self._fields.2,
+            mod_tool: self._fields.3,
+            report_action: self._fields.4,
+            subject: self._fields.5.unwrap(),
+            subject_blob_cids: self._fields.6,
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> EmitEvent<S> {
+        EmitEvent {
+            created_by: self._fields.0.unwrap(),
+            event: self._fields.1.unwrap(),
+            external_id: self._fields.2,
+            mod_tool: self._fields.3,
+            report_action: self._fields.4,
+            subject: self._fields.5.unwrap(),
+            subject_blob_cids: self._fields.6,
+            extra_data: Some(extra_data),
+        }
+    }
+}
+
+fn lexicon_doc_tools_ozone_moderation_emitEvent() -> jacquard_lexicon::lexicon::LexiconDoc<'static>
 {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("tools.ozone.moderation.emitEvent"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
                 ::jacquard_lexicon::lexicon::LexUserType::XrpcProcedure(::jacquard_lexicon::lexicon::LexXrpcProcedure {
-                    description: None,
-                    parameters: None,
                     input: Some(::jacquard_lexicon::lexicon::LexXrpcBody {
-                        description: None,
                         encoding: ::jacquard_common::CowStr::new_static(
                             "application/json",
                         ),
                         schema: Some(
                             ::jacquard_lexicon::lexicon::LexXrpcBodySchema::Object(::jacquard_lexicon::lexicon::LexObject {
-                                description: None,
                                 required: Some(
                                     vec![
-                                        ::jacquard_common::smol_str::SmolStr::new_static("event"),
-                                        ::jacquard_common::smol_str::SmolStr::new_static("subject"),
-                                        ::jacquard_common::smol_str::SmolStr::new_static("createdBy")
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static("event"),
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static("subject"),
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static("createdBy")
                                     ],
                                 ),
-                                nullable: None,
                                 properties: {
                                     #[allow(unused_mut)]
-                                    let mut map = ::std::collections::BTreeMap::new();
+                                    let mut map = ::alloc::collections::BTreeMap::new();
                                     map.insert(
-                                        ::jacquard_common::smol_str::SmolStr::new_static(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                             "createdBy",
                                         ),
                                         ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                            description: None,
                                             format: Some(
                                                 ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                             ),
-                                            default: None,
-                                            min_length: None,
-                                            max_length: None,
-                                            min_graphemes: None,
-                                            max_graphemes: None,
-                                            r#enum: None,
-                                            r#const: None,
-                                            known_values: None,
+                                            ..Default::default()
                                         }),
                                     );
                                     map.insert(
-                                        ::jacquard_common::smol_str::SmolStr::new_static("event"),
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "event",
+                                        ),
                                         ::jacquard_lexicon::lexicon::LexObjectProperty::Union(::jacquard_lexicon::lexicon::LexRefUnion {
-                                            description: None,
                                             refs: vec![
                                                 ::jacquard_common::CowStr::new_static("tools.ozone.moderation.defs#modEventTakedown"),
                                                 ::jacquard_common::CowStr::new_static("tools.ozone.moderation.defs#modEventAcknowledge"),
@@ -584,11 +643,11 @@ fn lexicon_doc_tools_ozone_moderation_emitEvent() -> ::jacquard_lexicon::lexicon
                                                 ::jacquard_common::CowStr::new_static("tools.ozone.moderation.defs#scheduleTakedownEvent"),
                                                 ::jacquard_common::CowStr::new_static("tools.ozone.moderation.defs#cancelScheduledTakedownEvent")
                                             ],
-                                            closed: None,
+                                            ..Default::default()
                                         }),
                                     );
                                     map.insert(
-                                        ::jacquard_common::smol_str::SmolStr::new_static(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                             "externalId",
                                         ),
                                         ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -597,104 +656,90 @@ fn lexicon_doc_tools_ozone_moderation_emitEvent() -> ::jacquard_lexicon::lexicon
                                                     "An optional external ID for the event, used to deduplicate events from external systems. Fails when an event of same type with the same external ID exists for the same subject.",
                                                 ),
                                             ),
-                                            format: None,
-                                            default: None,
-                                            min_length: None,
-                                            max_length: None,
-                                            min_graphemes: None,
-                                            max_graphemes: None,
-                                            r#enum: None,
-                                            r#const: None,
-                                            known_values: None,
+                                            ..Default::default()
                                         }),
                                     );
                                     map.insert(
-                                        ::jacquard_common::smol_str::SmolStr::new_static("modTool"),
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "modTool",
+                                        ),
                                         ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                            description: None,
                                             r#ref: ::jacquard_common::CowStr::new_static(
                                                 "tools.ozone.moderation.defs#modTool",
                                             ),
+                                            ..Default::default()
                                         }),
                                     );
                                     map.insert(
-                                        ::jacquard_common::smol_str::SmolStr::new_static(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                             "reportAction",
                                         ),
                                         ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                            description: None,
                                             r#ref: ::jacquard_common::CowStr::new_static(
                                                 "#reportAction",
                                             ),
+                                            ..Default::default()
                                         }),
                                     );
                                     map.insert(
-                                        ::jacquard_common::smol_str::SmolStr::new_static("subject"),
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "subject",
+                                        ),
                                         ::jacquard_lexicon::lexicon::LexObjectProperty::Union(::jacquard_lexicon::lexicon::LexRefUnion {
-                                            description: None,
                                             refs: vec![
                                                 ::jacquard_common::CowStr::new_static("com.atproto.admin.defs#repoRef"),
                                                 ::jacquard_common::CowStr::new_static("com.atproto.repo.strongRef")
                                             ],
-                                            closed: None,
+                                            ..Default::default()
                                         }),
                                     );
                                     map.insert(
-                                        ::jacquard_common::smol_str::SmolStr::new_static(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                             "subjectBlobCids",
                                         ),
                                         ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
-                                            description: None,
                                             items: ::jacquard_lexicon::lexicon::LexArrayItem::String(::jacquard_lexicon::lexicon::LexString {
-                                                description: None,
                                                 format: Some(
                                                     ::jacquard_lexicon::lexicon::LexStringFormat::Cid,
                                                 ),
-                                                default: None,
-                                                min_length: None,
-                                                max_length: None,
-                                                min_graphemes: None,
-                                                max_graphemes: None,
-                                                r#enum: None,
-                                                r#const: None,
-                                                known_values: None,
+                                                ..Default::default()
                                             }),
-                                            min_length: None,
-                                            max_length: None,
+                                            ..Default::default()
                                         }),
                                     );
                                     map
                                 },
+                                ..Default::default()
                             }),
                         ),
+                        ..Default::default()
                     }),
-                    output: None,
-                    errors: None,
+                    ..Default::default()
                 }),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("reportAction"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("reportAction"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
                             "Target specific reports when emitting a moderation event",
                         ),
                     ),
-                    required: None,
-                    nullable: None,
                     properties: {
                         #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
+                        let mut map = ::alloc::collections::BTreeMap::new();
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("all"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "all",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
-                                description: None,
-                                default: None,
-                                r#const: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("ids"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "ids",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
@@ -702,38 +747,28 @@ fn lexicon_doc_tools_ozone_moderation_emitEvent() -> ::jacquard_lexicon::lexicon
                                     ),
                                 ),
                                 items: ::jacquard_lexicon::lexicon::LexArrayItem::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                    description: None,
-                                    default: None,
-                                    minimum: None,
-                                    maximum: None,
-                                    r#enum: None,
-                                    r#const: None,
+                                    ..Default::default()
                                 }),
-                                min_length: None,
-                                max_length: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("note"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "note",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
                                         "Note to send to reporter(s) when actioning their report",
                                     ),
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("types"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "types",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
@@ -741,43 +776,18 @@ fn lexicon_doc_tools_ozone_moderation_emitEvent() -> ::jacquard_lexicon::lexicon
                                     ),
                                 ),
                                 items: ::jacquard_lexicon::lexicon::LexArrayItem::String(::jacquard_lexicon::lexicon::LexString {
-                                    description: None,
-                                    format: None,
-                                    default: None,
-                                    min_length: None,
-                                    max_length: None,
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
-                                min_length: None,
-                                max_length: None,
+                                ..Default::default()
                             }),
                         );
                         map
                     },
+                    ..Default::default()
                 }),
             );
             map
         },
-    }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ReportAction<'a> {
-    fn nsid() -> &'static str {
-        "tools.ozone.moderation.emitEvent"
-    }
-    fn def_name() -> &'static str {
-        "reportAction"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_tools_ozone_moderation_emitEvent()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
+        ..Default::default()
     }
 }

@@ -3,6 +3,7 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
+//! Generated bindings for the `place.stream.live` Lexicon namespace/module.
 pub mod deny_teleport;
 pub mod get_live_users;
 pub mod get_profile_card;

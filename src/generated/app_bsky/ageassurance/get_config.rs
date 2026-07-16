@@ -5,37 +5,53 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetConfigOutput<'a> {
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetConfigOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(flatten)]
-    #[serde(borrow)]
-    pub value: crate::generated::app_bsky::ageassurance::Config<'a>,
+    pub value: crate::generated::app_bsky::ageassurance::Config<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-/// XRPC request marker type
+/** Request marker for the `app.bsky.ageassurance.getConfig` query.
+
+This endpoint has no request parameters or input body; send this marker with `jacquard::Client`.*/
+
 #[derive(
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
     serde::Serialize,
     serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
     jacquard_derive::IntoStatic,
+    Copy,
 )]
 pub struct GetConfig;
-/// Response type for
-///app.bsky.ageassurance.getConfig
+/** Response marker for the `app.bsky.ageassurance.getConfig` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetConfigOutput<S>` for this endpoint.*/
 pub struct GetConfigResponse;
 impl jacquard_common::xrpc::XrpcResp for GetConfigResponse {
     const NSID: &'static str = "app.bsky.ageassurance.getConfig";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetConfigOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
+    type Output<S: jacquard_common::BosStr> = GetConfigOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
 }
 
 impl jacquard_common::xrpc::XrpcRequest for GetConfig {
@@ -44,12 +60,13 @@ impl jacquard_common::xrpc::XrpcRequest for GetConfig {
     type Response = GetConfigResponse;
 }
 
-/// Endpoint type for
-///app.bsky.ageassurance.getConfig
+/** Endpoint marker for the `app.bsky.ageassurance.getConfig` query.
+
+Path: `/xrpc/app.bsky.ageassurance.getConfig`. The request payload type is `GetConfig`; use this marker with lower-level `XrpcEndpoint` APIs when you need endpoint metadata.*/
 pub struct GetConfigRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for GetConfigRequest {
     const PATH: &'static str = "/xrpc/app.bsky.ageassurance.getConfig";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetConfig;
+    type Request<S: jacquard_common::BosStr> = GetConfig;
     type Response = GetConfigResponse;
 }

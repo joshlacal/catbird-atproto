@@ -5,35 +5,52 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct RequestEmailUpdateOutput<'a> {
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct RequestEmailUpdateOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub token_required: bool,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-/// XRPC request marker type
+/** Request marker for the `com.atproto.server.requestEmailUpdate` procedure.
+
+This endpoint has no request parameters or input body; send this marker with `jacquard::Client`.*/
+
 #[derive(
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
     serde::Serialize,
     serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
     jacquard_derive::IntoStatic,
+    Copy,
 )]
 pub struct RequestEmailUpdate;
-/// Response type for
-///com.atproto.server.requestEmailUpdate
+/** Response marker for the `com.atproto.server.requestEmailUpdate` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `RequestEmailUpdateOutput<S>` for this endpoint.*/
 pub struct RequestEmailUpdateResponse;
 impl jacquard_common::xrpc::XrpcResp for RequestEmailUpdateResponse {
     const NSID: &'static str = "com.atproto.server.requestEmailUpdate";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = RequestEmailUpdateOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
+    type Output<S: jacquard_common::BosStr> = RequestEmailUpdateOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
 }
 
 impl jacquard_common::xrpc::XrpcRequest for RequestEmailUpdate {
@@ -43,13 +60,14 @@ impl jacquard_common::xrpc::XrpcRequest for RequestEmailUpdate {
     type Response = RequestEmailUpdateResponse;
 }
 
-/// Endpoint type for
-///com.atproto.server.requestEmailUpdate
+/** Endpoint marker for the `com.atproto.server.requestEmailUpdate` procedure.
+
+Path: `/xrpc/com.atproto.server.requestEmailUpdate`. The request payload type is `RequestEmailUpdate`; use this marker with lower-level `XrpcEndpoint` APIs when you need endpoint metadata.*/
 pub struct RequestEmailUpdateRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for RequestEmailUpdateRequest {
     const PATH: &'static str = "/xrpc/com.atproto.server.requestEmailUpdate";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = RequestEmailUpdate;
+    type Request<S: jacquard_common::BosStr> = RequestEmailUpdate;
     type Response = RequestEmailUpdateResponse;
 }

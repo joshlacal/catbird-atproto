@@ -5,7 +5,6 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -16,46 +15,75 @@
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct StopLivestream<'a> {}
-#[jacquard_derive::lexicon]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct StopLivestream<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct StopLivestreamOutput<'a> {
-    /// The new CID of the stopped livestream record.
-    #[serde(borrow)]
-    pub cid: jacquard_common::types::string::Cid<'a>,
-    /// The URI of the stopped livestream record.
-    #[serde(borrow)]
-    pub uri: jacquard_common::types::string::Uri<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct StopLivestreamOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///The new CID of the stopped livestream record.
+    pub cid: jacquard_common::types::string::Cid<S>,
+    ///The URI of the stopped livestream record.
+    pub uri: jacquard_common::types::string::UriValue<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-/// Response type for
-///place.stream.live.stopLivestream
+/** Response marker for the `place.stream.live.stopLivestream` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `StopLivestreamOutput<S>` for this endpoint.*/
 pub struct StopLivestreamResponse;
 impl jacquard_common::xrpc::XrpcResp for StopLivestreamResponse {
     const NSID: &'static str = "place.stream.live.stopLivestream";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = StopLivestreamOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
+    type Output<S: jacquard_common::BosStr> = StopLivestreamOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for StopLivestream<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for StopLivestream<S> {
     const NSID: &'static str = "place.stream.live.stopLivestream";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = StopLivestreamResponse;
 }
 
-/// Endpoint type for
-///place.stream.live.stopLivestream
+/** Endpoint marker for the `place.stream.live.stopLivestream` procedure.
+
+Path: `/xrpc/place.stream.live.stopLivestream`. The request payload type is `StopLivestream<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct StopLivestreamRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for StopLivestreamRequest {
     const PATH: &'static str = "/xrpc/place.stream.live.stopLivestream";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = StopLivestream<'de>;
+    type Request<S: jacquard_common::BosStr> = StopLivestream<S>;
     type Response = StopLivestreamResponse;
 }

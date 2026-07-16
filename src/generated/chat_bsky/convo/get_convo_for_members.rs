@@ -8,112 +8,36 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetConvoForMembers<'a> {
-    #[serde(borrow)]
-    pub members: Vec<jacquard_common::types::string::Did<'a>>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetConvoForMembers<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub members: Vec<jacquard_common::types::string::Did<S>>,
 }
 
-pub mod get_convo_for_members_state {
-
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
-    #[allow(unused)]
-    use core::marker::PhantomData;
-    mod sealed {
-        pub trait Sealed {}
-    }
-    /// State trait tracking which required fields have been set
-    pub trait State: sealed::Sealed {
-        type Members;
-    }
-    /// Empty state - all required fields are unset
-    pub struct Empty(());
-    impl sealed::Sealed for Empty {}
-    impl State for Empty {
-        type Members = Unset;
-    }
-    ///State transition - sets the `members` field to Set
-    pub struct SetMembers<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetMembers<S> {}
-    impl<S: State> State for SetMembers<S> {
-        type Members = Set<members::members>;
-    }
-    /// Marker types for field names
-    #[allow(non_camel_case_types)]
-    pub mod members {
-        ///Marker type for the `members` field
-        pub struct members(());
-    }
-}
-
-/// Builder for constructing an instance of this type
-pub struct GetConvoForMembersBuilder<'a, S: get_convo_for_members_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<Vec<jacquard_common::types::string::Did<'a>>>,),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
-}
-
-impl<'a> GetConvoForMembers<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> GetConvoForMembersBuilder<'a, get_convo_for_members_state::Empty> {
-        GetConvoForMembersBuilder::new()
-    }
-}
-
-impl<'a> GetConvoForMembersBuilder<'a, get_convo_for_members_state::Empty> {
-    /// Create a new builder with all fields unset
-    pub fn new() -> Self {
-        GetConvoForMembersBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> GetConvoForMembersBuilder<'a, S>
-where
-    S: get_convo_for_members_state::State,
-    S::Members: get_convo_for_members_state::IsUnset,
-{
-    /// Set the `members` field (required)
-    pub fn members(
-        mut self,
-        value: impl Into<Vec<jacquard_common::types::string::Did<'a>>>,
-    ) -> GetConvoForMembersBuilder<'a, get_convo_for_members_state::SetMembers<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
-        GetConvoForMembersBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> GetConvoForMembersBuilder<'a, S>
-where
-    S: get_convo_for_members_state::State,
-    S::Members: get_convo_for_members_state::IsSet,
-{
-    /// Build the final struct
-    pub fn build(self) -> GetConvoForMembers<'a> {
-        GetConvoForMembers {
-            members: self.__unsafe_private_named.0.unwrap(),
-        }
-    }
-}
-
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetConvoForMembersOutput<'a> {
-    #[serde(borrow)]
-    pub convo: crate::generated::chat_bsky::convo::ConvoView<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetConvoForMembersOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub convo: crate::generated::chat_bsky::convo::ConvoView<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::open_union]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -123,27 +47,31 @@ pub struct GetConvoForMembersOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum GetConvoForMembersError<'a> {
+pub enum GetConvoForMembersError {
     #[serde(rename = "AccountSuspended")]
-    AccountSuspended(std::option::Option<jacquard_common::CowStr<'a>>),
+    AccountSuspended(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "BlockedActor")]
-    BlockedActor(std::option::Option<jacquard_common::CowStr<'a>>),
+    BlockedActor(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "BlockedSubject")]
-    BlockedSubject(std::option::Option<jacquard_common::CowStr<'a>>),
+    BlockedSubject(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "MessagesDisabled")]
-    MessagesDisabled(std::option::Option<jacquard_common::CowStr<'a>>),
+    MessagesDisabled(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "NotFollowedBySender")]
-    NotFollowedBySender(std::option::Option<jacquard_common::CowStr<'a>>),
+    NotFollowedBySender(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "RecipientNotFound")]
-    RecipientNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
+    RecipientNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
 }
 
-impl std::fmt::Display for GetConvoForMembersError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for GetConvoForMembersError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             Self::AccountSuspended(msg) => {
                 write!(f, "AccountSuspended")?;
@@ -187,33 +115,153 @@ impl std::fmt::Display for GetConvoForMembersError<'_> {
                 }
                 Ok(())
             }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
         }
     }
 }
 
-/// Response type for
-///chat.bsky.convo.getConvoForMembers
+/** Response marker for the `chat.bsky.convo.getConvoForMembers` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetConvoForMembersOutput<S>` for this endpoint.*/
 pub struct GetConvoForMembersResponse;
 impl jacquard_common::xrpc::XrpcResp for GetConvoForMembersResponse {
     const NSID: &'static str = "chat.bsky.convo.getConvoForMembers";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetConvoForMembersOutput<'de>;
-    type Err<'de> = GetConvoForMembersError<'de>;
+    type Output<S: jacquard_common::BosStr> = GetConvoForMembersOutput<S>;
+    type Err = GetConvoForMembersError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for GetConvoForMembers<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetConvoForMembers<S> {
     const NSID: &'static str = "chat.bsky.convo.getConvoForMembers";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = GetConvoForMembersResponse;
 }
 
-/// Endpoint type for
-///chat.bsky.convo.getConvoForMembers
+/** Endpoint marker for the `chat.bsky.convo.getConvoForMembers` query.
+
+Path: `/xrpc/chat.bsky.convo.getConvoForMembers`. The request payload type is `GetConvoForMembers<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct GetConvoForMembersRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for GetConvoForMembersRequest {
     const PATH: &'static str = "/xrpc/chat.bsky.convo.getConvoForMembers";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetConvoForMembers<'de>;
+    type Request<S: jacquard_common::BosStr> = GetConvoForMembers<S>;
     type Response = GetConvoForMembersResponse;
+}
+
+pub mod get_convo_for_members_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type Members;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type Members = Unset;
+    }
+    ///State transition - sets the `members` field to Set
+    pub struct SetMembers<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetMembers<St> {}
+    impl<St: State> State for SetMembers<St> {
+        type Members = Set<members::members>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `members` field
+        pub struct members(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct GetConvoForMembersBuilder<
+    St: get_convo_for_members_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<Vec<jacquard_common::types::string::Did<S>>>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl GetConvoForMembers<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> GetConvoForMembersBuilder<get_convo_for_members_state::Empty, jacquard_common::DefaultStr>
+    {
+        GetConvoForMembersBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> GetConvoForMembers<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> GetConvoForMembersBuilder<get_convo_for_members_state::Empty, S> {
+        GetConvoForMembersBuilder::builder()
+    }
+}
+
+impl GetConvoForMembersBuilder<get_convo_for_members_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        GetConvoForMembersBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> GetConvoForMembersBuilder<get_convo_for_members_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GetConvoForMembersBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> GetConvoForMembersBuilder<St, S>
+where
+    St: get_convo_for_members_state::State,
+    St::Members: get_convo_for_members_state::IsUnset,
+{
+    /// Set the `members` field (required)
+    pub fn members(
+        mut self,
+        value: impl Into<Vec<jacquard_common::types::string::Did<S>>>,
+    ) -> GetConvoForMembersBuilder<get_convo_for_members_state::SetMembers<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        GetConvoForMembersBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> GetConvoForMembersBuilder<St, S>
+where
+    St: get_convo_for_members_state::State,
+    St::Members: get_convo_for_members_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> GetConvoForMembers<S> {
+        GetConvoForMembers {
+            members: self._fields.0.unwrap(),
+        }
+    }
 }

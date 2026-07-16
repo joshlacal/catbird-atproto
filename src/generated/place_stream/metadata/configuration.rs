@@ -6,27 +6,110 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 /// Default metadata record for livestream including content warnings, rights, and distribution policy
-#[jacquard_derive::lexicon]
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    rename = "place.stream.metadata.configuration",
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct Configuration<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub content_rights: core::option::Option<
+        crate::generated::place_stream::metadata::content_rights::ContentRights<S>,
+    >,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub content_warnings: core::option::Option<
+        crate::generated::place_stream::metadata::content_warnings::ContentWarnings<S>,
+    >,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub distribution_policy: core::option::Option<
+        crate::generated::place_stream::metadata::distribution_policy::DistributionPolicy<S>,
+    >,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// Typed wrapper for GetRecord response with this collection's record type.
+
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
-pub struct Configuration<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub content_rights: std::option::Option<
-        crate::generated::place_stream::metadata::content_rights::ContentRights<'a>,
-    >,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub content_warnings: std::option::Option<
-        crate::generated::place_stream::metadata::content_warnings::ContentWarnings<'a>,
-    >,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub distribution_policy: std::option::Option<
-        crate::generated::place_stream::metadata::distribution_policy::DistributionPolicy<'a>,
-    >,
+pub struct ConfigurationGetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
+    pub uri: jacquard_common::types::string::AtUri<S>,
+    pub value: Configuration<S>,
+}
+
+impl<S: jacquard_common::BosStr> Configuration<S> {
+    pub fn uri(
+        uri: S,
+    ) -> Result<
+        jacquard_common::types::uri::RecordUri<S, ConfigurationRecord>,
+        jacquard_common::types::uri::UriError,
+    > {
+        jacquard_common::types::uri::RecordUri::try_from_uri(
+            jacquard_common::types::string::AtUri::new(uri)?,
+        )
+    }
+}
+
+/// Marker type for deserializing records from this collection.
+
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+pub struct ConfigurationRecord;
+impl jacquard_common::xrpc::XrpcResp for ConfigurationRecord {
+    const NSID: &'static str = "place.stream.metadata.configuration";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = ConfigurationGetRecordOutput<S>;
+    type Err = jacquard_common::types::collection::RecordError;
+}
+
+impl<S: jacquard_common::BosStr> From<ConfigurationGetRecordOutput<S>> for Configuration<S> {
+    fn from(output: ConfigurationGetRecordOutput<S>) -> Self {
+        output.value
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection
+    for Configuration<S>
+{
+    const NSID: &'static str = "place.stream.metadata.configuration";
+    type Record = ConfigurationRecord;
+}
+
+impl jacquard_common::types::collection::Collection for ConfigurationRecord {
+    const NSID: &'static str = "place.stream.metadata.configuration";
+    type Record = ConfigurationRecord;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Configuration<S> {
+    fn nsid() -> &'static str {
+        "place.stream.metadata.configuration"
+    }
+    fn def_name() -> &'static str {
+        "main"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_place_stream_metadata_configuration()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
 }
 
 pub mod configuration_state {
@@ -48,225 +131,172 @@ pub mod configuration_state {
     pub mod members {}
 }
 
-/// Builder for constructing an instance of this type
-pub struct ConfigurationBuilder<'a, S: configuration_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<
-            crate::generated::place_stream::metadata::content_rights::ContentRights<'a>,
+/// Builder for constructing an instance of this type.
+pub struct ConfigurationBuilder<
+    St: configuration_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<
+            crate::generated::place_stream::metadata::content_rights::ContentRights<S>,
         >,
-        ::core::option::Option<
-            crate::generated::place_stream::metadata::content_warnings::ContentWarnings<'a>,
+        core::option::Option<
+            crate::generated::place_stream::metadata::content_warnings::ContentWarnings<S>,
         >,
-        ::core::option::Option<
-            crate::generated::place_stream::metadata::distribution_policy::DistributionPolicy<'a>,
+        core::option::Option<
+            crate::generated::place_stream::metadata::distribution_policy::DistributionPolicy<S>,
         >,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> Configuration<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> ConfigurationBuilder<'a, configuration_state::Empty> {
+impl Configuration<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> ConfigurationBuilder<configuration_state::Empty, jacquard_common::DefaultStr> {
         ConfigurationBuilder::new()
     }
 }
 
-impl<'a> ConfigurationBuilder<'a, configuration_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> Configuration<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> ConfigurationBuilder<configuration_state::Empty, S> {
+        ConfigurationBuilder::builder()
+    }
+}
+
+impl ConfigurationBuilder<configuration_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ConfigurationBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: configuration_state::State> ConfigurationBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> ConfigurationBuilder<configuration_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        ConfigurationBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: configuration_state::State, S: jacquard_common::BosStr> ConfigurationBuilder<St, S> {
     /// Set the `contentRights` field (optional)
     pub fn content_rights(
         mut self,
         value: impl Into<
-            Option<crate::generated::place_stream::metadata::content_rights::ContentRights<'a>>,
+            Option<crate::generated::place_stream::metadata::content_rights::ContentRights<S>>,
         >,
     ) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+        self._fields.0 = value.into();
         self
     }
     /// Set the `contentRights` field to an Option value (optional)
     pub fn maybe_content_rights(
         mut self,
-        value: Option<crate::generated::place_stream::metadata::content_rights::ContentRights<'a>>,
+        value: Option<crate::generated::place_stream::metadata::content_rights::ContentRights<S>>,
     ) -> Self {
-        self.__unsafe_private_named.0 = value;
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S: configuration_state::State> ConfigurationBuilder<'a, S> {
+impl<St: configuration_state::State, S: jacquard_common::BosStr> ConfigurationBuilder<St, S> {
     /// Set the `contentWarnings` field (optional)
     pub fn content_warnings(
         mut self,
         value: impl Into<
-            Option<crate::generated::place_stream::metadata::content_warnings::ContentWarnings<'a>>,
+            Option<crate::generated::place_stream::metadata::content_warnings::ContentWarnings<S>>,
         >,
     ) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self._fields.1 = value.into();
         self
     }
     /// Set the `contentWarnings` field to an Option value (optional)
     pub fn maybe_content_warnings(
         mut self,
         value: Option<
-            crate::generated::place_stream::metadata::content_warnings::ContentWarnings<'a>,
+            crate::generated::place_stream::metadata::content_warnings::ContentWarnings<S>,
         >,
     ) -> Self {
-        self.__unsafe_private_named.1 = value;
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S: configuration_state::State> ConfigurationBuilder<'a, S> {
+impl<St: configuration_state::State, S: jacquard_common::BosStr> ConfigurationBuilder<St, S> {
     /// Set the `distributionPolicy` field (optional)
     pub fn distribution_policy(
         mut self,
         value: impl Into<
             Option<
                 crate::generated::place_stream::metadata::distribution_policy::DistributionPolicy<
-                    'a,
+                    S,
                 >,
             >,
         >,
     ) -> Self {
-        self.__unsafe_private_named.2 = value.into();
+        self._fields.2 = value.into();
         self
     }
     /// Set the `distributionPolicy` field to an Option value (optional)
     pub fn maybe_distribution_policy(
         mut self,
         value: Option<
-            crate::generated::place_stream::metadata::distribution_policy::DistributionPolicy<'a>,
+            crate::generated::place_stream::metadata::distribution_policy::DistributionPolicy<S>,
         >,
     ) -> Self {
-        self.__unsafe_private_named.2 = value;
+        self._fields.2 = value;
         self
     }
 }
 
-impl<'a, S> ConfigurationBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ConfigurationBuilder<St, S>
 where
-    S: configuration_state::State,
+    St: configuration_state::State,
 {
-    /// Build the final struct
-    pub fn build(self) -> Configuration<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> Configuration<S> {
         Configuration {
-            content_rights: self.__unsafe_private_named.0,
-            content_warnings: self.__unsafe_private_named.1,
-            distribution_policy: self.__unsafe_private_named.2,
+            content_rights: self._fields.0,
+            content_warnings: self._fields.1,
+            distribution_policy: self._fields.2,
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> Configuration<'a> {
+    ) -> Configuration<S> {
         Configuration {
-            content_rights: self.__unsafe_private_named.0,
-            content_warnings: self.__unsafe_private_named.1,
-            distribution_policy: self.__unsafe_private_named.2,
+            content_rights: self._fields.0,
+            content_warnings: self._fields.1,
+            distribution_policy: self._fields.2,
             extra_data: Some(extra_data),
         }
     }
 }
 
-impl<'a> Configuration<'a> {
-    pub fn uri(
-        uri: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> Result<
-        jacquard_common::types::uri::RecordUri<'a, ConfigurationRecord>,
-        jacquard_common::types::uri::UriError,
-    > {
-        jacquard_common::types::uri::RecordUri::try_from_uri(
-            jacquard_common::types::string::AtUri::new_cow(uri.into())?,
-        )
-    }
-}
-
-/// Typed wrapper for GetRecord response with this collection's record type.
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct ConfigurationGetRecordOutput<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cid: std::option::Option<jacquard_common::types::string::Cid<'a>>,
-    #[serde(borrow)]
-    pub uri: jacquard_common::types::string::AtUri<'a>,
-    #[serde(borrow)]
-    pub value: Configuration<'a>,
-}
-
-impl From<ConfigurationGetRecordOutput<'_>> for Configuration<'_> {
-    fn from(output: ConfigurationGetRecordOutput<'_>) -> Self {
-        use jacquard_common::IntoStatic;
-        output.value.into_static()
-    }
-}
-
-impl jacquard_common::types::collection::Collection for Configuration<'_> {
-    const NSID: &'static str = "place.stream.metadata.configuration";
-    type Record = ConfigurationRecord;
-}
-
-/// Marker type for deserializing records from this collection.
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
-pub struct ConfigurationRecord;
-impl jacquard_common::xrpc::XrpcResp for ConfigurationRecord {
-    const NSID: &'static str = "place.stream.metadata.configuration";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = ConfigurationGetRecordOutput<'de>;
-    type Err<'de> = jacquard_common::types::collection::RecordError<'de>;
-}
-
-impl jacquard_common::types::collection::Collection for ConfigurationRecord {
-    const NSID: &'static str = "place.stream.metadata.configuration";
-    type Record = ConfigurationRecord;
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Configuration<'a> {
-    fn nsid() -> &'static str {
-        "place.stream.metadata.configuration"
-    }
-    fn def_name() -> &'static str {
-        "main"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_place_stream_metadata_configuration()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
 fn lexicon_doc_place_stream_metadata_configuration(
-) -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+) -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("place.stream.metadata.configuration"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
                 ::jacquard_lexicon::lexicon::LexUserType::Record(::jacquard_lexicon::lexicon::LexRecord {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
@@ -275,51 +305,51 @@ fn lexicon_doc_place_stream_metadata_configuration(
                     ),
                     key: Some(::jacquard_common::CowStr::new_static("literal:self")),
                     record: ::jacquard_lexicon::lexicon::LexRecordRecord::Object(::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
-                        required: None,
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "contentRights",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                    description: None,
                                     r#ref: ::jacquard_common::CowStr::new_static(
                                         "place.stream.metadata.contentRights",
                                     ),
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "contentWarnings",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                    description: None,
                                     r#ref: ::jacquard_common::CowStr::new_static(
                                         "place.stream.metadata.contentWarnings",
                                     ),
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "distributionPolicy",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                    description: None,
                                     r#ref: ::jacquard_common::CowStr::new_static(
                                         "place.stream.metadata.distributionPolicy",
                                     ),
+                                    ..Default::default()
                                 }),
                             );
                             map
                         },
+                        ..Default::default()
                     }),
+                    ..Default::default()
                 }),
             );
             map
         },
+        ..Default::default()
     }
 }

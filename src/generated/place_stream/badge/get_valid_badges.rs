@@ -8,11 +8,63 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetValidBadges<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub streamer: std::option::Option<jacquard_common::types::string::Did<'a>>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetValidBadges<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub streamer: core::option::Option<jacquard_common::types::string::Did<S>>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetValidBadgesOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub badges: Vec<crate::generated::place_stream::badge::BadgeView<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `place.stream.badge.getValidBadges` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetValidBadgesOutput<S>` for this endpoint.*/
+pub struct GetValidBadgesResponse;
+impl jacquard_common::xrpc::XrpcResp for GetValidBadgesResponse {
+    const NSID: &'static str = "place.stream.badge.getValidBadges";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = GetValidBadgesOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetValidBadges<S> {
+    const NSID: &'static str = "place.stream.badge.getValidBadges";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = GetValidBadgesResponse;
+}
+
+/** Endpoint marker for the `place.stream.badge.getValidBadges` query.
+
+Path: `/xrpc/place.stream.badge.getValidBadges`. The request payload type is `GetValidBadges<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct GetValidBadgesRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for GetValidBadgesRequest {
+    const PATH: &'static str = "/xrpc/place.stream.badge.getValidBadges";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = GetValidBadges<S>;
+    type Response = GetValidBadgesResponse;
 }
 
 pub mod get_valid_badges_state {
@@ -34,94 +86,77 @@ pub mod get_valid_badges_state {
     pub mod members {}
 }
 
-/// Builder for constructing an instance of this type
-pub struct GetValidBadgesBuilder<'a, S: get_valid_badges_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<jacquard_common::types::string::Did<'a>>,),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct GetValidBadgesBuilder<
+    St: get_valid_badges_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<jacquard_common::types::string::Did<S>>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> GetValidBadges<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> GetValidBadgesBuilder<'a, get_valid_badges_state::Empty> {
+impl GetValidBadges<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> GetValidBadgesBuilder<get_valid_badges_state::Empty, jacquard_common::DefaultStr>
+    {
         GetValidBadgesBuilder::new()
     }
 }
 
-impl<'a> GetValidBadgesBuilder<'a, get_valid_badges_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> GetValidBadges<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> GetValidBadgesBuilder<get_valid_badges_state::Empty, S> {
+        GetValidBadgesBuilder::builder()
+    }
+}
+
+impl GetValidBadgesBuilder<get_valid_badges_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetValidBadgesBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: get_valid_badges_state::State> GetValidBadgesBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> GetValidBadgesBuilder<get_valid_badges_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GetValidBadgesBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: get_valid_badges_state::State, S: jacquard_common::BosStr> GetValidBadgesBuilder<St, S> {
     /// Set the `streamer` field (optional)
     pub fn streamer(
         mut self,
-        value: impl Into<Option<jacquard_common::types::string::Did<'a>>>,
+        value: impl Into<Option<jacquard_common::types::string::Did<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+        self._fields.0 = value.into();
         self
     }
     /// Set the `streamer` field to an Option value (optional)
-    pub fn maybe_streamer(
-        mut self,
-        value: Option<jacquard_common::types::string::Did<'a>>,
-    ) -> Self {
-        self.__unsafe_private_named.0 = value;
+    pub fn maybe_streamer(mut self, value: Option<jacquard_common::types::string::Did<S>>) -> Self {
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S> GetValidBadgesBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GetValidBadgesBuilder<St, S>
 where
-    S: get_valid_badges_state::State,
+    St: get_valid_badges_state::State,
 {
-    /// Build the final struct
-    pub fn build(self) -> GetValidBadges<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> GetValidBadges<S> {
         GetValidBadges {
-            streamer: self.__unsafe_private_named.0,
+            streamer: self._fields.0,
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GetValidBadgesOutput<'a> {
-    #[serde(borrow)]
-    pub badges: Vec<crate::generated::place_stream::badge::BadgeView<'a>>,
-}
-
-/// Response type for
-///place.stream.badge.getValidBadges
-pub struct GetValidBadgesResponse;
-impl jacquard_common::xrpc::XrpcResp for GetValidBadgesResponse {
-    const NSID: &'static str = "place.stream.badge.getValidBadges";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetValidBadgesOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for GetValidBadges<'a> {
-    const NSID: &'static str = "place.stream.badge.getValidBadges";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = GetValidBadgesResponse;
-}
-
-/// Endpoint type for
-///place.stream.badge.getValidBadges
-pub struct GetValidBadgesRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for GetValidBadgesRequest {
-    const PATH: &'static str = "/xrpc/place.stream.badge.getValidBadges";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetValidBadges<'de>;
-    type Response = GetValidBadgesResponse;
 }

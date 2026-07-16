@@ -5,191 +5,59 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct TransferSequencer<'a> {
-    /// Conversation ID
-    #[serde(borrow)]
-    pub convo_id: jacquard_common::CowStr<'a>,
-    /// Current epoch at time of transfer (informational)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub current_epoch: std::option::Option<i64>,
-    /// New sequencer term to establish
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct TransferSequencer<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Conversation ID
+    pub convo_id: S,
+    ///Current epoch at time of transfer (informational)
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub current_epoch: core::option::Option<i64>,
+    ///New sequencer term to establish
     pub new_sequencer_term: i64,
-}
-
-pub mod transfer_sequencer_state {
-
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
-    #[allow(unused)]
-    use core::marker::PhantomData;
-    mod sealed {
-        pub trait Sealed {}
-    }
-    /// State trait tracking which required fields have been set
-    pub trait State: sealed::Sealed {
-        type ConvoId;
-        type NewSequencerTerm;
-    }
-    /// Empty state - all required fields are unset
-    pub struct Empty(());
-    impl sealed::Sealed for Empty {}
-    impl State for Empty {
-        type ConvoId = Unset;
-        type NewSequencerTerm = Unset;
-    }
-    ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type ConvoId = Set<members::convo_id>;
-        type NewSequencerTerm = S::NewSequencerTerm;
-    }
-    ///State transition - sets the `new_sequencer_term` field to Set
-    pub struct SetNewSequencerTerm<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetNewSequencerTerm<S> {}
-    impl<S: State> State for SetNewSequencerTerm<S> {
-        type ConvoId = S::ConvoId;
-        type NewSequencerTerm = Set<members::new_sequencer_term>;
-    }
-    /// Marker types for field names
-    #[allow(non_camel_case_types)]
-    pub mod members {
-        ///Marker type for the `convo_id` field
-        pub struct convo_id(());
-        ///Marker type for the `new_sequencer_term` field
-        pub struct new_sequencer_term(());
-    }
-}
-
-/// Builder for constructing an instance of this type
-pub struct TransferSequencerBuilder<'a, S: transfer_sequencer_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<i64>,
-    ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
-}
-
-impl<'a> TransferSequencer<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> TransferSequencerBuilder<'a, transfer_sequencer_state::Empty> {
-        TransferSequencerBuilder::new()
-    }
-}
-
-impl<'a> TransferSequencerBuilder<'a, transfer_sequencer_state::Empty> {
-    /// Create a new builder with all fields unset
-    pub fn new() -> Self {
-        TransferSequencerBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None),
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> TransferSequencerBuilder<'a, S>
-where
-    S: transfer_sequencer_state::State,
-    S::ConvoId: transfer_sequencer_state::IsUnset,
-{
-    /// Set the `convoId` field (required)
-    pub fn convo_id(
-        mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> TransferSequencerBuilder<'a, transfer_sequencer_state::SetConvoId<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
-        TransferSequencerBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S: transfer_sequencer_state::State> TransferSequencerBuilder<'a, S> {
-    /// Set the `currentEpoch` field (optional)
-    pub fn current_epoch(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.1 = value.into();
-        self
-    }
-    /// Set the `currentEpoch` field to an Option value (optional)
-    pub fn maybe_current_epoch(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.1 = value;
-        self
-    }
-}
-
-impl<'a, S> TransferSequencerBuilder<'a, S>
-where
-    S: transfer_sequencer_state::State,
-    S::NewSequencerTerm: transfer_sequencer_state::IsUnset,
-{
-    /// Set the `newSequencerTerm` field (required)
-    pub fn new_sequencer_term(
-        mut self,
-        value: impl Into<i64>,
-    ) -> TransferSequencerBuilder<'a, transfer_sequencer_state::SetNewSequencerTerm<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
-        TransferSequencerBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> TransferSequencerBuilder<'a, S>
-where
-    S: transfer_sequencer_state::State,
-    S::ConvoId: transfer_sequencer_state::IsSet,
-    S::NewSequencerTerm: transfer_sequencer_state::IsSet,
-{
-    /// Build the final struct
-    pub fn build(self) -> TransferSequencer<'a> {
-        TransferSequencer {
-            convo_id: self.__unsafe_private_named.0.unwrap(),
-            current_epoch: self.__unsafe_private_named.1,
-            new_sequencer_term: self.__unsafe_private_named.2.unwrap(),
-            extra_data: Default::default(),
-        }
-    }
-    /// Build the final struct with custom extra_data
-    pub fn build_with_data(
-        self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> TransferSequencer<'a> {
-        TransferSequencer {
-            convo_id: self.__unsafe_private_named.0.unwrap(),
-            current_epoch: self.__unsafe_private_named.1,
-            new_sequencer_term: self.__unsafe_private_named.2.unwrap(),
-            extra_data: Some(extra_data),
-        }
-    }
+    >,
 }
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct TransferSequencerOutput<'a> {
-    /// Whether the transfer was accepted
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct TransferSequencerOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Whether the transfer was accepted
     pub accepted: bool,
-    /// Confirmed new sequencer term
+    ///Confirmed new sequencer term
     pub new_sequencer_term: i64,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::open_union]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -199,23 +67,27 @@ pub struct TransferSequencerOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum TransferSequencerError<'a> {
+pub enum TransferSequencerError {
     #[serde(rename = "ConversationNotFound")]
-    ConversationNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
+    ConversationNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "NotCurrentSequencer")]
-    NotCurrentSequencer(std::option::Option<jacquard_common::CowStr<'a>>),
+    NotCurrentSequencer(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "TermStale")]
-    TermStale(std::option::Option<jacquard_common::CowStr<'a>>),
+    TermStale(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "TransferFailed")]
-    TransferFailed(std::option::Option<jacquard_common::CowStr<'a>>),
+    TransferFailed(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
 }
 
-impl std::fmt::Display for TransferSequencerError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for TransferSequencerError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             Self::ConversationNotFound(msg) => {
                 write!(f, "ConversationNotFound")?;
@@ -245,35 +117,224 @@ impl std::fmt::Display for TransferSequencerError<'_> {
                 }
                 Ok(())
             }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
         }
     }
 }
 
-/// Response type for
-///blue.catbird.mlsDS.transferSequencer
+/** Response marker for the `blue.catbird.mlsDS.transferSequencer` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `TransferSequencerOutput<S>` for this endpoint.*/
 pub struct TransferSequencerResponse;
 impl jacquard_common::xrpc::XrpcResp for TransferSequencerResponse {
     const NSID: &'static str = "blue.catbird.mlsDS.transferSequencer";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = TransferSequencerOutput<'de>;
-    type Err<'de> = TransferSequencerError<'de>;
+    type Output<S: jacquard_common::BosStr> = TransferSequencerOutput<S>;
+    type Err = TransferSequencerError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for TransferSequencer<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for TransferSequencer<S> {
     const NSID: &'static str = "blue.catbird.mlsDS.transferSequencer";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = TransferSequencerResponse;
 }
 
-/// Endpoint type for
-///blue.catbird.mlsDS.transferSequencer
+/** Endpoint marker for the `blue.catbird.mlsDS.transferSequencer` procedure.
+
+Path: `/xrpc/blue.catbird.mlsDS.transferSequencer`. The request payload type is `TransferSequencer<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct TransferSequencerRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for TransferSequencerRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.mlsDS.transferSequencer";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = TransferSequencer<'de>;
+    type Request<S: jacquard_common::BosStr> = TransferSequencer<S>;
     type Response = TransferSequencerResponse;
+}
+
+pub mod transfer_sequencer_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type ConvoId;
+        type NewSequencerTerm;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type ConvoId = Unset;
+        type NewSequencerTerm = Unset;
+    }
+    ///State transition - sets the `convo_id` field to Set
+    pub struct SetConvoId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetConvoId<St> {}
+    impl<St: State> State for SetConvoId<St> {
+        type ConvoId = Set<members::convo_id>;
+        type NewSequencerTerm = St::NewSequencerTerm;
+    }
+    ///State transition - sets the `new_sequencer_term` field to Set
+    pub struct SetNewSequencerTerm<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetNewSequencerTerm<St> {}
+    impl<St: State> State for SetNewSequencerTerm<St> {
+        type ConvoId = St::ConvoId;
+        type NewSequencerTerm = Set<members::new_sequencer_term>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `convo_id` field
+        pub struct convo_id(());
+        ///Marker type for the `new_sequencer_term` field
+        pub struct new_sequencer_term(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct TransferSequencerBuilder<
+    St: transfer_sequencer_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<i64>,
+        core::option::Option<i64>,
+    ),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl TransferSequencer<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> TransferSequencerBuilder<transfer_sequencer_state::Empty, jacquard_common::DefaultStr>
+    {
+        TransferSequencerBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> TransferSequencer<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> TransferSequencerBuilder<transfer_sequencer_state::Empty, S> {
+        TransferSequencerBuilder::builder()
+    }
+}
+
+impl TransferSequencerBuilder<transfer_sequencer_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        TransferSequencerBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> TransferSequencerBuilder<transfer_sequencer_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        TransferSequencerBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> TransferSequencerBuilder<St, S>
+where
+    St: transfer_sequencer_state::State,
+    St::ConvoId: transfer_sequencer_state::IsUnset,
+{
+    /// Set the `convoId` field (required)
+    pub fn convo_id(
+        mut self,
+        value: impl Into<S>,
+    ) -> TransferSequencerBuilder<transfer_sequencer_state::SetConvoId<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        TransferSequencerBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: transfer_sequencer_state::State, S: jacquard_common::BosStr>
+    TransferSequencerBuilder<St, S>
+{
+    /// Set the `currentEpoch` field (optional)
+    pub fn current_epoch(mut self, value: impl Into<Option<i64>>) -> Self {
+        self._fields.1 = value.into();
+        self
+    }
+    /// Set the `currentEpoch` field to an Option value (optional)
+    pub fn maybe_current_epoch(mut self, value: Option<i64>) -> Self {
+        self._fields.1 = value;
+        self
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> TransferSequencerBuilder<St, S>
+where
+    St: transfer_sequencer_state::State,
+    St::NewSequencerTerm: transfer_sequencer_state::IsUnset,
+{
+    /// Set the `newSequencerTerm` field (required)
+    pub fn new_sequencer_term(
+        mut self,
+        value: impl Into<i64>,
+    ) -> TransferSequencerBuilder<transfer_sequencer_state::SetNewSequencerTerm<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
+        TransferSequencerBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> TransferSequencerBuilder<St, S>
+where
+    St: transfer_sequencer_state::State,
+    St::ConvoId: transfer_sequencer_state::IsSet,
+    St::NewSequencerTerm: transfer_sequencer_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> TransferSequencer<S> {
+        TransferSequencer {
+            convo_id: self._fields.0.unwrap(),
+            current_epoch: self._fields.1,
+            new_sequencer_term: self._fields.2.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> TransferSequencer<S> {
+        TransferSequencer {
+            convo_id: self._fields.0.unwrap(),
+            current_epoch: self._fields.1,
+            new_sequencer_term: self._fields.2.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
 }

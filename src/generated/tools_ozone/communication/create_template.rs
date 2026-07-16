@@ -5,7 +5,6 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -16,38 +15,59 @@
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct CreateTemplate<'a> {
-    /// Content of the template, markdown supported, can contain variable placeholders.
-    #[serde(borrow)]
-    pub content_markdown: jacquard_common::CowStr<'a>,
-    /// DID of the user who is creating the template.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub created_by: std::option::Option<jacquard_common::types::string::Did<'a>>,
-    /// Message language.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub lang: std::option::Option<jacquard_common::types::string::Language>,
-    /// Name of the template.
-    #[serde(borrow)]
-    pub name: jacquard_common::CowStr<'a>,
-    /// Subject of the message, used in emails.
-    #[serde(borrow)]
-    pub subject: jacquard_common::CowStr<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct CreateTemplate<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Content of the template, markdown supported, can contain variable placeholders.
+    pub content_markdown: S,
+    ///DID of the user who is creating the template.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub created_by: core::option::Option<jacquard_common::types::string::Did<S>>,
+    ///Message language.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub lang: core::option::Option<jacquard_common::types::string::Language>,
+    ///Name of the template.
+    pub name: S,
+    ///Subject of the message, used in emails.
+    pub subject: S,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct CreateTemplateOutput<'a> {
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct CreateTemplateOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(flatten)]
-    #[serde(borrow)]
-    pub value: crate::generated::tools_ozone::communication::TemplateView<'a>,
+    pub value: crate::generated::tools_ozone::communication::TemplateView<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::open_union]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -57,17 +77,21 @@ pub struct CreateTemplateOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum CreateTemplateError<'a> {
+pub enum CreateTemplateError {
     #[serde(rename = "DuplicateTemplateName")]
-    DuplicateTemplateName(std::option::Option<jacquard_common::CowStr<'a>>),
+    DuplicateTemplateName(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
 }
 
-impl std::fmt::Display for CreateTemplateError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for CreateTemplateError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             Self::DuplicateTemplateName(msg) => {
                 write!(f, "DuplicateTemplateName")?;
@@ -76,35 +100,43 @@ impl std::fmt::Display for CreateTemplateError<'_> {
                 }
                 Ok(())
             }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
         }
     }
 }
 
-/// Response type for
-///tools.ozone.communication.createTemplate
+/** Response marker for the `tools.ozone.communication.createTemplate` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `CreateTemplateOutput<S>` for this endpoint.*/
 pub struct CreateTemplateResponse;
 impl jacquard_common::xrpc::XrpcResp for CreateTemplateResponse {
     const NSID: &'static str = "tools.ozone.communication.createTemplate";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = CreateTemplateOutput<'de>;
-    type Err<'de> = CreateTemplateError<'de>;
+    type Output<S: jacquard_common::BosStr> = CreateTemplateOutput<S>;
+    type Err = CreateTemplateError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for CreateTemplate<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for CreateTemplate<S> {
     const NSID: &'static str = "tools.ozone.communication.createTemplate";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = CreateTemplateResponse;
 }
 
-/// Endpoint type for
-///tools.ozone.communication.createTemplate
+/** Endpoint marker for the `tools.ozone.communication.createTemplate` procedure.
+
+Path: `/xrpc/tools.ozone.communication.createTemplate`. The request payload type is `CreateTemplate<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct CreateTemplateRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for CreateTemplateRequest {
     const PATH: &'static str = "/xrpc/tools.ozone.communication.createTemplate";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = CreateTemplate<'de>;
+    type Request<S: jacquard_common::BosStr> = CreateTemplate<S>;
     type Response = CreateTemplateResponse;
 }

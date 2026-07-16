@@ -8,99 +8,12 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct UploadBlobParams<'a> {
-    #[serde(borrow)]
-    pub convo_id: jacquard_common::CowStr<'a>,
-}
-
-pub mod upload_blob_params_state {
-
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
-    #[allow(unused)]
-    use core::marker::PhantomData;
-    mod sealed {
-        pub trait Sealed {}
-    }
-    /// State trait tracking which required fields have been set
-    pub trait State: sealed::Sealed {
-        type ConvoId;
-    }
-    /// Empty state - all required fields are unset
-    pub struct Empty(());
-    impl sealed::Sealed for Empty {}
-    impl State for Empty {
-        type ConvoId = Unset;
-    }
-    ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type ConvoId = Set<members::convo_id>;
-    }
-    /// Marker types for field names
-    #[allow(non_camel_case_types)]
-    pub mod members {
-        ///Marker type for the `convo_id` field
-        pub struct convo_id(());
-    }
-}
-
-/// Builder for constructing an instance of this type
-pub struct UploadBlobParamsBuilder<'a, S: upload_blob_params_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<jacquard_common::CowStr<'a>>,),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
-}
-
-impl<'a> UploadBlobParams<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> UploadBlobParamsBuilder<'a, upload_blob_params_state::Empty> {
-        UploadBlobParamsBuilder::new()
-    }
-}
-
-impl<'a> UploadBlobParamsBuilder<'a, upload_blob_params_state::Empty> {
-    /// Create a new builder with all fields unset
-    pub fn new() -> Self {
-        UploadBlobParamsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> UploadBlobParamsBuilder<'a, S>
-where
-    S: upload_blob_params_state::State,
-    S::ConvoId: upload_blob_params_state::IsUnset,
-{
-    /// Set the `convoId` field (required)
-    pub fn convo_id(
-        mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> UploadBlobParamsBuilder<'a, upload_blob_params_state::SetConvoId<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
-        UploadBlobParamsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> UploadBlobParamsBuilder<'a, S>
-where
-    S: upload_blob_params_state::State,
-    S::ConvoId: upload_blob_params_state::IsSet,
-{
-    /// Build the final struct
-    pub fn build(self) -> UploadBlobParams<'a> {
-        UploadBlobParams {
-            convo_id: self.__unsafe_private_named.0.unwrap(),
-        }
-    }
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct UploadBlobParams<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub convo_id: S,
 }
 
 #[derive(
@@ -108,23 +21,34 @@ where
 )]
 #[serde(rename_all = "camelCase")]
 pub struct UploadBlob {
-    pub body: bytes::Bytes,
+    pub body: jacquard_common::deps::bytes::Bytes,
 }
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct UploadBlobOutput<'a> {
-    /// Server-assigned UUIDv4 blob identifier
-    #[serde(borrow)]
-    pub blob_id: jacquard_common::CowStr<'a>,
-    /// Stored blob size in bytes
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct UploadBlobOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Server-assigned UUIDv4 blob identifier
+    pub blob_id: S,
+    ///Stored blob size in bytes
     pub size: i64,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::open_union]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -134,24 +58,28 @@ pub struct UploadBlobOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum UploadBlobError<'a> {
+pub enum UploadBlobError {
     /// User's blob storage quota has been exceeded (500MB per user)
     #[serde(rename = "QuotaExceeded")]
-    QuotaExceeded(std::option::Option<jacquard_common::CowStr<'a>>),
+    QuotaExceeded(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// Blob exceeds maximum size (10MB)
     #[serde(rename = "BlobTooLarge")]
-    BlobTooLarge(std::option::Option<jacquard_common::CowStr<'a>>),
+    BlobTooLarge(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// Uploader is not an active member of the target conversation
     #[serde(rename = "NotAMember")]
-    NotAMember(std::option::Option<jacquard_common::CowStr<'a>>),
+    NotAMember(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
 }
 
-impl std::fmt::Display for UploadBlobError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for UploadBlobError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             Self::QuotaExceeded(msg) => {
                 write!(f, "QuotaExceeded")?;
@@ -174,19 +102,26 @@ impl std::fmt::Display for UploadBlobError<'_> {
                 }
                 Ok(())
             }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
         }
     }
 }
 
-/// Response type for
-///blue.catbird.mlsChat.uploadBlob
+/** Response marker for the `blue.catbird.mlsChat.uploadBlob` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `UploadBlobOutput<S>` for this endpoint.*/
 pub struct UploadBlobResponse;
 impl jacquard_common::xrpc::XrpcResp for UploadBlobResponse {
     const NSID: &'static str = "blue.catbird.mlsChat.uploadBlob";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = UploadBlobOutput<'de>;
-    type Err<'de> = UploadBlobError<'de>;
+    type Output<S: jacquard_common::BosStr> = UploadBlobOutput<S>;
+    type Err = UploadBlobError;
 }
 
 impl jacquard_common::xrpc::XrpcRequest for UploadBlob {
@@ -194,26 +129,141 @@ impl jacquard_common::xrpc::XrpcRequest for UploadBlob {
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("*/*");
     type Response = UploadBlobResponse;
-    fn encode_body(&self) -> Result<Vec<u8>, jacquard_common::xrpc::EncodeError> {
-        Ok(self.body.to_vec())
+    fn encode_body(&self, buffer: &mut Vec<u8>) -> Result<(), jacquard_common::xrpc::EncodeError>
+    where
+        Self: serde::Serialize,
+    {
+        Ok(buffer.extend_from_slice(self.body.as_ref()))
     }
-    fn decode_body<'de>(body: &'de [u8]) -> Result<Box<Self>, jacquard_common::error::DecodeError>
+    fn decode_body<'de>(body: &'de [u8]) -> Result<Self, jacquard_common::error::DecodeError>
     where
         Self: serde::Deserialize<'de>,
     {
-        Ok(Box::new(Self {
-            body: bytes::Bytes::copy_from_slice(body),
-        }))
+        Ok(Self {
+            body: jacquard_common::deps::bytes::Bytes::copy_from_slice(body),
+        })
     }
 }
 
-/// Endpoint type for
-///blue.catbird.mlsChat.uploadBlob
+/** Endpoint marker for the `blue.catbird.mlsChat.uploadBlob` procedure.
+
+Path: `/xrpc/blue.catbird.mlsChat.uploadBlob`. The request payload type is `UploadBlob`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct UploadBlobRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for UploadBlobRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.uploadBlob";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("*/*");
-    type Request<'de> = UploadBlob;
+    type Request<S: jacquard_common::BosStr> = UploadBlob;
     type Response = UploadBlobResponse;
+}
+
+pub mod upload_blob_params_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type ConvoId;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type ConvoId = Unset;
+    }
+    ///State transition - sets the `convo_id` field to Set
+    pub struct SetConvoId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetConvoId<St> {}
+    impl<St: State> State for SetConvoId<St> {
+        type ConvoId = Set<members::convo_id>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `convo_id` field
+        pub struct convo_id(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct UploadBlobParamsBuilder<
+    St: upload_blob_params_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<S>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl UploadBlobParams<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> UploadBlobParamsBuilder<upload_blob_params_state::Empty, jacquard_common::DefaultStr> {
+        UploadBlobParamsBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> UploadBlobParams<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> UploadBlobParamsBuilder<upload_blob_params_state::Empty, S> {
+        UploadBlobParamsBuilder::builder()
+    }
+}
+
+impl UploadBlobParamsBuilder<upload_blob_params_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        UploadBlobParamsBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> UploadBlobParamsBuilder<upload_blob_params_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        UploadBlobParamsBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> UploadBlobParamsBuilder<St, S>
+where
+    St: upload_blob_params_state::State,
+    St::ConvoId: upload_blob_params_state::IsUnset,
+{
+    /// Set the `convoId` field (required)
+    pub fn convo_id(
+        mut self,
+        value: impl Into<S>,
+    ) -> UploadBlobParamsBuilder<upload_blob_params_state::SetConvoId<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        UploadBlobParamsBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> UploadBlobParamsBuilder<St, S>
+where
+    St: upload_blob_params_state::State,
+    St::ConvoId: upload_blob_params_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> UploadBlobParams<S> {
+        UploadBlobParams {
+            convo_id: self._fields.0.unwrap(),
+        }
+    }
 }

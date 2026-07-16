@@ -5,18 +5,59 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct AddValues<'a> {
-    /// Name of the set to add values to
-    #[serde(borrow)]
-    pub name: jacquard_common::CowStr<'a>,
-    /// Array of string values to add to the set
-    #[serde(borrow)]
-    pub values: Vec<jacquard_common::CowStr<'a>>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct AddValues<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Name of the set to add values to
+    pub name: S,
+    ///Array of string values to add to the set
+    pub values: Vec<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `tools.ozone.set.addValues` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `()` for this endpoint.*/
+pub struct AddValuesResponse;
+impl jacquard_common::xrpc::XrpcResp for AddValuesResponse {
+    const NSID: &'static str = "tools.ozone.set.addValues";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = ();
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for AddValues<S> {
+    const NSID: &'static str = "tools.ozone.set.addValues";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Response = AddValuesResponse;
+}
+
+/** Endpoint marker for the `tools.ozone.set.addValues` procedure.
+
+Path: `/xrpc/tools.ozone.set.addValues`. The request payload type is `AddValues<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct AddValuesRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for AddValuesRequest {
+    const PATH: &'static str = "/xrpc/tools.ozone.set.addValues";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Request<S: jacquard_common::BosStr> = AddValues<S>;
+    type Response = AddValuesResponse;
 }
 
 pub mod add_values_state {
@@ -40,17 +81,17 @@ pub mod add_values_state {
         type Values = Unset;
     }
     ///State transition - sets the `name` field to Set
-    pub struct SetName<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetName<S> {}
-    impl<S: State> State for SetName<S> {
+    pub struct SetName<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetName<St> {}
+    impl<St: State> State for SetName<St> {
         type Name = Set<members::name>;
-        type Values = S::Values;
+        type Values = St::Values;
     }
     ///State transition - sets the `values` field to Set
-    pub struct SetValues<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetValues<S> {}
-    impl<S: State> State for SetValues<S> {
-        type Name = S::Name;
+    pub struct SetValues<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetValues<St> {}
+    impl<St: State> State for SetValues<St> {
+        type Name = St::Name;
         type Values = Set<members::values>;
     }
     /// Marker types for field names
@@ -63,126 +104,116 @@ pub mod add_values_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct AddValuesBuilder<'a, S: add_values_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<Vec<jacquard_common::CowStr<'a>>>,
-    ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct AddValuesBuilder<
+    St: add_values_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<S>, core::option::Option<Vec<S>>),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> AddValues<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> AddValuesBuilder<'a, add_values_state::Empty> {
+impl AddValues<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> AddValuesBuilder<add_values_state::Empty, jacquard_common::DefaultStr> {
         AddValuesBuilder::new()
     }
 }
 
-impl<'a> AddValuesBuilder<'a, add_values_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> AddValues<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> AddValuesBuilder<add_values_state::Empty, S> {
+        AddValuesBuilder::builder()
+    }
+}
+
+impl AddValuesBuilder<add_values_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         AddValuesBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> AddValuesBuilder<'a, S>
+impl<S: jacquard_common::BosStr> AddValuesBuilder<add_values_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        AddValuesBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> AddValuesBuilder<St, S>
 where
-    S: add_values_state::State,
-    S::Name: add_values_state::IsUnset,
+    St: add_values_state::State,
+    St::Name: add_values_state::IsUnset,
 {
     /// Set the `name` field (required)
     pub fn name(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> AddValuesBuilder<'a, add_values_state::SetName<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> AddValuesBuilder<add_values_state::SetName<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         AddValuesBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> AddValuesBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> AddValuesBuilder<St, S>
 where
-    S: add_values_state::State,
-    S::Values: add_values_state::IsUnset,
+    St: add_values_state::State,
+    St::Values: add_values_state::IsUnset,
 {
     /// Set the `values` field (required)
     pub fn values(
         mut self,
-        value: impl Into<Vec<jacquard_common::CowStr<'a>>>,
-    ) -> AddValuesBuilder<'a, add_values_state::SetValues<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<Vec<S>>,
+    ) -> AddValuesBuilder<add_values_state::SetValues<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         AddValuesBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> AddValuesBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> AddValuesBuilder<St, S>
 where
-    S: add_values_state::State,
-    S::Name: add_values_state::IsSet,
-    S::Values: add_values_state::IsSet,
+    St: add_values_state::State,
+    St::Name: add_values_state::IsSet,
+    St::Values: add_values_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> AddValues<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> AddValues<S> {
         AddValues {
-            name: self.__unsafe_private_named.0.unwrap(),
-            values: self.__unsafe_private_named.1.unwrap(),
+            name: self._fields.0.unwrap(),
+            values: self._fields.1.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> AddValues<'a> {
+    ) -> AddValues<S> {
         AddValues {
-            name: self.__unsafe_private_named.0.unwrap(),
-            values: self.__unsafe_private_named.1.unwrap(),
+            name: self._fields.0.unwrap(),
+            values: self._fields.1.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-/// Response type for
-///tools.ozone.set.addValues
-pub struct AddValuesResponse;
-impl jacquard_common::xrpc::XrpcResp for AddValuesResponse {
-    const NSID: &'static str = "tools.ozone.set.addValues";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = ();
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for AddValues<'a> {
-    const NSID: &'static str = "tools.ozone.set.addValues";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Response = AddValuesResponse;
-}
-
-/// Endpoint type for
-///tools.ozone.set.addValues
-pub struct AddValuesRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for AddValuesRequest {
-    const PATH: &'static str = "/xrpc/tools.ozone.set.addValues";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = AddValues<'de>;
-    type Response = AddValuesResponse;
 }

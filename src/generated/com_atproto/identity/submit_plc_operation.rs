@@ -5,14 +5,56 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct SubmitPlcOperation<'a> {
-    #[serde(borrow)]
-    pub operation: jacquard_common::types::value::Data<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct SubmitPlcOperation<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub operation: jacquard_common::types::value::Data<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `com.atproto.identity.submitPlcOperation` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `()` for this endpoint.*/
+pub struct SubmitPlcOperationResponse;
+impl jacquard_common::xrpc::XrpcResp for SubmitPlcOperationResponse {
+    const NSID: &'static str = "com.atproto.identity.submitPlcOperation";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = ();
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for SubmitPlcOperation<S> {
+    const NSID: &'static str = "com.atproto.identity.submitPlcOperation";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Response = SubmitPlcOperationResponse;
+}
+
+/** Endpoint marker for the `com.atproto.identity.submitPlcOperation` procedure.
+
+Path: `/xrpc/com.atproto.identity.submitPlcOperation`. The request payload type is `SubmitPlcOperation<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct SubmitPlcOperationRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for SubmitPlcOperationRequest {
+    const PATH: &'static str = "/xrpc/com.atproto.identity.submitPlcOperation";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Request<S: jacquard_common::BosStr> = SubmitPlcOperation<S>;
+    type Response = SubmitPlcOperationResponse;
 }
 
 pub mod submit_plc_operation_state {
@@ -34,9 +76,9 @@ pub mod submit_plc_operation_state {
         type Operation = Unset;
     }
     ///State transition - sets the `operation` field to Set
-    pub struct SetOperation<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetOperation<S> {}
-    impl<S: State> State for SetOperation<S> {
+    pub struct SetOperation<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetOperation<St> {}
+    impl<St: State> State for SetOperation<St> {
         type Operation = Set<members::operation>;
     }
     /// Marker types for field names
@@ -47,101 +89,96 @@ pub mod submit_plc_operation_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct SubmitPlcOperationBuilder<'a, S: submit_plc_operation_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<jacquard_common::types::value::Data<'a>>,),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct SubmitPlcOperationBuilder<
+    St: submit_plc_operation_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<jacquard_common::types::value::Data<S>>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> SubmitPlcOperation<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> SubmitPlcOperationBuilder<'a, submit_plc_operation_state::Empty> {
+impl SubmitPlcOperation<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> SubmitPlcOperationBuilder<submit_plc_operation_state::Empty, jacquard_common::DefaultStr>
+    {
         SubmitPlcOperationBuilder::new()
     }
 }
 
-impl<'a> SubmitPlcOperationBuilder<'a, submit_plc_operation_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> SubmitPlcOperation<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> SubmitPlcOperationBuilder<submit_plc_operation_state::Empty, S> {
+        SubmitPlcOperationBuilder::builder()
+    }
+}
+
+impl SubmitPlcOperationBuilder<submit_plc_operation_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         SubmitPlcOperationBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> SubmitPlcOperationBuilder<'a, S>
+impl<S: jacquard_common::BosStr> SubmitPlcOperationBuilder<submit_plc_operation_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        SubmitPlcOperationBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> SubmitPlcOperationBuilder<St, S>
 where
-    S: submit_plc_operation_state::State,
-    S::Operation: submit_plc_operation_state::IsUnset,
+    St: submit_plc_operation_state::State,
+    St::Operation: submit_plc_operation_state::IsUnset,
 {
     /// Set the `operation` field (required)
     pub fn operation(
         mut self,
-        value: impl Into<jacquard_common::types::value::Data<'a>>,
-    ) -> SubmitPlcOperationBuilder<'a, submit_plc_operation_state::SetOperation<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::value::Data<S>>,
+    ) -> SubmitPlcOperationBuilder<submit_plc_operation_state::SetOperation<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         SubmitPlcOperationBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> SubmitPlcOperationBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> SubmitPlcOperationBuilder<St, S>
 where
-    S: submit_plc_operation_state::State,
-    S::Operation: submit_plc_operation_state::IsSet,
+    St: submit_plc_operation_state::State,
+    St::Operation: submit_plc_operation_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> SubmitPlcOperation<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> SubmitPlcOperation<S> {
         SubmitPlcOperation {
-            operation: self.__unsafe_private_named.0.unwrap(),
+            operation: self._fields.0.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> SubmitPlcOperation<'a> {
+    ) -> SubmitPlcOperation<S> {
         SubmitPlcOperation {
-            operation: self.__unsafe_private_named.0.unwrap(),
+            operation: self._fields.0.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-/// Response type for
-///com.atproto.identity.submitPlcOperation
-pub struct SubmitPlcOperationResponse;
-impl jacquard_common::xrpc::XrpcResp for SubmitPlcOperationResponse {
-    const NSID: &'static str = "com.atproto.identity.submitPlcOperation";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = ();
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for SubmitPlcOperation<'a> {
-    const NSID: &'static str = "com.atproto.identity.submitPlcOperation";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Response = SubmitPlcOperationResponse;
-}
-
-/// Endpoint type for
-///com.atproto.identity.submitPlcOperation
-pub struct SubmitPlcOperationRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for SubmitPlcOperationRequest {
-    const PATH: &'static str = "/xrpc/com.atproto.identity.submitPlcOperation";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = SubmitPlcOperation<'de>;
-    type Response = SubmitPlcOperationResponse;
 }

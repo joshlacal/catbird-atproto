@@ -6,28 +6,176 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 /// Record containing a Streamplace chat message.
-#[jacquard_derive::lexicon]
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    rename = "place.stream.chat.message",
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct Message<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Client-declared timestamp when this message was originally created.
+    pub created_at: jacquard_common::types::string::Datetime,
+    ///Annotations of text (mentions, URLs, etc)
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub facets:
+        core::option::Option<Vec<crate::generated::place_stream::richtext::facet::Facet<S>>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub reply: core::option::Option<crate::generated::place_stream::chat::message::ReplyRef<S>>,
+    ///The DID of the streamer whose chat this is.
+    pub streamer: jacquard_common::types::string::Did<S>,
+    ///The primary message content. May be an empty string, if there are embeds.
+    pub text: S,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// Typed wrapper for GetRecord response with this collection's record type.
+
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
-pub struct Message<'a> {
-    /// Client-declared timestamp when this message was originally created.
-    pub created_at: jacquard_common::types::string::Datetime,
-    /// Annotations of text (mentions, URLs, etc)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub facets:
-        std::option::Option<Vec<crate::generated::place_stream::richtext::facet::Facet<'a>>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub reply: std::option::Option<crate::generated::place_stream::chat::message::ReplyRef<'a>>,
-    /// The DID of the streamer whose chat this is.
-    #[serde(borrow)]
-    pub streamer: jacquard_common::types::string::Did<'a>,
-    /// The primary message content. May be an empty string, if there are embeds.
-    #[serde(borrow)]
-    pub text: jacquard_common::CowStr<'a>,
+pub struct MessageGetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
+    pub uri: jacquard_common::types::string::AtUri<S>,
+    pub value: Message<S>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ReplyRef<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub parent: crate::generated::com_atproto::repo::strong_ref::StrongRef<S>,
+    pub root: crate::generated::com_atproto::repo::strong_ref::StrongRef<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+impl<S: jacquard_common::BosStr> Message<S> {
+    pub fn uri(
+        uri: S,
+    ) -> Result<
+        jacquard_common::types::uri::RecordUri<S, MessageRecord>,
+        jacquard_common::types::uri::UriError,
+    > {
+        jacquard_common::types::uri::RecordUri::try_from_uri(
+            jacquard_common::types::string::AtUri::new(uri)?,
+        )
+    }
+}
+
+/// Marker type for deserializing records from this collection.
+
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+pub struct MessageRecord;
+impl jacquard_common::xrpc::XrpcResp for MessageRecord {
+    const NSID: &'static str = "place.stream.chat.message";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = MessageGetRecordOutput<S>;
+    type Err = jacquard_common::types::collection::RecordError;
+}
+
+impl<S: jacquard_common::BosStr> From<MessageGetRecordOutput<S>> for Message<S> {
+    fn from(output: MessageGetRecordOutput<S>) -> Self {
+        output.value
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection for Message<S> {
+    const NSID: &'static str = "place.stream.chat.message";
+    type Record = MessageRecord;
+}
+
+impl jacquard_common::types::collection::Collection for MessageRecord {
+    const NSID: &'static str = "place.stream.chat.message";
+    type Record = MessageRecord;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Message<S> {
+    fn nsid() -> &'static str {
+        "place.stream.chat.message"
+    }
+    fn def_name() -> &'static str {
+        "main"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_place_stream_chat_message()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.text;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 3000usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("text"),
+                    max: 3000usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.text;
+            {
+                let count = jacquard_common::deps::codegen::unicode_segmentation::UnicodeSegmentation::graphemes(
+                        value.as_ref(),
+                        true,
+                    )
+                    .count();
+                if count > 300usize {
+                    return Err(
+                        jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field("text"),
+                            max: 300usize,
+                            actual: count,
+                        },
+                    );
+                }
+            }
+        }
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ReplyRef<S> {
+    fn nsid() -> &'static str {
+        "place.stream.chat.message"
+    }
+    fn def_name() -> &'static str {
+        "replyRef"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_place_stream_chat_message()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
 }
 
 pub mod message_state {
@@ -40,329 +188,243 @@ pub mod message_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Text;
         type CreatedAt;
         type Streamer;
+        type Text;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Text = Unset;
         type CreatedAt = Unset;
         type Streamer = Unset;
-    }
-    ///State transition - sets the `text` field to Set
-    pub struct SetText<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetText<S> {}
-    impl<S: State> State for SetText<S> {
-        type Text = Set<members::text>;
-        type CreatedAt = S::CreatedAt;
-        type Streamer = S::Streamer;
+        type Text = Unset;
     }
     ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type Text = S::Text;
+    pub struct SetCreatedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCreatedAt<St> {}
+    impl<St: State> State for SetCreatedAt<St> {
         type CreatedAt = Set<members::created_at>;
-        type Streamer = S::Streamer;
+        type Streamer = St::Streamer;
+        type Text = St::Text;
     }
     ///State transition - sets the `streamer` field to Set
-    pub struct SetStreamer<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetStreamer<S> {}
-    impl<S: State> State for SetStreamer<S> {
-        type Text = S::Text;
-        type CreatedAt = S::CreatedAt;
+    pub struct SetStreamer<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetStreamer<St> {}
+    impl<St: State> State for SetStreamer<St> {
+        type CreatedAt = St::CreatedAt;
         type Streamer = Set<members::streamer>;
+        type Text = St::Text;
+    }
+    ///State transition - sets the `text` field to Set
+    pub struct SetText<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetText<St> {}
+    impl<St: State> State for SetText<St> {
+        type CreatedAt = St::CreatedAt;
+        type Streamer = St::Streamer;
+        type Text = Set<members::text>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `text` field
-        pub struct text(());
         ///Marker type for the `created_at` field
         pub struct created_at(());
         ///Marker type for the `streamer` field
         pub struct streamer(());
+        ///Marker type for the `text` field
+        pub struct text(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct MessageBuilder<'a, S: message_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<Vec<crate::generated::place_stream::richtext::facet::Facet<'a>>>,
-        ::core::option::Option<crate::generated::place_stream::chat::message::ReplyRef<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct MessageBuilder<
+    St: message_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<Vec<crate::generated::place_stream::richtext::facet::Facet<S>>>,
+        core::option::Option<crate::generated::place_stream::chat::message::ReplyRef<S>>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<S>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> Message<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> MessageBuilder<'a, message_state::Empty> {
+impl Message<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> MessageBuilder<message_state::Empty, jacquard_common::DefaultStr> {
         MessageBuilder::new()
     }
 }
 
-impl<'a> MessageBuilder<'a, message_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> Message<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> MessageBuilder<message_state::Empty, S> {
+        MessageBuilder::builder()
+    }
+}
+
+impl MessageBuilder<message_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         MessageBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> MessageBuilder<'a, S>
+impl<S: jacquard_common::BosStr> MessageBuilder<message_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        MessageBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> MessageBuilder<St, S>
 where
-    S: message_state::State,
-    S::CreatedAt: message_state::IsUnset,
+    St: message_state::State,
+    St::CreatedAt: message_state::IsUnset,
 {
     /// Set the `createdAt` field (required)
     pub fn created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> MessageBuilder<'a, message_state::SetCreatedAt<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+    ) -> MessageBuilder<message_state::SetCreatedAt<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         MessageBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: message_state::State> MessageBuilder<'a, S> {
+impl<St: message_state::State, S: jacquard_common::BosStr> MessageBuilder<St, S> {
     /// Set the `facets` field (optional)
     pub fn facets(
         mut self,
-        value: impl Into<Option<Vec<crate::generated::place_stream::richtext::facet::Facet<'a>>>>,
+        value: impl Into<Option<Vec<crate::generated::place_stream::richtext::facet::Facet<S>>>>,
     ) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self._fields.1 = value.into();
         self
     }
     /// Set the `facets` field to an Option value (optional)
     pub fn maybe_facets(
         mut self,
-        value: Option<Vec<crate::generated::place_stream::richtext::facet::Facet<'a>>>,
+        value: Option<Vec<crate::generated::place_stream::richtext::facet::Facet<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.1 = value;
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S: message_state::State> MessageBuilder<'a, S> {
+impl<St: message_state::State, S: jacquard_common::BosStr> MessageBuilder<St, S> {
     /// Set the `reply` field (optional)
     pub fn reply(
         mut self,
-        value: impl Into<Option<crate::generated::place_stream::chat::message::ReplyRef<'a>>>,
+        value: impl Into<Option<crate::generated::place_stream::chat::message::ReplyRef<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.2 = value.into();
+        self._fields.2 = value.into();
         self
     }
     /// Set the `reply` field to an Option value (optional)
     pub fn maybe_reply(
         mut self,
-        value: Option<crate::generated::place_stream::chat::message::ReplyRef<'a>>,
+        value: Option<crate::generated::place_stream::chat::message::ReplyRef<S>>,
     ) -> Self {
-        self.__unsafe_private_named.2 = value;
+        self._fields.2 = value;
         self
     }
 }
 
-impl<'a, S> MessageBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> MessageBuilder<St, S>
 where
-    S: message_state::State,
-    S::Streamer: message_state::IsUnset,
+    St: message_state::State,
+    St::Streamer: message_state::IsUnset,
 {
     /// Set the `streamer` field (required)
     pub fn streamer(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> MessageBuilder<'a, message_state::SetStreamer<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> MessageBuilder<message_state::SetStreamer<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
         MessageBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> MessageBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> MessageBuilder<St, S>
 where
-    S: message_state::State,
-    S::Text: message_state::IsUnset,
+    St: message_state::State,
+    St::Text: message_state::IsUnset,
 {
     /// Set the `text` field (required)
-    pub fn text(
-        mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> MessageBuilder<'a, message_state::SetText<S>> {
-        self.__unsafe_private_named.4 = ::core::option::Option::Some(value.into());
+    pub fn text(mut self, value: impl Into<S>) -> MessageBuilder<message_state::SetText<St>, S> {
+        self._fields.4 = ::core::option::Option::Some(value.into());
         MessageBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> MessageBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> MessageBuilder<St, S>
 where
-    S: message_state::State,
-    S::Text: message_state::IsSet,
-    S::CreatedAt: message_state::IsSet,
-    S::Streamer: message_state::IsSet,
+    St: message_state::State,
+    St::CreatedAt: message_state::IsSet,
+    St::Streamer: message_state::IsSet,
+    St::Text: message_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> Message<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> Message<S> {
         Message {
-            created_at: self.__unsafe_private_named.0.unwrap(),
-            facets: self.__unsafe_private_named.1,
-            reply: self.__unsafe_private_named.2,
-            streamer: self.__unsafe_private_named.3.unwrap(),
-            text: self.__unsafe_private_named.4.unwrap(),
+            created_at: self._fields.0.unwrap(),
+            facets: self._fields.1,
+            reply: self._fields.2,
+            streamer: self._fields.3.unwrap(),
+            text: self._fields.4.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> Message<'a> {
+    ) -> Message<S> {
         Message {
-            created_at: self.__unsafe_private_named.0.unwrap(),
-            facets: self.__unsafe_private_named.1,
-            reply: self.__unsafe_private_named.2,
-            streamer: self.__unsafe_private_named.3.unwrap(),
-            text: self.__unsafe_private_named.4.unwrap(),
+            created_at: self._fields.0.unwrap(),
+            facets: self._fields.1,
+            reply: self._fields.2,
+            streamer: self._fields.3.unwrap(),
+            text: self._fields.4.unwrap(),
             extra_data: Some(extra_data),
         }
     }
 }
 
-impl<'a> Message<'a> {
-    pub fn uri(
-        uri: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> Result<
-        jacquard_common::types::uri::RecordUri<'a, MessageRecord>,
-        jacquard_common::types::uri::UriError,
-    > {
-        jacquard_common::types::uri::RecordUri::try_from_uri(
-            jacquard_common::types::string::AtUri::new_cow(uri.into())?,
-        )
-    }
-}
-
-/// Typed wrapper for GetRecord response with this collection's record type.
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct MessageGetRecordOutput<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cid: std::option::Option<jacquard_common::types::string::Cid<'a>>,
-    #[serde(borrow)]
-    pub uri: jacquard_common::types::string::AtUri<'a>,
-    #[serde(borrow)]
-    pub value: Message<'a>,
-}
-
-impl From<MessageGetRecordOutput<'_>> for Message<'_> {
-    fn from(output: MessageGetRecordOutput<'_>) -> Self {
-        use jacquard_common::IntoStatic;
-        output.value.into_static()
-    }
-}
-
-impl jacquard_common::types::collection::Collection for Message<'_> {
-    const NSID: &'static str = "place.stream.chat.message";
-    type Record = MessageRecord;
-}
-
-/// Marker type for deserializing records from this collection.
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
-pub struct MessageRecord;
-impl jacquard_common::xrpc::XrpcResp for MessageRecord {
-    const NSID: &'static str = "place.stream.chat.message";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = MessageGetRecordOutput<'de>;
-    type Err<'de> = jacquard_common::types::collection::RecordError<'de>;
-}
-
-impl jacquard_common::types::collection::Collection for MessageRecord {
-    const NSID: &'static str = "place.stream.chat.message";
-    type Record = MessageRecord;
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Message<'a> {
-    fn nsid() -> &'static str {
-        "place.stream.chat.message"
-    }
-    fn def_name() -> &'static str {
-        "main"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_place_stream_chat_message()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        {
-            let value = &self.text;
-            #[allow(unused_comparisons)]
-            if <str>::len(value.as_ref()) > 3000usize {
-                return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("text"),
-                    max: 3000usize,
-                    actual: <str>::len(value.as_ref()),
-                });
-            }
-        }
-        {
-            let value = &self.text;
-            {
-                let count =
-                    ::unicode_segmentation::UnicodeSegmentation::graphemes(value.as_ref(), true)
-                        .count();
-                if count > 300usize {
-                    return Err(
-                        ::jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
-                            path: ::jacquard_lexicon::validation::ValidationPath::from_field(
-                                "text",
-                            ),
-                            max: 300usize,
-                            actual: count,
-                        },
-                    );
-                }
-            }
-        }
-        Ok(())
-    }
-}
-
-fn lexicon_doc_place_stream_chat_message() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_place_stream_chat_message() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("place.stream.chat.message"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
                 ::jacquard_lexicon::lexicon::LexUserType::Record(::jacquard_lexicon::lexicon::LexRecord {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
@@ -371,20 +433,18 @@ fn lexicon_doc_place_stream_chat_message() -> ::jacquard_lexicon::lexicon::Lexic
                     ),
                     key: Some(::jacquard_common::CowStr::new_static("tid")),
                     record: ::jacquard_lexicon::lexicon::LexRecordRecord::Object(::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(
                             vec![
-                                ::jacquard_common::smol_str::SmolStr::new_static("text"),
-                                ::jacquard_common::smol_str::SmolStr::new_static("createdAt"),
-                                ::jacquard_common::smol_str::SmolStr::new_static("streamer")
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("text"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("streamer")
                             ],
                         ),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "createdAt",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -396,18 +456,13 @@ fn lexicon_doc_place_stream_chat_message() -> ::jacquard_lexicon::lexicon::Lexic
                                     format: Some(
                                         ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                     ),
-                                    default: None,
-                                    min_length: None,
-                                    max_length: None,
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("facets"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "facets",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
                                     description: Some(
                                         ::jacquard_common::CowStr::new_static(
@@ -415,24 +470,25 @@ fn lexicon_doc_place_stream_chat_message() -> ::jacquard_lexicon::lexicon::Lexic
                                         ),
                                     ),
                                     items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                        description: None,
                                         r#ref: ::jacquard_common::CowStr::new_static(
                                             "place.stream.richtext.facet",
                                         ),
+                                        ..Default::default()
                                     }),
-                                    min_length: None,
-                                    max_length: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("reply"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "reply",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                    description: None,
                                     r#ref: ::jacquard_common::CowStr::new_static("#replyRef"),
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "streamer",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -444,95 +500,74 @@ fn lexicon_doc_place_stream_chat_message() -> ::jacquard_lexicon::lexicon::Lexic
                                     format: Some(
                                         ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                     ),
-                                    default: None,
-                                    min_length: None,
-                                    max_length: None,
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("text"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "text",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                     description: Some(
                                         ::jacquard_common::CowStr::new_static(
                                             "The primary message content. May be an empty string, if there are embeds.",
                                         ),
                                     ),
-                                    format: None,
-                                    default: None,
-                                    min_length: None,
                                     max_length: Some(3000usize),
-                                    min_graphemes: None,
                                     max_graphemes: Some(300usize),
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
                             );
                             map
                         },
+                        ..Default::default()
                     }),
+                    ..Default::default()
                 }),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("replyRef"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("replyRef"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("root"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("parent"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("root"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("parent"),
                         ]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("parent"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("parent"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
                                     ::jacquard_lexicon::lexicon::LexRef {
-                                        description: None,
                                         r#ref: ::jacquard_common::CowStr::new_static(
                                             "com.atproto.repo.strongRef",
                                         ),
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("root"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("root"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
                                     ::jacquard_lexicon::lexicon::LexRef {
-                                        description: None,
                                         r#ref: ::jacquard_common::CowStr::new_static(
                                             "com.atproto.repo.strongRef",
                                         ),
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map
         },
+        ..Default::default()
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct ReplyRef<'a> {
-    #[serde(borrow)]
-    pub parent: crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>,
-    #[serde(borrow)]
-    pub root: crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>,
 }
 
 pub mod reply_ref_state {
@@ -545,149 +580,153 @@ pub mod reply_ref_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Root;
         type Parent;
+        type Root;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Root = Unset;
         type Parent = Unset;
-    }
-    ///State transition - sets the `root` field to Set
-    pub struct SetRoot<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRoot<S> {}
-    impl<S: State> State for SetRoot<S> {
-        type Root = Set<members::root>;
-        type Parent = S::Parent;
+        type Root = Unset;
     }
     ///State transition - sets the `parent` field to Set
-    pub struct SetParent<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetParent<S> {}
-    impl<S: State> State for SetParent<S> {
-        type Root = S::Root;
+    pub struct SetParent<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetParent<St> {}
+    impl<St: State> State for SetParent<St> {
         type Parent = Set<members::parent>;
+        type Root = St::Root;
+    }
+    ///State transition - sets the `root` field to Set
+    pub struct SetRoot<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRoot<St> {}
+    impl<St: State> State for SetRoot<St> {
+        type Parent = St::Parent;
+        type Root = Set<members::root>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `root` field
-        pub struct root(());
         ///Marker type for the `parent` field
         pub struct parent(());
+        ///Marker type for the `root` field
+        pub struct root(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct ReplyRefBuilder<'a, S: reply_ref_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,
-        ::core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct ReplyRefBuilder<
+    St: reply_ref_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
+        core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> ReplyRef<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> ReplyRefBuilder<'a, reply_ref_state::Empty> {
+impl ReplyRef<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> ReplyRefBuilder<reply_ref_state::Empty, jacquard_common::DefaultStr> {
         ReplyRefBuilder::new()
     }
 }
 
-impl<'a> ReplyRefBuilder<'a, reply_ref_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> ReplyRef<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> ReplyRefBuilder<reply_ref_state::Empty, S> {
+        ReplyRefBuilder::builder()
+    }
+}
+
+impl ReplyRefBuilder<reply_ref_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ReplyRefBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ReplyRefBuilder<'a, S>
+impl<S: jacquard_common::BosStr> ReplyRefBuilder<reply_ref_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        ReplyRefBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ReplyRefBuilder<St, S>
 where
-    S: reply_ref_state::State,
-    S::Parent: reply_ref_state::IsUnset,
+    St: reply_ref_state::State,
+    St::Parent: reply_ref_state::IsUnset,
 {
     /// Set the `parent` field (required)
     pub fn parent(
         mut self,
-        value: impl Into<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,
-    ) -> ReplyRefBuilder<'a, reply_ref_state::SetParent<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
+    ) -> ReplyRefBuilder<reply_ref_state::SetParent<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         ReplyRefBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ReplyRefBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ReplyRefBuilder<St, S>
 where
-    S: reply_ref_state::State,
-    S::Root: reply_ref_state::IsUnset,
+    St: reply_ref_state::State,
+    St::Root: reply_ref_state::IsUnset,
 {
     /// Set the `root` field (required)
     pub fn root(
         mut self,
-        value: impl Into<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,
-    ) -> ReplyRefBuilder<'a, reply_ref_state::SetRoot<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
+    ) -> ReplyRefBuilder<reply_ref_state::SetRoot<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         ReplyRefBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ReplyRefBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ReplyRefBuilder<St, S>
 where
-    S: reply_ref_state::State,
-    S::Root: reply_ref_state::IsSet,
-    S::Parent: reply_ref_state::IsSet,
+    St: reply_ref_state::State,
+    St::Parent: reply_ref_state::IsSet,
+    St::Root: reply_ref_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> ReplyRef<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> ReplyRef<S> {
         ReplyRef {
-            parent: self.__unsafe_private_named.0.unwrap(),
-            root: self.__unsafe_private_named.1.unwrap(),
+            parent: self._fields.0.unwrap(),
+            root: self._fields.1.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> ReplyRef<'a> {
+    ) -> ReplyRef<S> {
         ReplyRef {
-            parent: self.__unsafe_private_named.0.unwrap(),
-            root: self.__unsafe_private_named.1.unwrap(),
+            parent: self._fields.0.unwrap(),
+            root: self._fields.1.unwrap(),
             extra_data: Some(extra_data),
         }
-    }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ReplyRef<'a> {
-    fn nsid() -> &'static str {
-        "place.stream.chat.message"
-    }
-    fn def_name() -> &'static str {
-        "replyRef"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_place_stream_chat_message()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
     }
 }

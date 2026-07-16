@@ -5,15 +5,399 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct DeviceKeyPackageCount<'a> {
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct DeviceKeyPackageCount<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub available: i64,
-    #[serde(borrow)]
-    pub device_id: jacquard_common::CowStr<'a>,
+    pub device_id: S,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct KeyPackageHistoryItem<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub action: KeyPackageHistoryItemAction<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub consumed_by_did: core::option::Option<jacquard_common::types::string::Did<S>>,
+    pub created_at: jacquard_common::types::string::Datetime,
+    pub id: S,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum KeyPackageHistoryItemAction<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    Uploaded,
+    Consumed,
+    Expired,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> KeyPackageHistoryItemAction<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Uploaded => "uploaded",
+            Self::Consumed => "consumed",
+            Self::Expired => "expired",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "uploaded" => Self::Uploaded,
+            "consumed" => Self::Consumed,
+            "expired" => Self::Expired,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for KeyPackageHistoryItemAction<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for KeyPackageHistoryItemAction<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for KeyPackageHistoryItemAction<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for KeyPackageHistoryItemAction<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for KeyPackageHistoryItemAction<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for KeyPackageHistoryItemAction<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = KeyPackageHistoryItemAction<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            KeyPackageHistoryItemAction::Uploaded => KeyPackageHistoryItemAction::Uploaded,
+            KeyPackageHistoryItemAction::Consumed => KeyPackageHistoryItemAction::Consumed,
+            KeyPackageHistoryItemAction::Expired => KeyPackageHistoryItemAction::Expired,
+            KeyPackageHistoryItemAction::Other(v) => {
+                KeyPackageHistoryItemAction::Other(v.into_static())
+            }
+        }
+    }
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct KeyPackageStats<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub by_device: core::option::Option<
+        Vec<
+            crate::generated::blue_catbird::mlsChat::get_key_package_status::DeviceKeyPackageCount<
+                S,
+            >,
+        >,
+    >,
+    pub total_available: i64,
+    pub total_consumed: i64,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct KeyPackageStatusItem<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub cipher_suite: S,
+    pub consumed: bool,
+    pub created_at: jacquard_common::types::string::Datetime,
+    pub device_id: S,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub expires_at: core::option::Option<jacquard_common::types::string::Datetime>,
+    pub id: S,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetKeyPackageStatus<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cipher_suite: core::option::Option<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub did: core::option::Option<jacquard_common::types::string::Did<S>>,
+    /// Defaults to `"stats"`.
+    #[serde(default = "_default_include")]
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub include: core::option::Option<S>,
+    /// Defaults to `50`. Min: 1. Max: 100.
+    #[serde(default = "_default_limit")]
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub limit: core::option::Option<i64>,
+}
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic,
+    Default,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetKeyPackageStatusOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub history: core::option::Option<
+        Vec<
+            crate::generated::blue_catbird::mlsChat::get_key_package_status::KeyPackageHistoryItem<
+                S,
+            >,
+        >,
+    >,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub stats: core::option::Option<
+        crate::generated::blue_catbird::mlsChat::get_key_package_status::KeyPackageStats<S>,
+    >,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub status: core::option::Option<
+        Vec<
+            crate::generated::blue_catbird::mlsChat::get_key_package_status::KeyPackageStatusItem<
+                S,
+            >,
+        >,
+    >,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+    for DeviceKeyPackageCount<S>
+{
+    fn nsid() -> &'static str {
+        "blue.catbird.mlsChat.getKeyPackageStatus"
+    }
+    fn def_name() -> &'static str {
+        "deviceKeyPackageCount"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_blue_catbird_mlsChat_getKeyPackageStatus()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.available;
+            if *value < 0i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("available"),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+    for KeyPackageHistoryItem<S>
+{
+    fn nsid() -> &'static str {
+        "blue.catbird.mlsChat.getKeyPackageStatus"
+    }
+    fn def_name() -> &'static str {
+        "keyPackageHistoryItem"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_blue_catbird_mlsChat_getKeyPackageStatus()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for KeyPackageStats<S> {
+    fn nsid() -> &'static str {
+        "blue.catbird.mlsChat.getKeyPackageStatus"
+    }
+    fn def_name() -> &'static str {
+        "keyPackageStats"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_blue_catbird_mlsChat_getKeyPackageStatus()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.total_available;
+            if *value < 0i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "total_available",
+                    ),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.total_consumed;
+            if *value < 0i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "total_consumed",
+                    ),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+    for KeyPackageStatusItem<S>
+{
+    fn nsid() -> &'static str {
+        "blue.catbird.mlsChat.getKeyPackageStatus"
+    }
+    fn def_name() -> &'static str {
+        "keyPackageStatusItem"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_blue_catbird_mlsChat_getKeyPackageStatus()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+/** Response marker for the `blue.catbird.mlsChat.getKeyPackageStatus` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetKeyPackageStatusOutput<S>` for this endpoint.*/
+pub struct GetKeyPackageStatusResponse;
+impl jacquard_common::xrpc::XrpcResp for GetKeyPackageStatusResponse {
+    const NSID: &'static str = "blue.catbird.mlsChat.getKeyPackageStatus";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = GetKeyPackageStatusOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetKeyPackageStatus<S> {
+    const NSID: &'static str = "blue.catbird.mlsChat.getKeyPackageStatus";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = GetKeyPackageStatusResponse;
+}
+
+/** Endpoint marker for the `blue.catbird.mlsChat.getKeyPackageStatus` query.
+
+Path: `/xrpc/blue.catbird.mlsChat.getKeyPackageStatus`. The request payload type is `GetKeyPackageStatus<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct GetKeyPackageStatusRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for GetKeyPackageStatusRequest {
+    const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.getKeyPackageStatus";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = GetKeyPackageStatus<S>;
+    type Response = GetKeyPackageStatusResponse;
 }
 
 pub mod device_key_package_count_state {
@@ -26,479 +410,403 @@ pub mod device_key_package_count_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type DeviceId;
         type Available;
+        type DeviceId;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type DeviceId = Unset;
         type Available = Unset;
-    }
-    ///State transition - sets the `device_id` field to Set
-    pub struct SetDeviceId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDeviceId<S> {}
-    impl<S: State> State for SetDeviceId<S> {
-        type DeviceId = Set<members::device_id>;
-        type Available = S::Available;
+        type DeviceId = Unset;
     }
     ///State transition - sets the `available` field to Set
-    pub struct SetAvailable<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetAvailable<S> {}
-    impl<S: State> State for SetAvailable<S> {
-        type DeviceId = S::DeviceId;
+    pub struct SetAvailable<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetAvailable<St> {}
+    impl<St: State> State for SetAvailable<St> {
         type Available = Set<members::available>;
+        type DeviceId = St::DeviceId;
+    }
+    ///State transition - sets the `device_id` field to Set
+    pub struct SetDeviceId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetDeviceId<St> {}
+    impl<St: State> State for SetDeviceId<St> {
+        type Available = St::Available;
+        type DeviceId = Set<members::device_id>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `device_id` field
-        pub struct device_id(());
         ///Marker type for the `available` field
         pub struct available(());
+        ///Marker type for the `device_id` field
+        pub struct device_id(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct DeviceKeyPackageCountBuilder<'a, S: device_key_package_count_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<i64>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-    ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct DeviceKeyPackageCountBuilder<
+    St: device_key_package_count_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<i64>, core::option::Option<S>),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> DeviceKeyPackageCount<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> DeviceKeyPackageCountBuilder<'a, device_key_package_count_state::Empty> {
+impl DeviceKeyPackageCount<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> DeviceKeyPackageCountBuilder<
+        device_key_package_count_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         DeviceKeyPackageCountBuilder::new()
     }
 }
 
-impl<'a> DeviceKeyPackageCountBuilder<'a, device_key_package_count_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> DeviceKeyPackageCount<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> DeviceKeyPackageCountBuilder<device_key_package_count_state::Empty, S> {
+        DeviceKeyPackageCountBuilder::builder()
+    }
+}
+
+impl
+    DeviceKeyPackageCountBuilder<device_key_package_count_state::Empty, jacquard_common::DefaultStr>
+{
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         DeviceKeyPackageCountBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> DeviceKeyPackageCountBuilder<'a, S>
+impl<S: jacquard_common::BosStr>
+    DeviceKeyPackageCountBuilder<device_key_package_count_state::Empty, S>
+{
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        DeviceKeyPackageCountBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeviceKeyPackageCountBuilder<St, S>
 where
-    S: device_key_package_count_state::State,
-    S::Available: device_key_package_count_state::IsUnset,
+    St: device_key_package_count_state::State,
+    St::Available: device_key_package_count_state::IsUnset,
 {
     /// Set the `available` field (required)
     pub fn available(
         mut self,
         value: impl Into<i64>,
-    ) -> DeviceKeyPackageCountBuilder<'a, device_key_package_count_state::SetAvailable<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+    ) -> DeviceKeyPackageCountBuilder<device_key_package_count_state::SetAvailable<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         DeviceKeyPackageCountBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> DeviceKeyPackageCountBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> DeviceKeyPackageCountBuilder<St, S>
 where
-    S: device_key_package_count_state::State,
-    S::DeviceId: device_key_package_count_state::IsUnset,
+    St: device_key_package_count_state::State,
+    St::DeviceId: device_key_package_count_state::IsUnset,
 {
     /// Set the `deviceId` field (required)
     pub fn device_id(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> DeviceKeyPackageCountBuilder<'a, device_key_package_count_state::SetDeviceId<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> DeviceKeyPackageCountBuilder<device_key_package_count_state::SetDeviceId<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         DeviceKeyPackageCountBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> DeviceKeyPackageCountBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> DeviceKeyPackageCountBuilder<St, S>
 where
-    S: device_key_package_count_state::State,
-    S::DeviceId: device_key_package_count_state::IsSet,
-    S::Available: device_key_package_count_state::IsSet,
+    St: device_key_package_count_state::State,
+    St::Available: device_key_package_count_state::IsSet,
+    St::DeviceId: device_key_package_count_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> DeviceKeyPackageCount<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> DeviceKeyPackageCount<S> {
         DeviceKeyPackageCount {
-            available: self.__unsafe_private_named.0.unwrap(),
-            device_id: self.__unsafe_private_named.1.unwrap(),
+            available: self._fields.0.unwrap(),
+            device_id: self._fields.1.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> DeviceKeyPackageCount<'a> {
+    ) -> DeviceKeyPackageCount<S> {
         DeviceKeyPackageCount {
-            available: self.__unsafe_private_named.0.unwrap(),
-            device_id: self.__unsafe_private_named.1.unwrap(),
+            available: self._fields.0.unwrap(),
+            device_id: self._fields.1.unwrap(),
             extra_data: Some(extra_data),
         }
     }
 }
 
 fn lexicon_doc_blue_catbird_mlsChat_getKeyPackageStatus(
-) -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+) -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("blue.catbird.mlsChat.getKeyPackageStatus"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("deviceKeyPackageCount"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("deviceKeyPackageCount"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("deviceId"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("available"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("deviceId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("available"),
                         ]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("available"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("available"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
                                     ::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
                                         minimum: Some(0i64),
-                                        maximum: None,
-                                        r#enum: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("deviceId"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("deviceId"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("keyPackageHistoryItem"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("keyPackageHistoryItem"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("id"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("action"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("createdAt"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("id"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("action"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
                         ]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("action"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("action"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("consumedByDid"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "consumedByDid",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("createdAt"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("id"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("id"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("keyPackageStats"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("keyPackageStats"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("totalAvailable"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("totalConsumed"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "totalAvailable",
+                            ),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("totalConsumed"),
                         ]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("byDevice"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("byDevice"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Array(
                                     ::jacquard_lexicon::lexicon::LexArray {
-                                        description: None,
                                         items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(
                                             ::jacquard_lexicon::lexicon::LexRef {
-                                                description: None,
                                                 r#ref: ::jacquard_common::CowStr::new_static(
                                                     "#deviceKeyPackageCount",
                                                 ),
+                                                ..Default::default()
                                             },
                                         ),
-                                        min_length: None,
-                                        max_length: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("totalAvailable"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "totalAvailable",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
                                     ::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
                                         minimum: Some(0i64),
-                                        maximum: None,
-                                        r#enum: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("totalConsumed"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "totalConsumed",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
                                     ::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
                                         minimum: Some(0i64),
-                                        maximum: None,
-                                        r#enum: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("keyPackageStatusItem"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("keyPackageStatusItem"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("id"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("deviceId"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("cipherSuite"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("createdAt"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("consumed"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("id"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("deviceId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("cipherSuite"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("consumed"),
                         ]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("cipherSuite"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "cipherSuite",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("consumed"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("consumed"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(
                                     ::jacquard_lexicon::lexicon::LexBoolean {
-                                        description: None,
-                                        default: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("createdAt"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("deviceId"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("deviceId"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("expiresAt"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("expiresAt"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("id"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("id"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
                 ::jacquard_lexicon::lexicon::LexUserType::XrpcQuery(::jacquard_lexicon::lexicon::LexXrpcQuery {
-                    description: None,
                     parameters: Some(
                         ::jacquard_lexicon::lexicon::LexXrpcQueryParameter::Params(::jacquard_lexicon::lexicon::LexXrpcParameters {
-                            description: None,
-                            required: None,
                             properties: {
                                 #[allow(unused_mut)]
-                                let mut map = ::std::collections::BTreeMap::new();
+                                let mut map = ::alloc::collections::BTreeMap::new();
                                 map.insert(
-                                    ::jacquard_common::smol_str::SmolStr::new_static(
+                                    ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                         "cipherSuite",
                                     ),
                                     ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -507,36 +815,24 @@ fn lexicon_doc_blue_catbird_mlsChat_getKeyPackageStatus(
                                                 "Filter by cipher suite",
                                             ),
                                         ),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     }),
                                 );
                                 map.insert(
-                                    ::jacquard_common::smol_str::SmolStr::new_static("cursor"),
+                                    ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                        "cursor",
+                                    ),
                                     ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::String(::jacquard_lexicon::lexicon::LexString {
                                         description: Some(
                                             ::jacquard_common::CowStr::new_static("Pagination cursor"),
                                         ),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     }),
                                 );
                                 map.insert(
-                                    ::jacquard_common::smol_str::SmolStr::new_static("did"),
+                                    ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                        "did",
+                                    ),
                                     ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::String(::jacquard_lexicon::lexicon::LexString {
                                         description: Some(
                                             ::jacquard_common::CowStr::new_static(
@@ -546,100 +842,42 @@ fn lexicon_doc_blue_catbird_mlsChat_getKeyPackageStatus(
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     }),
                                 );
                                 map.insert(
-                                    ::jacquard_common::smol_str::SmolStr::new_static("include"),
+                                    ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                        "include",
+                                    ),
                                     ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::String(::jacquard_lexicon::lexicon::LexString {
                                         description: Some(
                                             ::jacquard_common::CowStr::new_static(
                                                 "Comma-separated sections to include",
                                             ),
                                         ),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     }),
                                 );
                                 map.insert(
-                                    ::jacquard_common::smol_str::SmolStr::new_static("limit"),
+                                    ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                        "limit",
+                                    ),
                                     ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
-                                        minimum: None,
-                                        maximum: None,
-                                        r#enum: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     }),
                                 );
                                 map
                             },
+                            ..Default::default()
                         }),
                     ),
-                    output: None,
-                    errors: None,
+                    ..Default::default()
                 }),
             );
             map
         },
+        ..Default::default()
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for DeviceKeyPackageCount<'a> {
-    fn nsid() -> &'static str {
-        "blue.catbird.mlsChat.getKeyPackageStatus"
-    }
-    fn def_name() -> &'static str {
-        "deviceKeyPackageCount"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_blue_catbird_mlsChat_getKeyPackageStatus()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        {
-            let value = &self.available;
-            if *value < 0i64 {
-                return Err(::jacquard_lexicon::validation::ConstraintError::Minimum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("available"),
-                    min: 0i64,
-                    actual: *value,
-                });
-            }
-        }
-        Ok(())
-    }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct KeyPackageHistoryItem<'a> {
-    #[serde(borrow)]
-    pub action: jacquard_common::CowStr<'a>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub consumed_by_did: std::option::Option<jacquard_common::types::string::Did<'a>>,
-    pub created_at: jacquard_common::types::string::Datetime,
-    #[serde(borrow)]
-    pub id: jacquard_common::CowStr<'a>,
 }
 
 pub mod key_package_history_item_state {
@@ -652,229 +890,223 @@ pub mod key_package_history_item_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Id;
         type Action;
         type CreatedAt;
+        type Id;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Id = Unset;
         type Action = Unset;
         type CreatedAt = Unset;
-    }
-    ///State transition - sets the `id` field to Set
-    pub struct SetId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetId<S> {}
-    impl<S: State> State for SetId<S> {
-        type Id = Set<members::id>;
-        type Action = S::Action;
-        type CreatedAt = S::CreatedAt;
+        type Id = Unset;
     }
     ///State transition - sets the `action` field to Set
-    pub struct SetAction<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetAction<S> {}
-    impl<S: State> State for SetAction<S> {
-        type Id = S::Id;
+    pub struct SetAction<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetAction<St> {}
+    impl<St: State> State for SetAction<St> {
         type Action = Set<members::action>;
-        type CreatedAt = S::CreatedAt;
+        type CreatedAt = St::CreatedAt;
+        type Id = St::Id;
     }
     ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type Id = S::Id;
-        type Action = S::Action;
+    pub struct SetCreatedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCreatedAt<St> {}
+    impl<St: State> State for SetCreatedAt<St> {
+        type Action = St::Action;
         type CreatedAt = Set<members::created_at>;
+        type Id = St::Id;
+    }
+    ///State transition - sets the `id` field to Set
+    pub struct SetId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetId<St> {}
+    impl<St: State> State for SetId<St> {
+        type Action = St::Action;
+        type CreatedAt = St::CreatedAt;
+        type Id = Set<members::id>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `id` field
-        pub struct id(());
         ///Marker type for the `action` field
         pub struct action(());
         ///Marker type for the `created_at` field
         pub struct created_at(());
+        ///Marker type for the `id` field
+        pub struct id(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct KeyPackageHistoryItemBuilder<'a, S: key_package_history_item_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct KeyPackageHistoryItemBuilder<
+    St: key_package_history_item_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<KeyPackageHistoryItemAction<S>>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<S>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> KeyPackageHistoryItem<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> KeyPackageHistoryItemBuilder<'a, key_package_history_item_state::Empty> {
+impl KeyPackageHistoryItem<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> KeyPackageHistoryItemBuilder<
+        key_package_history_item_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         KeyPackageHistoryItemBuilder::new()
     }
 }
 
-impl<'a> KeyPackageHistoryItemBuilder<'a, key_package_history_item_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> KeyPackageHistoryItem<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> KeyPackageHistoryItemBuilder<key_package_history_item_state::Empty, S> {
+        KeyPackageHistoryItemBuilder::builder()
+    }
+}
+
+impl
+    KeyPackageHistoryItemBuilder<key_package_history_item_state::Empty, jacquard_common::DefaultStr>
+{
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         KeyPackageHistoryItemBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> KeyPackageHistoryItemBuilder<'a, S>
+impl<S: jacquard_common::BosStr>
+    KeyPackageHistoryItemBuilder<key_package_history_item_state::Empty, S>
+{
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        KeyPackageHistoryItemBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> KeyPackageHistoryItemBuilder<St, S>
 where
-    S: key_package_history_item_state::State,
-    S::Action: key_package_history_item_state::IsUnset,
+    St: key_package_history_item_state::State,
+    St::Action: key_package_history_item_state::IsUnset,
 {
     /// Set the `action` field (required)
     pub fn action(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> KeyPackageHistoryItemBuilder<'a, key_package_history_item_state::SetAction<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<KeyPackageHistoryItemAction<S>>,
+    ) -> KeyPackageHistoryItemBuilder<key_package_history_item_state::SetAction<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         KeyPackageHistoryItemBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: key_package_history_item_state::State> KeyPackageHistoryItemBuilder<'a, S> {
+impl<St: key_package_history_item_state::State, S: jacquard_common::BosStr>
+    KeyPackageHistoryItemBuilder<St, S>
+{
     /// Set the `consumedByDid` field (optional)
     pub fn consumed_by_did(
         mut self,
-        value: impl Into<Option<jacquard_common::types::string::Did<'a>>>,
+        value: impl Into<Option<jacquard_common::types::string::Did<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self._fields.1 = value.into();
         self
     }
     /// Set the `consumedByDid` field to an Option value (optional)
     pub fn maybe_consumed_by_did(
         mut self,
-        value: Option<jacquard_common::types::string::Did<'a>>,
+        value: Option<jacquard_common::types::string::Did<S>>,
     ) -> Self {
-        self.__unsafe_private_named.1 = value;
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S> KeyPackageHistoryItemBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> KeyPackageHistoryItemBuilder<St, S>
 where
-    S: key_package_history_item_state::State,
-    S::CreatedAt: key_package_history_item_state::IsUnset,
+    St: key_package_history_item_state::State,
+    St::CreatedAt: key_package_history_item_state::IsUnset,
 {
     /// Set the `createdAt` field (required)
     pub fn created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> KeyPackageHistoryItemBuilder<'a, key_package_history_item_state::SetCreatedAt<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+    ) -> KeyPackageHistoryItemBuilder<key_package_history_item_state::SetCreatedAt<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         KeyPackageHistoryItemBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> KeyPackageHistoryItemBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> KeyPackageHistoryItemBuilder<St, S>
 where
-    S: key_package_history_item_state::State,
-    S::Id: key_package_history_item_state::IsUnset,
+    St: key_package_history_item_state::State,
+    St::Id: key_package_history_item_state::IsUnset,
 {
     /// Set the `id` field (required)
     pub fn id(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> KeyPackageHistoryItemBuilder<'a, key_package_history_item_state::SetId<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> KeyPackageHistoryItemBuilder<key_package_history_item_state::SetId<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
         KeyPackageHistoryItemBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> KeyPackageHistoryItemBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> KeyPackageHistoryItemBuilder<St, S>
 where
-    S: key_package_history_item_state::State,
-    S::Id: key_package_history_item_state::IsSet,
-    S::Action: key_package_history_item_state::IsSet,
-    S::CreatedAt: key_package_history_item_state::IsSet,
+    St: key_package_history_item_state::State,
+    St::Action: key_package_history_item_state::IsSet,
+    St::CreatedAt: key_package_history_item_state::IsSet,
+    St::Id: key_package_history_item_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> KeyPackageHistoryItem<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> KeyPackageHistoryItem<S> {
         KeyPackageHistoryItem {
-            action: self.__unsafe_private_named.0.unwrap(),
-            consumed_by_did: self.__unsafe_private_named.1,
-            created_at: self.__unsafe_private_named.2.unwrap(),
-            id: self.__unsafe_private_named.3.unwrap(),
+            action: self._fields.0.unwrap(),
+            consumed_by_did: self._fields.1,
+            created_at: self._fields.2.unwrap(),
+            id: self._fields.3.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> KeyPackageHistoryItem<'a> {
+    ) -> KeyPackageHistoryItem<S> {
         KeyPackageHistoryItem {
-            action: self.__unsafe_private_named.0.unwrap(),
-            consumed_by_did: self.__unsafe_private_named.1,
-            created_at: self.__unsafe_private_named.2.unwrap(),
-            id: self.__unsafe_private_named.3.unwrap(),
+            action: self._fields.0.unwrap(),
+            consumed_by_did: self._fields.1,
+            created_at: self._fields.2.unwrap(),
+            id: self._fields.3.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for KeyPackageHistoryItem<'a> {
-    fn nsid() -> &'static str {
-        "blue.catbird.mlsChat.getKeyPackageStatus"
-    }
-    fn def_name() -> &'static str {
-        "keyPackageHistoryItem"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_blue_catbird_mlsChat_getKeyPackageStatus()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct KeyPackageStats<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub by_device: std::option::Option<
-        Vec<
-            crate::generated::blue_catbird::mlsChat::get_key_package_status::DeviceKeyPackageCount<
-                'a,
-            >,
-        >,
-    >,
-    pub total_available: i64,
-    pub total_consumed: i64,
 }
 
 pub mod key_package_stats_state {
@@ -898,17 +1130,17 @@ pub mod key_package_stats_state {
         type TotalConsumed = Unset;
     }
     ///State transition - sets the `total_available` field to Set
-    pub struct SetTotalAvailable<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetTotalAvailable<S> {}
-    impl<S: State> State for SetTotalAvailable<S> {
+    pub struct SetTotalAvailable<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetTotalAvailable<St> {}
+    impl<St: State> State for SetTotalAvailable<St> {
         type TotalAvailable = Set<members::total_available>;
-        type TotalConsumed = S::TotalConsumed;
+        type TotalConsumed = St::TotalConsumed;
     }
     ///State transition - sets the `total_consumed` field to Set
-    pub struct SetTotalConsumed<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetTotalConsumed<S> {}
-    impl<S: State> State for SetTotalConsumed<S> {
-        type TotalAvailable = S::TotalAvailable;
+    pub struct SetTotalConsumed<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetTotalConsumed<St> {}
+    impl<St: State> State for SetTotalConsumed<St> {
+        type TotalAvailable = St::TotalAvailable;
         type TotalConsumed = Set<members::total_consumed>;
     }
     /// Marker types for field names
@@ -921,42 +1153,64 @@ pub mod key_package_stats_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct KeyPackageStatsBuilder<'a, S: key_package_stats_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<
+/// Builder for constructing an instance of this type.
+pub struct KeyPackageStatsBuilder<
+    St: key_package_stats_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<
             Vec<
                 crate::generated::blue_catbird::mlsChat::get_key_package_status::DeviceKeyPackageCount<
-                    'a,
+                    S,
                 >,
             >,
         >,
-        ::core::option::Option<i64>,
-        ::core::option::Option<i64>,
+        core::option::Option<i64>,
+        core::option::Option<i64>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> KeyPackageStats<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> KeyPackageStatsBuilder<'a, key_package_stats_state::Empty> {
+impl KeyPackageStats<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> KeyPackageStatsBuilder<key_package_stats_state::Empty, jacquard_common::DefaultStr> {
         KeyPackageStatsBuilder::new()
     }
 }
 
-impl<'a> KeyPackageStatsBuilder<'a, key_package_stats_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> KeyPackageStats<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> KeyPackageStatsBuilder<key_package_stats_state::Empty, S> {
+        KeyPackageStatsBuilder::builder()
+    }
+}
+
+impl KeyPackageStatsBuilder<key_package_stats_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         KeyPackageStatsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: key_package_stats_state::State> KeyPackageStatsBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> KeyPackageStatsBuilder<key_package_stats_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        KeyPackageStatsBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: key_package_stats_state::State, S: jacquard_common::BosStr> KeyPackageStatsBuilder<St, S> {
     /// Set the `byDevice` field (optional)
     pub fn by_device(
         mut self,
@@ -964,13 +1218,13 @@ impl<'a, S: key_package_stats_state::State> KeyPackageStatsBuilder<'a, S> {
             Option<
                 Vec<
                     crate::generated::blue_catbird::mlsChat::get_key_package_status::DeviceKeyPackageCount<
-                        'a,
+                        S,
                     >,
                 >,
             >,
         >,
     ) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+        self._fields.0 = value.into();
         self
     }
     /// Set the `byDevice` field to an Option value (optional)
@@ -979,143 +1233,84 @@ impl<'a, S: key_package_stats_state::State> KeyPackageStatsBuilder<'a, S> {
         value: Option<
             Vec<
                 crate::generated::blue_catbird::mlsChat::get_key_package_status::DeviceKeyPackageCount<
-                    'a,
+                    S,
                 >,
             >,
         >,
     ) -> Self {
-        self.__unsafe_private_named.0 = value;
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S> KeyPackageStatsBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> KeyPackageStatsBuilder<St, S>
 where
-    S: key_package_stats_state::State,
-    S::TotalAvailable: key_package_stats_state::IsUnset,
+    St: key_package_stats_state::State,
+    St::TotalAvailable: key_package_stats_state::IsUnset,
 {
     /// Set the `totalAvailable` field (required)
     pub fn total_available(
         mut self,
         value: impl Into<i64>,
-    ) -> KeyPackageStatsBuilder<'a, key_package_stats_state::SetTotalAvailable<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+    ) -> KeyPackageStatsBuilder<key_package_stats_state::SetTotalAvailable<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         KeyPackageStatsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> KeyPackageStatsBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> KeyPackageStatsBuilder<St, S>
 where
-    S: key_package_stats_state::State,
-    S::TotalConsumed: key_package_stats_state::IsUnset,
+    St: key_package_stats_state::State,
+    St::TotalConsumed: key_package_stats_state::IsUnset,
 {
     /// Set the `totalConsumed` field (required)
     pub fn total_consumed(
         mut self,
         value: impl Into<i64>,
-    ) -> KeyPackageStatsBuilder<'a, key_package_stats_state::SetTotalConsumed<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+    ) -> KeyPackageStatsBuilder<key_package_stats_state::SetTotalConsumed<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         KeyPackageStatsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> KeyPackageStatsBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> KeyPackageStatsBuilder<St, S>
 where
-    S: key_package_stats_state::State,
-    S::TotalAvailable: key_package_stats_state::IsSet,
-    S::TotalConsumed: key_package_stats_state::IsSet,
+    St: key_package_stats_state::State,
+    St::TotalAvailable: key_package_stats_state::IsSet,
+    St::TotalConsumed: key_package_stats_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> KeyPackageStats<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> KeyPackageStats<S> {
         KeyPackageStats {
-            by_device: self.__unsafe_private_named.0,
-            total_available: self.__unsafe_private_named.1.unwrap(),
-            total_consumed: self.__unsafe_private_named.2.unwrap(),
+            by_device: self._fields.0,
+            total_available: self._fields.1.unwrap(),
+            total_consumed: self._fields.2.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> KeyPackageStats<'a> {
+    ) -> KeyPackageStats<S> {
         KeyPackageStats {
-            by_device: self.__unsafe_private_named.0,
-            total_available: self.__unsafe_private_named.1.unwrap(),
-            total_consumed: self.__unsafe_private_named.2.unwrap(),
+            by_device: self._fields.0,
+            total_available: self._fields.1.unwrap(),
+            total_consumed: self._fields.2.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for KeyPackageStats<'a> {
-    fn nsid() -> &'static str {
-        "blue.catbird.mlsChat.getKeyPackageStatus"
-    }
-    fn def_name() -> &'static str {
-        "keyPackageStats"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_blue_catbird_mlsChat_getKeyPackageStatus()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        {
-            let value = &self.total_available;
-            if *value < 0i64 {
-                return Err(::jacquard_lexicon::validation::ConstraintError::Minimum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
-                        "total_available",
-                    ),
-                    min: 0i64,
-                    actual: *value,
-                });
-            }
-        }
-        {
-            let value = &self.total_consumed;
-            if *value < 0i64 {
-                return Err(::jacquard_lexicon::validation::ConstraintError::Minimum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
-                        "total_consumed",
-                    ),
-                    min: 0i64,
-                    actual: *value,
-                });
-            }
-        }
-        Ok(())
-    }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct KeyPackageStatusItem<'a> {
-    #[serde(borrow)]
-    pub cipher_suite: jacquard_common::CowStr<'a>,
-    pub consumed: bool,
-    pub created_at: jacquard_common::types::string::Datetime,
-    #[serde(borrow)]
-    pub device_id: jacquard_common::CowStr<'a>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub expires_at: std::option::Option<jacquard_common::types::string::Datetime>,
-    #[serde(borrow)]
-    pub id: jacquard_common::CowStr<'a>,
 }
 
 pub mod key_package_status_item_state {
@@ -1128,203 +1323,233 @@ pub mod key_package_status_item_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Id;
-        type DeviceId;
         type CipherSuite;
-        type CreatedAt;
         type Consumed;
+        type CreatedAt;
+        type DeviceId;
+        type Id;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Id = Unset;
-        type DeviceId = Unset;
         type CipherSuite = Unset;
-        type CreatedAt = Unset;
         type Consumed = Unset;
-    }
-    ///State transition - sets the `id` field to Set
-    pub struct SetId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetId<S> {}
-    impl<S: State> State for SetId<S> {
-        type Id = Set<members::id>;
-        type DeviceId = S::DeviceId;
-        type CipherSuite = S::CipherSuite;
-        type CreatedAt = S::CreatedAt;
-        type Consumed = S::Consumed;
-    }
-    ///State transition - sets the `device_id` field to Set
-    pub struct SetDeviceId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDeviceId<S> {}
-    impl<S: State> State for SetDeviceId<S> {
-        type Id = S::Id;
-        type DeviceId = Set<members::device_id>;
-        type CipherSuite = S::CipherSuite;
-        type CreatedAt = S::CreatedAt;
-        type Consumed = S::Consumed;
+        type CreatedAt = Unset;
+        type DeviceId = Unset;
+        type Id = Unset;
     }
     ///State transition - sets the `cipher_suite` field to Set
-    pub struct SetCipherSuite<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCipherSuite<S> {}
-    impl<S: State> State for SetCipherSuite<S> {
-        type Id = S::Id;
-        type DeviceId = S::DeviceId;
+    pub struct SetCipherSuite<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCipherSuite<St> {}
+    impl<St: State> State for SetCipherSuite<St> {
         type CipherSuite = Set<members::cipher_suite>;
-        type CreatedAt = S::CreatedAt;
-        type Consumed = S::Consumed;
-    }
-    ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type Id = S::Id;
-        type DeviceId = S::DeviceId;
-        type CipherSuite = S::CipherSuite;
-        type CreatedAt = Set<members::created_at>;
-        type Consumed = S::Consumed;
+        type Consumed = St::Consumed;
+        type CreatedAt = St::CreatedAt;
+        type DeviceId = St::DeviceId;
+        type Id = St::Id;
     }
     ///State transition - sets the `consumed` field to Set
-    pub struct SetConsumed<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConsumed<S> {}
-    impl<S: State> State for SetConsumed<S> {
-        type Id = S::Id;
-        type DeviceId = S::DeviceId;
-        type CipherSuite = S::CipherSuite;
-        type CreatedAt = S::CreatedAt;
+    pub struct SetConsumed<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetConsumed<St> {}
+    impl<St: State> State for SetConsumed<St> {
+        type CipherSuite = St::CipherSuite;
         type Consumed = Set<members::consumed>;
+        type CreatedAt = St::CreatedAt;
+        type DeviceId = St::DeviceId;
+        type Id = St::Id;
+    }
+    ///State transition - sets the `created_at` field to Set
+    pub struct SetCreatedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCreatedAt<St> {}
+    impl<St: State> State for SetCreatedAt<St> {
+        type CipherSuite = St::CipherSuite;
+        type Consumed = St::Consumed;
+        type CreatedAt = Set<members::created_at>;
+        type DeviceId = St::DeviceId;
+        type Id = St::Id;
+    }
+    ///State transition - sets the `device_id` field to Set
+    pub struct SetDeviceId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetDeviceId<St> {}
+    impl<St: State> State for SetDeviceId<St> {
+        type CipherSuite = St::CipherSuite;
+        type Consumed = St::Consumed;
+        type CreatedAt = St::CreatedAt;
+        type DeviceId = Set<members::device_id>;
+        type Id = St::Id;
+    }
+    ///State transition - sets the `id` field to Set
+    pub struct SetId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetId<St> {}
+    impl<St: State> State for SetId<St> {
+        type CipherSuite = St::CipherSuite;
+        type Consumed = St::Consumed;
+        type CreatedAt = St::CreatedAt;
+        type DeviceId = St::DeviceId;
+        type Id = Set<members::id>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `id` field
-        pub struct id(());
-        ///Marker type for the `device_id` field
-        pub struct device_id(());
         ///Marker type for the `cipher_suite` field
         pub struct cipher_suite(());
-        ///Marker type for the `created_at` field
-        pub struct created_at(());
         ///Marker type for the `consumed` field
         pub struct consumed(());
+        ///Marker type for the `created_at` field
+        pub struct created_at(());
+        ///Marker type for the `device_id` field
+        pub struct device_id(());
+        ///Marker type for the `id` field
+        pub struct id(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct KeyPackageStatusItemBuilder<'a, S: key_package_status_item_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<bool>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct KeyPackageStatusItemBuilder<
+    St: key_package_status_item_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<bool>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<S>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> KeyPackageStatusItem<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> KeyPackageStatusItemBuilder<'a, key_package_status_item_state::Empty> {
+impl KeyPackageStatusItem<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> KeyPackageStatusItemBuilder<
+        key_package_status_item_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         KeyPackageStatusItemBuilder::new()
     }
 }
 
-impl<'a> KeyPackageStatusItemBuilder<'a, key_package_status_item_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> KeyPackageStatusItem<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> KeyPackageStatusItemBuilder<key_package_status_item_state::Empty, S> {
+        KeyPackageStatusItemBuilder::builder()
+    }
+}
+
+impl
+    KeyPackageStatusItemBuilder<key_package_status_item_state::Empty, jacquard_common::DefaultStr>
+{
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         KeyPackageStatusItemBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> KeyPackageStatusItemBuilder<'a, S>
+impl<S: jacquard_common::BosStr>
+    KeyPackageStatusItemBuilder<key_package_status_item_state::Empty, S>
+{
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        KeyPackageStatusItemBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> KeyPackageStatusItemBuilder<St, S>
 where
-    S: key_package_status_item_state::State,
-    S::CipherSuite: key_package_status_item_state::IsUnset,
+    St: key_package_status_item_state::State,
+    St::CipherSuite: key_package_status_item_state::IsUnset,
 {
     /// Set the `cipherSuite` field (required)
     pub fn cipher_suite(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> KeyPackageStatusItemBuilder<'a, key_package_status_item_state::SetCipherSuite<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> KeyPackageStatusItemBuilder<key_package_status_item_state::SetCipherSuite<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         KeyPackageStatusItemBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> KeyPackageStatusItemBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> KeyPackageStatusItemBuilder<St, S>
 where
-    S: key_package_status_item_state::State,
-    S::Consumed: key_package_status_item_state::IsUnset,
+    St: key_package_status_item_state::State,
+    St::Consumed: key_package_status_item_state::IsUnset,
 {
     /// Set the `consumed` field (required)
     pub fn consumed(
         mut self,
         value: impl Into<bool>,
-    ) -> KeyPackageStatusItemBuilder<'a, key_package_status_item_state::SetConsumed<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+    ) -> KeyPackageStatusItemBuilder<key_package_status_item_state::SetConsumed<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         KeyPackageStatusItemBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> KeyPackageStatusItemBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> KeyPackageStatusItemBuilder<St, S>
 where
-    S: key_package_status_item_state::State,
-    S::CreatedAt: key_package_status_item_state::IsUnset,
+    St: key_package_status_item_state::State,
+    St::CreatedAt: key_package_status_item_state::IsUnset,
 {
     /// Set the `createdAt` field (required)
     pub fn created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> KeyPackageStatusItemBuilder<'a, key_package_status_item_state::SetCreatedAt<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+    ) -> KeyPackageStatusItemBuilder<key_package_status_item_state::SetCreatedAt<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         KeyPackageStatusItemBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> KeyPackageStatusItemBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> KeyPackageStatusItemBuilder<St, S>
 where
-    S: key_package_status_item_state::State,
-    S::DeviceId: key_package_status_item_state::IsUnset,
+    St: key_package_status_item_state::State,
+    St::DeviceId: key_package_status_item_state::IsUnset,
 {
     /// Set the `deviceId` field (required)
     pub fn device_id(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> KeyPackageStatusItemBuilder<'a, key_package_status_item_state::SetDeviceId<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> KeyPackageStatusItemBuilder<key_package_status_item_state::SetDeviceId<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
         KeyPackageStatusItemBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: key_package_status_item_state::State> KeyPackageStatusItemBuilder<'a, S> {
+impl<St: key_package_status_item_state::State, S: jacquard_common::BosStr>
+    KeyPackageStatusItemBuilder<St, S>
+{
     /// Set the `expiresAt` field (optional)
     pub fn expires_at(
         mut self,
         value: impl Into<Option<jacquard_common::types::string::Datetime>>,
     ) -> Self {
-        self.__unsafe_private_named.4 = value.into();
+        self._fields.4 = value.into();
         self
     }
     /// Set the `expiresAt` field to an Option value (optional)
@@ -1332,109 +1557,77 @@ impl<'a, S: key_package_status_item_state::State> KeyPackageStatusItemBuilder<'a
         mut self,
         value: Option<jacquard_common::types::string::Datetime>,
     ) -> Self {
-        self.__unsafe_private_named.4 = value;
+        self._fields.4 = value;
         self
     }
 }
 
-impl<'a, S> KeyPackageStatusItemBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> KeyPackageStatusItemBuilder<St, S>
 where
-    S: key_package_status_item_state::State,
-    S::Id: key_package_status_item_state::IsUnset,
+    St: key_package_status_item_state::State,
+    St::Id: key_package_status_item_state::IsUnset,
 {
     /// Set the `id` field (required)
     pub fn id(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> KeyPackageStatusItemBuilder<'a, key_package_status_item_state::SetId<S>> {
-        self.__unsafe_private_named.5 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> KeyPackageStatusItemBuilder<key_package_status_item_state::SetId<St>, S> {
+        self._fields.5 = ::core::option::Option::Some(value.into());
         KeyPackageStatusItemBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> KeyPackageStatusItemBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> KeyPackageStatusItemBuilder<St, S>
 where
-    S: key_package_status_item_state::State,
-    S::Id: key_package_status_item_state::IsSet,
-    S::DeviceId: key_package_status_item_state::IsSet,
-    S::CipherSuite: key_package_status_item_state::IsSet,
-    S::CreatedAt: key_package_status_item_state::IsSet,
-    S::Consumed: key_package_status_item_state::IsSet,
+    St: key_package_status_item_state::State,
+    St::CipherSuite: key_package_status_item_state::IsSet,
+    St::Consumed: key_package_status_item_state::IsSet,
+    St::CreatedAt: key_package_status_item_state::IsSet,
+    St::DeviceId: key_package_status_item_state::IsSet,
+    St::Id: key_package_status_item_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> KeyPackageStatusItem<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> KeyPackageStatusItem<S> {
         KeyPackageStatusItem {
-            cipher_suite: self.__unsafe_private_named.0.unwrap(),
-            consumed: self.__unsafe_private_named.1.unwrap(),
-            created_at: self.__unsafe_private_named.2.unwrap(),
-            device_id: self.__unsafe_private_named.3.unwrap(),
-            expires_at: self.__unsafe_private_named.4,
-            id: self.__unsafe_private_named.5.unwrap(),
+            cipher_suite: self._fields.0.unwrap(),
+            consumed: self._fields.1.unwrap(),
+            created_at: self._fields.2.unwrap(),
+            device_id: self._fields.3.unwrap(),
+            expires_at: self._fields.4,
+            id: self._fields.5.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> KeyPackageStatusItem<'a> {
+    ) -> KeyPackageStatusItem<S> {
         KeyPackageStatusItem {
-            cipher_suite: self.__unsafe_private_named.0.unwrap(),
-            consumed: self.__unsafe_private_named.1.unwrap(),
-            created_at: self.__unsafe_private_named.2.unwrap(),
-            device_id: self.__unsafe_private_named.3.unwrap(),
-            expires_at: self.__unsafe_private_named.4,
-            id: self.__unsafe_private_named.5.unwrap(),
+            cipher_suite: self._fields.0.unwrap(),
+            consumed: self._fields.1.unwrap(),
+            created_at: self._fields.2.unwrap(),
+            device_id: self._fields.3.unwrap(),
+            expires_at: self._fields.4,
+            id: self._fields.5.unwrap(),
             extra_data: Some(extra_data),
         }
     }
 }
 
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for KeyPackageStatusItem<'a> {
-    fn nsid() -> &'static str {
-        "blue.catbird.mlsChat.getKeyPackageStatus"
-    }
-    fn def_name() -> &'static str {
-        "keyPackageStatusItem"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_blue_catbird_mlsChat_getKeyPackageStatus()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
+fn _default_include<S: jacquard_common::FromStaticStr>() -> Option<S> {
+    Some(S::from_static("stats"))
 }
 
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GetKeyPackageStatus<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cipher_suite: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub did: std::option::Option<jacquard_common::types::string::Did<'a>>,
-    ///(default: "stats")
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub include: std::option::Option<jacquard_common::CowStr<'a>>,
-    ///(default: 50, min: 1, max: 100)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub limit: std::option::Option<i64>,
+fn _default_limit() -> core::option::Option<i64> {
+    Some(50i64)
 }
 
 pub mod get_key_package_status_state {
@@ -1456,184 +1649,149 @@ pub mod get_key_package_status_state {
     pub mod members {}
 }
 
-/// Builder for constructing an instance of this type
-pub struct GetKeyPackageStatusBuilder<'a, S: get_key_package_status_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<i64>,
+/// Builder for constructing an instance of this type.
+pub struct GetKeyPackageStatusBuilder<
+    St: get_key_package_status_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<S>,
+        core::option::Option<i64>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> GetKeyPackageStatus<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> GetKeyPackageStatusBuilder<'a, get_key_package_status_state::Empty> {
+impl GetKeyPackageStatus<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> GetKeyPackageStatusBuilder<get_key_package_status_state::Empty, jacquard_common::DefaultStr>
+    {
         GetKeyPackageStatusBuilder::new()
     }
 }
 
-impl<'a> GetKeyPackageStatusBuilder<'a, get_key_package_status_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> GetKeyPackageStatus<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> GetKeyPackageStatusBuilder<get_key_package_status_state::Empty, S> {
+        GetKeyPackageStatusBuilder::builder()
+    }
+}
+
+impl GetKeyPackageStatusBuilder<get_key_package_status_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetKeyPackageStatusBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: get_key_package_status_state::State> GetKeyPackageStatusBuilder<'a, S> {
+impl<S: jacquard_common::BosStr>
+    GetKeyPackageStatusBuilder<get_key_package_status_state::Empty, S>
+{
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GetKeyPackageStatusBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: get_key_package_status_state::State, S: jacquard_common::BosStr>
+    GetKeyPackageStatusBuilder<St, S>
+{
     /// Set the `cipherSuite` field (optional)
-    pub fn cipher_suite(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+    pub fn cipher_suite(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.0 = value.into();
         self
     }
     /// Set the `cipherSuite` field to an Option value (optional)
-    pub fn maybe_cipher_suite(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.0 = value;
+    pub fn maybe_cipher_suite(mut self, value: Option<S>) -> Self {
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S: get_key_package_status_state::State> GetKeyPackageStatusBuilder<'a, S> {
+impl<St: get_key_package_status_state::State, S: jacquard_common::BosStr>
+    GetKeyPackageStatusBuilder<St, S>
+{
     /// Set the `cursor` field (optional)
-    pub fn cursor(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+    pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.1 = value.into();
         self
     }
     /// Set the `cursor` field to an Option value (optional)
-    pub fn maybe_cursor(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.1 = value;
+    pub fn maybe_cursor(mut self, value: Option<S>) -> Self {
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S: get_key_package_status_state::State> GetKeyPackageStatusBuilder<'a, S> {
+impl<St: get_key_package_status_state::State, S: jacquard_common::BosStr>
+    GetKeyPackageStatusBuilder<St, S>
+{
     /// Set the `did` field (optional)
-    pub fn did(
-        mut self,
-        value: impl Into<Option<jacquard_common::types::string::Did<'a>>>,
-    ) -> Self {
-        self.__unsafe_private_named.2 = value.into();
+    pub fn did(mut self, value: impl Into<Option<jacquard_common::types::string::Did<S>>>) -> Self {
+        self._fields.2 = value.into();
         self
     }
     /// Set the `did` field to an Option value (optional)
-    pub fn maybe_did(mut self, value: Option<jacquard_common::types::string::Did<'a>>) -> Self {
-        self.__unsafe_private_named.2 = value;
+    pub fn maybe_did(mut self, value: Option<jacquard_common::types::string::Did<S>>) -> Self {
+        self._fields.2 = value;
         self
     }
 }
 
-impl<'a, S: get_key_package_status_state::State> GetKeyPackageStatusBuilder<'a, S> {
+impl<St: get_key_package_status_state::State, S: jacquard_common::BosStr>
+    GetKeyPackageStatusBuilder<St, S>
+{
     /// Set the `include` field (optional)
-    pub fn include(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.3 = value.into();
+    pub fn include(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.3 = value.into();
         self
     }
     /// Set the `include` field to an Option value (optional)
-    pub fn maybe_include(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.3 = value;
+    pub fn maybe_include(mut self, value: Option<S>) -> Self {
+        self._fields.3 = value;
         self
     }
 }
 
-impl<'a, S: get_key_package_status_state::State> GetKeyPackageStatusBuilder<'a, S> {
+impl<St: get_key_package_status_state::State, S: jacquard_common::BosStr>
+    GetKeyPackageStatusBuilder<St, S>
+{
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.4 = value.into();
+        self._fields.4 = value.into();
         self
     }
     /// Set the `limit` field to an Option value (optional)
     pub fn maybe_limit(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.4 = value;
+        self._fields.4 = value;
         self
     }
 }
 
-impl<'a, S> GetKeyPackageStatusBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GetKeyPackageStatusBuilder<St, S>
 where
-    S: get_key_package_status_state::State,
+    St: get_key_package_status_state::State,
 {
-    /// Build the final struct
-    pub fn build(self) -> GetKeyPackageStatus<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> GetKeyPackageStatus<S> {
         GetKeyPackageStatus {
-            cipher_suite: self.__unsafe_private_named.0,
-            cursor: self.__unsafe_private_named.1,
-            did: self.__unsafe_private_named.2,
-            include: self.__unsafe_private_named.3,
-            limit: self.__unsafe_private_named.4,
+            cipher_suite: self._fields.0,
+            cursor: self._fields.1,
+            did: self._fields.2,
+            include: self._fields.3,
+            limit: self._fields.4,
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic,
-    Default,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GetKeyPackageStatusOutput<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub history: std::option::Option<
-        Vec<
-            crate::generated::blue_catbird::mlsChat::get_key_package_status::KeyPackageHistoryItem<
-                'a,
-            >,
-        >,
-    >,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub stats: std::option::Option<
-        crate::generated::blue_catbird::mlsChat::get_key_package_status::KeyPackageStats<'a>,
-    >,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub status: std::option::Option<
-        Vec<
-            crate::generated::blue_catbird::mlsChat::get_key_package_status::KeyPackageStatusItem<
-                'a,
-            >,
-        >,
-    >,
-}
-
-/// Response type for
-///blue.catbird.mlsChat.getKeyPackageStatus
-pub struct GetKeyPackageStatusResponse;
-impl jacquard_common::xrpc::XrpcResp for GetKeyPackageStatusResponse {
-    const NSID: &'static str = "blue.catbird.mlsChat.getKeyPackageStatus";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetKeyPackageStatusOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for GetKeyPackageStatus<'a> {
-    const NSID: &'static str = "blue.catbird.mlsChat.getKeyPackageStatus";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = GetKeyPackageStatusResponse;
-}
-
-/// Endpoint type for
-///blue.catbird.mlsChat.getKeyPackageStatus
-pub struct GetKeyPackageStatusRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for GetKeyPackageStatusRequest {
-    const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.getKeyPackageStatus";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetKeyPackageStatus<'de>;
-    type Response = GetKeyPackageStatusResponse;
 }

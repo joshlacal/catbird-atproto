@@ -5,161 +5,31 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct DeleteBlock<'a> {
-    /// The AT-URI of the block record to delete.
-    #[serde(borrow)]
-    pub block_uri: jacquard_common::types::string::AtUri<'a>,
-    /// The DID of the streamer.
-    #[serde(borrow)]
-    pub streamer: jacquard_common::types::string::Did<'a>,
-}
-
-pub mod delete_block_state {
-
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
-    #[allow(unused)]
-    use core::marker::PhantomData;
-    mod sealed {
-        pub trait Sealed {}
-    }
-    /// State trait tracking which required fields have been set
-    pub trait State: sealed::Sealed {
-        type Streamer;
-        type BlockUri;
-    }
-    /// Empty state - all required fields are unset
-    pub struct Empty(());
-    impl sealed::Sealed for Empty {}
-    impl State for Empty {
-        type Streamer = Unset;
-        type BlockUri = Unset;
-    }
-    ///State transition - sets the `streamer` field to Set
-    pub struct SetStreamer<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetStreamer<S> {}
-    impl<S: State> State for SetStreamer<S> {
-        type Streamer = Set<members::streamer>;
-        type BlockUri = S::BlockUri;
-    }
-    ///State transition - sets the `block_uri` field to Set
-    pub struct SetBlockUri<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetBlockUri<S> {}
-    impl<S: State> State for SetBlockUri<S> {
-        type Streamer = S::Streamer;
-        type BlockUri = Set<members::block_uri>;
-    }
-    /// Marker types for field names
-    #[allow(non_camel_case_types)]
-    pub mod members {
-        ///Marker type for the `streamer` field
-        pub struct streamer(());
-        ///Marker type for the `block_uri` field
-        pub struct block_uri(());
-    }
-}
-
-/// Builder for constructing an instance of this type
-pub struct DeleteBlockBuilder<'a, S: delete_block_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-    ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
-}
-
-impl<'a> DeleteBlock<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> DeleteBlockBuilder<'a, delete_block_state::Empty> {
-        DeleteBlockBuilder::new()
-    }
-}
-
-impl<'a> DeleteBlockBuilder<'a, delete_block_state::Empty> {
-    /// Create a new builder with all fields unset
-    pub fn new() -> Self {
-        DeleteBlockBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> DeleteBlockBuilder<'a, S>
-where
-    S: delete_block_state::State,
-    S::BlockUri: delete_block_state::IsUnset,
-{
-    /// Set the `blockUri` field (required)
-    pub fn block_uri(
-        mut self,
-        value: impl Into<jacquard_common::types::string::AtUri<'a>>,
-    ) -> DeleteBlockBuilder<'a, delete_block_state::SetBlockUri<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
-        DeleteBlockBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> DeleteBlockBuilder<'a, S>
-where
-    S: delete_block_state::State,
-    S::Streamer: delete_block_state::IsUnset,
-{
-    /// Set the `streamer` field (required)
-    pub fn streamer(
-        mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> DeleteBlockBuilder<'a, delete_block_state::SetStreamer<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
-        DeleteBlockBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> DeleteBlockBuilder<'a, S>
-where
-    S: delete_block_state::State,
-    S::Streamer: delete_block_state::IsSet,
-    S::BlockUri: delete_block_state::IsSet,
-{
-    /// Build the final struct
-    pub fn build(self) -> DeleteBlock<'a> {
-        DeleteBlock {
-            block_uri: self.__unsafe_private_named.0.unwrap(),
-            streamer: self.__unsafe_private_named.1.unwrap(),
-            extra_data: Default::default(),
-        }
-    }
-    /// Build the final struct with custom extra_data
-    pub fn build_with_data(
-        self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct DeleteBlock<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///The AT-URI of the block record to delete.
+    pub block_uri: jacquard_common::types::string::AtUri<S>,
+    ///The DID of the streamer.
+    pub streamer: jacquard_common::types::string::Did<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> DeleteBlock<'a> {
-        DeleteBlock {
-            block_uri: self.__unsafe_private_named.0.unwrap(),
-            streamer: self.__unsafe_private_named.1.unwrap(),
-            extra_data: Some(extra_data),
-        }
-    }
+    >,
 }
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -170,9 +40,24 @@ where
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct DeleteBlockOutput<'a> {}
-#[jacquard_derive::open_union]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct DeleteBlockOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -182,24 +67,28 @@ pub struct DeleteBlockOutput<'a> {}
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum DeleteBlockError<'a> {
+pub enum DeleteBlockError {
     /// The request lacks valid authentication credentials.
     #[serde(rename = "Unauthorized")]
-    Unauthorized(std::option::Option<jacquard_common::CowStr<'a>>),
+    Unauthorized(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// The caller does not have permission to delete blocks for this streamer.
     #[serde(rename = "Forbidden")]
-    Forbidden(std::option::Option<jacquard_common::CowStr<'a>>),
+    Forbidden(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// The streamer's OAuth session could not be found or is invalid.
     #[serde(rename = "SessionNotFound")]
-    SessionNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
+    SessionNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
 }
 
-impl std::fmt::Display for DeleteBlockError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for DeleteBlockError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             Self::Unauthorized(msg) => {
                 write!(f, "Unauthorized")?;
@@ -222,35 +111,204 @@ impl std::fmt::Display for DeleteBlockError<'_> {
                 }
                 Ok(())
             }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
         }
     }
 }
 
-/// Response type for
-///place.stream.moderation.deleteBlock
+/** Response marker for the `place.stream.moderation.deleteBlock` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `DeleteBlockOutput<S>` for this endpoint.*/
 pub struct DeleteBlockResponse;
 impl jacquard_common::xrpc::XrpcResp for DeleteBlockResponse {
     const NSID: &'static str = "place.stream.moderation.deleteBlock";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = DeleteBlockOutput<'de>;
-    type Err<'de> = DeleteBlockError<'de>;
+    type Output<S: jacquard_common::BosStr> = DeleteBlockOutput<S>;
+    type Err = DeleteBlockError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for DeleteBlock<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for DeleteBlock<S> {
     const NSID: &'static str = "place.stream.moderation.deleteBlock";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = DeleteBlockResponse;
 }
 
-/// Endpoint type for
-///place.stream.moderation.deleteBlock
+/** Endpoint marker for the `place.stream.moderation.deleteBlock` procedure.
+
+Path: `/xrpc/place.stream.moderation.deleteBlock`. The request payload type is `DeleteBlock<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct DeleteBlockRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for DeleteBlockRequest {
     const PATH: &'static str = "/xrpc/place.stream.moderation.deleteBlock";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = DeleteBlock<'de>;
+    type Request<S: jacquard_common::BosStr> = DeleteBlock<S>;
     type Response = DeleteBlockResponse;
+}
+
+pub mod delete_block_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type BlockUri;
+        type Streamer;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type BlockUri = Unset;
+        type Streamer = Unset;
+    }
+    ///State transition - sets the `block_uri` field to Set
+    pub struct SetBlockUri<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetBlockUri<St> {}
+    impl<St: State> State for SetBlockUri<St> {
+        type BlockUri = Set<members::block_uri>;
+        type Streamer = St::Streamer;
+    }
+    ///State transition - sets the `streamer` field to Set
+    pub struct SetStreamer<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetStreamer<St> {}
+    impl<St: State> State for SetStreamer<St> {
+        type BlockUri = St::BlockUri;
+        type Streamer = Set<members::streamer>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `block_uri` field
+        pub struct block_uri(());
+        ///Marker type for the `streamer` field
+        pub struct streamer(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct DeleteBlockBuilder<
+    St: delete_block_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::AtUri<S>>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+    ),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl DeleteBlock<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> DeleteBlockBuilder<delete_block_state::Empty, jacquard_common::DefaultStr> {
+        DeleteBlockBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> DeleteBlock<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> DeleteBlockBuilder<delete_block_state::Empty, S> {
+        DeleteBlockBuilder::builder()
+    }
+}
+
+impl DeleteBlockBuilder<delete_block_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        DeleteBlockBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> DeleteBlockBuilder<delete_block_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        DeleteBlockBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeleteBlockBuilder<St, S>
+where
+    St: delete_block_state::State,
+    St::BlockUri: delete_block_state::IsUnset,
+{
+    /// Set the `blockUri` field (required)
+    pub fn block_uri(
+        mut self,
+        value: impl Into<jacquard_common::types::string::AtUri<S>>,
+    ) -> DeleteBlockBuilder<delete_block_state::SetBlockUri<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        DeleteBlockBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeleteBlockBuilder<St, S>
+where
+    St: delete_block_state::State,
+    St::Streamer: delete_block_state::IsUnset,
+{
+    /// Set the `streamer` field (required)
+    pub fn streamer(
+        mut self,
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> DeleteBlockBuilder<delete_block_state::SetStreamer<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
+        DeleteBlockBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeleteBlockBuilder<St, S>
+where
+    St: delete_block_state::State,
+    St::BlockUri: delete_block_state::IsSet,
+    St::Streamer: delete_block_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> DeleteBlock<S> {
+        DeleteBlock {
+            block_uri: self._fields.0.unwrap(),
+            streamer: self._fields.1.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> DeleteBlock<S> {
+        DeleteBlock {
+            block_uri: self._fields.0.unwrap(),
+            streamer: self._fields.1.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
 }

@@ -10,10 +10,60 @@
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetUnreadCount {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub priority: std::option::Option<bool>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub seen_at: std::option::Option<jacquard_common::types::string::Datetime>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub priority: core::option::Option<bool>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub seen_at: core::option::Option<jacquard_common::types::string::Datetime>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetUnreadCountOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub count: i64,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `app.bsky.notification.getUnreadCount` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetUnreadCountOutput<S>` for this endpoint.*/
+pub struct GetUnreadCountResponse;
+impl jacquard_common::xrpc::XrpcResp for GetUnreadCountResponse {
+    const NSID: &'static str = "app.bsky.notification.getUnreadCount";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = GetUnreadCountOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl jacquard_common::xrpc::XrpcRequest for GetUnreadCount {
+    const NSID: &'static str = "app.bsky.notification.getUnreadCount";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = GetUnreadCountResponse;
+}
+
+/** Endpoint marker for the `app.bsky.notification.getUnreadCount` query.
+
+Path: `/xrpc/app.bsky.notification.getUnreadCount`. The request payload type is `GetUnreadCount`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct GetUnreadCountRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for GetUnreadCountRequest {
+    const PATH: &'static str = "/xrpc/app.bsky.notification.getUnreadCount";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = GetUnreadCount;
+    type Response = GetUnreadCountResponse;
 }
 
 pub mod get_unread_count_state {
@@ -35,52 +85,62 @@ pub mod get_unread_count_state {
     pub mod members {}
 }
 
-/// Builder for constructing an instance of this type
-pub struct GetUnreadCountBuilder<S: get_unread_count_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<bool>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
+/// Builder for constructing an instance of this type.
+pub struct GetUnreadCountBuilder<St: get_unread_count_state::State> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<bool>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
     ),
 }
 
 impl GetUnreadCount {
-    /// Create a new builder for this type
+    /// Create a new builder for this type.
     pub fn new() -> GetUnreadCountBuilder<get_unread_count_state::Empty> {
         GetUnreadCountBuilder::new()
     }
 }
 
 impl GetUnreadCountBuilder<get_unread_count_state::Empty> {
-    /// Create a new builder with all fields unset
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetUnreadCountBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
         }
     }
 }
 
-impl<S: get_unread_count_state::State> GetUnreadCountBuilder<S> {
+impl GetUnreadCountBuilder<get_unread_count_state::Empty> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GetUnreadCountBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+        }
+    }
+}
+
+impl<St: get_unread_count_state::State> GetUnreadCountBuilder<St> {
     /// Set the `priority` field (optional)
     pub fn priority(mut self, value: impl Into<Option<bool>>) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+        self._fields.0 = value.into();
         self
     }
     /// Set the `priority` field to an Option value (optional)
     pub fn maybe_priority(mut self, value: Option<bool>) -> Self {
-        self.__unsafe_private_named.0 = value;
+        self._fields.0 = value;
         self
     }
 }
 
-impl<S: get_unread_count_state::State> GetUnreadCountBuilder<S> {
+impl<St: get_unread_count_state::State> GetUnreadCountBuilder<St> {
     /// Set the `seenAt` field (optional)
     pub fn seen_at(
         mut self,
         value: impl Into<Option<jacquard_common::types::string::Datetime>>,
     ) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self._fields.1 = value.into();
         self
     }
     /// Set the `seenAt` field to an Option value (optional)
@@ -88,55 +148,20 @@ impl<S: get_unread_count_state::State> GetUnreadCountBuilder<S> {
         mut self,
         value: Option<jacquard_common::types::string::Datetime>,
     ) -> Self {
-        self.__unsafe_private_named.1 = value;
+        self._fields.1 = value;
         self
     }
 }
 
-impl<S> GetUnreadCountBuilder<S>
+impl<St> GetUnreadCountBuilder<St>
 where
-    S: get_unread_count_state::State,
+    St: get_unread_count_state::State,
 {
-    /// Build the final struct
+    /// Build the final struct.
     pub fn build(self) -> GetUnreadCount {
         GetUnreadCount {
-            priority: self.__unsafe_private_named.0,
-            seen_at: self.__unsafe_private_named.1,
+            priority: self._fields.0,
+            seen_at: self._fields.1,
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GetUnreadCountOutput<'a> {
-    pub count: i64,
-}
-
-/// Response type for
-///app.bsky.notification.getUnreadCount
-pub struct GetUnreadCountResponse;
-impl jacquard_common::xrpc::XrpcResp for GetUnreadCountResponse {
-    const NSID: &'static str = "app.bsky.notification.getUnreadCount";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetUnreadCountOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl jacquard_common::xrpc::XrpcRequest for GetUnreadCount {
-    const NSID: &'static str = "app.bsky.notification.getUnreadCount";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = GetUnreadCountResponse;
-}
-
-/// Endpoint type for
-///app.bsky.notification.getUnreadCount
-pub struct GetUnreadCountRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for GetUnreadCountRequest {
-    const PATH: &'static str = "/xrpc/app.bsky.notification.getUnreadCount";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetUnreadCount;
-    type Response = GetUnreadCountResponse;
 }

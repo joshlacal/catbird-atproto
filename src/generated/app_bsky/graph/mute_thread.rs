@@ -5,14 +5,56 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct MuteThread<'a> {
-    #[serde(borrow)]
-    pub root: jacquard_common::types::string::AtUri<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct MuteThread<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub root: jacquard_common::types::string::AtUri<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `app.bsky.graph.muteThread` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `()` for this endpoint.*/
+pub struct MuteThreadResponse;
+impl jacquard_common::xrpc::XrpcResp for MuteThreadResponse {
+    const NSID: &'static str = "app.bsky.graph.muteThread";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = ();
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for MuteThread<S> {
+    const NSID: &'static str = "app.bsky.graph.muteThread";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Response = MuteThreadResponse;
+}
+
+/** Endpoint marker for the `app.bsky.graph.muteThread` procedure.
+
+Path: `/xrpc/app.bsky.graph.muteThread`. The request payload type is `MuteThread<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct MuteThreadRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for MuteThreadRequest {
+    const PATH: &'static str = "/xrpc/app.bsky.graph.muteThread";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Request<S: jacquard_common::BosStr> = MuteThread<S>;
+    type Response = MuteThreadResponse;
 }
 
 pub mod mute_thread_state {
@@ -34,9 +76,9 @@ pub mod mute_thread_state {
         type Root = Unset;
     }
     ///State transition - sets the `root` field to Set
-    pub struct SetRoot<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRoot<S> {}
-    impl<S: State> State for SetRoot<S> {
+    pub struct SetRoot<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRoot<St> {}
+    impl<St: State> State for SetRoot<St> {
         type Root = Set<members::root>;
     }
     /// Marker types for field names
@@ -47,101 +89,94 @@ pub mod mute_thread_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct MuteThreadBuilder<'a, S: mute_thread_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<jacquard_common::types::string::AtUri<'a>>,),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct MuteThreadBuilder<
+    St: mute_thread_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<jacquard_common::types::string::AtUri<S>>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> MuteThread<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> MuteThreadBuilder<'a, mute_thread_state::Empty> {
+impl MuteThread<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> MuteThreadBuilder<mute_thread_state::Empty, jacquard_common::DefaultStr> {
         MuteThreadBuilder::new()
     }
 }
 
-impl<'a> MuteThreadBuilder<'a, mute_thread_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> MuteThread<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> MuteThreadBuilder<mute_thread_state::Empty, S> {
+        MuteThreadBuilder::builder()
+    }
+}
+
+impl MuteThreadBuilder<mute_thread_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         MuteThreadBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> MuteThreadBuilder<'a, S>
+impl<S: jacquard_common::BosStr> MuteThreadBuilder<mute_thread_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        MuteThreadBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> MuteThreadBuilder<St, S>
 where
-    S: mute_thread_state::State,
-    S::Root: mute_thread_state::IsUnset,
+    St: mute_thread_state::State,
+    St::Root: mute_thread_state::IsUnset,
 {
     /// Set the `root` field (required)
     pub fn root(
         mut self,
-        value: impl Into<jacquard_common::types::string::AtUri<'a>>,
-    ) -> MuteThreadBuilder<'a, mute_thread_state::SetRoot<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::AtUri<S>>,
+    ) -> MuteThreadBuilder<mute_thread_state::SetRoot<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         MuteThreadBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> MuteThreadBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> MuteThreadBuilder<St, S>
 where
-    S: mute_thread_state::State,
-    S::Root: mute_thread_state::IsSet,
+    St: mute_thread_state::State,
+    St::Root: mute_thread_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> MuteThread<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> MuteThread<S> {
         MuteThread {
-            root: self.__unsafe_private_named.0.unwrap(),
+            root: self._fields.0.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> MuteThread<'a> {
+    ) -> MuteThread<S> {
         MuteThread {
-            root: self.__unsafe_private_named.0.unwrap(),
+            root: self._fields.0.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-/// Response type for
-///app.bsky.graph.muteThread
-pub struct MuteThreadResponse;
-impl jacquard_common::xrpc::XrpcResp for MuteThreadResponse {
-    const NSID: &'static str = "app.bsky.graph.muteThread";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = ();
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for MuteThread<'a> {
-    const NSID: &'static str = "app.bsky.graph.muteThread";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Response = MuteThreadResponse;
-}
-
-/// Endpoint type for
-///app.bsky.graph.muteThread
-pub struct MuteThreadRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for MuteThreadRequest {
-    const PATH: &'static str = "/xrpc/app.bsky.graph.muteThread";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = MuteThread<'de>;
-    type Response = MuteThreadResponse;
 }

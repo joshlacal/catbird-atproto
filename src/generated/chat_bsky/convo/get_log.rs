@@ -8,11 +8,140 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetLog<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetLog<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetLogOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    pub logs: Vec<GetLogOutputLogsItem<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[jacquard_derive::open_union]
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub enum GetLogOutputLogsItem<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(rename = "chat.bsky.convo.defs#logBeginConvo")]
+    LogBeginConvo(Box<crate::generated::chat_bsky::convo::LogBeginConvo<S>>),
+    #[serde(rename = "chat.bsky.convo.defs#logAcceptConvo")]
+    LogAcceptConvo(Box<crate::generated::chat_bsky::convo::LogAcceptConvo<S>>),
+    #[serde(rename = "chat.bsky.convo.defs#logLeaveConvo")]
+    LogLeaveConvo(Box<crate::generated::chat_bsky::convo::LogLeaveConvo<S>>),
+    #[serde(rename = "chat.bsky.convo.defs#logMuteConvo")]
+    LogMuteConvo(Box<crate::generated::chat_bsky::convo::LogMuteConvo<S>>),
+    #[serde(rename = "chat.bsky.convo.defs#logUnmuteConvo")]
+    LogUnmuteConvo(Box<crate::generated::chat_bsky::convo::LogUnmuteConvo<S>>),
+    #[serde(rename = "chat.bsky.convo.defs#logCreateMessage")]
+    LogCreateMessage(Box<crate::generated::chat_bsky::convo::LogCreateMessage<S>>),
+    #[serde(rename = "chat.bsky.convo.defs#logDeleteMessage")]
+    LogDeleteMessage(Box<crate::generated::chat_bsky::convo::LogDeleteMessage<S>>),
+    #[serde(rename = "chat.bsky.convo.defs#logReadMessage")]
+    LogReadMessage(Box<crate::generated::chat_bsky::convo::LogReadMessage<S>>),
+    #[serde(rename = "chat.bsky.convo.defs#logAddReaction")]
+    LogAddReaction(Box<crate::generated::chat_bsky::convo::LogAddReaction<S>>),
+    #[serde(rename = "chat.bsky.convo.defs#logRemoveReaction")]
+    LogRemoveReaction(Box<crate::generated::chat_bsky::convo::LogRemoveReaction<S>>),
+    #[serde(rename = "chat.bsky.convo.defs#logReadConvo")]
+    LogReadConvo(Box<crate::generated::chat_bsky::convo::LogReadConvo<S>>),
+    #[serde(rename = "chat.bsky.convo.defs#logAddMember")]
+    LogAddMember(Box<crate::generated::chat_bsky::convo::LogAddMember<S>>),
+    #[serde(rename = "chat.bsky.convo.defs#logRemoveMember")]
+    LogRemoveMember(Box<crate::generated::chat_bsky::convo::LogRemoveMember<S>>),
+    #[serde(rename = "chat.bsky.convo.defs#logMemberJoin")]
+    LogMemberJoin(Box<crate::generated::chat_bsky::convo::LogMemberJoin<S>>),
+    #[serde(rename = "chat.bsky.convo.defs#logMemberLeave")]
+    LogMemberLeave(Box<crate::generated::chat_bsky::convo::LogMemberLeave<S>>),
+    #[serde(rename = "chat.bsky.convo.defs#logLockConvo")]
+    LogLockConvo(Box<crate::generated::chat_bsky::convo::LogLockConvo<S>>),
+    #[serde(rename = "chat.bsky.convo.defs#logUnlockConvo")]
+    LogUnlockConvo(Box<crate::generated::chat_bsky::convo::LogUnlockConvo<S>>),
+    #[serde(rename = "chat.bsky.convo.defs#logLockConvoPermanently")]
+    LogLockConvoPermanently(Box<crate::generated::chat_bsky::convo::LogLockConvoPermanently<S>>),
+    #[serde(rename = "chat.bsky.convo.defs#logEditGroup")]
+    LogEditGroup(Box<crate::generated::chat_bsky::convo::LogEditGroup<S>>),
+    #[serde(rename = "chat.bsky.convo.defs#logCreateJoinLink")]
+    LogCreateJoinLink(Box<crate::generated::chat_bsky::convo::LogCreateJoinLink<S>>),
+    #[serde(rename = "chat.bsky.convo.defs#logEditJoinLink")]
+    LogEditJoinLink(Box<crate::generated::chat_bsky::convo::LogEditJoinLink<S>>),
+    #[serde(rename = "chat.bsky.convo.defs#logEnableJoinLink")]
+    LogEnableJoinLink(Box<crate::generated::chat_bsky::convo::LogEnableJoinLink<S>>),
+    #[serde(rename = "chat.bsky.convo.defs#logDisableJoinLink")]
+    LogDisableJoinLink(Box<crate::generated::chat_bsky::convo::LogDisableJoinLink<S>>),
+    #[serde(rename = "chat.bsky.convo.defs#logIncomingJoinRequest")]
+    LogIncomingJoinRequest(Box<crate::generated::chat_bsky::convo::LogIncomingJoinRequest<S>>),
+    #[serde(rename = "chat.bsky.convo.defs#logApproveJoinRequest")]
+    LogApproveJoinRequest(Box<crate::generated::chat_bsky::convo::LogApproveJoinRequest<S>>),
+    #[serde(rename = "chat.bsky.convo.defs#logRejectJoinRequest")]
+    LogRejectJoinRequest(Box<crate::generated::chat_bsky::convo::LogRejectJoinRequest<S>>),
+    #[serde(rename = "chat.bsky.convo.defs#logOutgoingJoinRequest")]
+    LogOutgoingJoinRequest(Box<crate::generated::chat_bsky::convo::LogOutgoingJoinRequest<S>>),
+    #[serde(rename = "chat.bsky.convo.defs#logWithdrawIncomingJoinRequest")]
+    LogWithdrawIncomingJoinRequest(
+        Box<crate::generated::chat_bsky::convo::LogWithdrawIncomingJoinRequest<S>>,
+    ),
+    #[serde(rename = "chat.bsky.convo.defs#logWithdrawOutgoingJoinRequest")]
+    LogWithdrawOutgoingJoinRequest(
+        Box<crate::generated::chat_bsky::convo::LogWithdrawOutgoingJoinRequest<S>>,
+    ),
+    #[serde(rename = "chat.bsky.convo.defs#logReadJoinRequests")]
+    LogReadJoinRequests(Box<crate::generated::chat_bsky::convo::LogReadJoinRequests<S>>),
+}
+
+/** Response marker for the `chat.bsky.convo.getLog` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetLogOutput<S>` for this endpoint.*/
+pub struct GetLogResponse;
+impl jacquard_common::xrpc::XrpcResp for GetLogResponse {
+    const NSID: &'static str = "chat.bsky.convo.getLog";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = GetLogOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetLog<S> {
+    const NSID: &'static str = "chat.bsky.convo.getLog";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = GetLogResponse;
+}
+
+/** Endpoint marker for the `chat.bsky.convo.getLog` query.
+
+Path: `/xrpc/chat.bsky.convo.getLog`. The request payload type is `GetLog<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct GetLogRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for GetLogRequest {
+    const PATH: &'static str = "/xrpc/chat.bsky.convo.getLog";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = GetLog<S>;
+    type Response = GetLogResponse;
 }
 
 pub mod get_log_state {
@@ -34,164 +163,73 @@ pub mod get_log_state {
     pub mod members {}
 }
 
-/// Builder for constructing an instance of this type
-pub struct GetLogBuilder<'a, S: get_log_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<jacquard_common::CowStr<'a>>,),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct GetLogBuilder<
+    St: get_log_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<S>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> GetLog<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> GetLogBuilder<'a, get_log_state::Empty> {
+impl GetLog<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> GetLogBuilder<get_log_state::Empty, jacquard_common::DefaultStr> {
         GetLogBuilder::new()
     }
 }
 
-impl<'a> GetLogBuilder<'a, get_log_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> GetLog<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> GetLogBuilder<get_log_state::Empty, S> {
+        GetLogBuilder::builder()
+    }
+}
+
+impl GetLogBuilder<get_log_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetLogBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: get_log_state::State> GetLogBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> GetLogBuilder<get_log_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GetLogBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: get_log_state::State, S: jacquard_common::BosStr> GetLogBuilder<St, S> {
     /// Set the `cursor` field (optional)
-    pub fn cursor(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+    pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.0 = value.into();
         self
     }
     /// Set the `cursor` field to an Option value (optional)
-    pub fn maybe_cursor(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.0 = value;
+    pub fn maybe_cursor(mut self, value: Option<S>) -> Self {
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S> GetLogBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GetLogBuilder<St, S>
 where
-    S: get_log_state::State,
+    St: get_log_state::State,
 {
-    /// Build the final struct
-    pub fn build(self) -> GetLog<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> GetLog<S> {
         GetLog {
-            cursor: self.__unsafe_private_named.0,
+            cursor: self._fields.0,
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GetLogOutput<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(borrow)]
-    pub logs: Vec<GetLogOutputLogsItem<'a>>,
-}
-
-#[jacquard_derive::open_union]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(tag = "$type")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum GetLogOutputLogsItem<'a> {
-    #[serde(rename = "chat.bsky.convo.defs#logBeginConvo")]
-    LogBeginConvo(Box<crate::generated::chat_bsky::convo::LogBeginConvo<'a>>),
-    #[serde(rename = "chat.bsky.convo.defs#logAcceptConvo")]
-    LogAcceptConvo(Box<crate::generated::chat_bsky::convo::LogAcceptConvo<'a>>),
-    #[serde(rename = "chat.bsky.convo.defs#logLeaveConvo")]
-    LogLeaveConvo(Box<crate::generated::chat_bsky::convo::LogLeaveConvo<'a>>),
-    #[serde(rename = "chat.bsky.convo.defs#logMuteConvo")]
-    LogMuteConvo(Box<crate::generated::chat_bsky::convo::LogMuteConvo<'a>>),
-    #[serde(rename = "chat.bsky.convo.defs#logUnmuteConvo")]
-    LogUnmuteConvo(Box<crate::generated::chat_bsky::convo::LogUnmuteConvo<'a>>),
-    #[serde(rename = "chat.bsky.convo.defs#logCreateMessage")]
-    LogCreateMessage(Box<crate::generated::chat_bsky::convo::LogCreateMessage<'a>>),
-    #[serde(rename = "chat.bsky.convo.defs#logDeleteMessage")]
-    LogDeleteMessage(Box<crate::generated::chat_bsky::convo::LogDeleteMessage<'a>>),
-    #[serde(rename = "chat.bsky.convo.defs#logReadMessage")]
-    LogReadMessage(Box<crate::generated::chat_bsky::convo::LogReadMessage<'a>>),
-    #[serde(rename = "chat.bsky.convo.defs#logAddReaction")]
-    LogAddReaction(Box<crate::generated::chat_bsky::convo::LogAddReaction<'a>>),
-    #[serde(rename = "chat.bsky.convo.defs#logRemoveReaction")]
-    LogRemoveReaction(Box<crate::generated::chat_bsky::convo::LogRemoveReaction<'a>>),
-    #[serde(rename = "chat.bsky.convo.defs#logReadConvo")]
-    LogReadConvo(Box<crate::generated::chat_bsky::convo::LogReadConvo<'a>>),
-    #[serde(rename = "chat.bsky.convo.defs#logAddMember")]
-    LogAddMember(Box<crate::generated::chat_bsky::convo::LogAddMember<'a>>),
-    #[serde(rename = "chat.bsky.convo.defs#logRemoveMember")]
-    LogRemoveMember(Box<crate::generated::chat_bsky::convo::LogRemoveMember<'a>>),
-    #[serde(rename = "chat.bsky.convo.defs#logMemberJoin")]
-    LogMemberJoin(Box<crate::generated::chat_bsky::convo::LogMemberJoin<'a>>),
-    #[serde(rename = "chat.bsky.convo.defs#logMemberLeave")]
-    LogMemberLeave(Box<crate::generated::chat_bsky::convo::LogMemberLeave<'a>>),
-    #[serde(rename = "chat.bsky.convo.defs#logLockConvo")]
-    LogLockConvo(Box<crate::generated::chat_bsky::convo::LogLockConvo<'a>>),
-    #[serde(rename = "chat.bsky.convo.defs#logUnlockConvo")]
-    LogUnlockConvo(Box<crate::generated::chat_bsky::convo::LogUnlockConvo<'a>>),
-    #[serde(rename = "chat.bsky.convo.defs#logLockConvoPermanently")]
-    LogLockConvoPermanently(Box<crate::generated::chat_bsky::convo::LogLockConvoPermanently<'a>>),
-    #[serde(rename = "chat.bsky.convo.defs#logEditGroup")]
-    LogEditGroup(Box<crate::generated::chat_bsky::convo::LogEditGroup<'a>>),
-    #[serde(rename = "chat.bsky.convo.defs#logCreateJoinLink")]
-    LogCreateJoinLink(Box<crate::generated::chat_bsky::convo::LogCreateJoinLink<'a>>),
-    #[serde(rename = "chat.bsky.convo.defs#logEditJoinLink")]
-    LogEditJoinLink(Box<crate::generated::chat_bsky::convo::LogEditJoinLink<'a>>),
-    #[serde(rename = "chat.bsky.convo.defs#logEnableJoinLink")]
-    LogEnableJoinLink(Box<crate::generated::chat_bsky::convo::LogEnableJoinLink<'a>>),
-    #[serde(rename = "chat.bsky.convo.defs#logDisableJoinLink")]
-    LogDisableJoinLink(Box<crate::generated::chat_bsky::convo::LogDisableJoinLink<'a>>),
-    #[serde(rename = "chat.bsky.convo.defs#logIncomingJoinRequest")]
-    LogIncomingJoinRequest(Box<crate::generated::chat_bsky::convo::LogIncomingJoinRequest<'a>>),
-    #[serde(rename = "chat.bsky.convo.defs#logApproveJoinRequest")]
-    LogApproveJoinRequest(Box<crate::generated::chat_bsky::convo::LogApproveJoinRequest<'a>>),
-    #[serde(rename = "chat.bsky.convo.defs#logRejectJoinRequest")]
-    LogRejectJoinRequest(Box<crate::generated::chat_bsky::convo::LogRejectJoinRequest<'a>>),
-    #[serde(rename = "chat.bsky.convo.defs#logOutgoingJoinRequest")]
-    LogOutgoingJoinRequest(Box<crate::generated::chat_bsky::convo::LogOutgoingJoinRequest<'a>>),
-    #[serde(rename = "chat.bsky.convo.defs#logWithdrawIncomingJoinRequest")]
-    LogWithdrawIncomingJoinRequest(
-        Box<crate::generated::chat_bsky::convo::LogWithdrawIncomingJoinRequest<'a>>,
-    ),
-    #[serde(rename = "chat.bsky.convo.defs#logWithdrawOutgoingJoinRequest")]
-    LogWithdrawOutgoingJoinRequest(
-        Box<crate::generated::chat_bsky::convo::LogWithdrawOutgoingJoinRequest<'a>>,
-    ),
-    #[serde(rename = "chat.bsky.convo.defs#logReadJoinRequests")]
-    LogReadJoinRequests(Box<crate::generated::chat_bsky::convo::LogReadJoinRequests<'a>>),
-}
-
-/// Response type for
-///chat.bsky.convo.getLog
-pub struct GetLogResponse;
-impl jacquard_common::xrpc::XrpcResp for GetLogResponse {
-    const NSID: &'static str = "chat.bsky.convo.getLog";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetLogOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for GetLog<'a> {
-    const NSID: &'static str = "chat.bsky.convo.getLog";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = GetLogResponse;
-}
-
-/// Endpoint type for
-///chat.bsky.convo.getLog
-pub struct GetLogRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for GetLogRequest {
-    const PATH: &'static str = "/xrpc/chat.bsky.convo.getLog";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetLog<'de>;
-    type Response = GetLogResponse;
 }

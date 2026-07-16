@@ -8,10 +8,62 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetReporterStats<'a> {
-    #[serde(borrow)]
-    pub dids: Vec<jacquard_common::types::string::Did<'a>>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetReporterStats<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub dids: Vec<jacquard_common::types::string::Did<S>>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetReporterStatsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub stats: Vec<crate::generated::tools_ozone::moderation::ReporterStats<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `tools.ozone.moderation.getReporterStats` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetReporterStatsOutput<S>` for this endpoint.*/
+pub struct GetReporterStatsResponse;
+impl jacquard_common::xrpc::XrpcResp for GetReporterStatsResponse {
+    const NSID: &'static str = "tools.ozone.moderation.getReporterStats";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = GetReporterStatsOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetReporterStats<S> {
+    const NSID: &'static str = "tools.ozone.moderation.getReporterStats";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = GetReporterStatsResponse;
+}
+
+/** Endpoint marker for the `tools.ozone.moderation.getReporterStats` query.
+
+Path: `/xrpc/tools.ozone.moderation.getReporterStats`. The request payload type is `GetReporterStats<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct GetReporterStatsRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for GetReporterStatsRequest {
+    const PATH: &'static str = "/xrpc/tools.ozone.moderation.getReporterStats";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = GetReporterStats<S>;
+    type Response = GetReporterStatsResponse;
 }
 
 pub mod get_reporter_stats_state {
@@ -33,9 +85,9 @@ pub mod get_reporter_stats_state {
         type Dids = Unset;
     }
     ///State transition - sets the `dids` field to Set
-    pub struct SetDids<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDids<S> {}
-    impl<S: State> State for SetDids<S> {
+    pub struct SetDids<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetDids<St> {}
+    impl<St: State> State for SetDids<St> {
         type Dids = Set<members::dids>;
     }
     /// Marker types for field names
@@ -46,95 +98,81 @@ pub mod get_reporter_stats_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct GetReporterStatsBuilder<'a, S: get_reporter_stats_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<Vec<jacquard_common::types::string::Did<'a>>>,),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct GetReporterStatsBuilder<
+    St: get_reporter_stats_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<Vec<jacquard_common::types::string::Did<S>>>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> GetReporterStats<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> GetReporterStatsBuilder<'a, get_reporter_stats_state::Empty> {
+impl GetReporterStats<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> GetReporterStatsBuilder<get_reporter_stats_state::Empty, jacquard_common::DefaultStr> {
         GetReporterStatsBuilder::new()
     }
 }
 
-impl<'a> GetReporterStatsBuilder<'a, get_reporter_stats_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> GetReporterStats<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> GetReporterStatsBuilder<get_reporter_stats_state::Empty, S> {
+        GetReporterStatsBuilder::builder()
+    }
+}
+
+impl GetReporterStatsBuilder<get_reporter_stats_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetReporterStatsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GetReporterStatsBuilder<'a, S>
+impl<S: jacquard_common::BosStr> GetReporterStatsBuilder<get_reporter_stats_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GetReporterStatsBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> GetReporterStatsBuilder<St, S>
 where
-    S: get_reporter_stats_state::State,
-    S::Dids: get_reporter_stats_state::IsUnset,
+    St: get_reporter_stats_state::State,
+    St::Dids: get_reporter_stats_state::IsUnset,
 {
     /// Set the `dids` field (required)
     pub fn dids(
         mut self,
-        value: impl Into<Vec<jacquard_common::types::string::Did<'a>>>,
-    ) -> GetReporterStatsBuilder<'a, get_reporter_stats_state::SetDids<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<Vec<jacquard_common::types::string::Did<S>>>,
+    ) -> GetReporterStatsBuilder<get_reporter_stats_state::SetDids<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         GetReporterStatsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GetReporterStatsBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GetReporterStatsBuilder<St, S>
 where
-    S: get_reporter_stats_state::State,
-    S::Dids: get_reporter_stats_state::IsSet,
+    St: get_reporter_stats_state::State,
+    St::Dids: get_reporter_stats_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> GetReporterStats<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> GetReporterStats<S> {
         GetReporterStats {
-            dids: self.__unsafe_private_named.0.unwrap(),
+            dids: self._fields.0.unwrap(),
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GetReporterStatsOutput<'a> {
-    #[serde(borrow)]
-    pub stats: Vec<crate::generated::tools_ozone::moderation::ReporterStats<'a>>,
-}
-
-/// Response type for
-///tools.ozone.moderation.getReporterStats
-pub struct GetReporterStatsResponse;
-impl jacquard_common::xrpc::XrpcResp for GetReporterStatsResponse {
-    const NSID: &'static str = "tools.ozone.moderation.getReporterStats";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetReporterStatsOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for GetReporterStats<'a> {
-    const NSID: &'static str = "tools.ozone.moderation.getReporterStats";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = GetReporterStatsResponse;
-}
-
-/// Endpoint type for
-///tools.ozone.moderation.getReporterStats
-pub struct GetReporterStatsRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for GetReporterStatsRequest {
-    const PATH: &'static str = "/xrpc/tools.ozone.moderation.getReporterStats";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetReporterStats<'de>;
-    type Response = GetReporterStatsResponse;
 }

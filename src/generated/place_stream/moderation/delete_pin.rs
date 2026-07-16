@@ -5,161 +5,31 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct DeletePin<'a> {
-    /// The AT-URI of the pinned record to delete.
-    #[serde(borrow)]
-    pub pin_uri: jacquard_common::types::string::AtUri<'a>,
-    /// The DID of the streamer.
-    #[serde(borrow)]
-    pub streamer: jacquard_common::types::string::Did<'a>,
-}
-
-pub mod delete_pin_state {
-
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
-    #[allow(unused)]
-    use core::marker::PhantomData;
-    mod sealed {
-        pub trait Sealed {}
-    }
-    /// State trait tracking which required fields have been set
-    pub trait State: sealed::Sealed {
-        type Streamer;
-        type PinUri;
-    }
-    /// Empty state - all required fields are unset
-    pub struct Empty(());
-    impl sealed::Sealed for Empty {}
-    impl State for Empty {
-        type Streamer = Unset;
-        type PinUri = Unset;
-    }
-    ///State transition - sets the `streamer` field to Set
-    pub struct SetStreamer<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetStreamer<S> {}
-    impl<S: State> State for SetStreamer<S> {
-        type Streamer = Set<members::streamer>;
-        type PinUri = S::PinUri;
-    }
-    ///State transition - sets the `pin_uri` field to Set
-    pub struct SetPinUri<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetPinUri<S> {}
-    impl<S: State> State for SetPinUri<S> {
-        type Streamer = S::Streamer;
-        type PinUri = Set<members::pin_uri>;
-    }
-    /// Marker types for field names
-    #[allow(non_camel_case_types)]
-    pub mod members {
-        ///Marker type for the `streamer` field
-        pub struct streamer(());
-        ///Marker type for the `pin_uri` field
-        pub struct pin_uri(());
-    }
-}
-
-/// Builder for constructing an instance of this type
-pub struct DeletePinBuilder<'a, S: delete_pin_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-    ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
-}
-
-impl<'a> DeletePin<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> DeletePinBuilder<'a, delete_pin_state::Empty> {
-        DeletePinBuilder::new()
-    }
-}
-
-impl<'a> DeletePinBuilder<'a, delete_pin_state::Empty> {
-    /// Create a new builder with all fields unset
-    pub fn new() -> Self {
-        DeletePinBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> DeletePinBuilder<'a, S>
-where
-    S: delete_pin_state::State,
-    S::PinUri: delete_pin_state::IsUnset,
-{
-    /// Set the `pinUri` field (required)
-    pub fn pin_uri(
-        mut self,
-        value: impl Into<jacquard_common::types::string::AtUri<'a>>,
-    ) -> DeletePinBuilder<'a, delete_pin_state::SetPinUri<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
-        DeletePinBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> DeletePinBuilder<'a, S>
-where
-    S: delete_pin_state::State,
-    S::Streamer: delete_pin_state::IsUnset,
-{
-    /// Set the `streamer` field (required)
-    pub fn streamer(
-        mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> DeletePinBuilder<'a, delete_pin_state::SetStreamer<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
-        DeletePinBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> DeletePinBuilder<'a, S>
-where
-    S: delete_pin_state::State,
-    S::Streamer: delete_pin_state::IsSet,
-    S::PinUri: delete_pin_state::IsSet,
-{
-    /// Build the final struct
-    pub fn build(self) -> DeletePin<'a> {
-        DeletePin {
-            pin_uri: self.__unsafe_private_named.0.unwrap(),
-            streamer: self.__unsafe_private_named.1.unwrap(),
-            extra_data: Default::default(),
-        }
-    }
-    /// Build the final struct with custom extra_data
-    pub fn build_with_data(
-        self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct DeletePin<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///The AT-URI of the pinned record to delete.
+    pub pin_uri: jacquard_common::types::string::AtUri<S>,
+    ///The DID of the streamer.
+    pub streamer: jacquard_common::types::string::Did<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> DeletePin<'a> {
-        DeletePin {
-            pin_uri: self.__unsafe_private_named.0.unwrap(),
-            streamer: self.__unsafe_private_named.1.unwrap(),
-            extra_data: Some(extra_data),
-        }
-    }
+    >,
 }
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -170,9 +40,24 @@ where
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct DeletePinOutput<'a> {}
-#[jacquard_derive::open_union]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct DeletePinOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -182,24 +67,28 @@ pub struct DeletePinOutput<'a> {}
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum DeletePinError<'a> {
+pub enum DeletePinError {
     /// The request lacks valid authentication credentials.
     #[serde(rename = "Unauthorized")]
-    Unauthorized(std::option::Option<jacquard_common::CowStr<'a>>),
+    Unauthorized(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// The caller does not have permission to unpin messages for this streamer.
     #[serde(rename = "Forbidden")]
-    Forbidden(std::option::Option<jacquard_common::CowStr<'a>>),
+    Forbidden(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// The streamer's OAuth session could not be found or is invalid.
     #[serde(rename = "SessionNotFound")]
-    SessionNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
+    SessionNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
 }
 
-impl std::fmt::Display for DeletePinError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for DeletePinError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             Self::Unauthorized(msg) => {
                 write!(f, "Unauthorized")?;
@@ -222,35 +111,204 @@ impl std::fmt::Display for DeletePinError<'_> {
                 }
                 Ok(())
             }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
         }
     }
 }
 
-/// Response type for
-///place.stream.moderation.deletePin
+/** Response marker for the `place.stream.moderation.deletePin` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `DeletePinOutput<S>` for this endpoint.*/
 pub struct DeletePinResponse;
 impl jacquard_common::xrpc::XrpcResp for DeletePinResponse {
     const NSID: &'static str = "place.stream.moderation.deletePin";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = DeletePinOutput<'de>;
-    type Err<'de> = DeletePinError<'de>;
+    type Output<S: jacquard_common::BosStr> = DeletePinOutput<S>;
+    type Err = DeletePinError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for DeletePin<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for DeletePin<S> {
     const NSID: &'static str = "place.stream.moderation.deletePin";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = DeletePinResponse;
 }
 
-/// Endpoint type for
-///place.stream.moderation.deletePin
+/** Endpoint marker for the `place.stream.moderation.deletePin` procedure.
+
+Path: `/xrpc/place.stream.moderation.deletePin`. The request payload type is `DeletePin<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct DeletePinRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for DeletePinRequest {
     const PATH: &'static str = "/xrpc/place.stream.moderation.deletePin";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = DeletePin<'de>;
+    type Request<S: jacquard_common::BosStr> = DeletePin<S>;
     type Response = DeletePinResponse;
+}
+
+pub mod delete_pin_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type PinUri;
+        type Streamer;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type PinUri = Unset;
+        type Streamer = Unset;
+    }
+    ///State transition - sets the `pin_uri` field to Set
+    pub struct SetPinUri<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetPinUri<St> {}
+    impl<St: State> State for SetPinUri<St> {
+        type PinUri = Set<members::pin_uri>;
+        type Streamer = St::Streamer;
+    }
+    ///State transition - sets the `streamer` field to Set
+    pub struct SetStreamer<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetStreamer<St> {}
+    impl<St: State> State for SetStreamer<St> {
+        type PinUri = St::PinUri;
+        type Streamer = Set<members::streamer>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `pin_uri` field
+        pub struct pin_uri(());
+        ///Marker type for the `streamer` field
+        pub struct streamer(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct DeletePinBuilder<
+    St: delete_pin_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::AtUri<S>>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+    ),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl DeletePin<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> DeletePinBuilder<delete_pin_state::Empty, jacquard_common::DefaultStr> {
+        DeletePinBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> DeletePin<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> DeletePinBuilder<delete_pin_state::Empty, S> {
+        DeletePinBuilder::builder()
+    }
+}
+
+impl DeletePinBuilder<delete_pin_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        DeletePinBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> DeletePinBuilder<delete_pin_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        DeletePinBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeletePinBuilder<St, S>
+where
+    St: delete_pin_state::State,
+    St::PinUri: delete_pin_state::IsUnset,
+{
+    /// Set the `pinUri` field (required)
+    pub fn pin_uri(
+        mut self,
+        value: impl Into<jacquard_common::types::string::AtUri<S>>,
+    ) -> DeletePinBuilder<delete_pin_state::SetPinUri<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        DeletePinBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeletePinBuilder<St, S>
+where
+    St: delete_pin_state::State,
+    St::Streamer: delete_pin_state::IsUnset,
+{
+    /// Set the `streamer` field (required)
+    pub fn streamer(
+        mut self,
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> DeletePinBuilder<delete_pin_state::SetStreamer<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
+        DeletePinBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeletePinBuilder<St, S>
+where
+    St: delete_pin_state::State,
+    St::PinUri: delete_pin_state::IsSet,
+    St::Streamer: delete_pin_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> DeletePin<S> {
+        DeletePin {
+            pin_uri: self._fields.0.unwrap(),
+            streamer: self._fields.1.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> DeletePin<S> {
+        DeletePin {
+            pin_uri: self._fields.0.unwrap(),
+            streamer: self._fields.1.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
 }

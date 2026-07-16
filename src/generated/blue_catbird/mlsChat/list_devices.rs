@@ -5,35 +5,133 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct DeviceInfo<'a> {
-    /// Full device credential DID (did:plc:user#device-uuid)
-    #[serde(borrow)]
-    pub credential_did: jacquard_common::CowStr<'a>,
-    /// Server-generated device ID (UUID)
-    #[serde(borrow)]
-    pub device_id: jacquard_common::CowStr<'a>,
-    /// Human-readable device name (e.g., 'Josh's iPhone')
-    #[serde(borrow)]
-    pub device_name: jacquard_common::CowStr<'a>,
-    /// Persistent device UUID (if provided during registration)
-    #[serde(rename = "deviceUUID")]
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub device_uuid: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// Number of available (unconsumed) key packages for this device
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct DeviceInfo<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Full device credential DID (did:plc:user#device-uuid)
+    pub credential_did: S,
+    ///Server-generated device ID (UUID)
+    pub device_id: S,
+    ///Human-readable device name (e.g., 'Josh's iPhone')
+    pub device_name: S,
+    ///Persistent device UUID (if provided during registration)
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub device_uuid: core::option::Option<S>,
+    ///Number of available (unconsumed) key packages for this device
     pub key_package_count: i64,
-    /// Timestamp of last device activity
+    ///Timestamp of last device activity
     pub last_seen_at: jacquard_common::types::string::Datetime,
-    /// Whether this device has a push token registered
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub push_token_registered: std::option::Option<bool>,
-    /// Timestamp when device was first registered
+    ///Whether this device has a push token registered
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub push_token_registered: core::option::Option<bool>,
+    ///Timestamp when device was first registered
     pub registered_at: jacquard_common::types::string::Datetime,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ListDevices<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub device_id: core::option::Option<S>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ListDevicesOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///List of user's registered devices, ordered by last seen (most recent first)
+    pub devices: Vec<crate::generated::blue_catbird::mlsChat::list_devices::DeviceInfo<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for DeviceInfo<S> {
+    fn nsid() -> &'static str {
+        "blue.catbird.mlsChat.listDevices"
+    }
+    fn def_name() -> &'static str {
+        "deviceInfo"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_blue_catbird_mlsChat_listDevices()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.key_package_count;
+            if *value < 0i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "key_package_count",
+                    ),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
+        Ok(())
+    }
+}
+
+/** Response marker for the `blue.catbird.mlsChat.listDevices` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `ListDevicesOutput<S>` for this endpoint.*/
+pub struct ListDevicesResponse;
+impl jacquard_common::xrpc::XrpcResp for ListDevicesResponse {
+    const NSID: &'static str = "blue.catbird.mlsChat.listDevices";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = ListDevicesOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for ListDevices<S> {
+    const NSID: &'static str = "blue.catbird.mlsChat.listDevices";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = ListDevicesResponse;
+}
+
+/** Endpoint marker for the `blue.catbird.mlsChat.listDevices` query.
+
+Path: `/xrpc/blue.catbird.mlsChat.listDevices`. The request payload type is `ListDevices<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct ListDevicesRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for ListDevicesRequest {
+    const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.listDevices";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = ListDevices<S>;
+    type Response = ListDevicesResponse;
 }
 
 pub mod device_info_state {
@@ -46,357 +144,374 @@ pub mod device_info_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
+        type CredentialDid;
         type DeviceId;
         type DeviceName;
-        type CredentialDid;
+        type KeyPackageCount;
         type LastSeenAt;
         type RegisteredAt;
-        type KeyPackageCount;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
+        type CredentialDid = Unset;
         type DeviceId = Unset;
         type DeviceName = Unset;
-        type CredentialDid = Unset;
+        type KeyPackageCount = Unset;
         type LastSeenAt = Unset;
         type RegisteredAt = Unset;
-        type KeyPackageCount = Unset;
-    }
-    ///State transition - sets the `device_id` field to Set
-    pub struct SetDeviceId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDeviceId<S> {}
-    impl<S: State> State for SetDeviceId<S> {
-        type DeviceId = Set<members::device_id>;
-        type DeviceName = S::DeviceName;
-        type CredentialDid = S::CredentialDid;
-        type LastSeenAt = S::LastSeenAt;
-        type RegisteredAt = S::RegisteredAt;
-        type KeyPackageCount = S::KeyPackageCount;
-    }
-    ///State transition - sets the `device_name` field to Set
-    pub struct SetDeviceName<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDeviceName<S> {}
-    impl<S: State> State for SetDeviceName<S> {
-        type DeviceId = S::DeviceId;
-        type DeviceName = Set<members::device_name>;
-        type CredentialDid = S::CredentialDid;
-        type LastSeenAt = S::LastSeenAt;
-        type RegisteredAt = S::RegisteredAt;
-        type KeyPackageCount = S::KeyPackageCount;
     }
     ///State transition - sets the `credential_did` field to Set
-    pub struct SetCredentialDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCredentialDid<S> {}
-    impl<S: State> State for SetCredentialDid<S> {
-        type DeviceId = S::DeviceId;
-        type DeviceName = S::DeviceName;
+    pub struct SetCredentialDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCredentialDid<St> {}
+    impl<St: State> State for SetCredentialDid<St> {
         type CredentialDid = Set<members::credential_did>;
-        type LastSeenAt = S::LastSeenAt;
-        type RegisteredAt = S::RegisteredAt;
-        type KeyPackageCount = S::KeyPackageCount;
+        type DeviceId = St::DeviceId;
+        type DeviceName = St::DeviceName;
+        type KeyPackageCount = St::KeyPackageCount;
+        type LastSeenAt = St::LastSeenAt;
+        type RegisteredAt = St::RegisteredAt;
     }
-    ///State transition - sets the `last_seen_at` field to Set
-    pub struct SetLastSeenAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetLastSeenAt<S> {}
-    impl<S: State> State for SetLastSeenAt<S> {
-        type DeviceId = S::DeviceId;
-        type DeviceName = S::DeviceName;
-        type CredentialDid = S::CredentialDid;
-        type LastSeenAt = Set<members::last_seen_at>;
-        type RegisteredAt = S::RegisteredAt;
-        type KeyPackageCount = S::KeyPackageCount;
+    ///State transition - sets the `device_id` field to Set
+    pub struct SetDeviceId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetDeviceId<St> {}
+    impl<St: State> State for SetDeviceId<St> {
+        type CredentialDid = St::CredentialDid;
+        type DeviceId = Set<members::device_id>;
+        type DeviceName = St::DeviceName;
+        type KeyPackageCount = St::KeyPackageCount;
+        type LastSeenAt = St::LastSeenAt;
+        type RegisteredAt = St::RegisteredAt;
     }
-    ///State transition - sets the `registered_at` field to Set
-    pub struct SetRegisteredAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRegisteredAt<S> {}
-    impl<S: State> State for SetRegisteredAt<S> {
-        type DeviceId = S::DeviceId;
-        type DeviceName = S::DeviceName;
-        type CredentialDid = S::CredentialDid;
-        type LastSeenAt = S::LastSeenAt;
-        type RegisteredAt = Set<members::registered_at>;
-        type KeyPackageCount = S::KeyPackageCount;
+    ///State transition - sets the `device_name` field to Set
+    pub struct SetDeviceName<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetDeviceName<St> {}
+    impl<St: State> State for SetDeviceName<St> {
+        type CredentialDid = St::CredentialDid;
+        type DeviceId = St::DeviceId;
+        type DeviceName = Set<members::device_name>;
+        type KeyPackageCount = St::KeyPackageCount;
+        type LastSeenAt = St::LastSeenAt;
+        type RegisteredAt = St::RegisteredAt;
     }
     ///State transition - sets the `key_package_count` field to Set
-    pub struct SetKeyPackageCount<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetKeyPackageCount<S> {}
-    impl<S: State> State for SetKeyPackageCount<S> {
-        type DeviceId = S::DeviceId;
-        type DeviceName = S::DeviceName;
-        type CredentialDid = S::CredentialDid;
-        type LastSeenAt = S::LastSeenAt;
-        type RegisteredAt = S::RegisteredAt;
+    pub struct SetKeyPackageCount<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetKeyPackageCount<St> {}
+    impl<St: State> State for SetKeyPackageCount<St> {
+        type CredentialDid = St::CredentialDid;
+        type DeviceId = St::DeviceId;
+        type DeviceName = St::DeviceName;
         type KeyPackageCount = Set<members::key_package_count>;
+        type LastSeenAt = St::LastSeenAt;
+        type RegisteredAt = St::RegisteredAt;
+    }
+    ///State transition - sets the `last_seen_at` field to Set
+    pub struct SetLastSeenAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetLastSeenAt<St> {}
+    impl<St: State> State for SetLastSeenAt<St> {
+        type CredentialDid = St::CredentialDid;
+        type DeviceId = St::DeviceId;
+        type DeviceName = St::DeviceName;
+        type KeyPackageCount = St::KeyPackageCount;
+        type LastSeenAt = Set<members::last_seen_at>;
+        type RegisteredAt = St::RegisteredAt;
+    }
+    ///State transition - sets the `registered_at` field to Set
+    pub struct SetRegisteredAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRegisteredAt<St> {}
+    impl<St: State> State for SetRegisteredAt<St> {
+        type CredentialDid = St::CredentialDid;
+        type DeviceId = St::DeviceId;
+        type DeviceName = St::DeviceName;
+        type KeyPackageCount = St::KeyPackageCount;
+        type LastSeenAt = St::LastSeenAt;
+        type RegisteredAt = Set<members::registered_at>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
+        ///Marker type for the `credential_did` field
+        pub struct credential_did(());
         ///Marker type for the `device_id` field
         pub struct device_id(());
         ///Marker type for the `device_name` field
         pub struct device_name(());
-        ///Marker type for the `credential_did` field
-        pub struct credential_did(());
+        ///Marker type for the `key_package_count` field
+        pub struct key_package_count(());
         ///Marker type for the `last_seen_at` field
         pub struct last_seen_at(());
         ///Marker type for the `registered_at` field
         pub struct registered_at(());
-        ///Marker type for the `key_package_count` field
-        pub struct key_package_count(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct DeviceInfoBuilder<'a, S: device_info_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<bool>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
+/// Builder for constructing an instance of this type.
+pub struct DeviceInfoBuilder<
+    St: device_info_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<S>,
+        core::option::Option<S>,
+        core::option::Option<S>,
+        core::option::Option<i64>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<bool>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> DeviceInfo<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> DeviceInfoBuilder<'a, device_info_state::Empty> {
+impl DeviceInfo<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> DeviceInfoBuilder<device_info_state::Empty, jacquard_common::DefaultStr> {
         DeviceInfoBuilder::new()
     }
 }
 
-impl<'a> DeviceInfoBuilder<'a, device_info_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> DeviceInfo<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> DeviceInfoBuilder<device_info_state::Empty, S> {
+        DeviceInfoBuilder::builder()
+    }
+}
+
+impl DeviceInfoBuilder<device_info_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         DeviceInfoBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> DeviceInfoBuilder<'a, S>
+impl<S: jacquard_common::BosStr> DeviceInfoBuilder<device_info_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        DeviceInfoBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeviceInfoBuilder<St, S>
 where
-    S: device_info_state::State,
-    S::CredentialDid: device_info_state::IsUnset,
+    St: device_info_state::State,
+    St::CredentialDid: device_info_state::IsUnset,
 {
     /// Set the `credentialDid` field (required)
     pub fn credential_did(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> DeviceInfoBuilder<'a, device_info_state::SetCredentialDid<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> DeviceInfoBuilder<device_info_state::SetCredentialDid<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         DeviceInfoBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> DeviceInfoBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> DeviceInfoBuilder<St, S>
 where
-    S: device_info_state::State,
-    S::DeviceId: device_info_state::IsUnset,
+    St: device_info_state::State,
+    St::DeviceId: device_info_state::IsUnset,
 {
     /// Set the `deviceId` field (required)
     pub fn device_id(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> DeviceInfoBuilder<'a, device_info_state::SetDeviceId<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> DeviceInfoBuilder<device_info_state::SetDeviceId<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         DeviceInfoBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> DeviceInfoBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> DeviceInfoBuilder<St, S>
 where
-    S: device_info_state::State,
-    S::DeviceName: device_info_state::IsUnset,
+    St: device_info_state::State,
+    St::DeviceName: device_info_state::IsUnset,
 {
     /// Set the `deviceName` field (required)
     pub fn device_name(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> DeviceInfoBuilder<'a, device_info_state::SetDeviceName<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> DeviceInfoBuilder<device_info_state::SetDeviceName<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         DeviceInfoBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: device_info_state::State> DeviceInfoBuilder<'a, S> {
+impl<St: device_info_state::State, S: jacquard_common::BosStr> DeviceInfoBuilder<St, S> {
     /// Set the `deviceUUID` field (optional)
-    pub fn device_uuid(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.3 = value.into();
+    pub fn device_uuid(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.3 = value.into();
         self
     }
     /// Set the `deviceUUID` field to an Option value (optional)
-    pub fn maybe_device_uuid(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.3 = value;
+    pub fn maybe_device_uuid(mut self, value: Option<S>) -> Self {
+        self._fields.3 = value;
         self
     }
 }
 
-impl<'a, S> DeviceInfoBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> DeviceInfoBuilder<St, S>
 where
-    S: device_info_state::State,
-    S::KeyPackageCount: device_info_state::IsUnset,
+    St: device_info_state::State,
+    St::KeyPackageCount: device_info_state::IsUnset,
 {
     /// Set the `keyPackageCount` field (required)
     pub fn key_package_count(
         mut self,
         value: impl Into<i64>,
-    ) -> DeviceInfoBuilder<'a, device_info_state::SetKeyPackageCount<S>> {
-        self.__unsafe_private_named.4 = ::core::option::Option::Some(value.into());
+    ) -> DeviceInfoBuilder<device_info_state::SetKeyPackageCount<St>, S> {
+        self._fields.4 = ::core::option::Option::Some(value.into());
         DeviceInfoBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> DeviceInfoBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> DeviceInfoBuilder<St, S>
 where
-    S: device_info_state::State,
-    S::LastSeenAt: device_info_state::IsUnset,
+    St: device_info_state::State,
+    St::LastSeenAt: device_info_state::IsUnset,
 {
     /// Set the `lastSeenAt` field (required)
     pub fn last_seen_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> DeviceInfoBuilder<'a, device_info_state::SetLastSeenAt<S>> {
-        self.__unsafe_private_named.5 = ::core::option::Option::Some(value.into());
+    ) -> DeviceInfoBuilder<device_info_state::SetLastSeenAt<St>, S> {
+        self._fields.5 = ::core::option::Option::Some(value.into());
         DeviceInfoBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: device_info_state::State> DeviceInfoBuilder<'a, S> {
+impl<St: device_info_state::State, S: jacquard_common::BosStr> DeviceInfoBuilder<St, S> {
     /// Set the `pushTokenRegistered` field (optional)
     pub fn push_token_registered(mut self, value: impl Into<Option<bool>>) -> Self {
-        self.__unsafe_private_named.6 = value.into();
+        self._fields.6 = value.into();
         self
     }
     /// Set the `pushTokenRegistered` field to an Option value (optional)
     pub fn maybe_push_token_registered(mut self, value: Option<bool>) -> Self {
-        self.__unsafe_private_named.6 = value;
+        self._fields.6 = value;
         self
     }
 }
 
-impl<'a, S> DeviceInfoBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> DeviceInfoBuilder<St, S>
 where
-    S: device_info_state::State,
-    S::RegisteredAt: device_info_state::IsUnset,
+    St: device_info_state::State,
+    St::RegisteredAt: device_info_state::IsUnset,
 {
     /// Set the `registeredAt` field (required)
     pub fn registered_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> DeviceInfoBuilder<'a, device_info_state::SetRegisteredAt<S>> {
-        self.__unsafe_private_named.7 = ::core::option::Option::Some(value.into());
+    ) -> DeviceInfoBuilder<device_info_state::SetRegisteredAt<St>, S> {
+        self._fields.7 = ::core::option::Option::Some(value.into());
         DeviceInfoBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> DeviceInfoBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> DeviceInfoBuilder<St, S>
 where
-    S: device_info_state::State,
-    S::DeviceId: device_info_state::IsSet,
-    S::DeviceName: device_info_state::IsSet,
-    S::CredentialDid: device_info_state::IsSet,
-    S::LastSeenAt: device_info_state::IsSet,
-    S::RegisteredAt: device_info_state::IsSet,
-    S::KeyPackageCount: device_info_state::IsSet,
+    St: device_info_state::State,
+    St::CredentialDid: device_info_state::IsSet,
+    St::DeviceId: device_info_state::IsSet,
+    St::DeviceName: device_info_state::IsSet,
+    St::KeyPackageCount: device_info_state::IsSet,
+    St::LastSeenAt: device_info_state::IsSet,
+    St::RegisteredAt: device_info_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> DeviceInfo<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> DeviceInfo<S> {
         DeviceInfo {
-            credential_did: self.__unsafe_private_named.0.unwrap(),
-            device_id: self.__unsafe_private_named.1.unwrap(),
-            device_name: self.__unsafe_private_named.2.unwrap(),
-            device_uuid: self.__unsafe_private_named.3,
-            key_package_count: self.__unsafe_private_named.4.unwrap(),
-            last_seen_at: self.__unsafe_private_named.5.unwrap(),
-            push_token_registered: self.__unsafe_private_named.6,
-            registered_at: self.__unsafe_private_named.7.unwrap(),
+            credential_did: self._fields.0.unwrap(),
+            device_id: self._fields.1.unwrap(),
+            device_name: self._fields.2.unwrap(),
+            device_uuid: self._fields.3,
+            key_package_count: self._fields.4.unwrap(),
+            last_seen_at: self._fields.5.unwrap(),
+            push_token_registered: self._fields.6,
+            registered_at: self._fields.7.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> DeviceInfo<'a> {
+    ) -> DeviceInfo<S> {
         DeviceInfo {
-            credential_did: self.__unsafe_private_named.0.unwrap(),
-            device_id: self.__unsafe_private_named.1.unwrap(),
-            device_name: self.__unsafe_private_named.2.unwrap(),
-            device_uuid: self.__unsafe_private_named.3,
-            key_package_count: self.__unsafe_private_named.4.unwrap(),
-            last_seen_at: self.__unsafe_private_named.5.unwrap(),
-            push_token_registered: self.__unsafe_private_named.6,
-            registered_at: self.__unsafe_private_named.7.unwrap(),
+            credential_did: self._fields.0.unwrap(),
+            device_id: self._fields.1.unwrap(),
+            device_name: self._fields.2.unwrap(),
+            device_uuid: self._fields.3,
+            key_package_count: self._fields.4.unwrap(),
+            last_seen_at: self._fields.5.unwrap(),
+            push_token_registered: self._fields.6,
+            registered_at: self._fields.7.unwrap(),
             extra_data: Some(extra_data),
         }
     }
 }
 
-fn lexicon_doc_blue_catbird_mlsChat_listDevices() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static>
+fn lexicon_doc_blue_catbird_mlsChat_listDevices() -> jacquard_lexicon::lexicon::LexiconDoc<'static>
 {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("blue.catbird.mlsChat.listDevices"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("deviceInfo"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("deviceInfo"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: None,
                     required: Some(
                         vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("deviceId"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("deviceName"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("credentialDid"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("lastSeenAt"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("registeredAt"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("keyPackageCount")
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("deviceId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("deviceName"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("credentialDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("lastSeenAt"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("registeredAt"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("keyPackageCount")
                         ],
                     ),
-                    nullable: None,
                     properties: {
                         #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
+                        let mut map = ::alloc::collections::BTreeMap::new();
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "credentialDid",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -405,38 +520,24 @@ fn lexicon_doc_blue_catbird_mlsChat_listDevices() -> ::jacquard_lexicon::lexicon
                                         "Full device credential DID (did:plc:user#device-uuid)",
                                     ),
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("deviceId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "deviceId",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
                                         "Server-generated device ID (UUID)",
                                     ),
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "deviceName",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -445,19 +546,11 @@ fn lexicon_doc_blue_catbird_mlsChat_listDevices() -> ::jacquard_lexicon::lexicon
                                         "Human-readable device name (e.g., 'Josh's iPhone')",
                                     ),
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "deviceUUID",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -466,32 +559,20 @@ fn lexicon_doc_blue_catbird_mlsChat_listDevices() -> ::jacquard_lexicon::lexicon
                                         "Persistent device UUID (if provided during registration)",
                                     ),
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "keyPackageCount",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                description: None,
-                                default: None,
                                 minimum: Some(0i64),
-                                maximum: None,
-                                r#enum: None,
-                                r#const: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "lastSeenAt",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -503,28 +584,19 @@ fn lexicon_doc_blue_catbird_mlsChat_listDevices() -> ::jacquard_lexicon::lexicon
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "pushTokenRegistered",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
-                                description: None,
-                                default: None,
-                                r#const: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "registeredAt",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -536,33 +608,24 @@ fn lexicon_doc_blue_catbird_mlsChat_listDevices() -> ::jacquard_lexicon::lexicon
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map
                     },
+                    ..Default::default()
                 }),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
                 ::jacquard_lexicon::lexicon::LexUserType::XrpcQuery(::jacquard_lexicon::lexicon::LexXrpcQuery {
-                    description: None,
                     parameters: Some(
                         ::jacquard_lexicon::lexicon::LexXrpcQueryParameter::Params(::jacquard_lexicon::lexicon::LexXrpcParameters {
-                            description: None,
-                            required: None,
                             properties: {
                                 #[allow(unused_mut)]
-                                let mut map = ::std::collections::BTreeMap::new();
+                                let mut map = ::alloc::collections::BTreeMap::new();
                                 map.insert(
-                                    ::jacquard_common::smol_str::SmolStr::new_static(
+                                    ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                         "deviceId",
                                     ),
                                     ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -571,67 +634,21 @@ fn lexicon_doc_blue_catbird_mlsChat_listDevices() -> ::jacquard_lexicon::lexicon
                                                 "Optional: when provided with DELETE method, removes this device and its key packages",
                                             ),
                                         ),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     }),
                                 );
                                 map
                             },
+                            ..Default::default()
                         }),
                     ),
-                    output: None,
-                    errors: None,
+                    ..Default::default()
                 }),
             );
             map
         },
+        ..Default::default()
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for DeviceInfo<'a> {
-    fn nsid() -> &'static str {
-        "blue.catbird.mlsChat.listDevices"
-    }
-    fn def_name() -> &'static str {
-        "deviceInfo"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_blue_catbird_mlsChat_listDevices()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        {
-            let value = &self.key_package_count;
-            if *value < 0i64 {
-                return Err(::jacquard_lexicon::validation::ConstraintError::Minimum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
-                        "key_package_count",
-                    ),
-                    min: 0i64,
-                    actual: *value,
-                });
-            }
-        }
-        Ok(())
-    }
-}
-
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct ListDevices<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub device_id: std::option::Option<jacquard_common::CowStr<'a>>,
 }
 
 pub mod list_devices_state {
@@ -653,89 +670,73 @@ pub mod list_devices_state {
     pub mod members {}
 }
 
-/// Builder for constructing an instance of this type
-pub struct ListDevicesBuilder<'a, S: list_devices_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<jacquard_common::CowStr<'a>>,),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct ListDevicesBuilder<
+    St: list_devices_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<S>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> ListDevices<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> ListDevicesBuilder<'a, list_devices_state::Empty> {
+impl ListDevices<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> ListDevicesBuilder<list_devices_state::Empty, jacquard_common::DefaultStr> {
         ListDevicesBuilder::new()
     }
 }
 
-impl<'a> ListDevicesBuilder<'a, list_devices_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> ListDevices<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> ListDevicesBuilder<list_devices_state::Empty, S> {
+        ListDevicesBuilder::builder()
+    }
+}
+
+impl ListDevicesBuilder<list_devices_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ListDevicesBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: list_devices_state::State> ListDevicesBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> ListDevicesBuilder<list_devices_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        ListDevicesBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: list_devices_state::State, S: jacquard_common::BosStr> ListDevicesBuilder<St, S> {
     /// Set the `deviceId` field (optional)
-    pub fn device_id(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+    pub fn device_id(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.0 = value.into();
         self
     }
     /// Set the `deviceId` field to an Option value (optional)
-    pub fn maybe_device_id(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.0 = value;
+    pub fn maybe_device_id(mut self, value: Option<S>) -> Self {
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S> ListDevicesBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ListDevicesBuilder<St, S>
 where
-    S: list_devices_state::State,
+    St: list_devices_state::State,
 {
-    /// Build the final struct
-    pub fn build(self) -> ListDevices<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> ListDevices<S> {
         ListDevices {
-            device_id: self.__unsafe_private_named.0,
+            device_id: self._fields.0,
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct ListDevicesOutput<'a> {
-    /// List of user's registered devices, ordered by last seen (most recent first)
-    #[serde(borrow)]
-    pub devices: Vec<crate::generated::blue_catbird::mlsChat::list_devices::DeviceInfo<'a>>,
-}
-
-/// Response type for
-///blue.catbird.mlsChat.listDevices
-pub struct ListDevicesResponse;
-impl jacquard_common::xrpc::XrpcResp for ListDevicesResponse {
-    const NSID: &'static str = "blue.catbird.mlsChat.listDevices";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = ListDevicesOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for ListDevices<'a> {
-    const NSID: &'static str = "blue.catbird.mlsChat.listDevices";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = ListDevicesResponse;
-}
-
-/// Endpoint type for
-///blue.catbird.mlsChat.listDevices
-pub struct ListDevicesRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for ListDevicesRequest {
-    const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.listDevices";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = ListDevices<'de>;
-    type Response = ListDevicesResponse;
 }

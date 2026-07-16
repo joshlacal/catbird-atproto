@@ -8,170 +8,46 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct ListBlobs<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(borrow)]
-    pub did: jacquard_common::types::string::Did<'a>,
-    ///(default: 500, min: 1, max: 1000)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub limit: std::option::Option<i64>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub since: std::option::Option<jacquard_common::types::string::Tid>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ListBlobs<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    pub did: jacquard_common::types::string::Did<S>,
+    /// Defaults to `500`. Min: 1. Max: 1000.
+    #[serde(default = "_default_limit")]
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub limit: core::option::Option<i64>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub since: core::option::Option<jacquard_common::types::string::Tid>,
 }
 
-pub mod list_blobs_state {
-
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
-    #[allow(unused)]
-    use core::marker::PhantomData;
-    mod sealed {
-        pub trait Sealed {}
-    }
-    /// State trait tracking which required fields have been set
-    pub trait State: sealed::Sealed {
-        type Did;
-    }
-    /// Empty state - all required fields are unset
-    pub struct Empty(());
-    impl sealed::Sealed for Empty {}
-    impl State for Empty {
-        type Did = Unset;
-    }
-    ///State transition - sets the `did` field to Set
-    pub struct SetDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDid<S> {}
-    impl<S: State> State for SetDid<S> {
-        type Did = Set<members::did>;
-    }
-    /// Marker types for field names
-    #[allow(non_camel_case_types)]
-    pub mod members {
-        ///Marker type for the `did` field
-        pub struct did(());
-    }
-}
-
-/// Builder for constructing an instance of this type
-pub struct ListBlobsBuilder<'a, S: list_blobs_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<jacquard_common::types::string::Tid>,
-    ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
-}
-
-impl<'a> ListBlobs<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> ListBlobsBuilder<'a, list_blobs_state::Empty> {
-        ListBlobsBuilder::new()
-    }
-}
-
-impl<'a> ListBlobsBuilder<'a, list_blobs_state::Empty> {
-    /// Create a new builder with all fields unset
-    pub fn new() -> Self {
-        ListBlobsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S: list_blobs_state::State> ListBlobsBuilder<'a, S> {
-    /// Set the `cursor` field (optional)
-    pub fn cursor(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.0 = value.into();
-        self
-    }
-    /// Set the `cursor` field to an Option value (optional)
-    pub fn maybe_cursor(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.0 = value;
-        self
-    }
-}
-
-impl<'a, S> ListBlobsBuilder<'a, S>
-where
-    S: list_blobs_state::State,
-    S::Did: list_blobs_state::IsUnset,
-{
-    /// Set the `did` field (required)
-    pub fn did(
-        mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> ListBlobsBuilder<'a, list_blobs_state::SetDid<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
-        ListBlobsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S: list_blobs_state::State> ListBlobsBuilder<'a, S> {
-    /// Set the `limit` field (optional)
-    pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.2 = value.into();
-        self
-    }
-    /// Set the `limit` field to an Option value (optional)
-    pub fn maybe_limit(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.2 = value;
-        self
-    }
-}
-
-impl<'a, S: list_blobs_state::State> ListBlobsBuilder<'a, S> {
-    /// Set the `since` field (optional)
-    pub fn since(mut self, value: impl Into<Option<jacquard_common::types::string::Tid>>) -> Self {
-        self.__unsafe_private_named.3 = value.into();
-        self
-    }
-    /// Set the `since` field to an Option value (optional)
-    pub fn maybe_since(mut self, value: Option<jacquard_common::types::string::Tid>) -> Self {
-        self.__unsafe_private_named.3 = value;
-        self
-    }
-}
-
-impl<'a, S> ListBlobsBuilder<'a, S>
-where
-    S: list_blobs_state::State,
-    S::Did: list_blobs_state::IsSet,
-{
-    /// Build the final struct
-    pub fn build(self) -> ListBlobs<'a> {
-        ListBlobs {
-            cursor: self.__unsafe_private_named.0,
-            did: self.__unsafe_private_named.1.unwrap(),
-            limit: self.__unsafe_private_named.2,
-            since: self.__unsafe_private_named.3,
-        }
-    }
-}
-
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct ListBlobsOutput<'a> {
-    #[serde(borrow)]
-    pub cids: Vec<jacquard_common::types::string::Cid<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ListBlobsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub cids: Vec<jacquard_common::types::string::Cid<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::open_union]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -181,23 +57,27 @@ pub struct ListBlobsOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum ListBlobsError<'a> {
+pub enum ListBlobsError {
     #[serde(rename = "RepoNotFound")]
-    RepoNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
+    RepoNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "RepoTakendown")]
-    RepoTakendown(std::option::Option<jacquard_common::CowStr<'a>>),
+    RepoTakendown(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "RepoSuspended")]
-    RepoSuspended(std::option::Option<jacquard_common::CowStr<'a>>),
+    RepoSuspended(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "RepoDeactivated")]
-    RepoDeactivated(std::option::Option<jacquard_common::CowStr<'a>>),
+    RepoDeactivated(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
 }
 
-impl std::fmt::Display for ListBlobsError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for ListBlobsError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             Self::RepoNotFound(msg) => {
                 write!(f, "RepoNotFound")?;
@@ -227,33 +107,202 @@ impl std::fmt::Display for ListBlobsError<'_> {
                 }
                 Ok(())
             }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
         }
     }
 }
 
-/// Response type for
-///com.atproto.sync.listBlobs
+/** Response marker for the `com.atproto.sync.listBlobs` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `ListBlobsOutput<S>` for this endpoint.*/
 pub struct ListBlobsResponse;
 impl jacquard_common::xrpc::XrpcResp for ListBlobsResponse {
     const NSID: &'static str = "com.atproto.sync.listBlobs";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = ListBlobsOutput<'de>;
-    type Err<'de> = ListBlobsError<'de>;
+    type Output<S: jacquard_common::BosStr> = ListBlobsOutput<S>;
+    type Err = ListBlobsError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for ListBlobs<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for ListBlobs<S> {
     const NSID: &'static str = "com.atproto.sync.listBlobs";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = ListBlobsResponse;
 }
 
-/// Endpoint type for
-///com.atproto.sync.listBlobs
+/** Endpoint marker for the `com.atproto.sync.listBlobs` query.
+
+Path: `/xrpc/com.atproto.sync.listBlobs`. The request payload type is `ListBlobs<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct ListBlobsRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for ListBlobsRequest {
     const PATH: &'static str = "/xrpc/com.atproto.sync.listBlobs";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = ListBlobs<'de>;
+    type Request<S: jacquard_common::BosStr> = ListBlobs<S>;
     type Response = ListBlobsResponse;
+}
+
+fn _default_limit() -> core::option::Option<i64> {
+    Some(500i64)
+}
+
+pub mod list_blobs_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type Did;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type Did = Unset;
+    }
+    ///State transition - sets the `did` field to Set
+    pub struct SetDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetDid<St> {}
+    impl<St: State> State for SetDid<St> {
+        type Did = Set<members::did>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `did` field
+        pub struct did(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct ListBlobsBuilder<
+    St: list_blobs_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<i64>,
+        core::option::Option<jacquard_common::types::string::Tid>,
+    ),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl ListBlobs<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> ListBlobsBuilder<list_blobs_state::Empty, jacquard_common::DefaultStr> {
+        ListBlobsBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> ListBlobs<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> ListBlobsBuilder<list_blobs_state::Empty, S> {
+        ListBlobsBuilder::builder()
+    }
+}
+
+impl ListBlobsBuilder<list_blobs_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        ListBlobsBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> ListBlobsBuilder<list_blobs_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        ListBlobsBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: list_blobs_state::State, S: jacquard_common::BosStr> ListBlobsBuilder<St, S> {
+    /// Set the `cursor` field (optional)
+    pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.0 = value.into();
+        self
+    }
+    /// Set the `cursor` field to an Option value (optional)
+    pub fn maybe_cursor(mut self, value: Option<S>) -> Self {
+        self._fields.0 = value;
+        self
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ListBlobsBuilder<St, S>
+where
+    St: list_blobs_state::State,
+    St::Did: list_blobs_state::IsUnset,
+{
+    /// Set the `did` field (required)
+    pub fn did(
+        mut self,
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> ListBlobsBuilder<list_blobs_state::SetDid<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
+        ListBlobsBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: list_blobs_state::State, S: jacquard_common::BosStr> ListBlobsBuilder<St, S> {
+    /// Set the `limit` field (optional)
+    pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
+        self._fields.2 = value.into();
+        self
+    }
+    /// Set the `limit` field to an Option value (optional)
+    pub fn maybe_limit(mut self, value: Option<i64>) -> Self {
+        self._fields.2 = value;
+        self
+    }
+}
+
+impl<St: list_blobs_state::State, S: jacquard_common::BosStr> ListBlobsBuilder<St, S> {
+    /// Set the `since` field (optional)
+    pub fn since(mut self, value: impl Into<Option<jacquard_common::types::string::Tid>>) -> Self {
+        self._fields.3 = value.into();
+        self
+    }
+    /// Set the `since` field to an Option value (optional)
+    pub fn maybe_since(mut self, value: Option<jacquard_common::types::string::Tid>) -> Self {
+        self._fields.3 = value;
+        self
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ListBlobsBuilder<St, S>
+where
+    St: list_blobs_state::State,
+    St::Did: list_blobs_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> ListBlobs<S> {
+        ListBlobs {
+            cursor: self._fields.0,
+            did: self._fields.1.unwrap(),
+            limit: self._fields.2,
+            since: self._fields.3,
+        }
+    }
 }

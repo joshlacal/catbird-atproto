@@ -6,20 +6,102 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 /// Record created by a Streamplace broadcaster to indicate that they will be replicating a livestream. NYI
-#[jacquard_derive::lexicon]
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    rename = "place.stream.broadcast.syndication",
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct Syndication<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///DID of the Streamplace broadcaster that will be replicating the livestream
+    pub broadcaster: jacquard_common::types::string::Did<S>,
+    ///Client-declared timestamp when this syndication was created.
+    pub created_at: jacquard_common::types::string::Datetime,
+    ///DID of the streamer whose livestream is being replicated
+    pub streamer: jacquard_common::types::string::Did<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// Typed wrapper for GetRecord response with this collection's record type.
+
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
-pub struct Syndication<'a> {
-    /// DID of the Streamplace broadcaster that will be replicating the livestream
-    #[serde(borrow)]
-    pub broadcaster: jacquard_common::types::string::Did<'a>,
-    /// Client-declared timestamp when this syndication was created.
-    pub created_at: jacquard_common::types::string::Datetime,
-    /// DID of the streamer whose livestream is being replicated
-    #[serde(borrow)]
-    pub streamer: jacquard_common::types::string::Did<'a>,
+pub struct SyndicationGetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
+    pub uri: jacquard_common::types::string::AtUri<S>,
+    pub value: Syndication<S>,
+}
+
+impl<S: jacquard_common::BosStr> Syndication<S> {
+    pub fn uri(
+        uri: S,
+    ) -> Result<
+        jacquard_common::types::uri::RecordUri<S, SyndicationRecord>,
+        jacquard_common::types::uri::UriError,
+    > {
+        jacquard_common::types::uri::RecordUri::try_from_uri(
+            jacquard_common::types::string::AtUri::new(uri)?,
+        )
+    }
+}
+
+/// Marker type for deserializing records from this collection.
+
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+pub struct SyndicationRecord;
+impl jacquard_common::xrpc::XrpcResp for SyndicationRecord {
+    const NSID: &'static str = "place.stream.broadcast.syndication";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = SyndicationGetRecordOutput<S>;
+    type Err = jacquard_common::types::collection::RecordError;
+}
+
+impl<S: jacquard_common::BosStr> From<SyndicationGetRecordOutput<S>> for Syndication<S> {
+    fn from(output: SyndicationGetRecordOutput<S>) -> Self {
+        output.value
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection for Syndication<S> {
+    const NSID: &'static str = "place.stream.broadcast.syndication";
+    type Record = SyndicationRecord;
+}
+
+impl jacquard_common::types::collection::Collection for SyndicationRecord {
+    const NSID: &'static str = "place.stream.broadcast.syndication";
+    type Record = SyndicationRecord;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Syndication<S> {
+    fn nsid() -> &'static str {
+        "place.stream.broadcast.syndication"
+    }
+    fn def_name() -> &'static str {
+        "main"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_place_stream_broadcast_syndication()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
 }
 
 pub mod syndication_state {
@@ -33,255 +115,202 @@ pub mod syndication_state {
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
         type Broadcaster;
-        type Streamer;
         type CreatedAt;
+        type Streamer;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
         type Broadcaster = Unset;
-        type Streamer = Unset;
         type CreatedAt = Unset;
+        type Streamer = Unset;
     }
     ///State transition - sets the `broadcaster` field to Set
-    pub struct SetBroadcaster<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetBroadcaster<S> {}
-    impl<S: State> State for SetBroadcaster<S> {
+    pub struct SetBroadcaster<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetBroadcaster<St> {}
+    impl<St: State> State for SetBroadcaster<St> {
         type Broadcaster = Set<members::broadcaster>;
-        type Streamer = S::Streamer;
-        type CreatedAt = S::CreatedAt;
-    }
-    ///State transition - sets the `streamer` field to Set
-    pub struct SetStreamer<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetStreamer<S> {}
-    impl<S: State> State for SetStreamer<S> {
-        type Broadcaster = S::Broadcaster;
-        type Streamer = Set<members::streamer>;
-        type CreatedAt = S::CreatedAt;
+        type CreatedAt = St::CreatedAt;
+        type Streamer = St::Streamer;
     }
     ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type Broadcaster = S::Broadcaster;
-        type Streamer = S::Streamer;
+    pub struct SetCreatedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCreatedAt<St> {}
+    impl<St: State> State for SetCreatedAt<St> {
+        type Broadcaster = St::Broadcaster;
         type CreatedAt = Set<members::created_at>;
+        type Streamer = St::Streamer;
+    }
+    ///State transition - sets the `streamer` field to Set
+    pub struct SetStreamer<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetStreamer<St> {}
+    impl<St: State> State for SetStreamer<St> {
+        type Broadcaster = St::Broadcaster;
+        type CreatedAt = St::CreatedAt;
+        type Streamer = Set<members::streamer>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
         ///Marker type for the `broadcaster` field
         pub struct broadcaster(());
-        ///Marker type for the `streamer` field
-        pub struct streamer(());
         ///Marker type for the `created_at` field
         pub struct created_at(());
+        ///Marker type for the `streamer` field
+        pub struct streamer(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct SyndicationBuilder<'a, S: syndication_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct SyndicationBuilder<
+    St: syndication_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> Syndication<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> SyndicationBuilder<'a, syndication_state::Empty> {
+impl Syndication<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> SyndicationBuilder<syndication_state::Empty, jacquard_common::DefaultStr> {
         SyndicationBuilder::new()
     }
 }
 
-impl<'a> SyndicationBuilder<'a, syndication_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> Syndication<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> SyndicationBuilder<syndication_state::Empty, S> {
+        SyndicationBuilder::builder()
+    }
+}
+
+impl SyndicationBuilder<syndication_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         SyndicationBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> SyndicationBuilder<'a, S>
+impl<S: jacquard_common::BosStr> SyndicationBuilder<syndication_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        SyndicationBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> SyndicationBuilder<St, S>
 where
-    S: syndication_state::State,
-    S::Broadcaster: syndication_state::IsUnset,
+    St: syndication_state::State,
+    St::Broadcaster: syndication_state::IsUnset,
 {
     /// Set the `broadcaster` field (required)
     pub fn broadcaster(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> SyndicationBuilder<'a, syndication_state::SetBroadcaster<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> SyndicationBuilder<syndication_state::SetBroadcaster<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         SyndicationBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> SyndicationBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> SyndicationBuilder<St, S>
 where
-    S: syndication_state::State,
-    S::CreatedAt: syndication_state::IsUnset,
+    St: syndication_state::State,
+    St::CreatedAt: syndication_state::IsUnset,
 {
     /// Set the `createdAt` field (required)
     pub fn created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> SyndicationBuilder<'a, syndication_state::SetCreatedAt<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+    ) -> SyndicationBuilder<syndication_state::SetCreatedAt<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         SyndicationBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> SyndicationBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> SyndicationBuilder<St, S>
 where
-    S: syndication_state::State,
-    S::Streamer: syndication_state::IsUnset,
+    St: syndication_state::State,
+    St::Streamer: syndication_state::IsUnset,
 {
     /// Set the `streamer` field (required)
     pub fn streamer(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> SyndicationBuilder<'a, syndication_state::SetStreamer<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> SyndicationBuilder<syndication_state::SetStreamer<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         SyndicationBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> SyndicationBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> SyndicationBuilder<St, S>
 where
-    S: syndication_state::State,
-    S::Broadcaster: syndication_state::IsSet,
-    S::Streamer: syndication_state::IsSet,
-    S::CreatedAt: syndication_state::IsSet,
+    St: syndication_state::State,
+    St::Broadcaster: syndication_state::IsSet,
+    St::CreatedAt: syndication_state::IsSet,
+    St::Streamer: syndication_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> Syndication<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> Syndication<S> {
         Syndication {
-            broadcaster: self.__unsafe_private_named.0.unwrap(),
-            created_at: self.__unsafe_private_named.1.unwrap(),
-            streamer: self.__unsafe_private_named.2.unwrap(),
+            broadcaster: self._fields.0.unwrap(),
+            created_at: self._fields.1.unwrap(),
+            streamer: self._fields.2.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> Syndication<'a> {
+    ) -> Syndication<S> {
         Syndication {
-            broadcaster: self.__unsafe_private_named.0.unwrap(),
-            created_at: self.__unsafe_private_named.1.unwrap(),
-            streamer: self.__unsafe_private_named.2.unwrap(),
+            broadcaster: self._fields.0.unwrap(),
+            created_at: self._fields.1.unwrap(),
+            streamer: self._fields.2.unwrap(),
             extra_data: Some(extra_data),
         }
     }
 }
 
-impl<'a> Syndication<'a> {
-    pub fn uri(
-        uri: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> Result<
-        jacquard_common::types::uri::RecordUri<'a, SyndicationRecord>,
-        jacquard_common::types::uri::UriError,
-    > {
-        jacquard_common::types::uri::RecordUri::try_from_uri(
-            jacquard_common::types::string::AtUri::new_cow(uri.into())?,
-        )
-    }
-}
-
-/// Typed wrapper for GetRecord response with this collection's record type.
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct SyndicationGetRecordOutput<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cid: std::option::Option<jacquard_common::types::string::Cid<'a>>,
-    #[serde(borrow)]
-    pub uri: jacquard_common::types::string::AtUri<'a>,
-    #[serde(borrow)]
-    pub value: Syndication<'a>,
-}
-
-impl From<SyndicationGetRecordOutput<'_>> for Syndication<'_> {
-    fn from(output: SyndicationGetRecordOutput<'_>) -> Self {
-        use jacquard_common::IntoStatic;
-        output.value.into_static()
-    }
-}
-
-impl jacquard_common::types::collection::Collection for Syndication<'_> {
-    const NSID: &'static str = "place.stream.broadcast.syndication";
-    type Record = SyndicationRecord;
-}
-
-/// Marker type for deserializing records from this collection.
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
-pub struct SyndicationRecord;
-impl jacquard_common::xrpc::XrpcResp for SyndicationRecord {
-    const NSID: &'static str = "place.stream.broadcast.syndication";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = SyndicationGetRecordOutput<'de>;
-    type Err<'de> = jacquard_common::types::collection::RecordError<'de>;
-}
-
-impl jacquard_common::types::collection::Collection for SyndicationRecord {
-    const NSID: &'static str = "place.stream.broadcast.syndication";
-    type Record = SyndicationRecord;
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Syndication<'a> {
-    fn nsid() -> &'static str {
-        "place.stream.broadcast.syndication"
-    }
-    fn def_name() -> &'static str {
-        "main"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_place_stream_broadcast_syndication()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-fn lexicon_doc_place_stream_broadcast_syndication(
-) -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_place_stream_broadcast_syndication() -> jacquard_lexicon::lexicon::LexiconDoc<'static>
+{
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("place.stream.broadcast.syndication"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
                 ::jacquard_lexicon::lexicon::LexUserType::Record(::jacquard_lexicon::lexicon::LexRecord {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
@@ -290,20 +319,18 @@ fn lexicon_doc_place_stream_broadcast_syndication(
                     ),
                     key: Some(::jacquard_common::CowStr::new_static("tid")),
                     record: ::jacquard_lexicon::lexicon::LexRecordRecord::Object(::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(
                             vec![
-                                ::jacquard_common::smol_str::SmolStr::new_static("broadcaster"),
-                                ::jacquard_common::smol_str::SmolStr::new_static("streamer"),
-                                ::jacquard_common::smol_str::SmolStr::new_static("createdAt")
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("broadcaster"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("streamer"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt")
                             ],
                         ),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "broadcaster",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -315,18 +342,11 @@ fn lexicon_doc_place_stream_broadcast_syndication(
                                     format: Some(
                                         ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                     ),
-                                    default: None,
-                                    min_length: None,
-                                    max_length: None,
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "createdAt",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -338,18 +358,11 @@ fn lexicon_doc_place_stream_broadcast_syndication(
                                     format: Some(
                                         ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                     ),
-                                    default: None,
-                                    min_length: None,
-                                    max_length: None,
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "streamer",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -361,22 +374,18 @@ fn lexicon_doc_place_stream_broadcast_syndication(
                                     format: Some(
                                         ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                     ),
-                                    default: None,
-                                    min_length: None,
-                                    max_length: None,
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
                             );
                             map
                         },
+                        ..Default::default()
                     }),
+                    ..Default::default()
                 }),
             );
             map
         },
+        ..Default::default()
     }
 }

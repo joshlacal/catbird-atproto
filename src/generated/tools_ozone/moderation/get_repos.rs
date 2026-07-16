@@ -8,10 +8,77 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetRepos<'a> {
-    #[serde(borrow)]
-    pub dids: Vec<jacquard_common::types::string::Did<'a>>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetRepos<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub dids: Vec<jacquard_common::types::string::Did<S>>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetReposOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub repos: Vec<GetReposOutputReposItem<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[jacquard_derive::open_union]
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub enum GetReposOutputReposItem<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(rename = "tools.ozone.moderation.defs#repoViewDetail")]
+    RepoViewDetail(Box<crate::generated::tools_ozone::moderation::RepoViewDetail<S>>),
+    #[serde(rename = "tools.ozone.moderation.defs#repoViewNotFound")]
+    RepoViewNotFound(Box<crate::generated::tools_ozone::moderation::RepoViewNotFound<S>>),
+}
+
+/** Response marker for the `tools.ozone.moderation.getRepos` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetReposOutput<S>` for this endpoint.*/
+pub struct GetReposResponse;
+impl jacquard_common::xrpc::XrpcResp for GetReposResponse {
+    const NSID: &'static str = "tools.ozone.moderation.getRepos";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = GetReposOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetRepos<S> {
+    const NSID: &'static str = "tools.ozone.moderation.getRepos";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = GetReposResponse;
+}
+
+/** Endpoint marker for the `tools.ozone.moderation.getRepos` query.
+
+Path: `/xrpc/tools.ozone.moderation.getRepos`. The request payload type is `GetRepos<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct GetReposRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for GetReposRequest {
+    const PATH: &'static str = "/xrpc/tools.ozone.moderation.getRepos";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = GetRepos<S>;
+    type Response = GetReposResponse;
 }
 
 pub mod get_repos_state {
@@ -33,9 +100,9 @@ pub mod get_repos_state {
         type Dids = Unset;
     }
     ///State transition - sets the `dids` field to Set
-    pub struct SetDids<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDids<S> {}
-    impl<S: State> State for SetDids<S> {
+    pub struct SetDids<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetDids<St> {}
+    impl<St: State> State for SetDids<St> {
         type Dids = Set<members::dids>;
     }
     /// Marker types for field names
@@ -46,108 +113,80 @@ pub mod get_repos_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct GetReposBuilder<'a, S: get_repos_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<Vec<jacquard_common::types::string::Did<'a>>>,),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct GetReposBuilder<
+    St: get_repos_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<Vec<jacquard_common::types::string::Did<S>>>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> GetRepos<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> GetReposBuilder<'a, get_repos_state::Empty> {
+impl GetRepos<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> GetReposBuilder<get_repos_state::Empty, jacquard_common::DefaultStr> {
         GetReposBuilder::new()
     }
 }
 
-impl<'a> GetReposBuilder<'a, get_repos_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> GetRepos<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> GetReposBuilder<get_repos_state::Empty, S> {
+        GetReposBuilder::builder()
+    }
+}
+
+impl GetReposBuilder<get_repos_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetReposBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GetReposBuilder<'a, S>
+impl<S: jacquard_common::BosStr> GetReposBuilder<get_repos_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GetReposBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> GetReposBuilder<St, S>
 where
-    S: get_repos_state::State,
-    S::Dids: get_repos_state::IsUnset,
+    St: get_repos_state::State,
+    St::Dids: get_repos_state::IsUnset,
 {
     /// Set the `dids` field (required)
     pub fn dids(
         mut self,
-        value: impl Into<Vec<jacquard_common::types::string::Did<'a>>>,
-    ) -> GetReposBuilder<'a, get_repos_state::SetDids<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<Vec<jacquard_common::types::string::Did<S>>>,
+    ) -> GetReposBuilder<get_repos_state::SetDids<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         GetReposBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GetReposBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GetReposBuilder<St, S>
 where
-    S: get_repos_state::State,
-    S::Dids: get_repos_state::IsSet,
+    St: get_repos_state::State,
+    St::Dids: get_repos_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> GetRepos<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> GetRepos<S> {
         GetRepos {
-            dids: self.__unsafe_private_named.0.unwrap(),
+            dids: self._fields.0.unwrap(),
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GetReposOutput<'a> {
-    #[serde(borrow)]
-    pub repos: Vec<GetReposOutputReposItem<'a>>,
-}
-
-#[jacquard_derive::open_union]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(tag = "$type")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum GetReposOutputReposItem<'a> {
-    #[serde(rename = "tools.ozone.moderation.defs#repoViewDetail")]
-    RepoViewDetail(Box<crate::generated::tools_ozone::moderation::RepoViewDetail<'a>>),
-    #[serde(rename = "tools.ozone.moderation.defs#repoViewNotFound")]
-    RepoViewNotFound(Box<crate::generated::tools_ozone::moderation::RepoViewNotFound<'a>>),
-}
-
-/// Response type for
-///tools.ozone.moderation.getRepos
-pub struct GetReposResponse;
-impl jacquard_common::xrpc::XrpcResp for GetReposResponse {
-    const NSID: &'static str = "tools.ozone.moderation.getRepos";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetReposOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for GetRepos<'a> {
-    const NSID: &'static str = "tools.ozone.moderation.getRepos";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = GetReposResponse;
-}
-
-/// Endpoint type for
-///tools.ozone.moderation.getRepos
-pub struct GetReposRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for GetReposRequest {
-    const PATH: &'static str = "/xrpc/tools.ozone.moderation.getRepos";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetRepos<'de>;
-    type Response = GetReposResponse;
 }

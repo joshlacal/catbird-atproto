@@ -20,6 +20,7 @@ cargo test
 
 # Feature flags
 cargo build --features streaming     # enables websocket + DAG-CBOR (serde_ipld_dagcbor)
+cargo build --features namespace-site-standard
 cargo build --no-default-features    # drops the blue_catbird namespace
 
 # Lint/format
@@ -28,6 +29,7 @@ cargo fmt --check && cargo clippy --all-targets --all-features
 
 Features (`Cargo.toml`):
 - `namespace-bluecatbird` (**default**) — gates the `blue_catbird` (`blue.catbird.*`) namespace.
+- `namespace-site-standard` — gates the `site_standard` (`site.standard.*`) namespace and the `com_atproto` types it references.
 - `streaming` — pulls in `jacquard-common/websocket` + `serde_ipld_dagcbor` for firehose/event-stream consumers.
 
 ## Codegen Is Source of Truth
@@ -72,10 +74,10 @@ src/
   lib.rs                  Hand-written crate root: re-exports + the `catbird::` ergonomic shim
                           (NSIDs, From<InputData> builders for mls_chat/bsky_chat). Editable.
   generated/              ALL generated — DO NOT EDIT
-    mod.rs                Active module root: declares `blue_catbird` (feature-gated) + `builder_types`
     builder_types.rs      Shared builder/helper types
     blue_catbird/         blue.catbird.* — MLS chat (mlsChat), bskychat, app types  [DEFAULT]
     com_atproto/          com.atproto.* — repo, sync, identity, server primitives
+    site_standard/        site.standard.* — document, publication, graph, and theme types
     app_bsky/             app.bsky.* — Bluesky feed/actor/graph/notification types
     chat_bsky/            chat.bsky.* — Bluesky DM/convo types (see Gotchas: wiring deferred)
     tools_ozone/          tools.ozone.* — moderation
@@ -83,7 +85,7 @@ src/
     com_germnetwork/      com.germnetwork.*
 ```
 
-Not every namespace dir on disk is wired into the compiled surface — `generated/mod.rs` is the source of truth for what's active. `chat_bsky` is generated but its crate-module declaration is intentionally deferred until a Rust consumer needs Bluesky chat types (see Gotchas). The `catbird::` module in `lib.rs` is the curated, hand-written ergonomics layer (NSID constants, typed `Input`/`Output` aliases, `InputData → Input` converters) and **is** safe to edit.
+Not every namespace dir on disk is wired into the compiled surface — the inline `generated` module in `src/lib.rs` is the source of truth for what's active. `chat_bsky` is generated but its crate-module declaration is intentionally deferred until a Rust consumer needs Bluesky chat types (see Gotchas). The `catbird::` module in `lib.rs` is the curated, hand-written ergonomics layer (NSID constants, typed `Input`/`Output` aliases, `InputData → Input` converters) and **is** safe to edit.
 
 ## Consumers
 

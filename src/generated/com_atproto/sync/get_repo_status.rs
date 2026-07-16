@@ -8,10 +8,211 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetRepoStatus<'a> {
-    #[serde(borrow)]
-    pub did: jacquard_common::types::string::Did<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetRepoStatus<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub did: jacquard_common::types::string::Did<S>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetRepoStatusOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub active: bool,
+    pub did: jacquard_common::types::string::Did<S>,
+    ///Optional field, the current rev of the repo, if active=true
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub rev: core::option::Option<jacquard_common::types::string::Tid>,
+    ///If active=false, this optional field indicates a possible reason for why the account is not active. If active=false and no status is supplied, then the host makes no claim for why the repository is no longer being hosted.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub status: core::option::Option<GetRepoStatusOutputStatus<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// If active=false, this optional field indicates a possible reason for why the account is not active. If active=false and no status is supplied, then the host makes no claim for why the repository is no longer being hosted.
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum GetRepoStatusOutputStatus<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    Takendown,
+    Suspended,
+    Deleted,
+    Deactivated,
+    Desynchronized,
+    Throttled,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> GetRepoStatusOutputStatus<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Takendown => "takendown",
+            Self::Suspended => "suspended",
+            Self::Deleted => "deleted",
+            Self::Deactivated => "deactivated",
+            Self::Desynchronized => "desynchronized",
+            Self::Throttled => "throttled",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "takendown" => Self::Takendown,
+            "suspended" => Self::Suspended,
+            "deleted" => Self::Deleted,
+            "deactivated" => Self::Deactivated,
+            "desynchronized" => Self::Desynchronized,
+            "throttled" => Self::Throttled,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for GetRepoStatusOutputStatus<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for GetRepoStatusOutputStatus<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for GetRepoStatusOutputStatus<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for GetRepoStatusOutputStatus<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for GetRepoStatusOutputStatus<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for GetRepoStatusOutputStatus<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = GetRepoStatusOutputStatus<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            GetRepoStatusOutputStatus::Takendown => GetRepoStatusOutputStatus::Takendown,
+            GetRepoStatusOutputStatus::Suspended => GetRepoStatusOutputStatus::Suspended,
+            GetRepoStatusOutputStatus::Deleted => GetRepoStatusOutputStatus::Deleted,
+            GetRepoStatusOutputStatus::Deactivated => GetRepoStatusOutputStatus::Deactivated,
+            GetRepoStatusOutputStatus::Desynchronized => GetRepoStatusOutputStatus::Desynchronized,
+            GetRepoStatusOutputStatus::Throttled => GetRepoStatusOutputStatus::Throttled,
+            GetRepoStatusOutputStatus::Other(v) => {
+                GetRepoStatusOutputStatus::Other(v.into_static())
+            }
+        }
+    }
+}
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    thiserror::Error,
+    miette::Diagnostic,
+)]
+#[serde(tag = "error", content = "message")]
+pub enum GetRepoStatusError {
+    #[serde(rename = "RepoNotFound")]
+    RepoNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
+}
+
+impl core::fmt::Display for GetRepoStatusError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+            Self::RepoNotFound(msg) => {
+                write!(f, "RepoNotFound")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+        }
+    }
+}
+
+/** Response marker for the `com.atproto.sync.getRepoStatus` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetRepoStatusOutput<S>` for this endpoint.*/
+pub struct GetRepoStatusResponse;
+impl jacquard_common::xrpc::XrpcResp for GetRepoStatusResponse {
+    const NSID: &'static str = "com.atproto.sync.getRepoStatus";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = GetRepoStatusOutput<S>;
+    type Err = GetRepoStatusError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetRepoStatus<S> {
+    const NSID: &'static str = "com.atproto.sync.getRepoStatus";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = GetRepoStatusResponse;
+}
+
+/** Endpoint marker for the `com.atproto.sync.getRepoStatus` query.
+
+Path: `/xrpc/com.atproto.sync.getRepoStatus`. The request payload type is `GetRepoStatus<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct GetRepoStatusRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for GetRepoStatusRequest {
+    const PATH: &'static str = "/xrpc/com.atproto.sync.getRepoStatus";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = GetRepoStatus<S>;
+    type Response = GetRepoStatusResponse;
 }
 
 pub mod get_repo_status_state {
@@ -33,9 +234,9 @@ pub mod get_repo_status_state {
         type Did = Unset;
     }
     ///State transition - sets the `did` field to Set
-    pub struct SetDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDid<S> {}
-    impl<S: State> State for SetDid<S> {
+    pub struct SetDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetDid<St> {}
+    impl<St: State> State for SetDid<St> {
         type Did = Set<members::did>;
     }
     /// Marker types for field names
@@ -46,137 +247,81 @@ pub mod get_repo_status_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct GetRepoStatusBuilder<'a, S: get_repo_status_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<jacquard_common::types::string::Did<'a>>,),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct GetRepoStatusBuilder<
+    St: get_repo_status_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<jacquard_common::types::string::Did<S>>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> GetRepoStatus<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> GetRepoStatusBuilder<'a, get_repo_status_state::Empty> {
+impl GetRepoStatus<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> GetRepoStatusBuilder<get_repo_status_state::Empty, jacquard_common::DefaultStr>
+    {
         GetRepoStatusBuilder::new()
     }
 }
 
-impl<'a> GetRepoStatusBuilder<'a, get_repo_status_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> GetRepoStatus<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> GetRepoStatusBuilder<get_repo_status_state::Empty, S> {
+        GetRepoStatusBuilder::builder()
+    }
+}
+
+impl GetRepoStatusBuilder<get_repo_status_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetRepoStatusBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GetRepoStatusBuilder<'a, S>
+impl<S: jacquard_common::BosStr> GetRepoStatusBuilder<get_repo_status_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GetRepoStatusBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> GetRepoStatusBuilder<St, S>
 where
-    S: get_repo_status_state::State,
-    S::Did: get_repo_status_state::IsUnset,
+    St: get_repo_status_state::State,
+    St::Did: get_repo_status_state::IsUnset,
 {
     /// Set the `did` field (required)
     pub fn did(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> GetRepoStatusBuilder<'a, get_repo_status_state::SetDid<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> GetRepoStatusBuilder<get_repo_status_state::SetDid<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         GetRepoStatusBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GetRepoStatusBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GetRepoStatusBuilder<St, S>
 where
-    S: get_repo_status_state::State,
-    S::Did: get_repo_status_state::IsSet,
+    St: get_repo_status_state::State,
+    St::Did: get_repo_status_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> GetRepoStatus<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> GetRepoStatus<S> {
         GetRepoStatus {
-            did: self.__unsafe_private_named.0.unwrap(),
+            did: self._fields.0.unwrap(),
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GetRepoStatusOutput<'a> {
-    pub active: bool,
-    #[serde(borrow)]
-    pub did: jacquard_common::types::string::Did<'a>,
-    /// Optional field, the current rev of the repo, if active=true
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub rev: std::option::Option<jacquard_common::types::string::Tid>,
-    /// If active=false, this optional field indicates a possible reason for why the account is not active. If active=false and no status is supplied, then the host makes no claim for why the repository is no longer being hosted.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub status: std::option::Option<jacquard_common::CowStr<'a>>,
-}
-
-#[jacquard_derive::open_union]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    thiserror::Error,
-    miette::Diagnostic,
-    jacquard_derive::IntoStatic,
-)]
-#[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum GetRepoStatusError<'a> {
-    #[serde(rename = "RepoNotFound")]
-    RepoNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
-}
-
-impl std::fmt::Display for GetRepoStatusError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::RepoNotFound(msg) => {
-                write!(f, "RepoNotFound")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
-        }
-    }
-}
-
-/// Response type for
-///com.atproto.sync.getRepoStatus
-pub struct GetRepoStatusResponse;
-impl jacquard_common::xrpc::XrpcResp for GetRepoStatusResponse {
-    const NSID: &'static str = "com.atproto.sync.getRepoStatus";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetRepoStatusOutput<'de>;
-    type Err<'de> = GetRepoStatusError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for GetRepoStatus<'a> {
-    const NSID: &'static str = "com.atproto.sync.getRepoStatus";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = GetRepoStatusResponse;
-}
-
-/// Endpoint type for
-///com.atproto.sync.getRepoStatus
-pub struct GetRepoStatusRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for GetRepoStatusRequest {
-    const PATH: &'static str = "/xrpc/com.atproto.sync.getRepoStatus";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetRepoStatus<'de>;
-    type Response = GetRepoStatusResponse;
 }

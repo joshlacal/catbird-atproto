@@ -5,7 +5,6 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -16,50 +15,77 @@
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct DeleteFederationPeer<'a> {
-    /// DID of the peer delivery service to remove
-    #[serde(borrow)]
-    pub ds_did: jacquard_common::CowStr<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct DeleteFederationPeer<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///DID of the peer delivery service to remove
+    pub ds_did: S,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct DeleteFederationPeerOutput<'a> {
-    /// Whether the peer was deleted
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct DeleteFederationPeerOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Whether the peer was deleted
     pub deleted: bool,
-    /// DID that was deleted
-    #[serde(borrow)]
-    pub ds_did: jacquard_common::CowStr<'a>,
+    ///DID that was deleted
+    pub ds_did: S,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-/// Response type for
-///blue.catbird.mlsDS.deleteFederationPeer
+/** Response marker for the `blue.catbird.mlsDS.deleteFederationPeer` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `DeleteFederationPeerOutput<S>` for this endpoint.*/
 pub struct DeleteFederationPeerResponse;
 impl jacquard_common::xrpc::XrpcResp for DeleteFederationPeerResponse {
     const NSID: &'static str = "blue.catbird.mlsDS.deleteFederationPeer";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = DeleteFederationPeerOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
+    type Output<S: jacquard_common::BosStr> = DeleteFederationPeerOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for DeleteFederationPeer<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for DeleteFederationPeer<S> {
     const NSID: &'static str = "blue.catbird.mlsDS.deleteFederationPeer";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = DeleteFederationPeerResponse;
 }
 
-/// Endpoint type for
-///blue.catbird.mlsDS.deleteFederationPeer
+/** Endpoint marker for the `blue.catbird.mlsDS.deleteFederationPeer` procedure.
+
+Path: `/xrpc/blue.catbird.mlsDS.deleteFederationPeer`. The request payload type is `DeleteFederationPeer<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct DeleteFederationPeerRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for DeleteFederationPeerRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.mlsDS.deleteFederationPeer";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = DeleteFederationPeer<'de>;
+    type Request<S: jacquard_common::BosStr> = DeleteFederationPeer<S>;
     type Response = DeleteFederationPeerResponse;
 }

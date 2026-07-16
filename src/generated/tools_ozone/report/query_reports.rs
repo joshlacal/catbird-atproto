@@ -8,51 +8,116 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct QueryReports<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub assigned_to: std::option::Option<jacquard_common::types::string::Did<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub collections: std::option::Option<Vec<jacquard_common::types::string::Nsid<'a>>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub did: std::option::Option<jacquard_common::types::string::Did<'a>>,
-    /// (default: false)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub is_muted: std::option::Option<bool>,
-    ///(default: 50, min: 1, max: 100)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub limit: std::option::Option<i64>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub queue_id: std::option::Option<i64>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub report_types: std::option::Option<Vec<jacquard_common::CowStr<'a>>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub reported_after: std::option::Option<jacquard_common::types::string::Datetime>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub reported_before: std::option::Option<jacquard_common::types::string::Datetime>,
-    ///(default: "desc")
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub sort_direction: std::option::Option<jacquard_common::CowStr<'a>>,
-    ///(default: "createdAt")
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub sort_field: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(borrow)]
-    pub status: jacquard_common::CowStr<'a>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub subject: std::option::Option<jacquard_common::types::string::Uri<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub subject_type: std::option::Option<jacquard_common::CowStr<'a>>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct QueryReports<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub assigned_to: core::option::Option<jacquard_common::types::string::Did<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub collections: core::option::Option<Vec<jacquard_common::types::string::Nsid<S>>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub did: core::option::Option<jacquard_common::types::string::Did<S>>,
+    ///  Defaults to `false`.
+    #[serde(default = "_default_is_muted")]
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub is_muted: core::option::Option<bool>,
+    /// Defaults to `50`. Min: 1. Max: 100.
+    #[serde(default = "_default_limit")]
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub limit: core::option::Option<i64>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub queue_id: core::option::Option<i64>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub report_types: core::option::Option<Vec<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub reported_after: core::option::Option<jacquard_common::types::string::Datetime>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub reported_before: core::option::Option<jacquard_common::types::string::Datetime>,
+    /// Defaults to `"desc"`.
+    #[serde(default = "_default_sort_direction")]
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub sort_direction: core::option::Option<S>,
+    /// Defaults to `"createdAt"`.
+    #[serde(default = "_default_sort_field")]
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub sort_field: core::option::Option<S>,
+    pub status: S,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub subject: core::option::Option<jacquard_common::types::string::UriValue<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub subject_type: core::option::Option<S>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct QueryReportsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    pub reports: Vec<crate::generated::tools_ozone::report::ReportView<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `tools.ozone.report.queryReports` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `QueryReportsOutput<S>` for this endpoint.*/
+pub struct QueryReportsResponse;
+impl jacquard_common::xrpc::XrpcResp for QueryReportsResponse {
+    const NSID: &'static str = "tools.ozone.report.queryReports";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = QueryReportsOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for QueryReports<S> {
+    const NSID: &'static str = "tools.ozone.report.queryReports";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = QueryReportsResponse;
+}
+
+/** Endpoint marker for the `tools.ozone.report.queryReports` query.
+
+Path: `/xrpc/tools.ozone.report.queryReports`. The request payload type is `QueryReports<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct QueryReportsRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for QueryReportsRequest {
+    const PATH: &'static str = "/xrpc/tools.ozone.report.queryReports";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = QueryReports<S>;
+    type Response = QueryReportsResponse;
+}
+
+fn _default_is_muted() -> core::option::Option<bool> {
+    Some(false)
+}
+
+fn _default_limit() -> core::option::Option<i64> {
+    Some(50i64)
+}
+
+fn _default_sort_direction<S: jacquard_common::FromStaticStr>() -> Option<S> {
+    Some(S::from_static("desc"))
+}
+
+fn _default_sort_field<S: jacquard_common::FromStaticStr>() -> Option<S> {
+    Some(S::from_static("createdAt"))
 }
 
 pub mod query_reports_state {
@@ -74,9 +139,9 @@ pub mod query_reports_state {
         type Status = Unset;
     }
     ///State transition - sets the `status` field to Set
-    pub struct SetStatus<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetStatus<S> {}
-    impl<S: State> State for SetStatus<S> {
+    pub struct SetStatus<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetStatus<St> {}
+    impl<St: State> State for SetStatus<St> {
         type Status = Set<members::status>;
     }
     /// Marker types for field names
@@ -87,179 +152,197 @@ pub mod query_reports_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct QueryReportsBuilder<'a, S: query_reports_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<Vec<jacquard_common::types::string::Nsid<'a>>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<bool>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<Vec<jacquard_common::CowStr<'a>>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Uri<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct QueryReportsBuilder<
+    St: query_reports_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<Vec<jacquard_common::types::string::Nsid<S>>>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<bool>,
+        core::option::Option<i64>,
+        core::option::Option<i64>,
+        core::option::Option<Vec<S>>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<S>,
+        core::option::Option<S>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::UriValue<S>>,
+        core::option::Option<S>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> QueryReports<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> QueryReportsBuilder<'a, query_reports_state::Empty> {
+impl QueryReports<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> QueryReportsBuilder<query_reports_state::Empty, jacquard_common::DefaultStr> {
         QueryReportsBuilder::new()
     }
 }
 
-impl<'a> QueryReportsBuilder<'a, query_reports_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> QueryReports<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> QueryReportsBuilder<query_reports_state::Empty, S> {
+        QueryReportsBuilder::builder()
+    }
+}
+
+impl QueryReportsBuilder<query_reports_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         QueryReportsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (
+            _state: ::core::marker::PhantomData,
+            _fields: (
                 None, None, None, None, None, None, None, None, None, None, None, None, None, None,
                 None,
             ),
-            _phantom: ::core::marker::PhantomData,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: query_reports_state::State> QueryReportsBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> QueryReportsBuilder<query_reports_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        QueryReportsBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (
+                None, None, None, None, None, None, None, None, None, None, None, None, None, None,
+                None,
+            ),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: query_reports_state::State, S: jacquard_common::BosStr> QueryReportsBuilder<St, S> {
     /// Set the `assignedTo` field (optional)
     pub fn assigned_to(
         mut self,
-        value: impl Into<Option<jacquard_common::types::string::Did<'a>>>,
+        value: impl Into<Option<jacquard_common::types::string::Did<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+        self._fields.0 = value.into();
         self
     }
     /// Set the `assignedTo` field to an Option value (optional)
     pub fn maybe_assigned_to(
         mut self,
-        value: Option<jacquard_common::types::string::Did<'a>>,
+        value: Option<jacquard_common::types::string::Did<S>>,
     ) -> Self {
-        self.__unsafe_private_named.0 = value;
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S: query_reports_state::State> QueryReportsBuilder<'a, S> {
+impl<St: query_reports_state::State, S: jacquard_common::BosStr> QueryReportsBuilder<St, S> {
     /// Set the `collections` field (optional)
     pub fn collections(
         mut self,
-        value: impl Into<Option<Vec<jacquard_common::types::string::Nsid<'a>>>>,
+        value: impl Into<Option<Vec<jacquard_common::types::string::Nsid<S>>>>,
     ) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self._fields.1 = value.into();
         self
     }
     /// Set the `collections` field to an Option value (optional)
     pub fn maybe_collections(
         mut self,
-        value: Option<Vec<jacquard_common::types::string::Nsid<'a>>>,
+        value: Option<Vec<jacquard_common::types::string::Nsid<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.1 = value;
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S: query_reports_state::State> QueryReportsBuilder<'a, S> {
+impl<St: query_reports_state::State, S: jacquard_common::BosStr> QueryReportsBuilder<St, S> {
     /// Set the `cursor` field (optional)
-    pub fn cursor(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.2 = value.into();
+    pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.2 = value.into();
         self
     }
     /// Set the `cursor` field to an Option value (optional)
-    pub fn maybe_cursor(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.2 = value;
+    pub fn maybe_cursor(mut self, value: Option<S>) -> Self {
+        self._fields.2 = value;
         self
     }
 }
 
-impl<'a, S: query_reports_state::State> QueryReportsBuilder<'a, S> {
+impl<St: query_reports_state::State, S: jacquard_common::BosStr> QueryReportsBuilder<St, S> {
     /// Set the `did` field (optional)
-    pub fn did(
-        mut self,
-        value: impl Into<Option<jacquard_common::types::string::Did<'a>>>,
-    ) -> Self {
-        self.__unsafe_private_named.3 = value.into();
+    pub fn did(mut self, value: impl Into<Option<jacquard_common::types::string::Did<S>>>) -> Self {
+        self._fields.3 = value.into();
         self
     }
     /// Set the `did` field to an Option value (optional)
-    pub fn maybe_did(mut self, value: Option<jacquard_common::types::string::Did<'a>>) -> Self {
-        self.__unsafe_private_named.3 = value;
+    pub fn maybe_did(mut self, value: Option<jacquard_common::types::string::Did<S>>) -> Self {
+        self._fields.3 = value;
         self
     }
 }
 
-impl<'a, S: query_reports_state::State> QueryReportsBuilder<'a, S> {
+impl<St: query_reports_state::State, S: jacquard_common::BosStr> QueryReportsBuilder<St, S> {
     /// Set the `isMuted` field (optional)
     pub fn is_muted(mut self, value: impl Into<Option<bool>>) -> Self {
-        self.__unsafe_private_named.4 = value.into();
+        self._fields.4 = value.into();
         self
     }
     /// Set the `isMuted` field to an Option value (optional)
     pub fn maybe_is_muted(mut self, value: Option<bool>) -> Self {
-        self.__unsafe_private_named.4 = value;
+        self._fields.4 = value;
         self
     }
 }
 
-impl<'a, S: query_reports_state::State> QueryReportsBuilder<'a, S> {
+impl<St: query_reports_state::State, S: jacquard_common::BosStr> QueryReportsBuilder<St, S> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.5 = value.into();
+        self._fields.5 = value.into();
         self
     }
     /// Set the `limit` field to an Option value (optional)
     pub fn maybe_limit(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.5 = value;
+        self._fields.5 = value;
         self
     }
 }
 
-impl<'a, S: query_reports_state::State> QueryReportsBuilder<'a, S> {
+impl<St: query_reports_state::State, S: jacquard_common::BosStr> QueryReportsBuilder<St, S> {
     /// Set the `queueId` field (optional)
     pub fn queue_id(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.6 = value.into();
+        self._fields.6 = value.into();
         self
     }
     /// Set the `queueId` field to an Option value (optional)
     pub fn maybe_queue_id(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.6 = value;
+        self._fields.6 = value;
         self
     }
 }
 
-impl<'a, S: query_reports_state::State> QueryReportsBuilder<'a, S> {
+impl<St: query_reports_state::State, S: jacquard_common::BosStr> QueryReportsBuilder<St, S> {
     /// Set the `reportTypes` field (optional)
-    pub fn report_types(
-        mut self,
-        value: impl Into<Option<Vec<jacquard_common::CowStr<'a>>>>,
-    ) -> Self {
-        self.__unsafe_private_named.7 = value.into();
+    pub fn report_types(mut self, value: impl Into<Option<Vec<S>>>) -> Self {
+        self._fields.7 = value.into();
         self
     }
     /// Set the `reportTypes` field to an Option value (optional)
-    pub fn maybe_report_types(mut self, value: Option<Vec<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.7 = value;
+    pub fn maybe_report_types(mut self, value: Option<Vec<S>>) -> Self {
+        self._fields.7 = value;
         self
     }
 }
 
-impl<'a, S: query_reports_state::State> QueryReportsBuilder<'a, S> {
+impl<St: query_reports_state::State, S: jacquard_common::BosStr> QueryReportsBuilder<St, S> {
     /// Set the `reportedAfter` field (optional)
     pub fn reported_after(
         mut self,
         value: impl Into<Option<jacquard_common::types::string::Datetime>>,
     ) -> Self {
-        self.__unsafe_private_named.8 = value.into();
+        self._fields.8 = value.into();
         self
     }
     /// Set the `reportedAfter` field to an Option value (optional)
@@ -267,18 +350,18 @@ impl<'a, S: query_reports_state::State> QueryReportsBuilder<'a, S> {
         mut self,
         value: Option<jacquard_common::types::string::Datetime>,
     ) -> Self {
-        self.__unsafe_private_named.8 = value;
+        self._fields.8 = value;
         self
     }
 }
 
-impl<'a, S: query_reports_state::State> QueryReportsBuilder<'a, S> {
+impl<St: query_reports_state::State, S: jacquard_common::BosStr> QueryReportsBuilder<St, S> {
     /// Set the `reportedBefore` field (optional)
     pub fn reported_before(
         mut self,
         value: impl Into<Option<jacquard_common::types::string::Datetime>>,
     ) -> Self {
-        self.__unsafe_private_named.9 = value.into();
+        self._fields.9 = value.into();
         self
     }
     /// Set the `reportedBefore` field to an Option value (optional)
@@ -286,147 +369,111 @@ impl<'a, S: query_reports_state::State> QueryReportsBuilder<'a, S> {
         mut self,
         value: Option<jacquard_common::types::string::Datetime>,
     ) -> Self {
-        self.__unsafe_private_named.9 = value;
+        self._fields.9 = value;
         self
     }
 }
 
-impl<'a, S: query_reports_state::State> QueryReportsBuilder<'a, S> {
+impl<St: query_reports_state::State, S: jacquard_common::BosStr> QueryReportsBuilder<St, S> {
     /// Set the `sortDirection` field (optional)
-    pub fn sort_direction(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.10 = value.into();
+    pub fn sort_direction(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.10 = value.into();
         self
     }
     /// Set the `sortDirection` field to an Option value (optional)
-    pub fn maybe_sort_direction(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.10 = value;
+    pub fn maybe_sort_direction(mut self, value: Option<S>) -> Self {
+        self._fields.10 = value;
         self
     }
 }
 
-impl<'a, S: query_reports_state::State> QueryReportsBuilder<'a, S> {
+impl<St: query_reports_state::State, S: jacquard_common::BosStr> QueryReportsBuilder<St, S> {
     /// Set the `sortField` field (optional)
-    pub fn sort_field(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.11 = value.into();
+    pub fn sort_field(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.11 = value.into();
         self
     }
     /// Set the `sortField` field to an Option value (optional)
-    pub fn maybe_sort_field(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.11 = value;
+    pub fn maybe_sort_field(mut self, value: Option<S>) -> Self {
+        self._fields.11 = value;
         self
     }
 }
 
-impl<'a, S> QueryReportsBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> QueryReportsBuilder<St, S>
 where
-    S: query_reports_state::State,
-    S::Status: query_reports_state::IsUnset,
+    St: query_reports_state::State,
+    St::Status: query_reports_state::IsUnset,
 {
     /// Set the `status` field (required)
     pub fn status(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> QueryReportsBuilder<'a, query_reports_state::SetStatus<S>> {
-        self.__unsafe_private_named.12 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> QueryReportsBuilder<query_reports_state::SetStatus<St>, S> {
+        self._fields.12 = ::core::option::Option::Some(value.into());
         QueryReportsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: query_reports_state::State> QueryReportsBuilder<'a, S> {
+impl<St: query_reports_state::State, S: jacquard_common::BosStr> QueryReportsBuilder<St, S> {
     /// Set the `subject` field (optional)
     pub fn subject(
         mut self,
-        value: impl Into<Option<jacquard_common::types::string::Uri<'a>>>,
+        value: impl Into<Option<jacquard_common::types::string::UriValue<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.13 = value.into();
+        self._fields.13 = value.into();
         self
     }
     /// Set the `subject` field to an Option value (optional)
-    pub fn maybe_subject(mut self, value: Option<jacquard_common::types::string::Uri<'a>>) -> Self {
-        self.__unsafe_private_named.13 = value;
+    pub fn maybe_subject(
+        mut self,
+        value: Option<jacquard_common::types::string::UriValue<S>>,
+    ) -> Self {
+        self._fields.13 = value;
         self
     }
 }
 
-impl<'a, S: query_reports_state::State> QueryReportsBuilder<'a, S> {
+impl<St: query_reports_state::State, S: jacquard_common::BosStr> QueryReportsBuilder<St, S> {
     /// Set the `subjectType` field (optional)
-    pub fn subject_type(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.14 = value.into();
+    pub fn subject_type(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.14 = value.into();
         self
     }
     /// Set the `subjectType` field to an Option value (optional)
-    pub fn maybe_subject_type(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.14 = value;
+    pub fn maybe_subject_type(mut self, value: Option<S>) -> Self {
+        self._fields.14 = value;
         self
     }
 }
 
-impl<'a, S> QueryReportsBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> QueryReportsBuilder<St, S>
 where
-    S: query_reports_state::State,
-    S::Status: query_reports_state::IsSet,
+    St: query_reports_state::State,
+    St::Status: query_reports_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> QueryReports<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> QueryReports<S> {
         QueryReports {
-            assigned_to: self.__unsafe_private_named.0,
-            collections: self.__unsafe_private_named.1,
-            cursor: self.__unsafe_private_named.2,
-            did: self.__unsafe_private_named.3,
-            is_muted: self.__unsafe_private_named.4,
-            limit: self.__unsafe_private_named.5,
-            queue_id: self.__unsafe_private_named.6,
-            report_types: self.__unsafe_private_named.7,
-            reported_after: self.__unsafe_private_named.8,
-            reported_before: self.__unsafe_private_named.9,
-            sort_direction: self.__unsafe_private_named.10,
-            sort_field: self.__unsafe_private_named.11,
-            status: self.__unsafe_private_named.12.unwrap(),
-            subject: self.__unsafe_private_named.13,
-            subject_type: self.__unsafe_private_named.14,
+            assigned_to: self._fields.0,
+            collections: self._fields.1,
+            cursor: self._fields.2,
+            did: self._fields.3,
+            is_muted: self._fields.4,
+            limit: self._fields.5,
+            queue_id: self._fields.6,
+            report_types: self._fields.7,
+            reported_after: self._fields.8,
+            reported_before: self._fields.9,
+            sort_direction: self._fields.10,
+            sort_field: self._fields.11,
+            status: self._fields.12.unwrap(),
+            subject: self._fields.13,
+            subject_type: self._fields.14,
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct QueryReportsOutput<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(borrow)]
-    pub reports: Vec<crate::generated::tools_ozone::report::ReportView<'a>>,
-}
-
-/// Response type for
-///tools.ozone.report.queryReports
-pub struct QueryReportsResponse;
-impl jacquard_common::xrpc::XrpcResp for QueryReportsResponse {
-    const NSID: &'static str = "tools.ozone.report.queryReports";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = QueryReportsOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for QueryReports<'a> {
-    const NSID: &'static str = "tools.ozone.report.queryReports";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = QueryReportsResponse;
-}
-
-/// Endpoint type for
-///tools.ozone.report.queryReports
-pub struct QueryReportsRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for QueryReportsRequest {
-    const PATH: &'static str = "/xrpc/tools.ozone.report.queryReports";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = QueryReports<'de>;
-    type Response = QueryReportsResponse;
 }

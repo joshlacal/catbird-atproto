@@ -5,7 +5,6 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -16,59 +15,84 @@
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct UpsertFederationPeer<'a> {
-    /// DID of the peer delivery service
-    #[serde(borrow)]
-    pub ds_did: jacquard_common::CowStr<'a>,
-    /// Per-peer rate limit override
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub max_requests_per_minute: std::option::Option<i64>,
-    /// Admin note
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub note: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// Peer status to set (trusted, blocked, probation)
-    #[serde(borrow)]
-    pub status: jacquard_common::CowStr<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct UpsertFederationPeer<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///DID of the peer delivery service
+    pub ds_did: S,
+    ///Per-peer rate limit override
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub max_requests_per_minute: core::option::Option<i64>,
+    ///Admin note
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub note: core::option::Option<S>,
+    ///Peer status to set (trusted, blocked, probation)
+    pub status: S,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct UpsertFederationPeerOutput<'a> {
-    #[serde(borrow)]
-    pub peer: crate::generated::blue_catbird::mlsDS::get_federation_peers::PeerRecord<'a>,
-    /// Whether the upsert succeeded
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct UpsertFederationPeerOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub peer: crate::generated::blue_catbird::mlsDS::get_federation_peers::PeerRecord<S>,
+    ///Whether the upsert succeeded
     pub updated: bool,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-/// Response type for
-///blue.catbird.mlsDS.upsertFederationPeer
+/** Response marker for the `blue.catbird.mlsDS.upsertFederationPeer` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `UpsertFederationPeerOutput<S>` for this endpoint.*/
 pub struct UpsertFederationPeerResponse;
 impl jacquard_common::xrpc::XrpcResp for UpsertFederationPeerResponse {
     const NSID: &'static str = "blue.catbird.mlsDS.upsertFederationPeer";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = UpsertFederationPeerOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
+    type Output<S: jacquard_common::BosStr> = UpsertFederationPeerOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for UpsertFederationPeer<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for UpsertFederationPeer<S> {
     const NSID: &'static str = "blue.catbird.mlsDS.upsertFederationPeer";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = UpsertFederationPeerResponse;
 }
 
-/// Endpoint type for
-///blue.catbird.mlsDS.upsertFederationPeer
+/** Endpoint marker for the `blue.catbird.mlsDS.upsertFederationPeer` procedure.
+
+Path: `/xrpc/blue.catbird.mlsDS.upsertFederationPeer`. The request payload type is `UpsertFederationPeer<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct UpsertFederationPeerRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for UpsertFederationPeerRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.mlsDS.upsertFederationPeer";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = UpsertFederationPeer<'de>;
+    type Request<S: jacquard_common::BosStr> = UpsertFederationPeer<S>;
     type Response = UpsertFederationPeerResponse;
 }

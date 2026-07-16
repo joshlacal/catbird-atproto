@@ -6,15 +6,435 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 /// RGB color definition, inspired by site.standard.theme.color#rgb
-#[jacquard_derive::lexicon]
+
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct ColorRgb<'a> {
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ColorRgb<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub b: i64,
     pub g: i64,
     pub r: i64,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct External<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///StrongRefs (uri+cid) of the Atmosphere records that backed this view.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub associated_refs:
+        core::option::Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>>,
+    pub description: S,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub thumb: core::option::Option<jacquard_common::types::blob::BlobRef<S>>,
+    pub title: S,
+    pub uri: jacquard_common::types::string::UriValue<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// A representation of some externally linked content (eg, a URL and 'card'), embedded in a Bluesky record (eg, a post).
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ExternalRecord<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub external: crate::generated::app_bsky::embed::external::External<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct View<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub external: crate::generated::app_bsky::embed::external::ViewExternal<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ViewExternal<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Profiles of the owners of the Atmosphere records that backed this view.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub associated_profiles:
+        core::option::Option<Vec<crate::generated::app_bsky::actor::ProfileViewBasic<S>>>,
+    ///StrongRefs (uri+cid) of the Atmosphere records that backed this view.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub associated_refs:
+        core::option::Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>>,
+    ///When the external content was created, if available. Example: a publication date, for an article.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub created_at: core::option::Option<jacquard_common::types::string::Datetime>,
+    pub description: S,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub labels: core::option::Option<Vec<crate::generated::com_atproto::label::Label<S>>>,
+    ///Estimated reading time in minutes, if applicable and available.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub reading_time: core::option::Option<i64>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub source:
+        core::option::Option<crate::generated::app_bsky::embed::external::ViewExternalSource<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub thumb: core::option::Option<jacquard_common::types::string::UriValue<S>>,
+    pub title: S,
+    ///When the external content was updated, if available.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub updated_at: core::option::Option<jacquard_common::types::string::Datetime>,
+    pub uri: jacquard_common::types::string::UriValue<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// The source of an external embed, such as a standard.site publication.
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ViewExternalSource<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub description: core::option::Option<S>,
+    ///Fully-qualified URL where an icon representing the source can be fetched. For example, CDN location provided by the App View.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub icon: core::option::Option<jacquard_common::types::string::UriValue<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub theme: core::option::Option<
+        crate::generated::app_bsky::embed::external::ViewExternalSourceTheme<S>,
+    >,
+    pub title: S,
+    ///URI of the source, if available. Example: the https:// URL of a site.standard.publication record.
+    pub uri: jacquard_common::types::string::UriValue<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// The theme colors of an external source, such as a site.standard.publication. These colors may be used when rendering an embed from that source.
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic,
+    Default,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ViewExternalSourceTheme<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub accent_foreground_rgb:
+        core::option::Option<crate::generated::app_bsky::embed::external::ColorRgb<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub accent_rgb: core::option::Option<crate::generated::app_bsky::embed::external::ColorRgb<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub background_rgb:
+        core::option::Option<crate::generated::app_bsky::embed::external::ColorRgb<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub foreground_rgb:
+        core::option::Option<crate::generated::app_bsky::embed::external::ColorRgb<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ColorRgb<S> {
+    fn nsid() -> &'static str {
+        "app.bsky.embed.external"
+    }
+    fn def_name() -> &'static str {
+        "colorRGB"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_app_bsky_embed_external()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.b;
+            if *value > 255i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("b"),
+                    max: 255i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.b;
+            if *value < 0i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("b"),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.g;
+            if *value > 255i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("g"),
+                    max: 255i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.g;
+            if *value < 0i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("g"),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.r;
+            if *value > 255i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("r"),
+                    max: 255i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.r;
+            if *value < 0i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("r"),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for External<S> {
+    fn nsid() -> &'static str {
+        "app.bsky.embed.external"
+    }
+    fn def_name() -> &'static str {
+        "external"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_app_bsky_embed_external()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        if let Some(ref value) = self.thumb {
+            {
+                let size = value.blob().size;
+                if size > 1000000usize {
+                    return Err(
+                        jacquard_lexicon::validation::ConstraintError::BlobTooLarge {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field("thumb"),
+                            max: 1000000usize,
+                            actual: size,
+                        },
+                    );
+                }
+            }
+        }
+        if let Some(ref value) = self.thumb {
+            {
+                let mime = value.blob().mime_type.as_str();
+                let accepted: &[&str] = &["image/*"];
+                let matched = accepted.iter().any(|pattern| {
+                    if *pattern == "*/*" {
+                        true
+                    } else if pattern.ends_with("/*") {
+                        let prefix = &pattern[..pattern.len() - 2];
+                        mime.starts_with(prefix) && mime.as_bytes().get(prefix.len()) == Some(&b'/')
+                    } else {
+                        mime == *pattern
+                    }
+                });
+                if !matched {
+                    return Err(
+                        jacquard_lexicon::validation::ConstraintError::BlobMimeTypeNotAccepted {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field("thumb"),
+                            accepted: vec!["image/*".to_string()],
+                            actual: mime.to_string(),
+                        },
+                    );
+                }
+            }
+        }
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ExternalRecord<S> {
+    fn nsid() -> &'static str {
+        "app.bsky.embed.external"
+    }
+    fn def_name() -> &'static str {
+        "main"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_app_bsky_embed_external()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for View<S> {
+    fn nsid() -> &'static str {
+        "app.bsky.embed.external"
+    }
+    fn def_name() -> &'static str {
+        "view"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_app_bsky_embed_external()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ViewExternal<S> {
+    fn nsid() -> &'static str {
+        "app.bsky.embed.external"
+    }
+    fn def_name() -> &'static str {
+        "viewExternal"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_app_bsky_embed_external()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ViewExternalSource<S> {
+    fn nsid() -> &'static str {
+        "app.bsky.embed.external"
+    }
+    fn def_name() -> &'static str {
+        "viewExternalSource"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_app_bsky_embed_external()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+    for ViewExternalSourceTheme<S>
+{
+    fn nsid() -> &'static str {
+        "app.bsky.embed.external"
+    }
+    fn def_name() -> &'static str {
+        "viewExternalSourceTheme"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_app_bsky_embed_external()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
 }
 
 pub mod color_rgb_state {
@@ -27,249 +447,257 @@ pub mod color_rgb_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type R;
-        type G;
         type B;
+        type G;
+        type R;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type R = Unset;
-        type G = Unset;
         type B = Unset;
-    }
-    ///State transition - sets the `r` field to Set
-    pub struct SetR<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetR<S> {}
-    impl<S: State> State for SetR<S> {
-        type R = Set<members::r>;
-        type G = S::G;
-        type B = S::B;
-    }
-    ///State transition - sets the `g` field to Set
-    pub struct SetG<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetG<S> {}
-    impl<S: State> State for SetG<S> {
-        type R = S::R;
-        type G = Set<members::g>;
-        type B = S::B;
+        type G = Unset;
+        type R = Unset;
     }
     ///State transition - sets the `b` field to Set
-    pub struct SetB<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetB<S> {}
-    impl<S: State> State for SetB<S> {
-        type R = S::R;
-        type G = S::G;
+    pub struct SetB<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetB<St> {}
+    impl<St: State> State for SetB<St> {
         type B = Set<members::b>;
+        type G = St::G;
+        type R = St::R;
+    }
+    ///State transition - sets the `g` field to Set
+    pub struct SetG<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetG<St> {}
+    impl<St: State> State for SetG<St> {
+        type B = St::B;
+        type G = Set<members::g>;
+        type R = St::R;
+    }
+    ///State transition - sets the `r` field to Set
+    pub struct SetR<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetR<St> {}
+    impl<St: State> State for SetR<St> {
+        type B = St::B;
+        type G = St::G;
+        type R = Set<members::r>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `r` field
-        pub struct r(());
-        ///Marker type for the `g` field
-        pub struct g(());
         ///Marker type for the `b` field
         pub struct b(());
+        ///Marker type for the `g` field
+        pub struct g(());
+        ///Marker type for the `r` field
+        pub struct r(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct ColorRgbBuilder<'a, S: color_rgb_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<i64>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<i64>,
+/// Builder for constructing an instance of this type.
+pub struct ColorRgbBuilder<
+    St: color_rgb_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<i64>,
+        core::option::Option<i64>,
+        core::option::Option<i64>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> ColorRgb<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> ColorRgbBuilder<'a, color_rgb_state::Empty> {
+impl ColorRgb<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> ColorRgbBuilder<color_rgb_state::Empty, jacquard_common::DefaultStr> {
         ColorRgbBuilder::new()
     }
 }
 
-impl<'a> ColorRgbBuilder<'a, color_rgb_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> ColorRgb<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> ColorRgbBuilder<color_rgb_state::Empty, S> {
+        ColorRgbBuilder::builder()
+    }
+}
+
+impl ColorRgbBuilder<color_rgb_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ColorRgbBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ColorRgbBuilder<'a, S>
+impl<S: jacquard_common::BosStr> ColorRgbBuilder<color_rgb_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        ColorRgbBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ColorRgbBuilder<St, S>
 where
-    S: color_rgb_state::State,
-    S::B: color_rgb_state::IsUnset,
+    St: color_rgb_state::State,
+    St::B: color_rgb_state::IsUnset,
 {
     /// Set the `b` field (required)
-    pub fn b(mut self, value: impl Into<i64>) -> ColorRgbBuilder<'a, color_rgb_state::SetB<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+    pub fn b(mut self, value: impl Into<i64>) -> ColorRgbBuilder<color_rgb_state::SetB<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         ColorRgbBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ColorRgbBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ColorRgbBuilder<St, S>
 where
-    S: color_rgb_state::State,
-    S::G: color_rgb_state::IsUnset,
+    St: color_rgb_state::State,
+    St::G: color_rgb_state::IsUnset,
 {
     /// Set the `g` field (required)
-    pub fn g(mut self, value: impl Into<i64>) -> ColorRgbBuilder<'a, color_rgb_state::SetG<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+    pub fn g(mut self, value: impl Into<i64>) -> ColorRgbBuilder<color_rgb_state::SetG<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         ColorRgbBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ColorRgbBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ColorRgbBuilder<St, S>
 where
-    S: color_rgb_state::State,
-    S::R: color_rgb_state::IsUnset,
+    St: color_rgb_state::State,
+    St::R: color_rgb_state::IsUnset,
 {
     /// Set the `r` field (required)
-    pub fn r(mut self, value: impl Into<i64>) -> ColorRgbBuilder<'a, color_rgb_state::SetR<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+    pub fn r(mut self, value: impl Into<i64>) -> ColorRgbBuilder<color_rgb_state::SetR<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         ColorRgbBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ColorRgbBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ColorRgbBuilder<St, S>
 where
-    S: color_rgb_state::State,
-    S::R: color_rgb_state::IsSet,
-    S::G: color_rgb_state::IsSet,
-    S::B: color_rgb_state::IsSet,
+    St: color_rgb_state::State,
+    St::B: color_rgb_state::IsSet,
+    St::G: color_rgb_state::IsSet,
+    St::R: color_rgb_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> ColorRgb<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> ColorRgb<S> {
         ColorRgb {
-            b: self.__unsafe_private_named.0.unwrap(),
-            g: self.__unsafe_private_named.1.unwrap(),
-            r: self.__unsafe_private_named.2.unwrap(),
+            b: self._fields.0.unwrap(),
+            g: self._fields.1.unwrap(),
+            r: self._fields.2.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> ColorRgb<'a> {
+    ) -> ColorRgb<S> {
         ColorRgb {
-            b: self.__unsafe_private_named.0.unwrap(),
-            g: self.__unsafe_private_named.1.unwrap(),
-            r: self.__unsafe_private_named.2.unwrap(),
+            b: self._fields.0.unwrap(),
+            g: self._fields.1.unwrap(),
+            r: self._fields.2.unwrap(),
             extra_data: Some(extra_data),
         }
     }
 }
 
-fn lexicon_doc_app_bsky_embed_external() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_app_bsky_embed_external() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("app.bsky.embed.external"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("colorRGB"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("colorRGB"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
                         description: Some(::jacquard_common::CowStr::new_static(
                             "RGB color definition, inspired by site.standard.theme.color#rgb",
                         )),
                         required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("r"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("g"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("b"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("r"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("g"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("b"),
                         ]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("b"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("b"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
                                     ::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
                                         minimum: Some(0i64),
                                         maximum: Some(255i64),
-                                        r#enum: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("g"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("g"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
                                     ::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
                                         minimum: Some(0i64),
                                         maximum: Some(255i64),
-                                        r#enum: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("r"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("r"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
                                     ::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
                                         minimum: Some(0i64),
                                         maximum: Some(255i64),
-                                        r#enum: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("external"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("external"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: None,
                     required: Some(
                         vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("uri"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("title"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("description")
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("uri"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("title"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("description")
                         ],
                     ),
-                    nullable: None,
                     properties: {
                         #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
+                        let mut map = ::alloc::collections::BTreeMap::new();
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "associatedRefs",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
@@ -279,78 +707,56 @@ fn lexicon_doc_app_bsky_embed_external() -> ::jacquard_lexicon::lexicon::Lexicon
                                     ),
                                 ),
                                 items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                    description: None,
                                     r#ref: ::jacquard_common::CowStr::new_static(
                                         "com.atproto.repo.strongRef",
                                     ),
+                                    ..Default::default()
                                 }),
-                                min_length: None,
-                                max_length: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "description",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("thumb"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "thumb",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Blob(::jacquard_lexicon::lexicon::LexBlob {
-                                description: None,
-                                accept: None,
-                                max_size: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("title"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "title",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("uri"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "uri",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Uri,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map
                     },
+                    ..Default::default()
                 }),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
@@ -359,69 +765,68 @@ fn lexicon_doc_app_bsky_embed_external() -> ::jacquard_lexicon::lexicon::Lexicon
                     ),
                     required: Some(
                         vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("external")
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("external")
                         ],
                     ),
-                    nullable: None,
                     properties: {
                         #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
+                        let mut map = ::alloc::collections::BTreeMap::new();
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("external"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "external",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                description: None,
                                 r#ref: ::jacquard_common::CowStr::new_static("#external"),
+                                ..Default::default()
                             }),
                         );
                         map
                     },
+                    ..Default::default()
                 }),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("view"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("view"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
-                        required: Some(vec![::jacquard_common::smol_str::SmolStr::new_static(
-                            "external",
-                        )]),
-                        nullable: None,
+                        required: Some(vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("external"),
+                        ]),
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("external"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("external"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
                                     ::jacquard_lexicon::lexicon::LexRef {
-                                        description: None,
                                         r#ref: ::jacquard_common::CowStr::new_static(
                                             "#viewExternal",
                                         ),
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("viewExternal"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("viewExternal"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: None,
                     required: Some(
                         vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("uri"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("title"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("description")
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("uri"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("title"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("description")
                         ],
                     ),
-                    nullable: None,
                     properties: {
                         #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
+                        let mut map = ::alloc::collections::BTreeMap::new();
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "associatedProfiles",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
@@ -431,17 +836,16 @@ fn lexicon_doc_app_bsky_embed_external() -> ::jacquard_lexicon::lexicon::Lexicon
                                     ),
                                 ),
                                 items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                    description: None,
                                     r#ref: ::jacquard_common::CowStr::new_static(
                                         "app.bsky.actor.defs#profileViewBasic",
                                     ),
+                                    ..Default::default()
                                 }),
-                                min_length: None,
-                                max_length: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "associatedRefs",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
@@ -451,17 +855,16 @@ fn lexicon_doc_app_bsky_embed_external() -> ::jacquard_lexicon::lexicon::Lexicon
                                     ),
                                 ),
                                 items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                    description: None,
                                     r#ref: ::jacquard_common::CowStr::new_static(
                                         "com.atproto.repo.strongRef",
                                     ),
+                                    ..Default::default()
                                 }),
-                                min_length: None,
-                                max_length: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "createdAt",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -473,103 +876,71 @@ fn lexicon_doc_app_bsky_embed_external() -> ::jacquard_lexicon::lexicon::Lexicon
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "description",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("labels"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "labels",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
-                                description: None,
                                 items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                    description: None,
                                     r#ref: ::jacquard_common::CowStr::new_static(
                                         "com.atproto.label.defs#label",
                                     ),
+                                    ..Default::default()
                                 }),
-                                min_length: None,
-                                max_length: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "readingTime",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                description: None,
-                                default: None,
-                                minimum: None,
-                                maximum: None,
-                                r#enum: None,
-                                r#const: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("source"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "source",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                description: None,
                                 r#ref: ::jacquard_common::CowStr::new_static(
                                     "#viewExternalSource",
                                 ),
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("thumb"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "thumb",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Uri,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("title"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "title",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "updatedAt",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -581,39 +952,29 @@ fn lexicon_doc_app_bsky_embed_external() -> ::jacquard_lexicon::lexicon::Lexicon
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("uri"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "uri",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Uri,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map
                     },
+                    ..Default::default()
                 }),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("viewExternalSource"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "viewExternalSource",
+                ),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
@@ -622,33 +983,25 @@ fn lexicon_doc_app_bsky_embed_external() -> ::jacquard_lexicon::lexicon::Lexicon
                     ),
                     required: Some(
                         vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("uri"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("title")
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("uri"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("title")
                         ],
                     ),
-                    nullable: None,
                     properties: {
                         #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
+                        let mut map = ::alloc::collections::BTreeMap::new();
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "description",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("icon"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "icon",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
@@ -658,42 +1011,32 @@ fn lexicon_doc_app_bsky_embed_external() -> ::jacquard_lexicon::lexicon::Lexicon
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Uri,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("theme"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "theme",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                description: None,
                                 r#ref: ::jacquard_common::CowStr::new_static(
                                     "#viewExternalSourceTheme",
                                 ),
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("title"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "title",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("uri"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "uri",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
@@ -703,22 +1046,16 @@ fn lexicon_doc_app_bsky_embed_external() -> ::jacquard_lexicon::lexicon::Lexicon
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Uri,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map
                     },
+                    ..Default::default()
                 }),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                     "viewExternalSourceTheme",
                 ),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
@@ -727,153 +1064,54 @@ fn lexicon_doc_app_bsky_embed_external() -> ::jacquard_lexicon::lexicon::Lexicon
                             "The theme colors of an external source, such as a site.standard.publication. These colors may be used when rendering an embed from that source.",
                         ),
                     ),
-                    required: None,
-                    nullable: None,
                     properties: {
                         #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
+                        let mut map = ::alloc::collections::BTreeMap::new();
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "accentForegroundRGB",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                description: None,
                                 r#ref: ::jacquard_common::CowStr::new_static("#colorRGB"),
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "accentRGB",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                description: None,
                                 r#ref: ::jacquard_common::CowStr::new_static("#colorRGB"),
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "backgroundRGB",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                description: None,
                                 r#ref: ::jacquard_common::CowStr::new_static("#colorRGB"),
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "foregroundRGB",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                description: None,
                                 r#ref: ::jacquard_common::CowStr::new_static("#colorRGB"),
+                                ..Default::default()
                             }),
                         );
                         map
                     },
+                    ..Default::default()
                 }),
             );
             map
         },
+        ..Default::default()
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ColorRgb<'a> {
-    fn nsid() -> &'static str {
-        "app.bsky.embed.external"
-    }
-    fn def_name() -> &'static str {
-        "colorRGB"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_app_bsky_embed_external()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        {
-            let value = &self.b;
-            if *value > 255i64 {
-                return Err(::jacquard_lexicon::validation::ConstraintError::Maximum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("b"),
-                    max: 255i64,
-                    actual: *value,
-                });
-            }
-        }
-        {
-            let value = &self.b;
-            if *value < 0i64 {
-                return Err(::jacquard_lexicon::validation::ConstraintError::Minimum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("b"),
-                    min: 0i64,
-                    actual: *value,
-                });
-            }
-        }
-        {
-            let value = &self.g;
-            if *value > 255i64 {
-                return Err(::jacquard_lexicon::validation::ConstraintError::Maximum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("g"),
-                    max: 255i64,
-                    actual: *value,
-                });
-            }
-        }
-        {
-            let value = &self.g;
-            if *value < 0i64 {
-                return Err(::jacquard_lexicon::validation::ConstraintError::Minimum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("g"),
-                    min: 0i64,
-                    actual: *value,
-                });
-            }
-        }
-        {
-            let value = &self.r;
-            if *value > 255i64 {
-                return Err(::jacquard_lexicon::validation::ConstraintError::Maximum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("r"),
-                    max: 255i64,
-                    actual: *value,
-                });
-            }
-        }
-        {
-            let value = &self.r;
-            if *value < 0i64 {
-                return Err(::jacquard_lexicon::validation::ConstraintError::Minimum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("r"),
-                    min: 0i64,
-                    actual: *value,
-                });
-            }
-        }
-        Ok(())
-    }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct External<'a> {
-    /// StrongRefs (uri+cid) of the Atmosphere records that backed this view.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub associated_refs:
-        std::option::Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>>,
-    #[serde(borrow)]
-    pub description: jacquard_common::CowStr<'a>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub thumb: std::option::Option<jacquard_common::types::blob::BlobRef<'a>>,
-    #[serde(borrow)]
-    pub title: jacquard_common::CowStr<'a>,
-    #[serde(borrow)]
-    pub uri: jacquard_common::types::string::Uri<'a>,
 }
 
 pub mod external_state {
@@ -886,240 +1124,233 @@ pub mod external_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Uri;
-        type Title;
         type Description;
+        type Title;
+        type Uri;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Uri = Unset;
-        type Title = Unset;
         type Description = Unset;
-    }
-    ///State transition - sets the `uri` field to Set
-    pub struct SetUri<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUri<S> {}
-    impl<S: State> State for SetUri<S> {
-        type Uri = Set<members::uri>;
-        type Title = S::Title;
-        type Description = S::Description;
-    }
-    ///State transition - sets the `title` field to Set
-    pub struct SetTitle<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetTitle<S> {}
-    impl<S: State> State for SetTitle<S> {
-        type Uri = S::Uri;
-        type Title = Set<members::title>;
-        type Description = S::Description;
+        type Title = Unset;
+        type Uri = Unset;
     }
     ///State transition - sets the `description` field to Set
-    pub struct SetDescription<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDescription<S> {}
-    impl<S: State> State for SetDescription<S> {
-        type Uri = S::Uri;
-        type Title = S::Title;
+    pub struct SetDescription<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetDescription<St> {}
+    impl<St: State> State for SetDescription<St> {
         type Description = Set<members::description>;
+        type Title = St::Title;
+        type Uri = St::Uri;
+    }
+    ///State transition - sets the `title` field to Set
+    pub struct SetTitle<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetTitle<St> {}
+    impl<St: State> State for SetTitle<St> {
+        type Description = St::Description;
+        type Title = Set<members::title>;
+        type Uri = St::Uri;
+    }
+    ///State transition - sets the `uri` field to Set
+    pub struct SetUri<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetUri<St> {}
+    impl<St: State> State for SetUri<St> {
+        type Description = St::Description;
+        type Title = St::Title;
+        type Uri = Set<members::uri>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `uri` field
-        pub struct uri(());
-        ///Marker type for the `title` field
-        pub struct title(());
         ///Marker type for the `description` field
         pub struct description(());
+        ///Marker type for the `title` field
+        pub struct title(());
+        ///Marker type for the `uri` field
+        pub struct uri(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct ExternalBuilder<'a, S: external_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::blob::BlobRef<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Uri<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct ExternalBuilder<
+    St: external_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::blob::BlobRef<S>>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::UriValue<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> External<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> ExternalBuilder<'a, external_state::Empty> {
+impl External<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> ExternalBuilder<external_state::Empty, jacquard_common::DefaultStr> {
         ExternalBuilder::new()
     }
 }
 
-impl<'a> ExternalBuilder<'a, external_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> External<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> ExternalBuilder<external_state::Empty, S> {
+        ExternalBuilder::builder()
+    }
+}
+
+impl ExternalBuilder<external_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ExternalBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: external_state::State> ExternalBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> ExternalBuilder<external_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        ExternalBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: external_state::State, S: jacquard_common::BosStr> ExternalBuilder<St, S> {
     /// Set the `associatedRefs` field (optional)
     pub fn associated_refs(
         mut self,
-        value: impl Into<Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>>>,
+        value: impl Into<Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>>>,
     ) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+        self._fields.0 = value.into();
         self
     }
     /// Set the `associatedRefs` field to an Option value (optional)
     pub fn maybe_associated_refs(
         mut self,
-        value: Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>>,
+        value: Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.0 = value;
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S> ExternalBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ExternalBuilder<St, S>
 where
-    S: external_state::State,
-    S::Description: external_state::IsUnset,
+    St: external_state::State,
+    St::Description: external_state::IsUnset,
 {
     /// Set the `description` field (required)
     pub fn description(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> ExternalBuilder<'a, external_state::SetDescription<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> ExternalBuilder<external_state::SetDescription<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         ExternalBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: external_state::State> ExternalBuilder<'a, S> {
+impl<St: external_state::State, S: jacquard_common::BosStr> ExternalBuilder<St, S> {
     /// Set the `thumb` field (optional)
     pub fn thumb(
         mut self,
-        value: impl Into<Option<jacquard_common::types::blob::BlobRef<'a>>>,
+        value: impl Into<Option<jacquard_common::types::blob::BlobRef<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.2 = value.into();
+        self._fields.2 = value.into();
         self
     }
     /// Set the `thumb` field to an Option value (optional)
-    pub fn maybe_thumb(mut self, value: Option<jacquard_common::types::blob::BlobRef<'a>>) -> Self {
-        self.__unsafe_private_named.2 = value;
+    pub fn maybe_thumb(mut self, value: Option<jacquard_common::types::blob::BlobRef<S>>) -> Self {
+        self._fields.2 = value;
         self
     }
 }
 
-impl<'a, S> ExternalBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ExternalBuilder<St, S>
 where
-    S: external_state::State,
-    S::Title: external_state::IsUnset,
+    St: external_state::State,
+    St::Title: external_state::IsUnset,
 {
     /// Set the `title` field (required)
     pub fn title(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> ExternalBuilder<'a, external_state::SetTitle<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> ExternalBuilder<external_state::SetTitle<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
         ExternalBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ExternalBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ExternalBuilder<St, S>
 where
-    S: external_state::State,
-    S::Uri: external_state::IsUnset,
+    St: external_state::State,
+    St::Uri: external_state::IsUnset,
 {
     /// Set the `uri` field (required)
     pub fn uri(
         mut self,
-        value: impl Into<jacquard_common::types::string::Uri<'a>>,
-    ) -> ExternalBuilder<'a, external_state::SetUri<S>> {
-        self.__unsafe_private_named.4 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::UriValue<S>>,
+    ) -> ExternalBuilder<external_state::SetUri<St>, S> {
+        self._fields.4 = ::core::option::Option::Some(value.into());
         ExternalBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ExternalBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ExternalBuilder<St, S>
 where
-    S: external_state::State,
-    S::Uri: external_state::IsSet,
-    S::Title: external_state::IsSet,
-    S::Description: external_state::IsSet,
+    St: external_state::State,
+    St::Description: external_state::IsSet,
+    St::Title: external_state::IsSet,
+    St::Uri: external_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> External<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> External<S> {
         External {
-            associated_refs: self.__unsafe_private_named.0,
-            description: self.__unsafe_private_named.1.unwrap(),
-            thumb: self.__unsafe_private_named.2,
-            title: self.__unsafe_private_named.3.unwrap(),
-            uri: self.__unsafe_private_named.4.unwrap(),
+            associated_refs: self._fields.0,
+            description: self._fields.1.unwrap(),
+            thumb: self._fields.2,
+            title: self._fields.3.unwrap(),
+            uri: self._fields.4.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> External<'a> {
+    ) -> External<S> {
         External {
-            associated_refs: self.__unsafe_private_named.0,
-            description: self.__unsafe_private_named.1.unwrap(),
-            thumb: self.__unsafe_private_named.2,
-            title: self.__unsafe_private_named.3.unwrap(),
-            uri: self.__unsafe_private_named.4.unwrap(),
+            associated_refs: self._fields.0,
+            description: self._fields.1.unwrap(),
+            thumb: self._fields.2,
+            title: self._fields.3.unwrap(),
+            uri: self._fields.4.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for External<'a> {
-    fn nsid() -> &'static str {
-        "app.bsky.embed.external"
-    }
-    fn def_name() -> &'static str {
-        "external"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_app_bsky_embed_external()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-/// A representation of some externally linked content (eg, a URL and 'card'), embedded in a Bluesky record (eg, a post).
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct ExternalRecord<'a> {
-    #[serde(borrow)]
-    pub external: crate::generated::app_bsky::embed::external::External<'a>,
 }
 
 pub mod external_record_state {
@@ -1141,9 +1372,9 @@ pub mod external_record_state {
         type External = Unset;
     }
     ///State transition - sets the `external` field to Set
-    pub struct SetExternal<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetExternal<S> {}
-    impl<S: State> State for SetExternal<S> {
+    pub struct SetExternal<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetExternal<St> {}
+    impl<St: State> State for SetExternal<St> {
         type External = Set<members::external>;
     }
     /// Marker types for field names
@@ -1154,103 +1385,97 @@ pub mod external_record_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct ExternalRecordBuilder<'a, S: external_record_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named:
-        (::core::option::Option<crate::generated::app_bsky::embed::external::External<'a>>,),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct ExternalRecordBuilder<
+    St: external_record_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<crate::generated::app_bsky::embed::external::External<S>>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> ExternalRecord<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> ExternalRecordBuilder<'a, external_record_state::Empty> {
+impl ExternalRecord<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> ExternalRecordBuilder<external_record_state::Empty, jacquard_common::DefaultStr>
+    {
         ExternalRecordBuilder::new()
     }
 }
 
-impl<'a> ExternalRecordBuilder<'a, external_record_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> ExternalRecord<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> ExternalRecordBuilder<external_record_state::Empty, S> {
+        ExternalRecordBuilder::builder()
+    }
+}
+
+impl ExternalRecordBuilder<external_record_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ExternalRecordBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ExternalRecordBuilder<'a, S>
+impl<S: jacquard_common::BosStr> ExternalRecordBuilder<external_record_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        ExternalRecordBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ExternalRecordBuilder<St, S>
 where
-    S: external_record_state::State,
-    S::External: external_record_state::IsUnset,
+    St: external_record_state::State,
+    St::External: external_record_state::IsUnset,
 {
     /// Set the `external` field (required)
     pub fn external(
         mut self,
-        value: impl Into<crate::generated::app_bsky::embed::external::External<'a>>,
-    ) -> ExternalRecordBuilder<'a, external_record_state::SetExternal<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<crate::generated::app_bsky::embed::external::External<S>>,
+    ) -> ExternalRecordBuilder<external_record_state::SetExternal<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         ExternalRecordBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ExternalRecordBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ExternalRecordBuilder<St, S>
 where
-    S: external_record_state::State,
-    S::External: external_record_state::IsSet,
+    St: external_record_state::State,
+    St::External: external_record_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> ExternalRecord<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> ExternalRecord<S> {
         ExternalRecord {
-            external: self.__unsafe_private_named.0.unwrap(),
+            external: self._fields.0.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> ExternalRecord<'a> {
+    ) -> ExternalRecord<S> {
         ExternalRecord {
-            external: self.__unsafe_private_named.0.unwrap(),
+            external: self._fields.0.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ExternalRecord<'a> {
-    fn nsid() -> &'static str {
-        "app.bsky.embed.external"
-    }
-    fn def_name() -> &'static str {
-        "main"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_app_bsky_embed_external()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct View<'a> {
-    #[serde(borrow)]
-    pub external: crate::generated::app_bsky::embed::external::ViewExternal<'a>,
 }
 
 pub mod view_state {
@@ -1272,9 +1497,9 @@ pub mod view_state {
         type External = Unset;
     }
     ///State transition - sets the `external` field to Set
-    pub struct SetExternal<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetExternal<S> {}
-    impl<S: State> State for SetExternal<S> {
+    pub struct SetExternal<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetExternal<St> {}
+    impl<St: State> State for SetExternal<St> {
         type External = Set<members::external>;
     }
     /// Marker types for field names
@@ -1285,136 +1510,96 @@ pub mod view_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct ViewBuilder<'a, S: view_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named:
-        (::core::option::Option<crate::generated::app_bsky::embed::external::ViewExternal<'a>>,),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct ViewBuilder<
+    St: view_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<crate::generated::app_bsky::embed::external::ViewExternal<S>>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> View<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> ViewBuilder<'a, view_state::Empty> {
+impl View<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> ViewBuilder<view_state::Empty, jacquard_common::DefaultStr> {
         ViewBuilder::new()
     }
 }
 
-impl<'a> ViewBuilder<'a, view_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> View<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> ViewBuilder<view_state::Empty, S> {
+        ViewBuilder::builder()
+    }
+}
+
+impl ViewBuilder<view_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ViewBuilder<'a, S>
+impl<S: jacquard_common::BosStr> ViewBuilder<view_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        ViewBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ViewBuilder<St, S>
 where
-    S: view_state::State,
-    S::External: view_state::IsUnset,
+    St: view_state::State,
+    St::External: view_state::IsUnset,
 {
     /// Set the `external` field (required)
     pub fn external(
         mut self,
-        value: impl Into<crate::generated::app_bsky::embed::external::ViewExternal<'a>>,
-    ) -> ViewBuilder<'a, view_state::SetExternal<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<crate::generated::app_bsky::embed::external::ViewExternal<S>>,
+    ) -> ViewBuilder<view_state::SetExternal<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         ViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ViewBuilder<St, S>
 where
-    S: view_state::State,
-    S::External: view_state::IsSet,
+    St: view_state::State,
+    St::External: view_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> View<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> View<S> {
         View {
-            external: self.__unsafe_private_named.0.unwrap(),
+            external: self._fields.0.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> View<'a> {
+    ) -> View<S> {
         View {
-            external: self.__unsafe_private_named.0.unwrap(),
+            external: self._fields.0.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for View<'a> {
-    fn nsid() -> &'static str {
-        "app.bsky.embed.external"
-    }
-    fn def_name() -> &'static str {
-        "view"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_app_bsky_embed_external()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct ViewExternal<'a> {
-    /// Profiles of the owners of the Atmosphere records that backed this view.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub associated_profiles:
-        std::option::Option<Vec<crate::generated::app_bsky::actor::ProfileViewBasic<'a>>>,
-    /// StrongRefs (uri+cid) of the Atmosphere records that backed this view.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub associated_refs:
-        std::option::Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>>,
-    /// When the external content was created, if available. Example: a publication date, for an article.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub created_at: std::option::Option<jacquard_common::types::string::Datetime>,
-    #[serde(borrow)]
-    pub description: jacquard_common::CowStr<'a>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub labels: std::option::Option<Vec<crate::generated::com_atproto::label::Label<'a>>>,
-    /// Estimated reading time in minutes, if applicable and available.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub reading_time: std::option::Option<i64>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub source:
-        std::option::Option<crate::generated::app_bsky::embed::external::ViewExternalSource<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub thumb: std::option::Option<jacquard_common::types::string::Uri<'a>>,
-    #[serde(borrow)]
-    pub title: jacquard_common::CowStr<'a>,
-    /// When the external content was updated, if available.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub updated_at: std::option::Option<jacquard_common::types::string::Datetime>,
-    #[serde(borrow)]
-    pub uri: jacquard_common::types::string::Uri<'a>,
 }
 
 pub mod view_external_state {
@@ -1427,138 +1612,161 @@ pub mod view_external_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Uri;
-        type Title;
         type Description;
+        type Title;
+        type Uri;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Uri = Unset;
-        type Title = Unset;
         type Description = Unset;
-    }
-    ///State transition - sets the `uri` field to Set
-    pub struct SetUri<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUri<S> {}
-    impl<S: State> State for SetUri<S> {
-        type Uri = Set<members::uri>;
-        type Title = S::Title;
-        type Description = S::Description;
-    }
-    ///State transition - sets the `title` field to Set
-    pub struct SetTitle<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetTitle<S> {}
-    impl<S: State> State for SetTitle<S> {
-        type Uri = S::Uri;
-        type Title = Set<members::title>;
-        type Description = S::Description;
+        type Title = Unset;
+        type Uri = Unset;
     }
     ///State transition - sets the `description` field to Set
-    pub struct SetDescription<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDescription<S> {}
-    impl<S: State> State for SetDescription<S> {
-        type Uri = S::Uri;
-        type Title = S::Title;
+    pub struct SetDescription<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetDescription<St> {}
+    impl<St: State> State for SetDescription<St> {
         type Description = Set<members::description>;
+        type Title = St::Title;
+        type Uri = St::Uri;
+    }
+    ///State transition - sets the `title` field to Set
+    pub struct SetTitle<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetTitle<St> {}
+    impl<St: State> State for SetTitle<St> {
+        type Description = St::Description;
+        type Title = Set<members::title>;
+        type Uri = St::Uri;
+    }
+    ///State transition - sets the `uri` field to Set
+    pub struct SetUri<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetUri<St> {}
+    impl<St: State> State for SetUri<St> {
+        type Description = St::Description;
+        type Title = St::Title;
+        type Uri = Set<members::uri>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `uri` field
-        pub struct uri(());
-        ///Marker type for the `title` field
-        pub struct title(());
         ///Marker type for the `description` field
         pub struct description(());
+        ///Marker type for the `title` field
+        pub struct title(());
+        ///Marker type for the `uri` field
+        pub struct uri(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct ViewExternalBuilder<'a, S: view_external_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<Vec<crate::generated::app_bsky::actor::ProfileViewBasic<'a>>>,
-        ::core::option::Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<Vec<crate::generated::com_atproto::label::Label<'a>>>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<crate::generated::app_bsky::embed::external::ViewExternalSource<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Uri<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<jacquard_common::types::string::Uri<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct ViewExternalBuilder<
+    St: view_external_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<Vec<crate::generated::app_bsky::actor::ProfileViewBasic<S>>>,
+        core::option::Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<S>,
+        core::option::Option<Vec<crate::generated::com_atproto::label::Label<S>>>,
+        core::option::Option<i64>,
+        core::option::Option<crate::generated::app_bsky::embed::external::ViewExternalSource<S>>,
+        core::option::Option<jacquard_common::types::string::UriValue<S>>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<jacquard_common::types::string::UriValue<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> ViewExternal<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> ViewExternalBuilder<'a, view_external_state::Empty> {
+impl ViewExternal<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> ViewExternalBuilder<view_external_state::Empty, jacquard_common::DefaultStr> {
         ViewExternalBuilder::new()
     }
 }
 
-impl<'a> ViewExternalBuilder<'a, view_external_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> ViewExternal<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> ViewExternalBuilder<view_external_state::Empty, S> {
+        ViewExternalBuilder::builder()
+    }
+}
+
+impl ViewExternalBuilder<view_external_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ViewExternalBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (
+            _state: ::core::marker::PhantomData,
+            _fields: (
                 None, None, None, None, None, None, None, None, None, None, None,
             ),
-            _phantom: ::core::marker::PhantomData,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: view_external_state::State> ViewExternalBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> ViewExternalBuilder<view_external_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        ViewExternalBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (
+                None, None, None, None, None, None, None, None, None, None, None,
+            ),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: view_external_state::State, S: jacquard_common::BosStr> ViewExternalBuilder<St, S> {
     /// Set the `associatedProfiles` field (optional)
     pub fn associated_profiles(
         mut self,
-        value: impl Into<Option<Vec<crate::generated::app_bsky::actor::ProfileViewBasic<'a>>>>,
+        value: impl Into<Option<Vec<crate::generated::app_bsky::actor::ProfileViewBasic<S>>>>,
     ) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+        self._fields.0 = value.into();
         self
     }
     /// Set the `associatedProfiles` field to an Option value (optional)
     pub fn maybe_associated_profiles(
         mut self,
-        value: Option<Vec<crate::generated::app_bsky::actor::ProfileViewBasic<'a>>>,
+        value: Option<Vec<crate::generated::app_bsky::actor::ProfileViewBasic<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.0 = value;
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S: view_external_state::State> ViewExternalBuilder<'a, S> {
+impl<St: view_external_state::State, S: jacquard_common::BosStr> ViewExternalBuilder<St, S> {
     /// Set the `associatedRefs` field (optional)
     pub fn associated_refs(
         mut self,
-        value: impl Into<Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>>>,
+        value: impl Into<Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>>>,
     ) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self._fields.1 = value.into();
         self
     }
     /// Set the `associatedRefs` field to an Option value (optional)
     pub fn maybe_associated_refs(
         mut self,
-        value: Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>>,
+        value: Option<Vec<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.1 = value;
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S: view_external_state::State> ViewExternalBuilder<'a, S> {
+impl<St: view_external_state::State, S: jacquard_common::BosStr> ViewExternalBuilder<St, S> {
     /// Set the `createdAt` field (optional)
     pub fn created_at(
         mut self,
         value: impl Into<Option<jacquard_common::types::string::Datetime>>,
     ) -> Self {
-        self.__unsafe_private_named.2 = value.into();
+        self._fields.2 = value.into();
         self
     }
     /// Set the `createdAt` field to an Option value (optional)
@@ -1566,123 +1774,126 @@ impl<'a, S: view_external_state::State> ViewExternalBuilder<'a, S> {
         mut self,
         value: Option<jacquard_common::types::string::Datetime>,
     ) -> Self {
-        self.__unsafe_private_named.2 = value;
+        self._fields.2 = value;
         self
     }
 }
 
-impl<'a, S> ViewExternalBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ViewExternalBuilder<St, S>
 where
-    S: view_external_state::State,
-    S::Description: view_external_state::IsUnset,
+    St: view_external_state::State,
+    St::Description: view_external_state::IsUnset,
 {
     /// Set the `description` field (required)
     pub fn description(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> ViewExternalBuilder<'a, view_external_state::SetDescription<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> ViewExternalBuilder<view_external_state::SetDescription<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
         ViewExternalBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: view_external_state::State> ViewExternalBuilder<'a, S> {
+impl<St: view_external_state::State, S: jacquard_common::BosStr> ViewExternalBuilder<St, S> {
     /// Set the `labels` field (optional)
     pub fn labels(
         mut self,
-        value: impl Into<Option<Vec<crate::generated::com_atproto::label::Label<'a>>>>,
+        value: impl Into<Option<Vec<crate::generated::com_atproto::label::Label<S>>>>,
     ) -> Self {
-        self.__unsafe_private_named.4 = value.into();
+        self._fields.4 = value.into();
         self
     }
     /// Set the `labels` field to an Option value (optional)
     pub fn maybe_labels(
         mut self,
-        value: Option<Vec<crate::generated::com_atproto::label::Label<'a>>>,
+        value: Option<Vec<crate::generated::com_atproto::label::Label<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.4 = value;
+        self._fields.4 = value;
         self
     }
 }
 
-impl<'a, S: view_external_state::State> ViewExternalBuilder<'a, S> {
+impl<St: view_external_state::State, S: jacquard_common::BosStr> ViewExternalBuilder<St, S> {
     /// Set the `readingTime` field (optional)
     pub fn reading_time(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.5 = value.into();
+        self._fields.5 = value.into();
         self
     }
     /// Set the `readingTime` field to an Option value (optional)
     pub fn maybe_reading_time(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.5 = value;
+        self._fields.5 = value;
         self
     }
 }
 
-impl<'a, S: view_external_state::State> ViewExternalBuilder<'a, S> {
+impl<St: view_external_state::State, S: jacquard_common::BosStr> ViewExternalBuilder<St, S> {
     /// Set the `source` field (optional)
     pub fn source(
         mut self,
-        value: impl Into<Option<crate::generated::app_bsky::embed::external::ViewExternalSource<'a>>>,
+        value: impl Into<Option<crate::generated::app_bsky::embed::external::ViewExternalSource<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.6 = value.into();
+        self._fields.6 = value.into();
         self
     }
     /// Set the `source` field to an Option value (optional)
     pub fn maybe_source(
         mut self,
-        value: Option<crate::generated::app_bsky::embed::external::ViewExternalSource<'a>>,
+        value: Option<crate::generated::app_bsky::embed::external::ViewExternalSource<S>>,
     ) -> Self {
-        self.__unsafe_private_named.6 = value;
+        self._fields.6 = value;
         self
     }
 }
 
-impl<'a, S: view_external_state::State> ViewExternalBuilder<'a, S> {
+impl<St: view_external_state::State, S: jacquard_common::BosStr> ViewExternalBuilder<St, S> {
     /// Set the `thumb` field (optional)
     pub fn thumb(
         mut self,
-        value: impl Into<Option<jacquard_common::types::string::Uri<'a>>>,
+        value: impl Into<Option<jacquard_common::types::string::UriValue<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.7 = value.into();
+        self._fields.7 = value.into();
         self
     }
     /// Set the `thumb` field to an Option value (optional)
-    pub fn maybe_thumb(mut self, value: Option<jacquard_common::types::string::Uri<'a>>) -> Self {
-        self.__unsafe_private_named.7 = value;
+    pub fn maybe_thumb(
+        mut self,
+        value: Option<jacquard_common::types::string::UriValue<S>>,
+    ) -> Self {
+        self._fields.7 = value;
         self
     }
 }
 
-impl<'a, S> ViewExternalBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ViewExternalBuilder<St, S>
 where
-    S: view_external_state::State,
-    S::Title: view_external_state::IsUnset,
+    St: view_external_state::State,
+    St::Title: view_external_state::IsUnset,
 {
     /// Set the `title` field (required)
     pub fn title(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> ViewExternalBuilder<'a, view_external_state::SetTitle<S>> {
-        self.__unsafe_private_named.8 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> ViewExternalBuilder<view_external_state::SetTitle<St>, S> {
+        self._fields.8 = ::core::option::Option::Some(value.into());
         ViewExternalBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: view_external_state::State> ViewExternalBuilder<'a, S> {
+impl<St: view_external_state::State, S: jacquard_common::BosStr> ViewExternalBuilder<St, S> {
     /// Set the `updatedAt` field (optional)
     pub fn updated_at(
         mut self,
         value: impl Into<Option<jacquard_common::types::string::Datetime>>,
     ) -> Self {
-        self.__unsafe_private_named.9 = value.into();
+        self._fields.9 = value.into();
         self
     }
     /// Set the `updatedAt` field to an Option value (optional)
@@ -1690,120 +1901,77 @@ impl<'a, S: view_external_state::State> ViewExternalBuilder<'a, S> {
         mut self,
         value: Option<jacquard_common::types::string::Datetime>,
     ) -> Self {
-        self.__unsafe_private_named.9 = value;
+        self._fields.9 = value;
         self
     }
 }
 
-impl<'a, S> ViewExternalBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ViewExternalBuilder<St, S>
 where
-    S: view_external_state::State,
-    S::Uri: view_external_state::IsUnset,
+    St: view_external_state::State,
+    St::Uri: view_external_state::IsUnset,
 {
     /// Set the `uri` field (required)
     pub fn uri(
         mut self,
-        value: impl Into<jacquard_common::types::string::Uri<'a>>,
-    ) -> ViewExternalBuilder<'a, view_external_state::SetUri<S>> {
-        self.__unsafe_private_named.10 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::UriValue<S>>,
+    ) -> ViewExternalBuilder<view_external_state::SetUri<St>, S> {
+        self._fields.10 = ::core::option::Option::Some(value.into());
         ViewExternalBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ViewExternalBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ViewExternalBuilder<St, S>
 where
-    S: view_external_state::State,
-    S::Uri: view_external_state::IsSet,
-    S::Title: view_external_state::IsSet,
-    S::Description: view_external_state::IsSet,
+    St: view_external_state::State,
+    St::Description: view_external_state::IsSet,
+    St::Title: view_external_state::IsSet,
+    St::Uri: view_external_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> ViewExternal<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> ViewExternal<S> {
         ViewExternal {
-            associated_profiles: self.__unsafe_private_named.0,
-            associated_refs: self.__unsafe_private_named.1,
-            created_at: self.__unsafe_private_named.2,
-            description: self.__unsafe_private_named.3.unwrap(),
-            labels: self.__unsafe_private_named.4,
-            reading_time: self.__unsafe_private_named.5,
-            source: self.__unsafe_private_named.6,
-            thumb: self.__unsafe_private_named.7,
-            title: self.__unsafe_private_named.8.unwrap(),
-            updated_at: self.__unsafe_private_named.9,
-            uri: self.__unsafe_private_named.10.unwrap(),
+            associated_profiles: self._fields.0,
+            associated_refs: self._fields.1,
+            created_at: self._fields.2,
+            description: self._fields.3.unwrap(),
+            labels: self._fields.4,
+            reading_time: self._fields.5,
+            source: self._fields.6,
+            thumb: self._fields.7,
+            title: self._fields.8.unwrap(),
+            updated_at: self._fields.9,
+            uri: self._fields.10.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> ViewExternal<'a> {
+    ) -> ViewExternal<S> {
         ViewExternal {
-            associated_profiles: self.__unsafe_private_named.0,
-            associated_refs: self.__unsafe_private_named.1,
-            created_at: self.__unsafe_private_named.2,
-            description: self.__unsafe_private_named.3.unwrap(),
-            labels: self.__unsafe_private_named.4,
-            reading_time: self.__unsafe_private_named.5,
-            source: self.__unsafe_private_named.6,
-            thumb: self.__unsafe_private_named.7,
-            title: self.__unsafe_private_named.8.unwrap(),
-            updated_at: self.__unsafe_private_named.9,
-            uri: self.__unsafe_private_named.10.unwrap(),
+            associated_profiles: self._fields.0,
+            associated_refs: self._fields.1,
+            created_at: self._fields.2,
+            description: self._fields.3.unwrap(),
+            labels: self._fields.4,
+            reading_time: self._fields.5,
+            source: self._fields.6,
+            thumb: self._fields.7,
+            title: self._fields.8.unwrap(),
+            updated_at: self._fields.9,
+            uri: self._fields.10.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ViewExternal<'a> {
-    fn nsid() -> &'static str {
-        "app.bsky.embed.external"
-    }
-    fn def_name() -> &'static str {
-        "viewExternal"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_app_bsky_embed_external()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-/// The source of an external embed, such as a standard.site publication.
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct ViewExternalSource<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub description: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// Fully-qualified URL where an icon representing the source can be fetched. For example, CDN location provided by the App View.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub icon: std::option::Option<jacquard_common::types::string::Uri<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub theme: std::option::Option<
-        crate::generated::app_bsky::embed::external::ViewExternalSourceTheme<'a>,
-    >,
-    #[serde(borrow)]
-    pub title: jacquard_common::CowStr<'a>,
-    /// URI of the source, if available. Example: the https:// URL of a site.standard.publication record.
-    #[serde(borrow)]
-    pub uri: jacquard_common::types::string::Uri<'a>,
 }
 
 pub mod view_external_source_state {
@@ -1816,262 +1984,225 @@ pub mod view_external_source_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Uri;
         type Title;
+        type Uri;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Uri = Unset;
         type Title = Unset;
-    }
-    ///State transition - sets the `uri` field to Set
-    pub struct SetUri<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUri<S> {}
-    impl<S: State> State for SetUri<S> {
-        type Uri = Set<members::uri>;
-        type Title = S::Title;
+        type Uri = Unset;
     }
     ///State transition - sets the `title` field to Set
-    pub struct SetTitle<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetTitle<S> {}
-    impl<S: State> State for SetTitle<S> {
-        type Uri = S::Uri;
+    pub struct SetTitle<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetTitle<St> {}
+    impl<St: State> State for SetTitle<St> {
         type Title = Set<members::title>;
+        type Uri = St::Uri;
+    }
+    ///State transition - sets the `uri` field to Set
+    pub struct SetUri<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetUri<St> {}
+    impl<St: State> State for SetUri<St> {
+        type Title = St::Title;
+        type Uri = Set<members::uri>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `uri` field
-        pub struct uri(());
         ///Marker type for the `title` field
         pub struct title(());
+        ///Marker type for the `uri` field
+        pub struct uri(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct ViewExternalSourceBuilder<'a, S: view_external_source_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Uri<'a>>,
-        ::core::option::Option<
-            crate::generated::app_bsky::embed::external::ViewExternalSourceTheme<'a>,
+/// Builder for constructing an instance of this type.
+pub struct ViewExternalSourceBuilder<
+    St: view_external_source_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::UriValue<S>>,
+        core::option::Option<
+            crate::generated::app_bsky::embed::external::ViewExternalSourceTheme<S>,
         >,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Uri<'a>>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::UriValue<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> ViewExternalSource<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> ViewExternalSourceBuilder<'a, view_external_source_state::Empty> {
+impl ViewExternalSource<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> ViewExternalSourceBuilder<view_external_source_state::Empty, jacquard_common::DefaultStr>
+    {
         ViewExternalSourceBuilder::new()
     }
 }
 
-impl<'a> ViewExternalSourceBuilder<'a, view_external_source_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> ViewExternalSource<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> ViewExternalSourceBuilder<view_external_source_state::Empty, S> {
+        ViewExternalSourceBuilder::builder()
+    }
+}
+
+impl ViewExternalSourceBuilder<view_external_source_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ViewExternalSourceBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: view_external_source_state::State> ViewExternalSourceBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> ViewExternalSourceBuilder<view_external_source_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        ViewExternalSourceBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: view_external_source_state::State, S: jacquard_common::BosStr>
+    ViewExternalSourceBuilder<St, S>
+{
     /// Set the `description` field (optional)
-    pub fn description(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+    pub fn description(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.0 = value.into();
         self
     }
     /// Set the `description` field to an Option value (optional)
-    pub fn maybe_description(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.0 = value;
+    pub fn maybe_description(mut self, value: Option<S>) -> Self {
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S: view_external_source_state::State> ViewExternalSourceBuilder<'a, S> {
+impl<St: view_external_source_state::State, S: jacquard_common::BosStr>
+    ViewExternalSourceBuilder<St, S>
+{
     /// Set the `icon` field (optional)
     pub fn icon(
         mut self,
-        value: impl Into<Option<jacquard_common::types::string::Uri<'a>>>,
+        value: impl Into<Option<jacquard_common::types::string::UriValue<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self._fields.1 = value.into();
         self
     }
     /// Set the `icon` field to an Option value (optional)
-    pub fn maybe_icon(mut self, value: Option<jacquard_common::types::string::Uri<'a>>) -> Self {
-        self.__unsafe_private_named.1 = value;
+    pub fn maybe_icon(
+        mut self,
+        value: Option<jacquard_common::types::string::UriValue<S>>,
+    ) -> Self {
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S: view_external_source_state::State> ViewExternalSourceBuilder<'a, S> {
+impl<St: view_external_source_state::State, S: jacquard_common::BosStr>
+    ViewExternalSourceBuilder<St, S>
+{
     /// Set the `theme` field (optional)
     pub fn theme(
         mut self,
         value: impl Into<
-            Option<crate::generated::app_bsky::embed::external::ViewExternalSourceTheme<'a>>,
+            Option<crate::generated::app_bsky::embed::external::ViewExternalSourceTheme<S>>,
         >,
     ) -> Self {
-        self.__unsafe_private_named.2 = value.into();
+        self._fields.2 = value.into();
         self
     }
     /// Set the `theme` field to an Option value (optional)
     pub fn maybe_theme(
         mut self,
-        value: Option<crate::generated::app_bsky::embed::external::ViewExternalSourceTheme<'a>>,
+        value: Option<crate::generated::app_bsky::embed::external::ViewExternalSourceTheme<S>>,
     ) -> Self {
-        self.__unsafe_private_named.2 = value;
+        self._fields.2 = value;
         self
     }
 }
 
-impl<'a, S> ViewExternalSourceBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ViewExternalSourceBuilder<St, S>
 where
-    S: view_external_source_state::State,
-    S::Title: view_external_source_state::IsUnset,
+    St: view_external_source_state::State,
+    St::Title: view_external_source_state::IsUnset,
 {
     /// Set the `title` field (required)
     pub fn title(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> ViewExternalSourceBuilder<'a, view_external_source_state::SetTitle<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> ViewExternalSourceBuilder<view_external_source_state::SetTitle<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
         ViewExternalSourceBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ViewExternalSourceBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ViewExternalSourceBuilder<St, S>
 where
-    S: view_external_source_state::State,
-    S::Uri: view_external_source_state::IsUnset,
+    St: view_external_source_state::State,
+    St::Uri: view_external_source_state::IsUnset,
 {
     /// Set the `uri` field (required)
     pub fn uri(
         mut self,
-        value: impl Into<jacquard_common::types::string::Uri<'a>>,
-    ) -> ViewExternalSourceBuilder<'a, view_external_source_state::SetUri<S>> {
-        self.__unsafe_private_named.4 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::UriValue<S>>,
+    ) -> ViewExternalSourceBuilder<view_external_source_state::SetUri<St>, S> {
+        self._fields.4 = ::core::option::Option::Some(value.into());
         ViewExternalSourceBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ViewExternalSourceBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ViewExternalSourceBuilder<St, S>
 where
-    S: view_external_source_state::State,
-    S::Uri: view_external_source_state::IsSet,
-    S::Title: view_external_source_state::IsSet,
+    St: view_external_source_state::State,
+    St::Title: view_external_source_state::IsSet,
+    St::Uri: view_external_source_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> ViewExternalSource<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> ViewExternalSource<S> {
         ViewExternalSource {
-            description: self.__unsafe_private_named.0,
-            icon: self.__unsafe_private_named.1,
-            theme: self.__unsafe_private_named.2,
-            title: self.__unsafe_private_named.3.unwrap(),
-            uri: self.__unsafe_private_named.4.unwrap(),
+            description: self._fields.0,
+            icon: self._fields.1,
+            theme: self._fields.2,
+            title: self._fields.3.unwrap(),
+            uri: self._fields.4.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> ViewExternalSource<'a> {
+    ) -> ViewExternalSource<S> {
         ViewExternalSource {
-            description: self.__unsafe_private_named.0,
-            icon: self.__unsafe_private_named.1,
-            theme: self.__unsafe_private_named.2,
-            title: self.__unsafe_private_named.3.unwrap(),
-            uri: self.__unsafe_private_named.4.unwrap(),
+            description: self._fields.0,
+            icon: self._fields.1,
+            theme: self._fields.2,
+            title: self._fields.3.unwrap(),
+            uri: self._fields.4.unwrap(),
             extra_data: Some(extra_data),
         }
-    }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ViewExternalSource<'a> {
-    fn nsid() -> &'static str {
-        "app.bsky.embed.external"
-    }
-    fn def_name() -> &'static str {
-        "viewExternalSource"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_app_bsky_embed_external()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-/// The theme colors of an external source, such as a site.standard.publication. These colors may be used when rendering an embed from that source.
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic,
-    Default,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct ViewExternalSourceTheme<'a> {
-    #[serde(rename = "accentForegroundRGB")]
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub accent_foreground_rgb:
-        std::option::Option<crate::generated::app_bsky::embed::external::ColorRgb<'a>>,
-    #[serde(rename = "accentRGB")]
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub accent_rgb: std::option::Option<crate::generated::app_bsky::embed::external::ColorRgb<'a>>,
-    #[serde(rename = "backgroundRGB")]
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub background_rgb:
-        std::option::Option<crate::generated::app_bsky::embed::external::ColorRgb<'a>>,
-    #[serde(rename = "foregroundRGB")]
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub foreground_rgb:
-        std::option::Option<crate::generated::app_bsky::embed::external::ColorRgb<'a>>,
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ViewExternalSourceTheme<'a> {
-    fn nsid() -> &'static str {
-        "app.bsky.embed.external"
-    }
-    fn def_name() -> &'static str {
-        "viewExternalSourceTheme"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_app_bsky_embed_external()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
     }
 }

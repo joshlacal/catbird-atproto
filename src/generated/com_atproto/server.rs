@@ -5,6 +5,7 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
+//! Generated bindings for the `com.atproto.server` Lexicon namespace/module.
 pub mod activate_account;
 pub mod check_account_status;
 pub mod confirm_email;
@@ -31,23 +32,85 @@ pub mod reset_password;
 pub mod revoke_app_password;
 pub mod update_email;
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct InviteCode<'a> {
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct InviteCode<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub available: i64,
-    #[serde(borrow)]
-    pub code: jacquard_common::CowStr<'a>,
+    pub code: S,
     pub created_at: jacquard_common::types::string::Datetime,
-    #[serde(borrow)]
-    pub created_by: jacquard_common::CowStr<'a>,
+    pub created_by: S,
     pub disabled: bool,
-    #[serde(borrow)]
-    pub for_account: jacquard_common::CowStr<'a>,
-    #[serde(borrow)]
-    pub uses: Vec<crate::generated::com_atproto::server::InviteCodeUse<'a>>,
+    pub for_account: S,
+    pub uses: Vec<crate::generated::com_atproto::server::InviteCodeUse<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct InviteCodeUse<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub used_at: jacquard_common::types::string::Datetime,
+    pub used_by: jacquard_common::types::string::Did<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for InviteCode<S> {
+    fn nsid() -> &'static str {
+        "com.atproto.server.defs"
+    }
+    fn def_name() -> &'static str {
+        "inviteCode"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_com_atproto_server_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for InviteCodeUse<S> {
+    fn nsid() -> &'static str {
+        "com.atproto.server.defs"
+    }
+    fn def_name() -> &'static str {
+        "inviteCodeUse"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_com_atproto_server_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
 }
 
 pub mod invite_code_state {
@@ -60,570 +123,502 @@ pub mod invite_code_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Code;
         type Available;
+        type Code;
+        type CreatedAt;
+        type CreatedBy;
         type Disabled;
         type ForAccount;
-        type CreatedBy;
-        type CreatedAt;
         type Uses;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Code = Unset;
         type Available = Unset;
+        type Code = Unset;
+        type CreatedAt = Unset;
+        type CreatedBy = Unset;
         type Disabled = Unset;
         type ForAccount = Unset;
-        type CreatedBy = Unset;
-        type CreatedAt = Unset;
         type Uses = Unset;
     }
-    ///State transition - sets the `code` field to Set
-    pub struct SetCode<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCode<S> {}
-    impl<S: State> State for SetCode<S> {
-        type Code = Set<members::code>;
-        type Available = S::Available;
-        type Disabled = S::Disabled;
-        type ForAccount = S::ForAccount;
-        type CreatedBy = S::CreatedBy;
-        type CreatedAt = S::CreatedAt;
-        type Uses = S::Uses;
-    }
     ///State transition - sets the `available` field to Set
-    pub struct SetAvailable<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetAvailable<S> {}
-    impl<S: State> State for SetAvailable<S> {
-        type Code = S::Code;
+    pub struct SetAvailable<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetAvailable<St> {}
+    impl<St: State> State for SetAvailable<St> {
         type Available = Set<members::available>;
-        type Disabled = S::Disabled;
-        type ForAccount = S::ForAccount;
-        type CreatedBy = S::CreatedBy;
-        type CreatedAt = S::CreatedAt;
-        type Uses = S::Uses;
+        type Code = St::Code;
+        type CreatedAt = St::CreatedAt;
+        type CreatedBy = St::CreatedBy;
+        type Disabled = St::Disabled;
+        type ForAccount = St::ForAccount;
+        type Uses = St::Uses;
     }
-    ///State transition - sets the `disabled` field to Set
-    pub struct SetDisabled<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDisabled<S> {}
-    impl<S: State> State for SetDisabled<S> {
-        type Code = S::Code;
-        type Available = S::Available;
-        type Disabled = Set<members::disabled>;
-        type ForAccount = S::ForAccount;
-        type CreatedBy = S::CreatedBy;
-        type CreatedAt = S::CreatedAt;
-        type Uses = S::Uses;
-    }
-    ///State transition - sets the `for_account` field to Set
-    pub struct SetForAccount<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetForAccount<S> {}
-    impl<S: State> State for SetForAccount<S> {
-        type Code = S::Code;
-        type Available = S::Available;
-        type Disabled = S::Disabled;
-        type ForAccount = Set<members::for_account>;
-        type CreatedBy = S::CreatedBy;
-        type CreatedAt = S::CreatedAt;
-        type Uses = S::Uses;
-    }
-    ///State transition - sets the `created_by` field to Set
-    pub struct SetCreatedBy<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedBy<S> {}
-    impl<S: State> State for SetCreatedBy<S> {
-        type Code = S::Code;
-        type Available = S::Available;
-        type Disabled = S::Disabled;
-        type ForAccount = S::ForAccount;
-        type CreatedBy = Set<members::created_by>;
-        type CreatedAt = S::CreatedAt;
-        type Uses = S::Uses;
+    ///State transition - sets the `code` field to Set
+    pub struct SetCode<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCode<St> {}
+    impl<St: State> State for SetCode<St> {
+        type Available = St::Available;
+        type Code = Set<members::code>;
+        type CreatedAt = St::CreatedAt;
+        type CreatedBy = St::CreatedBy;
+        type Disabled = St::Disabled;
+        type ForAccount = St::ForAccount;
+        type Uses = St::Uses;
     }
     ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type Code = S::Code;
-        type Available = S::Available;
-        type Disabled = S::Disabled;
-        type ForAccount = S::ForAccount;
-        type CreatedBy = S::CreatedBy;
+    pub struct SetCreatedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCreatedAt<St> {}
+    impl<St: State> State for SetCreatedAt<St> {
+        type Available = St::Available;
+        type Code = St::Code;
         type CreatedAt = Set<members::created_at>;
-        type Uses = S::Uses;
+        type CreatedBy = St::CreatedBy;
+        type Disabled = St::Disabled;
+        type ForAccount = St::ForAccount;
+        type Uses = St::Uses;
+    }
+    ///State transition - sets the `created_by` field to Set
+    pub struct SetCreatedBy<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCreatedBy<St> {}
+    impl<St: State> State for SetCreatedBy<St> {
+        type Available = St::Available;
+        type Code = St::Code;
+        type CreatedAt = St::CreatedAt;
+        type CreatedBy = Set<members::created_by>;
+        type Disabled = St::Disabled;
+        type ForAccount = St::ForAccount;
+        type Uses = St::Uses;
+    }
+    ///State transition - sets the `disabled` field to Set
+    pub struct SetDisabled<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetDisabled<St> {}
+    impl<St: State> State for SetDisabled<St> {
+        type Available = St::Available;
+        type Code = St::Code;
+        type CreatedAt = St::CreatedAt;
+        type CreatedBy = St::CreatedBy;
+        type Disabled = Set<members::disabled>;
+        type ForAccount = St::ForAccount;
+        type Uses = St::Uses;
+    }
+    ///State transition - sets the `for_account` field to Set
+    pub struct SetForAccount<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetForAccount<St> {}
+    impl<St: State> State for SetForAccount<St> {
+        type Available = St::Available;
+        type Code = St::Code;
+        type CreatedAt = St::CreatedAt;
+        type CreatedBy = St::CreatedBy;
+        type Disabled = St::Disabled;
+        type ForAccount = Set<members::for_account>;
+        type Uses = St::Uses;
     }
     ///State transition - sets the `uses` field to Set
-    pub struct SetUses<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUses<S> {}
-    impl<S: State> State for SetUses<S> {
-        type Code = S::Code;
-        type Available = S::Available;
-        type Disabled = S::Disabled;
-        type ForAccount = S::ForAccount;
-        type CreatedBy = S::CreatedBy;
-        type CreatedAt = S::CreatedAt;
+    pub struct SetUses<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetUses<St> {}
+    impl<St: State> State for SetUses<St> {
+        type Available = St::Available;
+        type Code = St::Code;
+        type CreatedAt = St::CreatedAt;
+        type CreatedBy = St::CreatedBy;
+        type Disabled = St::Disabled;
+        type ForAccount = St::ForAccount;
         type Uses = Set<members::uses>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `code` field
-        pub struct code(());
         ///Marker type for the `available` field
         pub struct available(());
+        ///Marker type for the `code` field
+        pub struct code(());
+        ///Marker type for the `created_at` field
+        pub struct created_at(());
+        ///Marker type for the `created_by` field
+        pub struct created_by(());
         ///Marker type for the `disabled` field
         pub struct disabled(());
         ///Marker type for the `for_account` field
         pub struct for_account(());
-        ///Marker type for the `created_by` field
-        pub struct created_by(());
-        ///Marker type for the `created_at` field
-        pub struct created_at(());
         ///Marker type for the `uses` field
         pub struct uses(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct InviteCodeBuilder<'a, S: invite_code_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<i64>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<bool>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<Vec<crate::generated::com_atproto::server::InviteCodeUse<'a>>>,
+/// Builder for constructing an instance of this type.
+pub struct InviteCodeBuilder<
+    St: invite_code_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<i64>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<S>,
+        core::option::Option<bool>,
+        core::option::Option<S>,
+        core::option::Option<Vec<crate::generated::com_atproto::server::InviteCodeUse<S>>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> InviteCode<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> InviteCodeBuilder<'a, invite_code_state::Empty> {
+impl InviteCode<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> InviteCodeBuilder<invite_code_state::Empty, jacquard_common::DefaultStr> {
         InviteCodeBuilder::new()
     }
 }
 
-impl<'a> InviteCodeBuilder<'a, invite_code_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> InviteCode<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> InviteCodeBuilder<invite_code_state::Empty, S> {
+        InviteCodeBuilder::builder()
+    }
+}
+
+impl InviteCodeBuilder<invite_code_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         InviteCodeBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> InviteCodeBuilder<'a, S>
+impl<S: jacquard_common::BosStr> InviteCodeBuilder<invite_code_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        InviteCodeBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> InviteCodeBuilder<St, S>
 where
-    S: invite_code_state::State,
-    S::Available: invite_code_state::IsUnset,
+    St: invite_code_state::State,
+    St::Available: invite_code_state::IsUnset,
 {
     /// Set the `available` field (required)
     pub fn available(
         mut self,
         value: impl Into<i64>,
-    ) -> InviteCodeBuilder<'a, invite_code_state::SetAvailable<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+    ) -> InviteCodeBuilder<invite_code_state::SetAvailable<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         InviteCodeBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> InviteCodeBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> InviteCodeBuilder<St, S>
 where
-    S: invite_code_state::State,
-    S::Code: invite_code_state::IsUnset,
+    St: invite_code_state::State,
+    St::Code: invite_code_state::IsUnset,
 {
     /// Set the `code` field (required)
     pub fn code(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> InviteCodeBuilder<'a, invite_code_state::SetCode<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> InviteCodeBuilder<invite_code_state::SetCode<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         InviteCodeBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> InviteCodeBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> InviteCodeBuilder<St, S>
 where
-    S: invite_code_state::State,
-    S::CreatedAt: invite_code_state::IsUnset,
+    St: invite_code_state::State,
+    St::CreatedAt: invite_code_state::IsUnset,
 {
     /// Set the `createdAt` field (required)
     pub fn created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> InviteCodeBuilder<'a, invite_code_state::SetCreatedAt<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+    ) -> InviteCodeBuilder<invite_code_state::SetCreatedAt<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         InviteCodeBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> InviteCodeBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> InviteCodeBuilder<St, S>
 where
-    S: invite_code_state::State,
-    S::CreatedBy: invite_code_state::IsUnset,
+    St: invite_code_state::State,
+    St::CreatedBy: invite_code_state::IsUnset,
 {
     /// Set the `createdBy` field (required)
     pub fn created_by(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> InviteCodeBuilder<'a, invite_code_state::SetCreatedBy<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> InviteCodeBuilder<invite_code_state::SetCreatedBy<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
         InviteCodeBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> InviteCodeBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> InviteCodeBuilder<St, S>
 where
-    S: invite_code_state::State,
-    S::Disabled: invite_code_state::IsUnset,
+    St: invite_code_state::State,
+    St::Disabled: invite_code_state::IsUnset,
 {
     /// Set the `disabled` field (required)
     pub fn disabled(
         mut self,
         value: impl Into<bool>,
-    ) -> InviteCodeBuilder<'a, invite_code_state::SetDisabled<S>> {
-        self.__unsafe_private_named.4 = ::core::option::Option::Some(value.into());
+    ) -> InviteCodeBuilder<invite_code_state::SetDisabled<St>, S> {
+        self._fields.4 = ::core::option::Option::Some(value.into());
         InviteCodeBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> InviteCodeBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> InviteCodeBuilder<St, S>
 where
-    S: invite_code_state::State,
-    S::ForAccount: invite_code_state::IsUnset,
+    St: invite_code_state::State,
+    St::ForAccount: invite_code_state::IsUnset,
 {
     /// Set the `forAccount` field (required)
     pub fn for_account(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> InviteCodeBuilder<'a, invite_code_state::SetForAccount<S>> {
-        self.__unsafe_private_named.5 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> InviteCodeBuilder<invite_code_state::SetForAccount<St>, S> {
+        self._fields.5 = ::core::option::Option::Some(value.into());
         InviteCodeBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> InviteCodeBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> InviteCodeBuilder<St, S>
 where
-    S: invite_code_state::State,
-    S::Uses: invite_code_state::IsUnset,
+    St: invite_code_state::State,
+    St::Uses: invite_code_state::IsUnset,
 {
     /// Set the `uses` field (required)
     pub fn uses(
         mut self,
-        value: impl Into<Vec<crate::generated::com_atproto::server::InviteCodeUse<'a>>>,
-    ) -> InviteCodeBuilder<'a, invite_code_state::SetUses<S>> {
-        self.__unsafe_private_named.6 = ::core::option::Option::Some(value.into());
+        value: impl Into<Vec<crate::generated::com_atproto::server::InviteCodeUse<S>>>,
+    ) -> InviteCodeBuilder<invite_code_state::SetUses<St>, S> {
+        self._fields.6 = ::core::option::Option::Some(value.into());
         InviteCodeBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> InviteCodeBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> InviteCodeBuilder<St, S>
 where
-    S: invite_code_state::State,
-    S::Code: invite_code_state::IsSet,
-    S::Available: invite_code_state::IsSet,
-    S::Disabled: invite_code_state::IsSet,
-    S::ForAccount: invite_code_state::IsSet,
-    S::CreatedBy: invite_code_state::IsSet,
-    S::CreatedAt: invite_code_state::IsSet,
-    S::Uses: invite_code_state::IsSet,
+    St: invite_code_state::State,
+    St::Available: invite_code_state::IsSet,
+    St::Code: invite_code_state::IsSet,
+    St::CreatedAt: invite_code_state::IsSet,
+    St::CreatedBy: invite_code_state::IsSet,
+    St::Disabled: invite_code_state::IsSet,
+    St::ForAccount: invite_code_state::IsSet,
+    St::Uses: invite_code_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> InviteCode<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> InviteCode<S> {
         InviteCode {
-            available: self.__unsafe_private_named.0.unwrap(),
-            code: self.__unsafe_private_named.1.unwrap(),
-            created_at: self.__unsafe_private_named.2.unwrap(),
-            created_by: self.__unsafe_private_named.3.unwrap(),
-            disabled: self.__unsafe_private_named.4.unwrap(),
-            for_account: self.__unsafe_private_named.5.unwrap(),
-            uses: self.__unsafe_private_named.6.unwrap(),
+            available: self._fields.0.unwrap(),
+            code: self._fields.1.unwrap(),
+            created_at: self._fields.2.unwrap(),
+            created_by: self._fields.3.unwrap(),
+            disabled: self._fields.4.unwrap(),
+            for_account: self._fields.5.unwrap(),
+            uses: self._fields.6.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> InviteCode<'a> {
+    ) -> InviteCode<S> {
         InviteCode {
-            available: self.__unsafe_private_named.0.unwrap(),
-            code: self.__unsafe_private_named.1.unwrap(),
-            created_at: self.__unsafe_private_named.2.unwrap(),
-            created_by: self.__unsafe_private_named.3.unwrap(),
-            disabled: self.__unsafe_private_named.4.unwrap(),
-            for_account: self.__unsafe_private_named.5.unwrap(),
-            uses: self.__unsafe_private_named.6.unwrap(),
+            available: self._fields.0.unwrap(),
+            code: self._fields.1.unwrap(),
+            created_at: self._fields.2.unwrap(),
+            created_by: self._fields.3.unwrap(),
+            disabled: self._fields.4.unwrap(),
+            for_account: self._fields.5.unwrap(),
+            uses: self._fields.6.unwrap(),
             extra_data: Some(extra_data),
         }
     }
 }
 
-fn lexicon_doc_com_atproto_server_defs() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_com_atproto_server_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("com.atproto.server.defs"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("inviteCode"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("inviteCode"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("code"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("available"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("disabled"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("forAccount"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("createdBy"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("createdAt"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("uses"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("code"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("available"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("disabled"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("forAccount"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("createdBy"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("uses"),
                         ]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("available"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("available"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
                                     ::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
-                                        minimum: None,
-                                        maximum: None,
-                                        r#enum: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("code"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("code"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("createdAt"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("createdBy"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("createdBy"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("disabled"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("disabled"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(
                                     ::jacquard_lexicon::lexicon::LexBoolean {
-                                        description: None,
-                                        default: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("forAccount"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "forAccount",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("uses"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("uses"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Array(
                                     ::jacquard_lexicon::lexicon::LexArray {
-                                        description: None,
                                         items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(
                                             ::jacquard_lexicon::lexicon::LexRef {
-                                                description: None,
                                                 r#ref: ::jacquard_common::CowStr::new_static(
                                                     "#inviteCodeUse",
                                                 ),
+                                                ..Default::default()
                                             },
                                         ),
-                                        min_length: None,
-                                        max_length: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("inviteCodeUse"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("inviteCodeUse"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("usedBy"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("usedAt"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("usedBy"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("usedAt"),
                         ]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("usedAt"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("usedAt"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("usedBy"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("usedBy"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map
         },
+        ..Default::default()
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for InviteCode<'a> {
-    fn nsid() -> &'static str {
-        "com.atproto.server.defs"
-    }
-    fn def_name() -> &'static str {
-        "inviteCode"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_com_atproto_server_defs()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct InviteCodeUse<'a> {
-    pub used_at: jacquard_common::types::string::Datetime,
-    #[serde(borrow)]
-    pub used_by: jacquard_common::types::string::Did<'a>,
 }
 
 pub mod invite_code_use_state {
@@ -636,149 +631,154 @@ pub mod invite_code_use_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type UsedBy;
         type UsedAt;
+        type UsedBy;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type UsedBy = Unset;
         type UsedAt = Unset;
-    }
-    ///State transition - sets the `used_by` field to Set
-    pub struct SetUsedBy<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUsedBy<S> {}
-    impl<S: State> State for SetUsedBy<S> {
-        type UsedBy = Set<members::used_by>;
-        type UsedAt = S::UsedAt;
+        type UsedBy = Unset;
     }
     ///State transition - sets the `used_at` field to Set
-    pub struct SetUsedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUsedAt<S> {}
-    impl<S: State> State for SetUsedAt<S> {
-        type UsedBy = S::UsedBy;
+    pub struct SetUsedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetUsedAt<St> {}
+    impl<St: State> State for SetUsedAt<St> {
         type UsedAt = Set<members::used_at>;
+        type UsedBy = St::UsedBy;
+    }
+    ///State transition - sets the `used_by` field to Set
+    pub struct SetUsedBy<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetUsedBy<St> {}
+    impl<St: State> State for SetUsedBy<St> {
+        type UsedAt = St::UsedAt;
+        type UsedBy = Set<members::used_by>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `used_by` field
-        pub struct used_by(());
         ///Marker type for the `used_at` field
         pub struct used_at(());
+        ///Marker type for the `used_by` field
+        pub struct used_by(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct InviteCodeUseBuilder<'a, S: invite_code_use_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct InviteCodeUseBuilder<
+    St: invite_code_use_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> InviteCodeUse<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> InviteCodeUseBuilder<'a, invite_code_use_state::Empty> {
+impl InviteCodeUse<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> InviteCodeUseBuilder<invite_code_use_state::Empty, jacquard_common::DefaultStr>
+    {
         InviteCodeUseBuilder::new()
     }
 }
 
-impl<'a> InviteCodeUseBuilder<'a, invite_code_use_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> InviteCodeUse<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> InviteCodeUseBuilder<invite_code_use_state::Empty, S> {
+        InviteCodeUseBuilder::builder()
+    }
+}
+
+impl InviteCodeUseBuilder<invite_code_use_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         InviteCodeUseBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> InviteCodeUseBuilder<'a, S>
+impl<S: jacquard_common::BosStr> InviteCodeUseBuilder<invite_code_use_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        InviteCodeUseBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> InviteCodeUseBuilder<St, S>
 where
-    S: invite_code_use_state::State,
-    S::UsedAt: invite_code_use_state::IsUnset,
+    St: invite_code_use_state::State,
+    St::UsedAt: invite_code_use_state::IsUnset,
 {
     /// Set the `usedAt` field (required)
     pub fn used_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> InviteCodeUseBuilder<'a, invite_code_use_state::SetUsedAt<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+    ) -> InviteCodeUseBuilder<invite_code_use_state::SetUsedAt<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         InviteCodeUseBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> InviteCodeUseBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> InviteCodeUseBuilder<St, S>
 where
-    S: invite_code_use_state::State,
-    S::UsedBy: invite_code_use_state::IsUnset,
+    St: invite_code_use_state::State,
+    St::UsedBy: invite_code_use_state::IsUnset,
 {
     /// Set the `usedBy` field (required)
     pub fn used_by(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> InviteCodeUseBuilder<'a, invite_code_use_state::SetUsedBy<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> InviteCodeUseBuilder<invite_code_use_state::SetUsedBy<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         InviteCodeUseBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> InviteCodeUseBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> InviteCodeUseBuilder<St, S>
 where
-    S: invite_code_use_state::State,
-    S::UsedBy: invite_code_use_state::IsSet,
-    S::UsedAt: invite_code_use_state::IsSet,
+    St: invite_code_use_state::State,
+    St::UsedAt: invite_code_use_state::IsSet,
+    St::UsedBy: invite_code_use_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> InviteCodeUse<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> InviteCodeUse<S> {
         InviteCodeUse {
-            used_at: self.__unsafe_private_named.0.unwrap(),
-            used_by: self.__unsafe_private_named.1.unwrap(),
+            used_at: self._fields.0.unwrap(),
+            used_by: self._fields.1.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> InviteCodeUse<'a> {
+    ) -> InviteCodeUse<S> {
         InviteCodeUse {
-            used_at: self.__unsafe_private_named.0.unwrap(),
-            used_by: self.__unsafe_private_named.1.unwrap(),
+            used_at: self._fields.0.unwrap(),
+            used_by: self._fields.1.unwrap(),
             extra_data: Some(extra_data),
         }
-    }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for InviteCodeUse<'a> {
-    fn nsid() -> &'static str {
-        "com.atproto.server.defs"
-    }
-    fn def_name() -> &'static str {
-        "inviteCodeUse"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_com_atproto_server_defs()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
     }
 }

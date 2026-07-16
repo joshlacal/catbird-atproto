@@ -5,17 +5,152 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct AppPassword<'a> {
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct AppPassword<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub created_at: jacquard_common::types::string::Datetime,
-    #[serde(borrow)]
-    pub name: jacquard_common::CowStr<'a>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub privileged: std::option::Option<bool>,
+    pub name: S,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub privileged: core::option::Option<bool>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ListAppPasswordsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub passwords: Vec<crate::generated::com_atproto::server::list_app_passwords::AppPassword<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    thiserror::Error,
+    miette::Diagnostic,
+)]
+#[serde(tag = "error", content = "message")]
+pub enum ListAppPasswordsError {
+    #[serde(rename = "AccountTakedown")]
+    AccountTakedown(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
+}
+
+impl core::fmt::Display for ListAppPasswordsError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+            Self::AccountTakedown(msg) => {
+                write!(f, "AccountTakedown")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for AppPassword<S> {
+    fn nsid() -> &'static str {
+        "com.atproto.server.listAppPasswords"
+    }
+    fn def_name() -> &'static str {
+        "appPassword"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_com_atproto_server_listAppPasswords()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+/** Request marker for the `com.atproto.server.listAppPasswords` query.
+
+This endpoint has no request parameters or input body; send this marker with `jacquard::Client`.*/
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic,
+    Copy,
+)]
+pub struct ListAppPasswords;
+/** Response marker for the `com.atproto.server.listAppPasswords` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `ListAppPasswordsOutput<S>` for this endpoint.*/
+pub struct ListAppPasswordsResponse;
+impl jacquard_common::xrpc::XrpcResp for ListAppPasswordsResponse {
+    const NSID: &'static str = "com.atproto.server.listAppPasswords";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = ListAppPasswordsOutput<S>;
+    type Err = ListAppPasswordsError;
+}
+
+impl jacquard_common::xrpc::XrpcRequest for ListAppPasswords {
+    const NSID: &'static str = "com.atproto.server.listAppPasswords";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = ListAppPasswordsResponse;
+}
+
+/** Endpoint marker for the `com.atproto.server.listAppPasswords` query.
+
+Path: `/xrpc/com.atproto.server.listAppPasswords`. The request payload type is `ListAppPasswords`; use this marker with lower-level `XrpcEndpoint` APIs when you need endpoint metadata.*/
+pub struct ListAppPasswordsRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for ListAppPasswordsRequest {
+    const PATH: &'static str = "/xrpc/com.atproto.server.listAppPasswords";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = ListAppPasswords;
+    type Response = ListAppPasswordsResponse;
 }
 
 pub mod app_password_state {
@@ -28,336 +163,237 @@ pub mod app_password_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Name;
         type CreatedAt;
+        type Name;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Name = Unset;
         type CreatedAt = Unset;
-    }
-    ///State transition - sets the `name` field to Set
-    pub struct SetName<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetName<S> {}
-    impl<S: State> State for SetName<S> {
-        type Name = Set<members::name>;
-        type CreatedAt = S::CreatedAt;
+        type Name = Unset;
     }
     ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type Name = S::Name;
+    pub struct SetCreatedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCreatedAt<St> {}
+    impl<St: State> State for SetCreatedAt<St> {
         type CreatedAt = Set<members::created_at>;
+        type Name = St::Name;
+    }
+    ///State transition - sets the `name` field to Set
+    pub struct SetName<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetName<St> {}
+    impl<St: State> State for SetName<St> {
+        type CreatedAt = St::CreatedAt;
+        type Name = Set<members::name>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `name` field
-        pub struct name(());
         ///Marker type for the `created_at` field
         pub struct created_at(());
+        ///Marker type for the `name` field
+        pub struct name(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct AppPasswordBuilder<'a, S: app_password_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<bool>,
+/// Builder for constructing an instance of this type.
+pub struct AppPasswordBuilder<
+    St: app_password_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<S>,
+        core::option::Option<bool>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> AppPassword<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> AppPasswordBuilder<'a, app_password_state::Empty> {
+impl AppPassword<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> AppPasswordBuilder<app_password_state::Empty, jacquard_common::DefaultStr> {
         AppPasswordBuilder::new()
     }
 }
 
-impl<'a> AppPasswordBuilder<'a, app_password_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> AppPassword<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> AppPasswordBuilder<app_password_state::Empty, S> {
+        AppPasswordBuilder::builder()
+    }
+}
+
+impl AppPasswordBuilder<app_password_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         AppPasswordBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> AppPasswordBuilder<'a, S>
+impl<S: jacquard_common::BosStr> AppPasswordBuilder<app_password_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        AppPasswordBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> AppPasswordBuilder<St, S>
 where
-    S: app_password_state::State,
-    S::CreatedAt: app_password_state::IsUnset,
+    St: app_password_state::State,
+    St::CreatedAt: app_password_state::IsUnset,
 {
     /// Set the `createdAt` field (required)
     pub fn created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> AppPasswordBuilder<'a, app_password_state::SetCreatedAt<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+    ) -> AppPasswordBuilder<app_password_state::SetCreatedAt<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         AppPasswordBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> AppPasswordBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> AppPasswordBuilder<St, S>
 where
-    S: app_password_state::State,
-    S::Name: app_password_state::IsUnset,
+    St: app_password_state::State,
+    St::Name: app_password_state::IsUnset,
 {
     /// Set the `name` field (required)
     pub fn name(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> AppPasswordBuilder<'a, app_password_state::SetName<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> AppPasswordBuilder<app_password_state::SetName<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         AppPasswordBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: app_password_state::State> AppPasswordBuilder<'a, S> {
+impl<St: app_password_state::State, S: jacquard_common::BosStr> AppPasswordBuilder<St, S> {
     /// Set the `privileged` field (optional)
     pub fn privileged(mut self, value: impl Into<Option<bool>>) -> Self {
-        self.__unsafe_private_named.2 = value.into();
+        self._fields.2 = value.into();
         self
     }
     /// Set the `privileged` field to an Option value (optional)
     pub fn maybe_privileged(mut self, value: Option<bool>) -> Self {
-        self.__unsafe_private_named.2 = value;
+        self._fields.2 = value;
         self
     }
 }
 
-impl<'a, S> AppPasswordBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> AppPasswordBuilder<St, S>
 where
-    S: app_password_state::State,
-    S::Name: app_password_state::IsSet,
-    S::CreatedAt: app_password_state::IsSet,
+    St: app_password_state::State,
+    St::CreatedAt: app_password_state::IsSet,
+    St::Name: app_password_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> AppPassword<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> AppPassword<S> {
         AppPassword {
-            created_at: self.__unsafe_private_named.0.unwrap(),
-            name: self.__unsafe_private_named.1.unwrap(),
-            privileged: self.__unsafe_private_named.2,
+            created_at: self._fields.0.unwrap(),
+            name: self._fields.1.unwrap(),
+            privileged: self._fields.2,
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> AppPassword<'a> {
+    ) -> AppPassword<S> {
         AppPassword {
-            created_at: self.__unsafe_private_named.0.unwrap(),
-            name: self.__unsafe_private_named.1.unwrap(),
-            privileged: self.__unsafe_private_named.2,
+            created_at: self._fields.0.unwrap(),
+            name: self._fields.1.unwrap(),
+            privileged: self._fields.2,
             extra_data: Some(extra_data),
         }
     }
 }
 
 fn lexicon_doc_com_atproto_server_listAppPasswords(
-) -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+) -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("com.atproto.server.listAppPasswords"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("appPassword"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("appPassword"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("name"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("createdAt"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("name"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
                         ]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("createdAt"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("name"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("name"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("privileged"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "privileged",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(
                                     ::jacquard_lexicon::lexicon::LexBoolean {
-                                        description: None,
-                                        default: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
                 ::jacquard_lexicon::lexicon::LexUserType::XrpcQuery(
                     ::jacquard_lexicon::lexicon::LexXrpcQuery {
-                        description: None,
                         parameters: None,
-                        output: None,
-                        errors: None,
+                        ..Default::default()
                     },
                 ),
             );
             map
         },
+        ..Default::default()
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for AppPassword<'a> {
-    fn nsid() -> &'static str {
-        "com.atproto.server.listAppPasswords"
-    }
-    fn def_name() -> &'static str {
-        "appPassword"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_com_atproto_server_listAppPasswords()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct ListAppPasswordsOutput<'a> {
-    #[serde(borrow)]
-    pub passwords: Vec<crate::generated::com_atproto::server::list_app_passwords::AppPassword<'a>>,
-}
-
-#[jacquard_derive::open_union]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    thiserror::Error,
-    miette::Diagnostic,
-    jacquard_derive::IntoStatic,
-)]
-#[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum ListAppPasswordsError<'a> {
-    #[serde(rename = "AccountTakedown")]
-    AccountTakedown(std::option::Option<jacquard_common::CowStr<'a>>),
-}
-
-impl std::fmt::Display for ListAppPasswordsError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::AccountTakedown(msg) => {
-                write!(f, "AccountTakedown")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
-        }
-    }
-}
-
-/// XRPC request marker type
-#[derive(
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
-    serde::Serialize,
-    serde::Deserialize,
-    jacquard_derive::IntoStatic,
-)]
-pub struct ListAppPasswords;
-/// Response type for
-///com.atproto.server.listAppPasswords
-pub struct ListAppPasswordsResponse;
-impl jacquard_common::xrpc::XrpcResp for ListAppPasswordsResponse {
-    const NSID: &'static str = "com.atproto.server.listAppPasswords";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = ListAppPasswordsOutput<'de>;
-    type Err<'de> = ListAppPasswordsError<'de>;
-}
-
-impl jacquard_common::xrpc::XrpcRequest for ListAppPasswords {
-    const NSID: &'static str = "com.atproto.server.listAppPasswords";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = ListAppPasswordsResponse;
-}
-
-/// Endpoint type for
-///com.atproto.server.listAppPasswords
-pub struct ListAppPasswordsRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for ListAppPasswordsRequest {
-    const PATH: &'static str = "/xrpc/com.atproto.server.listAppPasswords";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = ListAppPasswords;
-    type Response = ListAppPasswordsResponse;
 }

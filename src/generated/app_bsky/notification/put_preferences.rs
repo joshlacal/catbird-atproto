@@ -5,13 +5,56 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct PutPreferences<'a> {
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct PutPreferences<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub priority: bool,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `app.bsky.notification.putPreferences` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `()` for this endpoint.*/
+pub struct PutPreferencesResponse;
+impl jacquard_common::xrpc::XrpcResp for PutPreferencesResponse {
+    const NSID: &'static str = "app.bsky.notification.putPreferences";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = ();
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for PutPreferences<S> {
+    const NSID: &'static str = "app.bsky.notification.putPreferences";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Response = PutPreferencesResponse;
+}
+
+/** Endpoint marker for the `app.bsky.notification.putPreferences` procedure.
+
+Path: `/xrpc/app.bsky.notification.putPreferences`. The request payload type is `PutPreferences<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct PutPreferencesRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for PutPreferencesRequest {
+    const PATH: &'static str = "/xrpc/app.bsky.notification.putPreferences";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Request<S: jacquard_common::BosStr> = PutPreferences<S>;
+    type Response = PutPreferencesResponse;
 }
 
 pub mod put_preferences_state {
@@ -33,9 +76,9 @@ pub mod put_preferences_state {
         type Priority = Unset;
     }
     ///State transition - sets the `priority` field to Set
-    pub struct SetPriority<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetPriority<S> {}
-    impl<S: State> State for SetPriority<S> {
+    pub struct SetPriority<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetPriority<St> {}
+    impl<St: State> State for SetPriority<St> {
         type Priority = Set<members::priority>;
     }
     /// Marker types for field names
@@ -46,101 +89,95 @@ pub mod put_preferences_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct PutPreferencesBuilder<'a, S: put_preferences_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<bool>,),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct PutPreferencesBuilder<
+    St: put_preferences_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<bool>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> PutPreferences<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> PutPreferencesBuilder<'a, put_preferences_state::Empty> {
+impl PutPreferences<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> PutPreferencesBuilder<put_preferences_state::Empty, jacquard_common::DefaultStr>
+    {
         PutPreferencesBuilder::new()
     }
 }
 
-impl<'a> PutPreferencesBuilder<'a, put_preferences_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> PutPreferences<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> PutPreferencesBuilder<put_preferences_state::Empty, S> {
+        PutPreferencesBuilder::builder()
+    }
+}
+
+impl PutPreferencesBuilder<put_preferences_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         PutPreferencesBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> PutPreferencesBuilder<'a, S>
+impl<S: jacquard_common::BosStr> PutPreferencesBuilder<put_preferences_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        PutPreferencesBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> PutPreferencesBuilder<St, S>
 where
-    S: put_preferences_state::State,
-    S::Priority: put_preferences_state::IsUnset,
+    St: put_preferences_state::State,
+    St::Priority: put_preferences_state::IsUnset,
 {
     /// Set the `priority` field (required)
     pub fn priority(
         mut self,
         value: impl Into<bool>,
-    ) -> PutPreferencesBuilder<'a, put_preferences_state::SetPriority<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+    ) -> PutPreferencesBuilder<put_preferences_state::SetPriority<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         PutPreferencesBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> PutPreferencesBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> PutPreferencesBuilder<St, S>
 where
-    S: put_preferences_state::State,
-    S::Priority: put_preferences_state::IsSet,
+    St: put_preferences_state::State,
+    St::Priority: put_preferences_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> PutPreferences<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> PutPreferences<S> {
         PutPreferences {
-            priority: self.__unsafe_private_named.0.unwrap(),
+            priority: self._fields.0.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> PutPreferences<'a> {
+    ) -> PutPreferences<S> {
         PutPreferences {
-            priority: self.__unsafe_private_named.0.unwrap(),
+            priority: self._fields.0.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-/// Response type for
-///app.bsky.notification.putPreferences
-pub struct PutPreferencesResponse;
-impl jacquard_common::xrpc::XrpcResp for PutPreferencesResponse {
-    const NSID: &'static str = "app.bsky.notification.putPreferences";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = ();
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for PutPreferences<'a> {
-    const NSID: &'static str = "app.bsky.notification.putPreferences";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Response = PutPreferencesResponse;
-}
-
-/// Endpoint type for
-///app.bsky.notification.putPreferences
-pub struct PutPreferencesRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for PutPreferencesRequest {
-    const PATH: &'static str = "/xrpc/app.bsky.notification.putPreferences";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = PutPreferences<'de>;
-    type Response = PutPreferencesResponse;
 }

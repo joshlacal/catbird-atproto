@@ -8,10 +8,66 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetFeedGenerator<'a> {
-    #[serde(borrow)]
-    pub feed: jacquard_common::types::string::AtUri<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetFeedGenerator<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub feed: jacquard_common::types::string::AtUri<S>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetFeedGeneratorOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Indicates whether the feed generator service has been online recently, or else seems to be inactive.
+    pub is_online: bool,
+    ///Indicates whether the feed generator service is compatible with the record declaration.
+    pub is_valid: bool,
+    pub view: crate::generated::app_bsky::feed::GeneratorView<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `app.bsky.feed.getFeedGenerator` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetFeedGeneratorOutput<S>` for this endpoint.*/
+pub struct GetFeedGeneratorResponse;
+impl jacquard_common::xrpc::XrpcResp for GetFeedGeneratorResponse {
+    const NSID: &'static str = "app.bsky.feed.getFeedGenerator";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = GetFeedGeneratorOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetFeedGenerator<S> {
+    const NSID: &'static str = "app.bsky.feed.getFeedGenerator";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = GetFeedGeneratorResponse;
+}
+
+/** Endpoint marker for the `app.bsky.feed.getFeedGenerator` query.
+
+Path: `/xrpc/app.bsky.feed.getFeedGenerator`. The request payload type is `GetFeedGenerator<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct GetFeedGeneratorRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for GetFeedGeneratorRequest {
+    const PATH: &'static str = "/xrpc/app.bsky.feed.getFeedGenerator";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = GetFeedGenerator<S>;
+    type Response = GetFeedGeneratorResponse;
 }
 
 pub mod get_feed_generator_state {
@@ -33,9 +89,9 @@ pub mod get_feed_generator_state {
         type Feed = Unset;
     }
     ///State transition - sets the `feed` field to Set
-    pub struct SetFeed<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetFeed<S> {}
-    impl<S: State> State for SetFeed<S> {
+    pub struct SetFeed<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetFeed<St> {}
+    impl<St: State> State for SetFeed<St> {
         type Feed = Set<members::feed>;
     }
     /// Marker types for field names
@@ -46,99 +102,81 @@ pub mod get_feed_generator_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct GetFeedGeneratorBuilder<'a, S: get_feed_generator_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<jacquard_common::types::string::AtUri<'a>>,),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct GetFeedGeneratorBuilder<
+    St: get_feed_generator_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<jacquard_common::types::string::AtUri<S>>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> GetFeedGenerator<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> GetFeedGeneratorBuilder<'a, get_feed_generator_state::Empty> {
+impl GetFeedGenerator<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> GetFeedGeneratorBuilder<get_feed_generator_state::Empty, jacquard_common::DefaultStr> {
         GetFeedGeneratorBuilder::new()
     }
 }
 
-impl<'a> GetFeedGeneratorBuilder<'a, get_feed_generator_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> GetFeedGenerator<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> GetFeedGeneratorBuilder<get_feed_generator_state::Empty, S> {
+        GetFeedGeneratorBuilder::builder()
+    }
+}
+
+impl GetFeedGeneratorBuilder<get_feed_generator_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetFeedGeneratorBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GetFeedGeneratorBuilder<'a, S>
+impl<S: jacquard_common::BosStr> GetFeedGeneratorBuilder<get_feed_generator_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GetFeedGeneratorBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> GetFeedGeneratorBuilder<St, S>
 where
-    S: get_feed_generator_state::State,
-    S::Feed: get_feed_generator_state::IsUnset,
+    St: get_feed_generator_state::State,
+    St::Feed: get_feed_generator_state::IsUnset,
 {
     /// Set the `feed` field (required)
     pub fn feed(
         mut self,
-        value: impl Into<jacquard_common::types::string::AtUri<'a>>,
-    ) -> GetFeedGeneratorBuilder<'a, get_feed_generator_state::SetFeed<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::AtUri<S>>,
+    ) -> GetFeedGeneratorBuilder<get_feed_generator_state::SetFeed<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         GetFeedGeneratorBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GetFeedGeneratorBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GetFeedGeneratorBuilder<St, S>
 where
-    S: get_feed_generator_state::State,
-    S::Feed: get_feed_generator_state::IsSet,
+    St: get_feed_generator_state::State,
+    St::Feed: get_feed_generator_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> GetFeedGenerator<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> GetFeedGenerator<S> {
         GetFeedGenerator {
-            feed: self.__unsafe_private_named.0.unwrap(),
+            feed: self._fields.0.unwrap(),
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GetFeedGeneratorOutput<'a> {
-    /// Indicates whether the feed generator service has been online recently, or else seems to be inactive.
-    pub is_online: bool,
-    /// Indicates whether the feed generator service is compatible with the record declaration.
-    pub is_valid: bool,
-    #[serde(borrow)]
-    pub view: crate::generated::app_bsky::feed::GeneratorView<'a>,
-}
-
-/// Response type for
-///app.bsky.feed.getFeedGenerator
-pub struct GetFeedGeneratorResponse;
-impl jacquard_common::xrpc::XrpcResp for GetFeedGeneratorResponse {
-    const NSID: &'static str = "app.bsky.feed.getFeedGenerator";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetFeedGeneratorOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for GetFeedGenerator<'a> {
-    const NSID: &'static str = "app.bsky.feed.getFeedGenerator";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = GetFeedGeneratorResponse;
-}
-
-/// Endpoint type for
-///app.bsky.feed.getFeedGenerator
-pub struct GetFeedGeneratorRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for GetFeedGeneratorRequest {
-    const PATH: &'static str = "/xrpc/app.bsky.feed.getFeedGenerator";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetFeedGenerator<'de>;
-    type Response = GetFeedGeneratorResponse;
 }

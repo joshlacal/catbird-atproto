@@ -5,18 +5,103 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct DeleteValues<'a> {
-    /// Name of the set to delete values from
-    #[serde(borrow)]
-    pub name: jacquard_common::CowStr<'a>,
-    /// Array of string values to delete from the set
-    #[serde(borrow)]
-    pub values: Vec<jacquard_common::CowStr<'a>>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct DeleteValues<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Name of the set to delete values from
+    pub name: S,
+    ///Array of string values to delete from the set
+    pub values: Vec<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    thiserror::Error,
+    miette::Diagnostic,
+)]
+#[serde(tag = "error", content = "message")]
+pub enum DeleteValuesError {
+    /// set with the given name does not exist
+    #[serde(rename = "SetNotFound")]
+    SetNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
+}
+
+impl core::fmt::Display for DeleteValuesError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+            Self::SetNotFound(msg) => {
+                write!(f, "SetNotFound")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+        }
+    }
+}
+
+/** Response marker for the `tools.ozone.set.deleteValues` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `()` for this endpoint.*/
+pub struct DeleteValuesResponse;
+impl jacquard_common::xrpc::XrpcResp for DeleteValuesResponse {
+    const NSID: &'static str = "tools.ozone.set.deleteValues";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = ();
+    type Err = DeleteValuesError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for DeleteValues<S> {
+    const NSID: &'static str = "tools.ozone.set.deleteValues";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Response = DeleteValuesResponse;
+}
+
+/** Endpoint marker for the `tools.ozone.set.deleteValues` procedure.
+
+Path: `/xrpc/tools.ozone.set.deleteValues`. The request payload type is `DeleteValues<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct DeleteValuesRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for DeleteValuesRequest {
+    const PATH: &'static str = "/xrpc/tools.ozone.set.deleteValues";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Request<S: jacquard_common::BosStr> = DeleteValues<S>;
+    type Response = DeleteValuesResponse;
 }
 
 pub mod delete_values_state {
@@ -40,17 +125,17 @@ pub mod delete_values_state {
         type Values = Unset;
     }
     ///State transition - sets the `name` field to Set
-    pub struct SetName<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetName<S> {}
-    impl<S: State> State for SetName<S> {
+    pub struct SetName<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetName<St> {}
+    impl<St: State> State for SetName<St> {
         type Name = Set<members::name>;
-        type Values = S::Values;
+        type Values = St::Values;
     }
     ///State transition - sets the `values` field to Set
-    pub struct SetValues<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetValues<S> {}
-    impl<S: State> State for SetValues<S> {
-        type Name = S::Name;
+    pub struct SetValues<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetValues<St> {}
+    impl<St: State> State for SetValues<St> {
+        type Name = St::Name;
         type Values = Set<members::values>;
     }
     /// Marker types for field names
@@ -63,161 +148,116 @@ pub mod delete_values_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct DeleteValuesBuilder<'a, S: delete_values_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<Vec<jacquard_common::CowStr<'a>>>,
-    ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct DeleteValuesBuilder<
+    St: delete_values_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<S>, core::option::Option<Vec<S>>),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> DeleteValues<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> DeleteValuesBuilder<'a, delete_values_state::Empty> {
+impl DeleteValues<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> DeleteValuesBuilder<delete_values_state::Empty, jacquard_common::DefaultStr> {
         DeleteValuesBuilder::new()
     }
 }
 
-impl<'a> DeleteValuesBuilder<'a, delete_values_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> DeleteValues<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> DeleteValuesBuilder<delete_values_state::Empty, S> {
+        DeleteValuesBuilder::builder()
+    }
+}
+
+impl DeleteValuesBuilder<delete_values_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         DeleteValuesBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> DeleteValuesBuilder<'a, S>
+impl<S: jacquard_common::BosStr> DeleteValuesBuilder<delete_values_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        DeleteValuesBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeleteValuesBuilder<St, S>
 where
-    S: delete_values_state::State,
-    S::Name: delete_values_state::IsUnset,
+    St: delete_values_state::State,
+    St::Name: delete_values_state::IsUnset,
 {
     /// Set the `name` field (required)
     pub fn name(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> DeleteValuesBuilder<'a, delete_values_state::SetName<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> DeleteValuesBuilder<delete_values_state::SetName<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         DeleteValuesBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> DeleteValuesBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> DeleteValuesBuilder<St, S>
 where
-    S: delete_values_state::State,
-    S::Values: delete_values_state::IsUnset,
+    St: delete_values_state::State,
+    St::Values: delete_values_state::IsUnset,
 {
     /// Set the `values` field (required)
     pub fn values(
         mut self,
-        value: impl Into<Vec<jacquard_common::CowStr<'a>>>,
-    ) -> DeleteValuesBuilder<'a, delete_values_state::SetValues<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<Vec<S>>,
+    ) -> DeleteValuesBuilder<delete_values_state::SetValues<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         DeleteValuesBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> DeleteValuesBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> DeleteValuesBuilder<St, S>
 where
-    S: delete_values_state::State,
-    S::Name: delete_values_state::IsSet,
-    S::Values: delete_values_state::IsSet,
+    St: delete_values_state::State,
+    St::Name: delete_values_state::IsSet,
+    St::Values: delete_values_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> DeleteValues<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> DeleteValues<S> {
         DeleteValues {
-            name: self.__unsafe_private_named.0.unwrap(),
-            values: self.__unsafe_private_named.1.unwrap(),
+            name: self._fields.0.unwrap(),
+            values: self._fields.1.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> DeleteValues<'a> {
+    ) -> DeleteValues<S> {
         DeleteValues {
-            name: self.__unsafe_private_named.0.unwrap(),
-            values: self.__unsafe_private_named.1.unwrap(),
+            name: self._fields.0.unwrap(),
+            values: self._fields.1.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-#[jacquard_derive::open_union]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    thiserror::Error,
-    miette::Diagnostic,
-    jacquard_derive::IntoStatic,
-)]
-#[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum DeleteValuesError<'a> {
-    /// set with the given name does not exist
-    #[serde(rename = "SetNotFound")]
-    SetNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
-}
-
-impl std::fmt::Display for DeleteValuesError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::SetNotFound(msg) => {
-                write!(f, "SetNotFound")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
-        }
-    }
-}
-
-/// Response type for
-///tools.ozone.set.deleteValues
-pub struct DeleteValuesResponse;
-impl jacquard_common::xrpc::XrpcResp for DeleteValuesResponse {
-    const NSID: &'static str = "tools.ozone.set.deleteValues";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = ();
-    type Err<'de> = DeleteValuesError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for DeleteValues<'a> {
-    const NSID: &'static str = "tools.ozone.set.deleteValues";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Response = DeleteValuesResponse;
-}
-
-/// Endpoint type for
-///tools.ozone.set.deleteValues
-pub struct DeleteValuesRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for DeleteValuesRequest {
-    const PATH: &'static str = "/xrpc/tools.ozone.set.deleteValues";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = DeleteValues<'de>;
-    type Response = DeleteValuesResponse;
 }

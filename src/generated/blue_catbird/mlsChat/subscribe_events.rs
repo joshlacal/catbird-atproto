@@ -6,22 +6,1325 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 /// The automatic group-reset circuit breaker tripped for this conversation. Auto-reset is disabled; an admin must intervene.
-#[jacquard_derive::lexicon]
+
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct CircuitBreakerTrippedEvent<'a> {
-    /// Conversation identifier
-    #[serde(borrow)]
-    pub convo_id: jacquard_common::CowStr<'a>,
-    /// Resume cursor
-    #[serde(borrow)]
-    pub cursor: jacquard_common::CowStr<'a>,
-    /// Recent reset count that triggered the trip
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct CircuitBreakerTrippedEvent<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Conversation identifier
+    pub convo_id: S,
+    ///Resume cursor
+    pub cursor: S,
+    ///Recent reset count that triggered the trip
     pub reset_count: i64,
-    /// When the breaker tripped (RFC3339)
+    ///When the breaker tripped (RFC3339)
     pub tripped_at: jacquard_common::types::string::Datetime,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// A GroupInfo refresh was requested for a conversation
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic,
+    Default,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GroupInfoRefreshRequestedEvent<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
+{
+    ///Conversation identifier
+    pub convo_id: S,
+    ///Resume cursor
+    pub cursor: S,
+    ///When the refresh was requested (RFC3339)
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub requested_at: core::option::Option<jacquard_common::types::string::Datetime>,
+    ///DID of the requester
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub requested_by: core::option::Option<jacquard_common::types::string::Did<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// The MLS group was reset and a new group was created for this conversation
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GroupResetEvent<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///MLS cipher suite used for the new group after reset.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cipher_suite: core::option::Option<GroupResetEventCipherSuite<S>>,
+    ///Conversation identifier
+    pub convo_id: S,
+    ///Resume cursor
+    pub cursor: S,
+    ///New MLS group ID after reset
+    pub new_group_id: S,
+    ///Optional reason for the reset
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub reason: core::option::Option<S>,
+    ///DID of the admin who initiated the reset
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub reset_by: core::option::Option<jacquard_common::types::string::Did<S>>,
+    ///Cumulative reset count for this conversation
+    pub reset_generation: i64,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// MLS cipher suite used for the new group after reset.
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum GroupResetEventCipherSuite<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    Mls256XwingChacha20poly1305Sha256Ed25519,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> GroupResetEventCipherSuite<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Mls256XwingChacha20poly1305Sha256Ed25519 => {
+                "MLS_256_XWING_CHACHA20POLY1305_SHA256_Ed25519"
+            }
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "MLS_256_XWING_CHACHA20POLY1305_SHA256_Ed25519" => {
+                Self::Mls256XwingChacha20poly1305Sha256Ed25519
+            }
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for GroupResetEventCipherSuite<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for GroupResetEventCipherSuite<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for GroupResetEventCipherSuite<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for GroupResetEventCipherSuite<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for GroupResetEventCipherSuite<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for GroupResetEventCipherSuite<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = GroupResetEventCipherSuite<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            GroupResetEventCipherSuite::Mls256XwingChacha20poly1305Sha256Ed25519 => {
+                GroupResetEventCipherSuite::Mls256XwingChacha20poly1305Sha256Ed25519
+            }
+            GroupResetEventCipherSuite::Other(v) => {
+                GroupResetEventCipherSuite::Other(v.into_static())
+            }
+        }
+    }
+}
+
+/// Informational message (heartbeat, notices, or GroupInfo refresh request)
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic,
+    Default,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct InfoEvent<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Conversation ID (for groupInfoRefreshRequested, readditionRequested)
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub convo_id: core::option::Option<S>,
+    ///Resume cursor
+    pub cursor: S,
+    ///Human-readable info or keep-alive message
+    pub info: S,
+    ///Structured info type for programmatic handling
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub info_type: core::option::Option<InfoEventInfoType<S>>,
+    ///DID of the requester
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub requested_by: core::option::Option<jacquard_common::types::string::Did<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// Structured info type for programmatic handling
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum InfoEventInfoType<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    Heartbeat,
+    GroupInfoRefreshRequested,
+    ReadditionRequested,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> InfoEventInfoType<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Heartbeat => "heartbeat",
+            Self::GroupInfoRefreshRequested => "groupInfoRefreshRequested",
+            Self::ReadditionRequested => "readditionRequested",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "heartbeat" => Self::Heartbeat,
+            "groupInfoRefreshRequested" => Self::GroupInfoRefreshRequested,
+            "readditionRequested" => Self::ReadditionRequested,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for InfoEventInfoType<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for InfoEventInfoType<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for InfoEventInfoType<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for InfoEventInfoType<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for InfoEventInfoType<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for InfoEventInfoType<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = InfoEventInfoType<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            InfoEventInfoType::Heartbeat => InfoEventInfoType::Heartbeat,
+            InfoEventInfoType::GroupInfoRefreshRequested => {
+                InfoEventInfoType::GroupInfoRefreshRequested
+            }
+            InfoEventInfoType::ReadditionRequested => InfoEventInfoType::ReadditionRequested,
+            InfoEventInfoType::Other(v) => InfoEventInfoType::Other(v.into_static()),
+        }
+    }
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct SubscribeEvents<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub ticket: core::option::Option<S>,
+}
+
+#[jacquard_derive::open_union]
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub enum SubscribeEventsMessage<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(rename = "#messageEvent")]
+    MessageEvent(
+        Box<crate::generated::blue_catbird::mlsChat::subscribe_events::MessageEvent<S>>,
+    ),
+    #[serde(rename = "#reactionEvent")]
+    ReactionEvent(
+        Box<crate::generated::blue_catbird::mlsChat::subscribe_events::ReactionEvent<S>>,
+    ),
+    #[serde(rename = "#typingEvent")]
+    TypingEvent(
+        Box<crate::generated::blue_catbird::mlsChat::subscribe_events::TypingEvent<S>>,
+    ),
+    #[serde(rename = "#newDeviceEvent")]
+    NewDeviceEvent(
+        Box<crate::generated::blue_catbird::mlsChat::subscribe_events::NewDeviceEvent<S>>,
+    ),
+    #[serde(rename = "#infoEvent")]
+    InfoEvent(
+        Box<crate::generated::blue_catbird::mlsChat::subscribe_events::InfoEvent<S>>,
+    ),
+    #[serde(rename = "#treeChanged")]
+    TreeChanged(
+        Box<crate::generated::blue_catbird::mlsChat::subscribe_events::TreeChanged<S>>,
+    ),
+    #[serde(rename = "#groupResetEvent")]
+    GroupResetEvent(
+        Box<
+            crate::generated::blue_catbird::mlsChat::subscribe_events::GroupResetEvent<S>,
+        >,
+    ),
+    #[serde(rename = "#membershipChangeEvent")]
+    MembershipChangeEvent(
+        Box<
+            crate::generated::blue_catbird::mlsChat::subscribe_events::MembershipChangeEvent<
+                S,
+            >,
+        >,
+    ),
+    #[serde(rename = "#groupInfoRefreshRequestedEvent")]
+    GroupInfoRefreshRequestedEvent(
+        Box<
+            crate::generated::blue_catbird::mlsChat::subscribe_events::GroupInfoRefreshRequestedEvent<
+                S,
+            >,
+        >,
+    ),
+    #[serde(rename = "#readditionRequestedEvent")]
+    ReadditionRequestedEvent(
+        Box<
+            crate::generated::blue_catbird::mlsChat::subscribe_events::ReadditionRequestedEvent<
+                S,
+            >,
+        >,
+    ),
+    #[serde(rename = "#circuitBreakerTrippedEvent")]
+    CircuitBreakerTrippedEvent(
+        Box<
+            crate::generated::blue_catbird::mlsChat::subscribe_events::CircuitBreakerTrippedEvent<
+                S,
+            >,
+        >,
+    ),
+    #[serde(rename = "#resetRequestedEvent")]
+    ResetRequestedEvent(
+        Box<
+            crate::generated::blue_catbird::mlsChat::subscribe_events::ResetRequestedEvent<
+                S,
+            >,
+        >,
+    ),
+    #[serde(rename = "#welcomeReissueRequestedEvent")]
+    WelcomeReissueRequestedEvent(
+        Box<
+            crate::generated::blue_catbird::mlsChat::subscribe_events::WelcomeReissueRequestedEvent<
+                S,
+            >,
+        >,
+    ),
+}
+
+impl<S: jacquard_common::BosStr> SubscribeEventsMessage<S> {
+    /// Decode a framed DAG-CBOR message (header + body).
+    pub fn decode_framed<'de>(
+        bytes: &'de [u8],
+    ) -> Result<SubscribeEventsMessage<S>, jacquard_common::error::DecodeError>
+    where
+        S: serde::Deserialize<'de>,
+    {
+        let (header, body) = jacquard_common::xrpc::subscription::parse_event_header(bytes)?;
+        match header.t.as_str() {
+            "#messageEvent" => {
+                let variant = jacquard_common::deps::codegen::serde_ipld_dagcbor::from_slice(body)?;
+                Ok(Self::MessageEvent(Box::new(variant)))
+            }
+            "#reactionEvent" => {
+                let variant = jacquard_common::deps::codegen::serde_ipld_dagcbor::from_slice(body)?;
+                Ok(Self::ReactionEvent(Box::new(variant)))
+            }
+            "#typingEvent" => {
+                let variant = jacquard_common::deps::codegen::serde_ipld_dagcbor::from_slice(body)?;
+                Ok(Self::TypingEvent(Box::new(variant)))
+            }
+            "#newDeviceEvent" => {
+                let variant = jacquard_common::deps::codegen::serde_ipld_dagcbor::from_slice(body)?;
+                Ok(Self::NewDeviceEvent(Box::new(variant)))
+            }
+            "#infoEvent" => {
+                let variant = jacquard_common::deps::codegen::serde_ipld_dagcbor::from_slice(body)?;
+                Ok(Self::InfoEvent(Box::new(variant)))
+            }
+            "#treeChanged" => {
+                let variant = jacquard_common::deps::codegen::serde_ipld_dagcbor::from_slice(body)?;
+                Ok(Self::TreeChanged(Box::new(variant)))
+            }
+            "#groupResetEvent" => {
+                let variant = jacquard_common::deps::codegen::serde_ipld_dagcbor::from_slice(body)?;
+                Ok(Self::GroupResetEvent(Box::new(variant)))
+            }
+            "#membershipChangeEvent" => {
+                let variant = jacquard_common::deps::codegen::serde_ipld_dagcbor::from_slice(body)?;
+                Ok(Self::MembershipChangeEvent(Box::new(variant)))
+            }
+            "#groupInfoRefreshRequestedEvent" => {
+                let variant = jacquard_common::deps::codegen::serde_ipld_dagcbor::from_slice(body)?;
+                Ok(Self::GroupInfoRefreshRequestedEvent(Box::new(variant)))
+            }
+            "#readditionRequestedEvent" => {
+                let variant = jacquard_common::deps::codegen::serde_ipld_dagcbor::from_slice(body)?;
+                Ok(Self::ReadditionRequestedEvent(Box::new(variant)))
+            }
+            "#circuitBreakerTrippedEvent" => {
+                let variant = jacquard_common::deps::codegen::serde_ipld_dagcbor::from_slice(body)?;
+                Ok(Self::CircuitBreakerTrippedEvent(Box::new(variant)))
+            }
+            "#resetRequestedEvent" => {
+                let variant = jacquard_common::deps::codegen::serde_ipld_dagcbor::from_slice(body)?;
+                Ok(Self::ResetRequestedEvent(Box::new(variant)))
+            }
+            "#welcomeReissueRequestedEvent" => {
+                let variant = jacquard_common::deps::codegen::serde_ipld_dagcbor::from_slice(body)?;
+                Ok(Self::WelcomeReissueRequestedEvent(Box::new(variant)))
+            }
+            unknown => Err(jacquard_common::error::DecodeError::UnknownEventType(
+                unknown.into(),
+            )),
+        }
+    }
+}
+
+/// A membership change occurred (joined, left, removed, kicked)
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct MembershipChangeEvent<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Type of membership change
+    pub action: MembershipChangeEventAction<S>,
+    ///Conversation identifier
+    pub convo_id: S,
+    ///Resume cursor
+    pub cursor: S,
+    ///DID of the member involved
+    pub did: jacquard_common::types::string::Did<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// Type of membership change
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum MembershipChangeEventAction<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    Joined,
+    Left,
+    Removed,
+    Kicked,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> MembershipChangeEventAction<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Joined => "joined",
+            Self::Left => "left",
+            Self::Removed => "removed",
+            Self::Kicked => "kicked",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "joined" => Self::Joined,
+            "left" => Self::Left,
+            "removed" => Self::Removed,
+            "kicked" => Self::Kicked,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for MembershipChangeEventAction<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for MembershipChangeEventAction<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for MembershipChangeEventAction<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for MembershipChangeEventAction<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for MembershipChangeEventAction<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for MembershipChangeEventAction<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = MembershipChangeEventAction<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            MembershipChangeEventAction::Joined => MembershipChangeEventAction::Joined,
+            MembershipChangeEventAction::Left => MembershipChangeEventAction::Left,
+            MembershipChangeEventAction::Removed => MembershipChangeEventAction::Removed,
+            MembershipChangeEventAction::Kicked => MembershipChangeEventAction::Kicked,
+            MembershipChangeEventAction::Other(v) => {
+                MembershipChangeEventAction::Other(v.into_static())
+            }
+        }
+    }
+}
+
+/// A new encrypted message was sent
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct MessageEvent<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Resume cursor for this event position
+    pub cursor: S,
+    ///When true, this is an ephemeral signal (typing, read receipt, presence) that should NOT be shown in chat history. Omitted (defaults to false) for regular persistent messages.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub ephemeral: core::option::Option<bool>,
+    ///MLS epoch this message was encrypted at. Recipient SHOULD reject events where epoch < localJoinEpoch BEFORE feeding to unprotect_message.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub epoch: core::option::Option<i64>,
+    pub message: crate::generated::blue_catbird::mlsChat::MessageView<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// A user registered a new device needing addition to the conversation
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct NewDeviceEvent<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Conversation identifier
+    pub convo_id: S,
+    ///Resume cursor
+    pub cursor: S,
+    ///Full device credential DID (did:plc:user#device-uuid)
+    pub device_credential_did: S,
+    ///Device identifier
+    pub device_id: S,
+    ///Human-readable device name
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub device_name: core::option::Option<S>,
+    ///ID of the pending addition for claim/complete flow
+    pub pending_addition_id: S,
+    ///Base user DID
+    pub user_did: jacquard_common::types::string::Did<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// A reaction was added or removed
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ReactionEvent<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub action: ReactionEventAction<S>,
+    ///Conversation identifier
+    pub convo_id: S,
+    ///Resume cursor
+    pub cursor: S,
+    ///DID of the reactor
+    pub did: jacquard_common::types::string::Did<S>,
+    ///Message that was reacted to
+    pub message_id: S,
+    ///Emoji or short code
+    pub reaction: S,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum ReactionEventAction<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    Add,
+    Remove,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> ReactionEventAction<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Add => "add",
+            Self::Remove => "remove",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "add" => Self::Add,
+            "remove" => Self::Remove,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for ReactionEventAction<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for ReactionEventAction<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for ReactionEventAction<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for ReactionEventAction<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for ReactionEventAction<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for ReactionEventAction<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = ReactionEventAction<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            ReactionEventAction::Add => ReactionEventAction::Add,
+            ReactionEventAction::Remove => ReactionEventAction::Remove,
+            ReactionEventAction::Other(v) => ReactionEventAction::Other(v.into_static()),
+        }
+    }
+}
+
+/// A member re-addition was requested for a conversation
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic,
+    Default,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ReadditionRequestedEvent<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Conversation identifier
+    pub convo_id: S,
+    ///Resume cursor
+    pub cursor: S,
+    ///When the re-addition was requested (RFC3339)
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub requested_at: core::option::Option<jacquard_common::types::string::Datetime>,
+    ///DID of the member requesting re-addition
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub requested_by: core::option::Option<jacquard_common::types::string::Did<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// Phase 2.5: an indirect trigger (quorum vote, system sweep, inline 409/404) has requested a crypto session reset. Active members are invited to respond by submitting new MLS group material via bootstrapResetGroup or commitGroupChange. First commit wins via UNIQUE (conversation_id, generation) tie-break. The previous groupResetEvent is also emitted for backward compatibility during Stage 1.
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ResetRequestedEvent<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Conversation identifier
+    pub convo_id: S,
+    ///Server-side opaque id of the crypto_session whose reset was requested (the prior session, now in state='reset_requested')
+    pub crypto_session_id: S,
+    ///Resume cursor for this event position
+    pub cursor: S,
+    ///If non-null, only this mls_group_id may activate. Phase 2.5 indirect triggers always emit null here; admin/bootstrap direct flows always provide a value.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub expected_new_mls_group_id: core::option::Option<S>,
+    ///Generation number of the prior session — clients should activate at generation+1
+    pub generation: i64,
+    ///Human-readable reason for the reset
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub reason: core::option::Option<S>,
+    ///Server-side opaque id of the crypto_session_reset_requested delivery_event for correlation
+    pub request_event_id: S,
+    ///When the reset was requested (RFC3339)
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub requested_at: core::option::Option<jacquard_common::types::string::Datetime>,
+    ///Which subsystem produced the reset request
+    pub trigger: ResetRequestedEventTrigger<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// Which subsystem produced the reset request
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum ResetRequestedEventTrigger<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    QuorumVote,
+    SystemSweep,
+    InlineCommit409,
+    InlineGroupinfo404,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> ResetRequestedEventTrigger<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::QuorumVote => "quorum_vote",
+            Self::SystemSweep => "system_sweep",
+            Self::InlineCommit409 => "inline_commit_409",
+            Self::InlineGroupinfo404 => "inline_groupinfo_404",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "quorum_vote" => Self::QuorumVote,
+            "system_sweep" => Self::SystemSweep,
+            "inline_commit_409" => Self::InlineCommit409,
+            "inline_groupinfo_404" => Self::InlineGroupinfo404,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for ResetRequestedEventTrigger<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for ResetRequestedEventTrigger<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for ResetRequestedEventTrigger<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for ResetRequestedEventTrigger<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for ResetRequestedEventTrigger<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for ResetRequestedEventTrigger<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = ResetRequestedEventTrigger<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            ResetRequestedEventTrigger::QuorumVote => ResetRequestedEventTrigger::QuorumVote,
+            ResetRequestedEventTrigger::SystemSweep => ResetRequestedEventTrigger::SystemSweep,
+            ResetRequestedEventTrigger::InlineCommit409 => {
+                ResetRequestedEventTrigger::InlineCommit409
+            }
+            ResetRequestedEventTrigger::InlineGroupinfo404 => {
+                ResetRequestedEventTrigger::InlineGroupinfo404
+            }
+            ResetRequestedEventTrigger::Other(v) => {
+                ResetRequestedEventTrigger::Other(v.into_static())
+            }
+        }
+    }
+}
+
+/// The canonical MLS tree state changed. Clients must compare confirmationTag against their local state and re-join if mismatched.
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct TreeChanged<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Confirmation tag of the new canonical tree
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub confirmation_tag: jacquard_common::deps::bytes::Bytes,
+    ///Conversation identifier
+    pub convo_id: S,
+    ///Resume cursor
+    pub cursor: S,
+    ///New epoch number
+    pub epoch: i64,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// A user started or stopped typing
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct TypingEvent<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Conversation identifier
+    pub convo_id: S,
+    ///Resume cursor
+    pub cursor: S,
+    ///DID of the typist
+    pub did: jacquard_common::types::string::Did<S>,
+    ///True if started typing, false if stopped
+    pub is_typing: bool,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// A recipient device called reissueWelcome because it cannot decrypt the original Welcome. Server pushes this event to the inviter, who is expected to re-stage a new commit with a fresh KP. Body fields mirror blue.catbird.mlsChat.defs#welcomeReissueRequest.
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct WelcomeReissueRequestedEvent<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Conversation needing a reissued Welcome.
+    pub convo_id: S,
+    ///Resume cursor for this event position
+    pub cursor: S,
+    ///Recipient device that cannot decrypt the original Welcome. This may be a device-qualified DID (did#deviceId).
+    pub recipient_device_did: S,
+    ///Server-generated request identifier. Inviter echoes this in the replacement commit's idempotencyKey.
+    pub request_id: S,
+    ///When the reissue was requested (RFC3339).
+    pub requested_at: jacquard_common::types::string::Datetime,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+    for CircuitBreakerTrippedEvent<S>
+{
+    fn nsid() -> &'static str {
+        "blue.catbird.mlsChat.subscribeEvents"
+    }
+    fn def_name() -> &'static str {
+        "circuitBreakerTrippedEvent"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_blue_catbird_mlsChat_subscribeEvents()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+    for GroupInfoRefreshRequestedEvent<S>
+{
+    fn nsid() -> &'static str {
+        "blue.catbird.mlsChat.subscribeEvents"
+    }
+    fn def_name() -> &'static str {
+        "groupInfoRefreshRequestedEvent"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_blue_catbird_mlsChat_subscribeEvents()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for GroupResetEvent<S> {
+    fn nsid() -> &'static str {
+        "blue.catbird.mlsChat.subscribeEvents"
+    }
+    fn def_name() -> &'static str {
+        "groupResetEvent"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_blue_catbird_mlsChat_subscribeEvents()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for InfoEvent<S> {
+    fn nsid() -> &'static str {
+        "blue.catbird.mlsChat.subscribeEvents"
+    }
+    fn def_name() -> &'static str {
+        "infoEvent"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_blue_catbird_mlsChat_subscribeEvents()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+///Stream response type for
+///blue.catbird.mlsChat.subscribeEvents
+pub struct SubscribeEventsStream;
+impl jacquard_common::xrpc::SubscriptionResp for SubscribeEventsStream {
+    const NSID: &'static str = "blue.catbird.mlsChat.subscribeEvents";
+    const ENCODING: jacquard_common::xrpc::MessageEncoding =
+        jacquard_common::xrpc::MessageEncoding::Json;
+    type Message<S: jacquard_common::BosStr> = SubscribeEventsMessage<S>;
+    type Error = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcSubscription for SubscribeEvents<S> {
+    const NSID: &'static str = "blue.catbird.mlsChat.subscribeEvents";
+    const ENCODING: jacquard_common::xrpc::MessageEncoding =
+        jacquard_common::xrpc::MessageEncoding::Json;
+    type Stream = SubscribeEventsStream;
+}
+
+pub struct SubscribeEventsEndpoint;
+impl jacquard_common::xrpc::SubscriptionEndpoint for SubscribeEventsEndpoint {
+    const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.subscribeEvents";
+    const ENCODING: jacquard_common::xrpc::MessageEncoding =
+        jacquard_common::xrpc::MessageEncoding::Json;
+    type Params<S: jacquard_common::BosStr> = SubscribeEvents<S>;
+    type Stream = SubscribeEventsStream;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+    for MembershipChangeEvent<S>
+{
+    fn nsid() -> &'static str {
+        "blue.catbird.mlsChat.subscribeEvents"
+    }
+    fn def_name() -> &'static str {
+        "membershipChangeEvent"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_blue_catbird_mlsChat_subscribeEvents()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for MessageEvent<S> {
+    fn nsid() -> &'static str {
+        "blue.catbird.mlsChat.subscribeEvents"
+    }
+    fn def_name() -> &'static str {
+        "messageEvent"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_blue_catbird_mlsChat_subscribeEvents()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        if let Some(ref value) = self.epoch {
+            if *value < 0i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("epoch"),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for NewDeviceEvent<S> {
+    fn nsid() -> &'static str {
+        "blue.catbird.mlsChat.subscribeEvents"
+    }
+    fn def_name() -> &'static str {
+        "newDeviceEvent"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_blue_catbird_mlsChat_subscribeEvents()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ReactionEvent<S> {
+    fn nsid() -> &'static str {
+        "blue.catbird.mlsChat.subscribeEvents"
+    }
+    fn def_name() -> &'static str {
+        "reactionEvent"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_blue_catbird_mlsChat_subscribeEvents()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+    for ReadditionRequestedEvent<S>
+{
+    fn nsid() -> &'static str {
+        "blue.catbird.mlsChat.subscribeEvents"
+    }
+    fn def_name() -> &'static str {
+        "readditionRequestedEvent"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_blue_catbird_mlsChat_subscribeEvents()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+    for ResetRequestedEvent<S>
+{
+    fn nsid() -> &'static str {
+        "blue.catbird.mlsChat.subscribeEvents"
+    }
+    fn def_name() -> &'static str {
+        "resetRequestedEvent"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_blue_catbird_mlsChat_subscribeEvents()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for TreeChanged<S> {
+    fn nsid() -> &'static str {
+        "blue.catbird.mlsChat.subscribeEvents"
+    }
+    fn def_name() -> &'static str {
+        "treeChanged"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_blue_catbird_mlsChat_subscribeEvents()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for TypingEvent<S> {
+    fn nsid() -> &'static str {
+        "blue.catbird.mlsChat.subscribeEvents"
+    }
+    fn def_name() -> &'static str {
+        "typingEvent"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_blue_catbird_mlsChat_subscribeEvents()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+    for WelcomeReissueRequestedEvent<S>
+{
+    fn nsid() -> &'static str {
+        "blue.catbird.mlsChat.subscribeEvents"
+    }
+    fn def_name() -> &'static str {
+        "welcomeReissueRequestedEvent"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_blue_catbird_mlsChat_subscribeEvents()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
 }
 
 pub mod circuit_breaker_tripped_event_state {
@@ -34,8 +1337,8 @@ pub mod circuit_breaker_tripped_event_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Cursor;
         type ConvoId;
+        type Cursor;
         type ResetCount;
         type TrippedAt;
     }
@@ -43,54 +1346,54 @@ pub mod circuit_breaker_tripped_event_state {
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Cursor = Unset;
         type ConvoId = Unset;
+        type Cursor = Unset;
         type ResetCount = Unset;
         type TrippedAt = Unset;
     }
-    ///State transition - sets the `cursor` field to Set
-    pub struct SetCursor<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCursor<S> {}
-    impl<S: State> State for SetCursor<S> {
-        type Cursor = Set<members::cursor>;
-        type ConvoId = S::ConvoId;
-        type ResetCount = S::ResetCount;
-        type TrippedAt = S::TrippedAt;
-    }
     ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type Cursor = S::Cursor;
+    pub struct SetConvoId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetConvoId<St> {}
+    impl<St: State> State for SetConvoId<St> {
         type ConvoId = Set<members::convo_id>;
-        type ResetCount = S::ResetCount;
-        type TrippedAt = S::TrippedAt;
+        type Cursor = St::Cursor;
+        type ResetCount = St::ResetCount;
+        type TrippedAt = St::TrippedAt;
+    }
+    ///State transition - sets the `cursor` field to Set
+    pub struct SetCursor<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCursor<St> {}
+    impl<St: State> State for SetCursor<St> {
+        type ConvoId = St::ConvoId;
+        type Cursor = Set<members::cursor>;
+        type ResetCount = St::ResetCount;
+        type TrippedAt = St::TrippedAt;
     }
     ///State transition - sets the `reset_count` field to Set
-    pub struct SetResetCount<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetResetCount<S> {}
-    impl<S: State> State for SetResetCount<S> {
-        type Cursor = S::Cursor;
-        type ConvoId = S::ConvoId;
+    pub struct SetResetCount<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetResetCount<St> {}
+    impl<St: State> State for SetResetCount<St> {
+        type ConvoId = St::ConvoId;
+        type Cursor = St::Cursor;
         type ResetCount = Set<members::reset_count>;
-        type TrippedAt = S::TrippedAt;
+        type TrippedAt = St::TrippedAt;
     }
     ///State transition - sets the `tripped_at` field to Set
-    pub struct SetTrippedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetTrippedAt<S> {}
-    impl<S: State> State for SetTrippedAt<S> {
-        type Cursor = S::Cursor;
-        type ConvoId = S::ConvoId;
-        type ResetCount = S::ResetCount;
+    pub struct SetTrippedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetTrippedAt<St> {}
+    impl<St: State> State for SetTrippedAt<St> {
+        type ConvoId = St::ConvoId;
+        type Cursor = St::Cursor;
+        type ResetCount = St::ResetCount;
         type TrippedAt = Set<members::tripped_at>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `cursor` field
-        pub struct cursor(());
         ///Marker type for the `convo_id` field
         pub struct convo_id(());
+        ///Marker type for the `cursor` field
+        pub struct cursor(());
         ///Marker type for the `reset_count` field
         pub struct reset_count(());
         ///Marker type for the `tripped_at` field
@@ -98,164 +1401,193 @@ pub mod circuit_breaker_tripped_event_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct CircuitBreakerTrippedEventBuilder<'a, S: circuit_breaker_tripped_event_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
+/// Builder for constructing an instance of this type.
+pub struct CircuitBreakerTrippedEventBuilder<
+    St: circuit_breaker_tripped_event_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<S>,
+        core::option::Option<i64>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> CircuitBreakerTrippedEvent<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> CircuitBreakerTrippedEventBuilder<'a, circuit_breaker_tripped_event_state::Empty>
-    {
+impl CircuitBreakerTrippedEvent<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> CircuitBreakerTrippedEventBuilder<
+        circuit_breaker_tripped_event_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         CircuitBreakerTrippedEventBuilder::new()
     }
 }
 
-impl<'a> CircuitBreakerTrippedEventBuilder<'a, circuit_breaker_tripped_event_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> CircuitBreakerTrippedEvent<S> {
+    /// Create a new builder for this type
+    pub fn builder(
+    ) -> CircuitBreakerTrippedEventBuilder<circuit_breaker_tripped_event_state::Empty, S> {
+        CircuitBreakerTrippedEventBuilder::builder()
+    }
+}
+
+impl
+    CircuitBreakerTrippedEventBuilder<
+        circuit_breaker_tripped_event_state::Empty,
+        jacquard_common::DefaultStr,
+    >
+{
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         CircuitBreakerTrippedEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> CircuitBreakerTrippedEventBuilder<'a, S>
+impl<S: jacquard_common::BosStr>
+    CircuitBreakerTrippedEventBuilder<circuit_breaker_tripped_event_state::Empty, S>
+{
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        CircuitBreakerTrippedEventBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> CircuitBreakerTrippedEventBuilder<St, S>
 where
-    S: circuit_breaker_tripped_event_state::State,
-    S::ConvoId: circuit_breaker_tripped_event_state::IsUnset,
+    St: circuit_breaker_tripped_event_state::State,
+    St::ConvoId: circuit_breaker_tripped_event_state::IsUnset,
 {
     /// Set the `convoId` field (required)
     pub fn convo_id(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> CircuitBreakerTrippedEventBuilder<'a, circuit_breaker_tripped_event_state::SetConvoId<S>>
+        value: impl Into<S>,
+    ) -> CircuitBreakerTrippedEventBuilder<circuit_breaker_tripped_event_state::SetConvoId<St>, S>
     {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        self._fields.0 = ::core::option::Option::Some(value.into());
         CircuitBreakerTrippedEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> CircuitBreakerTrippedEventBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> CircuitBreakerTrippedEventBuilder<St, S>
 where
-    S: circuit_breaker_tripped_event_state::State,
-    S::Cursor: circuit_breaker_tripped_event_state::IsUnset,
+    St: circuit_breaker_tripped_event_state::State,
+    St::Cursor: circuit_breaker_tripped_event_state::IsUnset,
 {
     /// Set the `cursor` field (required)
     pub fn cursor(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> CircuitBreakerTrippedEventBuilder<'a, circuit_breaker_tripped_event_state::SetCursor<S>>
+        value: impl Into<S>,
+    ) -> CircuitBreakerTrippedEventBuilder<circuit_breaker_tripped_event_state::SetCursor<St>, S>
     {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        self._fields.1 = ::core::option::Option::Some(value.into());
         CircuitBreakerTrippedEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> CircuitBreakerTrippedEventBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> CircuitBreakerTrippedEventBuilder<St, S>
 where
-    S: circuit_breaker_tripped_event_state::State,
-    S::ResetCount: circuit_breaker_tripped_event_state::IsUnset,
+    St: circuit_breaker_tripped_event_state::State,
+    St::ResetCount: circuit_breaker_tripped_event_state::IsUnset,
 {
     /// Set the `resetCount` field (required)
     pub fn reset_count(
         mut self,
         value: impl Into<i64>,
-    ) -> CircuitBreakerTrippedEventBuilder<'a, circuit_breaker_tripped_event_state::SetResetCount<S>>
+    ) -> CircuitBreakerTrippedEventBuilder<circuit_breaker_tripped_event_state::SetResetCount<St>, S>
     {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        self._fields.2 = ::core::option::Option::Some(value.into());
         CircuitBreakerTrippedEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> CircuitBreakerTrippedEventBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> CircuitBreakerTrippedEventBuilder<St, S>
 where
-    S: circuit_breaker_tripped_event_state::State,
-    S::TrippedAt: circuit_breaker_tripped_event_state::IsUnset,
+    St: circuit_breaker_tripped_event_state::State,
+    St::TrippedAt: circuit_breaker_tripped_event_state::IsUnset,
 {
     /// Set the `trippedAt` field (required)
     pub fn tripped_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> CircuitBreakerTrippedEventBuilder<'a, circuit_breaker_tripped_event_state::SetTrippedAt<S>>
+    ) -> CircuitBreakerTrippedEventBuilder<circuit_breaker_tripped_event_state::SetTrippedAt<St>, S>
     {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        self._fields.3 = ::core::option::Option::Some(value.into());
         CircuitBreakerTrippedEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> CircuitBreakerTrippedEventBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> CircuitBreakerTrippedEventBuilder<St, S>
 where
-    S: circuit_breaker_tripped_event_state::State,
-    S::Cursor: circuit_breaker_tripped_event_state::IsSet,
-    S::ConvoId: circuit_breaker_tripped_event_state::IsSet,
-    S::ResetCount: circuit_breaker_tripped_event_state::IsSet,
-    S::TrippedAt: circuit_breaker_tripped_event_state::IsSet,
+    St: circuit_breaker_tripped_event_state::State,
+    St::ConvoId: circuit_breaker_tripped_event_state::IsSet,
+    St::Cursor: circuit_breaker_tripped_event_state::IsSet,
+    St::ResetCount: circuit_breaker_tripped_event_state::IsSet,
+    St::TrippedAt: circuit_breaker_tripped_event_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> CircuitBreakerTrippedEvent<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> CircuitBreakerTrippedEvent<S> {
         CircuitBreakerTrippedEvent {
-            convo_id: self.__unsafe_private_named.0.unwrap(),
-            cursor: self.__unsafe_private_named.1.unwrap(),
-            reset_count: self.__unsafe_private_named.2.unwrap(),
-            tripped_at: self.__unsafe_private_named.3.unwrap(),
+            convo_id: self._fields.0.unwrap(),
+            cursor: self._fields.1.unwrap(),
+            reset_count: self._fields.2.unwrap(),
+            tripped_at: self._fields.3.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> CircuitBreakerTrippedEvent<'a> {
+    ) -> CircuitBreakerTrippedEvent<S> {
         CircuitBreakerTrippedEvent {
-            convo_id: self.__unsafe_private_named.0.unwrap(),
-            cursor: self.__unsafe_private_named.1.unwrap(),
-            reset_count: self.__unsafe_private_named.2.unwrap(),
-            tripped_at: self.__unsafe_private_named.3.unwrap(),
+            convo_id: self._fields.0.unwrap(),
+            cursor: self._fields.1.unwrap(),
+            reset_count: self._fields.2.unwrap(),
+            tripped_at: self._fields.3.unwrap(),
             extra_data: Some(extra_data),
         }
     }
 }
 
 fn lexicon_doc_blue_catbird_mlsChat_subscribeEvents(
-) -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+) -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("blue.catbird.mlsChat.subscribeEvents"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                     "circuitBreakerTrippedEvent",
                 ),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
@@ -266,67 +1598,49 @@ fn lexicon_doc_blue_catbird_mlsChat_subscribeEvents(
                     ),
                     required: Some(
                         vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("cursor"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("resetCount"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("trippedAt")
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("cursor"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("resetCount"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("trippedAt")
                         ],
                     ),
-                    nullable: None,
                     properties: {
                         #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
+                        let mut map = ::alloc::collections::BTreeMap::new();
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "convoId",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
                                         "Conversation identifier",
                                     ),
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("cursor"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "cursor",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static("Resume cursor"),
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "resetCount",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                description: None,
-                                default: None,
-                                minimum: None,
-                                maximum: None,
-                                r#enum: None,
-                                r#const: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "trippedAt",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -338,75 +1652,56 @@ fn lexicon_doc_blue_catbird_mlsChat_subscribeEvents(
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map
                     },
+                    ..Default::default()
                 }),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("groupInfoRefreshRequestedEvent"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "groupInfoRefreshRequestedEvent",
+                ),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
                         description: Some(::jacquard_common::CowStr::new_static(
                             "A GroupInfo refresh was requested for a conversation",
                         )),
                         required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("cursor"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("cursor"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
                         ]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
                                             "Conversation identifier",
                                         )),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("cursor"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("cursor"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
                                             "Resume cursor",
                                         )),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("requestedAt"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "requestedAt",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
@@ -415,19 +1710,14 @@ fn lexicon_doc_blue_catbird_mlsChat_subscribeEvents(
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("requestedBy"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "requestedBy",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
@@ -436,24 +1726,20 @@ fn lexicon_doc_blue_catbird_mlsChat_subscribeEvents(
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("groupResetEvent"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "groupResetEvent",
+                ),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
@@ -462,18 +1748,17 @@ fn lexicon_doc_blue_catbird_mlsChat_subscribeEvents(
                     ),
                     required: Some(
                         vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("cursor"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("newGroupId"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("resetGeneration")
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("cursor"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("newGroupId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("resetGeneration")
                         ],
                     ),
-                    nullable: None,
                     properties: {
                         #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
+                        let mut map = ::alloc::collections::BTreeMap::new();
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "cipherSuite",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -482,55 +1767,35 @@ fn lexicon_doc_blue_catbird_mlsChat_subscribeEvents(
                                         "MLS cipher suite used for the new group after reset.",
                                     ),
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "convoId",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
                                         "Conversation identifier",
                                     ),
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("cursor"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "cursor",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static("Resume cursor"),
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "newGroupId",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -539,38 +1804,26 @@ fn lexicon_doc_blue_catbird_mlsChat_subscribeEvents(
                                         "New MLS group ID after reset",
                                     ),
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("reason"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "reason",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
                                         "Optional reason for the reset",
                                     ),
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("resetBy"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "resetBy",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
@@ -580,35 +1833,24 @@ fn lexicon_doc_blue_catbird_mlsChat_subscribeEvents(
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "resetGeneration",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                description: None,
-                                default: None,
-                                minimum: None,
-                                maximum: None,
-                                r#enum: None,
-                                r#const: None,
+                                ..Default::default()
                             }),
                         );
                         map
                     },
+                    ..Default::default()
                 }),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("infoEvent"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("infoEvent"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
@@ -617,90 +1859,65 @@ fn lexicon_doc_blue_catbird_mlsChat_subscribeEvents(
                     ),
                     required: Some(
                         vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("cursor"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("info")
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("cursor"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("info")
                         ],
                     ),
-                    nullable: None,
                     properties: {
                         #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
+                        let mut map = ::alloc::collections::BTreeMap::new();
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "convoId",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
                                         "Conversation ID (for groupInfoRefreshRequested, readditionRequested)",
                                     ),
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("cursor"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "cursor",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static("Resume cursor"),
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("info"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "info",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
                                         "Human-readable info or keep-alive message",
                                     ),
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("infoType"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "infoType",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
                                         "Structured info type for programmatic handling",
                                     ),
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "requestedBy",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -712,154 +1929,107 @@ fn lexicon_doc_blue_catbird_mlsChat_subscribeEvents(
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map
                     },
+                    ..Default::default()
                 }),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
                 ::jacquard_lexicon::lexicon::LexUserType::XrpcSubscription(::jacquard_lexicon::lexicon::LexXrpcSubscription {
-                    description: None,
                     parameters: Some(
                         ::jacquard_lexicon::lexicon::LexXrpcSubscriptionParameter::Params(::jacquard_lexicon::lexicon::LexXrpcParameters {
-                            description: None,
-                            required: None,
                             properties: {
                                 #[allow(unused_mut)]
-                                let mut map = ::std::collections::BTreeMap::new();
+                                let mut map = ::alloc::collections::BTreeMap::new();
                                 map.insert(
-                                    ::jacquard_common::smol_str::SmolStr::new_static("cursor"),
+                                    ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                        "cursor",
+                                    ),
                                     ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::String(::jacquard_lexicon::lexicon::LexString {
                                         description: Some(
                                             ::jacquard_common::CowStr::new_static(
                                                 "Opaque resume cursor. If provided, resume after this position.",
                                             ),
                                         ),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     }),
                                 );
                                 map.insert(
-                                    ::jacquard_common::smol_str::SmolStr::new_static("ticket"),
+                                    ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                        "ticket",
+                                    ),
                                     ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::String(::jacquard_lexicon::lexicon::LexString {
                                         description: Some(
                                             ::jacquard_common::CowStr::new_static(
                                                 "JWT ticket from getSubscriptionTicket for authentication",
                                             ),
                                         ),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     }),
                                 );
                                 map
                             },
+                            ..Default::default()
                         }),
                     ),
-                    message: None,
-                    infos: None,
-                    errors: None,
+                    ..Default::default()
                 }),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("membershipChangeEvent"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("membershipChangeEvent"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
                         description: Some(::jacquard_common::CowStr::new_static(
                             "A membership change occurred (joined, left, removed, kicked)",
                         )),
                         required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("cursor"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("did"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("action"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("cursor"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("action"),
                         ]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("action"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("action"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
                                             "Type of membership change",
                                         )),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
                                             "Conversation identifier",
                                         )),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("cursor"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("cursor"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
                                             "Resume cursor",
                                         )),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("did"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
@@ -868,154 +2038,121 @@ fn lexicon_doc_blue_catbird_mlsChat_subscribeEvents(
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("messageEvent"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("messageEvent"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
                         description: Some(::jacquard_common::CowStr::new_static(
                             "A new encrypted message was sent",
                         )),
                         required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("cursor"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("message"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("cursor"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("message"),
                         ]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("cursor"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("cursor"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
                                             "Resume cursor for this event position",
                                         )),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("ephemeral"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("ephemeral"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(
                                     ::jacquard_lexicon::lexicon::LexBoolean {
-                                        description: None,
-                                        default: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("epoch"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("epoch"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
                                     ::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
                                         minimum: Some(0i64),
-                                        maximum: None,
-                                        r#enum: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("message"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("message"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
                                     ::jacquard_lexicon::lexicon::LexRef {
-                                        description: None,
                                         r#ref: ::jacquard_common::CowStr::new_static(
                                             "blue.catbird.mlsChat.defs#messageView",
                                         ),
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("newDeviceEvent"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("newDeviceEvent"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
                         description: Some(::jacquard_common::CowStr::new_static(
                             "A user registered a new device needing addition to the conversation",
                         )),
                         required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("cursor"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("userDid"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("deviceId"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("deviceCredentialDid"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("pendingAdditionId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("cursor"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("userDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("deviceId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "deviceCredentialDid",
+                            ),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "pendingAdditionId",
+                            ),
                         ]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
                                             "Conversation identifier",
                                         )),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("cursor"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("cursor"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
                                             "Resume cursor",
                                         )),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "deviceCredentialDid",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
@@ -1023,58 +2160,36 @@ fn lexicon_doc_blue_catbird_mlsChat_subscribeEvents(
                                         description: Some(::jacquard_common::CowStr::new_static(
                                             "Full device credential DID (did:plc:user#device-uuid)",
                                         )),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("deviceId"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("deviceId"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
                                             "Device identifier",
                                         )),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("deviceName"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "deviceName",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
                                             "Human-readable device name",
                                         )),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "pendingAdditionId",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
@@ -1082,20 +2197,12 @@ fn lexicon_doc_blue_catbird_mlsChat_subscribeEvents(
                                         description: Some(::jacquard_common::CowStr::new_static(
                                             "ID of the pending addition for claim/complete flow",
                                         )),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("userDid"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("userDid"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
@@ -1104,98 +2211,66 @@ fn lexicon_doc_blue_catbird_mlsChat_subscribeEvents(
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("reactionEvent"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("reactionEvent"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
                         description: Some(::jacquard_common::CowStr::new_static(
                             "A reaction was added or removed",
                         )),
                         required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("cursor"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("messageId"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("did"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("reaction"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("action"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("cursor"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("messageId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("reaction"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("action"),
                         ]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("action"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("action"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
                                             "Conversation identifier",
                                         )),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("cursor"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("cursor"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
                                             "Resume cursor",
                                         )),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("did"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
@@ -1204,115 +2279,78 @@ fn lexicon_doc_blue_catbird_mlsChat_subscribeEvents(
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("messageId"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("messageId"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
                                             "Message that was reacted to",
                                         )),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("reaction"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("reaction"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
                                             "Emoji or short code",
                                         )),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("readditionRequestedEvent"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("readditionRequestedEvent"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
                         description: Some(::jacquard_common::CowStr::new_static(
                             "A member re-addition was requested for a conversation",
                         )),
                         required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("cursor"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("cursor"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
                         ]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
                                             "Conversation identifier",
                                         )),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("cursor"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("cursor"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
                                             "Resume cursor",
                                         )),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("requestedAt"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "requestedAt",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
@@ -1321,19 +2359,14 @@ fn lexicon_doc_blue_catbird_mlsChat_subscribeEvents(
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("requestedBy"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "requestedBy",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
@@ -1342,24 +2375,20 @@ fn lexicon_doc_blue_catbird_mlsChat_subscribeEvents(
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("resetRequestedEvent"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "resetRequestedEvent",
+                ),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
@@ -1368,39 +2397,32 @@ fn lexicon_doc_blue_catbird_mlsChat_subscribeEvents(
                     ),
                     required: Some(
                         vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("cursor"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("cryptoSessionId"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("generation"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("trigger"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("requestEventId")
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("cursor"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("cryptoSessionId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("generation"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("trigger"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("requestEventId")
                         ],
                     ),
-                    nullable: None,
                     properties: {
                         #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
+                        let mut map = ::alloc::collections::BTreeMap::new();
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "convoId",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
                                         "Conversation identifier",
                                     ),
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "cryptoSessionId",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -1409,38 +2431,24 @@ fn lexicon_doc_blue_catbird_mlsChat_subscribeEvents(
                                         "Server-side opaque id of the crypto_session whose reset was requested (the prior session, now in state='reset_requested')",
                                     ),
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("cursor"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "cursor",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
                                         "Resume cursor for this event position",
                                     ),
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "expectedNewMlsGroupId",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -1449,51 +2457,32 @@ fn lexicon_doc_blue_catbird_mlsChat_subscribeEvents(
                                         "If non-null, only this mls_group_id may activate. Phase 2.5 indirect triggers always emit null here; admin/bootstrap direct flows always provide a value.",
                                     ),
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "generation",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                description: None,
-                                default: None,
-                                minimum: None,
-                                maximum: None,
-                                r#enum: None,
-                                r#const: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("reason"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "reason",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
                                         "Human-readable reason for the reset",
                                     ),
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "requestEventId",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -1502,19 +2491,11 @@ fn lexicon_doc_blue_catbird_mlsChat_subscribeEvents(
                                         "Server-side opaque id of the crypto_session_reset_requested delivery_event for correlation",
                                     ),
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "requestedAt",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -1526,41 +2507,29 @@ fn lexicon_doc_blue_catbird_mlsChat_subscribeEvents(
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("trigger"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "trigger",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
                                         "Which subsystem produced the reset request",
                                     ),
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map
                     },
+                    ..Default::default()
                 }),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("treeChanged"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("treeChanged"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
@@ -1569,134 +2538,100 @@ fn lexicon_doc_blue_catbird_mlsChat_subscribeEvents(
                     ),
                     required: Some(
                         vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("cursor"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("confirmationTag"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("epoch")
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("cursor"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("confirmationTag"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("epoch")
                         ],
                     ),
-                    nullable: None,
                     properties: {
                         #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
+                        let mut map = ::alloc::collections::BTreeMap::new();
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "confirmationTag",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
-                                description: None,
-                                max_length: None,
-                                min_length: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "convoId",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
                                         "Conversation identifier",
                                     ),
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("cursor"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "cursor",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static("Resume cursor"),
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("epoch"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "epoch",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                description: None,
-                                default: None,
-                                minimum: None,
-                                maximum: None,
-                                r#enum: None,
-                                r#const: None,
+                                ..Default::default()
                             }),
                         );
                         map
                     },
+                    ..Default::default()
                 }),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("typingEvent"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("typingEvent"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
                         description: Some(::jacquard_common::CowStr::new_static(
                             "A user started or stopped typing",
                         )),
                         required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("cursor"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("did"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("isTyping"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("cursor"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("isTyping"),
                         ]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
                                             "Conversation identifier",
                                         )),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("cursor"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("cursor"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
                                             "Resume cursor",
                                         )),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("did"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
@@ -1705,34 +2640,26 @@ fn lexicon_doc_blue_catbird_mlsChat_subscribeEvents(
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("isTyping"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("isTyping"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(
                                     ::jacquard_lexicon::lexicon::LexBoolean {
-                                        description: None,
-                                        default: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                     "welcomeReissueRequestedEvent",
                 ),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
@@ -1743,57 +2670,44 @@ fn lexicon_doc_blue_catbird_mlsChat_subscribeEvents(
                     ),
                     required: Some(
                         vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("cursor"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("recipientDeviceDid"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("requestedAt"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("requestId")
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("cursor"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("recipientDeviceDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("requestedAt"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("requestId")
                         ],
                     ),
-                    nullable: None,
                     properties: {
                         #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
+                        let mut map = ::alloc::collections::BTreeMap::new();
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "convoId",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
                                         "Conversation needing a reissued Welcome.",
                                     ),
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("cursor"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "cursor",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
                                         "Resume cursor for this event position",
                                     ),
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "recipientDeviceDid",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -1802,19 +2716,11 @@ fn lexicon_doc_blue_catbird_mlsChat_subscribeEvents(
                                         "Recipient device that cannot decrypt the original Welcome. This may be a device-qualified DID (did#deviceId).",
                                     ),
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "requestId",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -1823,19 +2729,11 @@ fn lexicon_doc_blue_catbird_mlsChat_subscribeEvents(
                                         "Server-generated request identifier. Inviter echoes this in the replacement commit's idempotencyKey.",
                                     ),
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "requestedAt",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -1847,118 +2745,18 @@ fn lexicon_doc_blue_catbird_mlsChat_subscribeEvents(
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map
                     },
+                    ..Default::default()
                 }),
             );
             map
         },
+        ..Default::default()
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for CircuitBreakerTrippedEvent<'a> {
-    fn nsid() -> &'static str {
-        "blue.catbird.mlsChat.subscribeEvents"
-    }
-    fn def_name() -> &'static str {
-        "circuitBreakerTrippedEvent"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_blue_catbird_mlsChat_subscribeEvents()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-/// A GroupInfo refresh was requested for a conversation
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic,
-    Default,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GroupInfoRefreshRequestedEvent<'a> {
-    /// Conversation identifier
-    #[serde(borrow)]
-    pub convo_id: jacquard_common::CowStr<'a>,
-    /// Resume cursor
-    #[serde(borrow)]
-    pub cursor: jacquard_common::CowStr<'a>,
-    /// When the refresh was requested (RFC3339)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub requested_at: std::option::Option<jacquard_common::types::string::Datetime>,
-    /// DID of the requester
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub requested_by: std::option::Option<jacquard_common::types::string::Did<'a>>,
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for GroupInfoRefreshRequestedEvent<'a> {
-    fn nsid() -> &'static str {
-        "blue.catbird.mlsChat.subscribeEvents"
-    }
-    fn def_name() -> &'static str {
-        "groupInfoRefreshRequestedEvent"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_blue_catbird_mlsChat_subscribeEvents()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-/// The MLS group was reset and a new group was created for this conversation
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GroupResetEvent<'a> {
-    /// MLS cipher suite used for the new group after reset.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cipher_suite: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// Conversation identifier
-    #[serde(borrow)]
-    pub convo_id: jacquard_common::CowStr<'a>,
-    /// Resume cursor
-    #[serde(borrow)]
-    pub cursor: jacquard_common::CowStr<'a>,
-    /// New MLS group ID after reset
-    #[serde(borrow)]
-    pub new_group_id: jacquard_common::CowStr<'a>,
-    /// Optional reason for the reset
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub reason: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// DID of the admin who initiated the reset
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub reset_by: std::option::Option<jacquard_common::types::string::Did<'a>>,
-    /// Cumulative reset count for this conversation
-    pub reset_generation: i64,
 }
 
 pub mod group_reset_event_state {
@@ -1971,8 +2769,8 @@ pub mod group_reset_event_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Cursor;
         type ConvoId;
+        type Cursor;
         type NewGroupId;
         type ResetGeneration;
     }
@@ -1980,54 +2778,54 @@ pub mod group_reset_event_state {
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Cursor = Unset;
         type ConvoId = Unset;
+        type Cursor = Unset;
         type NewGroupId = Unset;
         type ResetGeneration = Unset;
     }
-    ///State transition - sets the `cursor` field to Set
-    pub struct SetCursor<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCursor<S> {}
-    impl<S: State> State for SetCursor<S> {
-        type Cursor = Set<members::cursor>;
-        type ConvoId = S::ConvoId;
-        type NewGroupId = S::NewGroupId;
-        type ResetGeneration = S::ResetGeneration;
-    }
     ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type Cursor = S::Cursor;
+    pub struct SetConvoId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetConvoId<St> {}
+    impl<St: State> State for SetConvoId<St> {
         type ConvoId = Set<members::convo_id>;
-        type NewGroupId = S::NewGroupId;
-        type ResetGeneration = S::ResetGeneration;
+        type Cursor = St::Cursor;
+        type NewGroupId = St::NewGroupId;
+        type ResetGeneration = St::ResetGeneration;
+    }
+    ///State transition - sets the `cursor` field to Set
+    pub struct SetCursor<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCursor<St> {}
+    impl<St: State> State for SetCursor<St> {
+        type ConvoId = St::ConvoId;
+        type Cursor = Set<members::cursor>;
+        type NewGroupId = St::NewGroupId;
+        type ResetGeneration = St::ResetGeneration;
     }
     ///State transition - sets the `new_group_id` field to Set
-    pub struct SetNewGroupId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetNewGroupId<S> {}
-    impl<S: State> State for SetNewGroupId<S> {
-        type Cursor = S::Cursor;
-        type ConvoId = S::ConvoId;
+    pub struct SetNewGroupId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetNewGroupId<St> {}
+    impl<St: State> State for SetNewGroupId<St> {
+        type ConvoId = St::ConvoId;
+        type Cursor = St::Cursor;
         type NewGroupId = Set<members::new_group_id>;
-        type ResetGeneration = S::ResetGeneration;
+        type ResetGeneration = St::ResetGeneration;
     }
     ///State transition - sets the `reset_generation` field to Set
-    pub struct SetResetGeneration<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetResetGeneration<S> {}
-    impl<S: State> State for SetResetGeneration<S> {
-        type Cursor = S::Cursor;
-        type ConvoId = S::ConvoId;
-        type NewGroupId = S::NewGroupId;
+    pub struct SetResetGeneration<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetResetGeneration<St> {}
+    impl<St: State> State for SetResetGeneration<St> {
+        type ConvoId = St::ConvoId;
+        type Cursor = St::Cursor;
+        type NewGroupId = St::NewGroupId;
         type ResetGeneration = Set<members::reset_generation>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `cursor` field
-        pub struct cursor(());
         ///Marker type for the `convo_id` field
         pub struct convo_id(());
+        ///Marker type for the `cursor` field
+        pub struct cursor(());
         ///Marker type for the `new_group_id` field
         pub struct new_group_id(());
         ///Marker type for the `reset_generation` field
@@ -2035,281 +2833,219 @@ pub mod group_reset_event_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct GroupResetEventBuilder<'a, S: group_reset_event_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<i64>,
+/// Builder for constructing an instance of this type.
+pub struct GroupResetEventBuilder<
+    St: group_reset_event_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<GroupResetEventCipherSuite<S>>,
+        core::option::Option<S>,
+        core::option::Option<S>,
+        core::option::Option<S>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<i64>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> GroupResetEvent<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> GroupResetEventBuilder<'a, group_reset_event_state::Empty> {
+impl GroupResetEvent<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> GroupResetEventBuilder<group_reset_event_state::Empty, jacquard_common::DefaultStr> {
         GroupResetEventBuilder::new()
     }
 }
 
-impl<'a> GroupResetEventBuilder<'a, group_reset_event_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> GroupResetEvent<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> GroupResetEventBuilder<group_reset_event_state::Empty, S> {
+        GroupResetEventBuilder::builder()
+    }
+}
+
+impl GroupResetEventBuilder<group_reset_event_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GroupResetEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: group_reset_event_state::State> GroupResetEventBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> GroupResetEventBuilder<group_reset_event_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GroupResetEventBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: group_reset_event_state::State, S: jacquard_common::BosStr> GroupResetEventBuilder<St, S> {
     /// Set the `cipherSuite` field (optional)
-    pub fn cipher_suite(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+    pub fn cipher_suite(mut self, value: impl Into<Option<GroupResetEventCipherSuite<S>>>) -> Self {
+        self._fields.0 = value.into();
         self
     }
     /// Set the `cipherSuite` field to an Option value (optional)
-    pub fn maybe_cipher_suite(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.0 = value;
+    pub fn maybe_cipher_suite(mut self, value: Option<GroupResetEventCipherSuite<S>>) -> Self {
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S> GroupResetEventBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GroupResetEventBuilder<St, S>
 where
-    S: group_reset_event_state::State,
-    S::ConvoId: group_reset_event_state::IsUnset,
+    St: group_reset_event_state::State,
+    St::ConvoId: group_reset_event_state::IsUnset,
 {
     /// Set the `convoId` field (required)
     pub fn convo_id(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> GroupResetEventBuilder<'a, group_reset_event_state::SetConvoId<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> GroupResetEventBuilder<group_reset_event_state::SetConvoId<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         GroupResetEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GroupResetEventBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GroupResetEventBuilder<St, S>
 where
-    S: group_reset_event_state::State,
-    S::Cursor: group_reset_event_state::IsUnset,
+    St: group_reset_event_state::State,
+    St::Cursor: group_reset_event_state::IsUnset,
 {
     /// Set the `cursor` field (required)
     pub fn cursor(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> GroupResetEventBuilder<'a, group_reset_event_state::SetCursor<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> GroupResetEventBuilder<group_reset_event_state::SetCursor<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         GroupResetEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GroupResetEventBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GroupResetEventBuilder<St, S>
 where
-    S: group_reset_event_state::State,
-    S::NewGroupId: group_reset_event_state::IsUnset,
+    St: group_reset_event_state::State,
+    St::NewGroupId: group_reset_event_state::IsUnset,
 {
     /// Set the `newGroupId` field (required)
     pub fn new_group_id(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> GroupResetEventBuilder<'a, group_reset_event_state::SetNewGroupId<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> GroupResetEventBuilder<group_reset_event_state::SetNewGroupId<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
         GroupResetEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: group_reset_event_state::State> GroupResetEventBuilder<'a, S> {
+impl<St: group_reset_event_state::State, S: jacquard_common::BosStr> GroupResetEventBuilder<St, S> {
     /// Set the `reason` field (optional)
-    pub fn reason(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.4 = value.into();
+    pub fn reason(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.4 = value.into();
         self
     }
     /// Set the `reason` field to an Option value (optional)
-    pub fn maybe_reason(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.4 = value;
+    pub fn maybe_reason(mut self, value: Option<S>) -> Self {
+        self._fields.4 = value;
         self
     }
 }
 
-impl<'a, S: group_reset_event_state::State> GroupResetEventBuilder<'a, S> {
+impl<St: group_reset_event_state::State, S: jacquard_common::BosStr> GroupResetEventBuilder<St, S> {
     /// Set the `resetBy` field (optional)
     pub fn reset_by(
         mut self,
-        value: impl Into<Option<jacquard_common::types::string::Did<'a>>>,
+        value: impl Into<Option<jacquard_common::types::string::Did<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.5 = value.into();
+        self._fields.5 = value.into();
         self
     }
     /// Set the `resetBy` field to an Option value (optional)
-    pub fn maybe_reset_by(
-        mut self,
-        value: Option<jacquard_common::types::string::Did<'a>>,
-    ) -> Self {
-        self.__unsafe_private_named.5 = value;
+    pub fn maybe_reset_by(mut self, value: Option<jacquard_common::types::string::Did<S>>) -> Self {
+        self._fields.5 = value;
         self
     }
 }
 
-impl<'a, S> GroupResetEventBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GroupResetEventBuilder<St, S>
 where
-    S: group_reset_event_state::State,
-    S::ResetGeneration: group_reset_event_state::IsUnset,
+    St: group_reset_event_state::State,
+    St::ResetGeneration: group_reset_event_state::IsUnset,
 {
     /// Set the `resetGeneration` field (required)
     pub fn reset_generation(
         mut self,
         value: impl Into<i64>,
-    ) -> GroupResetEventBuilder<'a, group_reset_event_state::SetResetGeneration<S>> {
-        self.__unsafe_private_named.6 = ::core::option::Option::Some(value.into());
+    ) -> GroupResetEventBuilder<group_reset_event_state::SetResetGeneration<St>, S> {
+        self._fields.6 = ::core::option::Option::Some(value.into());
         GroupResetEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GroupResetEventBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GroupResetEventBuilder<St, S>
 where
-    S: group_reset_event_state::State,
-    S::Cursor: group_reset_event_state::IsSet,
-    S::ConvoId: group_reset_event_state::IsSet,
-    S::NewGroupId: group_reset_event_state::IsSet,
-    S::ResetGeneration: group_reset_event_state::IsSet,
+    St: group_reset_event_state::State,
+    St::ConvoId: group_reset_event_state::IsSet,
+    St::Cursor: group_reset_event_state::IsSet,
+    St::NewGroupId: group_reset_event_state::IsSet,
+    St::ResetGeneration: group_reset_event_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> GroupResetEvent<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> GroupResetEvent<S> {
         GroupResetEvent {
-            cipher_suite: self.__unsafe_private_named.0,
-            convo_id: self.__unsafe_private_named.1.unwrap(),
-            cursor: self.__unsafe_private_named.2.unwrap(),
-            new_group_id: self.__unsafe_private_named.3.unwrap(),
-            reason: self.__unsafe_private_named.4,
-            reset_by: self.__unsafe_private_named.5,
-            reset_generation: self.__unsafe_private_named.6.unwrap(),
+            cipher_suite: self._fields.0,
+            convo_id: self._fields.1.unwrap(),
+            cursor: self._fields.2.unwrap(),
+            new_group_id: self._fields.3.unwrap(),
+            reason: self._fields.4,
+            reset_by: self._fields.5,
+            reset_generation: self._fields.6.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> GroupResetEvent<'a> {
+    ) -> GroupResetEvent<S> {
         GroupResetEvent {
-            cipher_suite: self.__unsafe_private_named.0,
-            convo_id: self.__unsafe_private_named.1.unwrap(),
-            cursor: self.__unsafe_private_named.2.unwrap(),
-            new_group_id: self.__unsafe_private_named.3.unwrap(),
-            reason: self.__unsafe_private_named.4,
-            reset_by: self.__unsafe_private_named.5,
-            reset_generation: self.__unsafe_private_named.6.unwrap(),
+            cipher_suite: self._fields.0,
+            convo_id: self._fields.1.unwrap(),
+            cursor: self._fields.2.unwrap(),
+            new_group_id: self._fields.3.unwrap(),
+            reason: self._fields.4,
+            reset_by: self._fields.5,
+            reset_generation: self._fields.6.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for GroupResetEvent<'a> {
-    fn nsid() -> &'static str {
-        "blue.catbird.mlsChat.subscribeEvents"
-    }
-    fn def_name() -> &'static str {
-        "groupResetEvent"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_blue_catbird_mlsChat_subscribeEvents()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-/// Informational message (heartbeat, notices, or GroupInfo refresh request)
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic,
-    Default,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct InfoEvent<'a> {
-    /// Conversation ID (for groupInfoRefreshRequested, readditionRequested)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub convo_id: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// Resume cursor
-    #[serde(borrow)]
-    pub cursor: jacquard_common::CowStr<'a>,
-    /// Human-readable info or keep-alive message
-    #[serde(borrow)]
-    pub info: jacquard_common::CowStr<'a>,
-    /// Structured info type for programmatic handling
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub info_type: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// DID of the requester
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub requested_by: std::option::Option<jacquard_common::types::string::Did<'a>>,
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for InfoEvent<'a> {
-    fn nsid() -> &'static str {
-        "blue.catbird.mlsChat.subscribeEvents"
-    }
-    fn def_name() -> &'static str {
-        "infoEvent"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_blue_catbird_mlsChat_subscribeEvents()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct SubscribeEvents<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub ticket: std::option::Option<jacquard_common::CowStr<'a>>,
 }
 
 pub mod subscribe_events_state {
@@ -2331,276 +3067,90 @@ pub mod subscribe_events_state {
     pub mod members {}
 }
 
-/// Builder for constructing an instance of this type
-pub struct SubscribeEventsBuilder<'a, S: subscribe_events_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-    ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct SubscribeEventsBuilder<
+    St: subscribe_events_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<S>, core::option::Option<S>),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> SubscribeEvents<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> SubscribeEventsBuilder<'a, subscribe_events_state::Empty> {
+impl SubscribeEvents<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> SubscribeEventsBuilder<subscribe_events_state::Empty, jacquard_common::DefaultStr> {
         SubscribeEventsBuilder::new()
     }
 }
 
-impl<'a> SubscribeEventsBuilder<'a, subscribe_events_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> SubscribeEvents<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> SubscribeEventsBuilder<subscribe_events_state::Empty, S> {
+        SubscribeEventsBuilder::builder()
+    }
+}
+
+impl SubscribeEventsBuilder<subscribe_events_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         SubscribeEventsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: subscribe_events_state::State> SubscribeEventsBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> SubscribeEventsBuilder<subscribe_events_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        SubscribeEventsBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: subscribe_events_state::State, S: jacquard_common::BosStr> SubscribeEventsBuilder<St, S> {
     /// Set the `cursor` field (optional)
-    pub fn cursor(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+    pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.0 = value.into();
         self
     }
     /// Set the `cursor` field to an Option value (optional)
-    pub fn maybe_cursor(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.0 = value;
+    pub fn maybe_cursor(mut self, value: Option<S>) -> Self {
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S: subscribe_events_state::State> SubscribeEventsBuilder<'a, S> {
+impl<St: subscribe_events_state::State, S: jacquard_common::BosStr> SubscribeEventsBuilder<St, S> {
     /// Set the `ticket` field (optional)
-    pub fn ticket(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+    pub fn ticket(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.1 = value.into();
         self
     }
     /// Set the `ticket` field to an Option value (optional)
-    pub fn maybe_ticket(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.1 = value;
+    pub fn maybe_ticket(mut self, value: Option<S>) -> Self {
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S> SubscribeEventsBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> SubscribeEventsBuilder<St, S>
 where
-    S: subscribe_events_state::State,
+    St: subscribe_events_state::State,
 {
-    /// Build the final struct
-    pub fn build(self) -> SubscribeEvents<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> SubscribeEvents<S> {
         SubscribeEvents {
-            cursor: self.__unsafe_private_named.0,
-            ticket: self.__unsafe_private_named.1,
+            cursor: self._fields.0,
+            ticket: self._fields.1,
         }
     }
-}
-
-#[jacquard_derive::open_union]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(tag = "$type")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum SubscribeEventsMessage<'a> {
-    #[serde(rename = "#messageEvent")]
-    MessageEvent(
-        Box<crate::generated::blue_catbird::mlsChat::subscribe_events::MessageEvent<'a>>,
-    ),
-    #[serde(rename = "#reactionEvent")]
-    ReactionEvent(
-        Box<crate::generated::blue_catbird::mlsChat::subscribe_events::ReactionEvent<'a>>,
-    ),
-    #[serde(rename = "#typingEvent")]
-    TypingEvent(
-        Box<crate::generated::blue_catbird::mlsChat::subscribe_events::TypingEvent<'a>>,
-    ),
-    #[serde(rename = "#newDeviceEvent")]
-    NewDeviceEvent(
-        Box<
-            crate::generated::blue_catbird::mlsChat::subscribe_events::NewDeviceEvent<'a>,
-        >,
-    ),
-    #[serde(rename = "#infoEvent")]
-    InfoEvent(
-        Box<crate::generated::blue_catbird::mlsChat::subscribe_events::InfoEvent<'a>>,
-    ),
-    #[serde(rename = "#treeChanged")]
-    TreeChanged(
-        Box<crate::generated::blue_catbird::mlsChat::subscribe_events::TreeChanged<'a>>,
-    ),
-    #[serde(rename = "#groupResetEvent")]
-    GroupResetEvent(
-        Box<
-            crate::generated::blue_catbird::mlsChat::subscribe_events::GroupResetEvent<
-                'a,
-            >,
-        >,
-    ),
-    #[serde(rename = "#membershipChangeEvent")]
-    MembershipChangeEvent(
-        Box<
-            crate::generated::blue_catbird::mlsChat::subscribe_events::MembershipChangeEvent<
-                'a,
-            >,
-        >,
-    ),
-    #[serde(rename = "#groupInfoRefreshRequestedEvent")]
-    GroupInfoRefreshRequestedEvent(
-        Box<
-            crate::generated::blue_catbird::mlsChat::subscribe_events::GroupInfoRefreshRequestedEvent<
-                'a,
-            >,
-        >,
-    ),
-    #[serde(rename = "#readditionRequestedEvent")]
-    ReadditionRequestedEvent(
-        Box<
-            crate::generated::blue_catbird::mlsChat::subscribe_events::ReadditionRequestedEvent<
-                'a,
-            >,
-        >,
-    ),
-    #[serde(rename = "#circuitBreakerTrippedEvent")]
-    CircuitBreakerTrippedEvent(
-        Box<
-            crate::generated::blue_catbird::mlsChat::subscribe_events::CircuitBreakerTrippedEvent<
-                'a,
-            >,
-        >,
-    ),
-    #[serde(rename = "#resetRequestedEvent")]
-    ResetRequestedEvent(
-        Box<
-            crate::generated::blue_catbird::mlsChat::subscribe_events::ResetRequestedEvent<
-                'a,
-            >,
-        >,
-    ),
-    #[serde(rename = "#welcomeReissueRequestedEvent")]
-    WelcomeReissueRequestedEvent(
-        Box<
-            crate::generated::blue_catbird::mlsChat::subscribe_events::WelcomeReissueRequestedEvent<
-                'a,
-            >,
-        >,
-    ),
-}
-
-impl<'a> SubscribeEventsMessage<'a> {
-    /// Decode a framed DAG-CBOR message (header + body).
-    pub fn decode_framed<'de: 'a>(
-        bytes: &'de [u8],
-    ) -> Result<SubscribeEventsMessage<'a>, jacquard_common::error::DecodeError> {
-        let (header, body) = jacquard_common::xrpc::subscription::parse_event_header(bytes)?;
-        match header.t.as_str() {
-            "#messageEvent" => {
-                let variant = serde_ipld_dagcbor::from_slice(body)?;
-                Ok(Self::MessageEvent(Box::new(variant)))
-            }
-            "#reactionEvent" => {
-                let variant = serde_ipld_dagcbor::from_slice(body)?;
-                Ok(Self::ReactionEvent(Box::new(variant)))
-            }
-            "#typingEvent" => {
-                let variant = serde_ipld_dagcbor::from_slice(body)?;
-                Ok(Self::TypingEvent(Box::new(variant)))
-            }
-            "#newDeviceEvent" => {
-                let variant = serde_ipld_dagcbor::from_slice(body)?;
-                Ok(Self::NewDeviceEvent(Box::new(variant)))
-            }
-            "#infoEvent" => {
-                let variant = serde_ipld_dagcbor::from_slice(body)?;
-                Ok(Self::InfoEvent(Box::new(variant)))
-            }
-            "#treeChanged" => {
-                let variant = serde_ipld_dagcbor::from_slice(body)?;
-                Ok(Self::TreeChanged(Box::new(variant)))
-            }
-            "#groupResetEvent" => {
-                let variant = serde_ipld_dagcbor::from_slice(body)?;
-                Ok(Self::GroupResetEvent(Box::new(variant)))
-            }
-            "#membershipChangeEvent" => {
-                let variant = serde_ipld_dagcbor::from_slice(body)?;
-                Ok(Self::MembershipChangeEvent(Box::new(variant)))
-            }
-            "#groupInfoRefreshRequestedEvent" => {
-                let variant = serde_ipld_dagcbor::from_slice(body)?;
-                Ok(Self::GroupInfoRefreshRequestedEvent(Box::new(variant)))
-            }
-            "#readditionRequestedEvent" => {
-                let variant = serde_ipld_dagcbor::from_slice(body)?;
-                Ok(Self::ReadditionRequestedEvent(Box::new(variant)))
-            }
-            "#circuitBreakerTrippedEvent" => {
-                let variant = serde_ipld_dagcbor::from_slice(body)?;
-                Ok(Self::CircuitBreakerTrippedEvent(Box::new(variant)))
-            }
-            "#resetRequestedEvent" => {
-                let variant = serde_ipld_dagcbor::from_slice(body)?;
-                Ok(Self::ResetRequestedEvent(Box::new(variant)))
-            }
-            "#welcomeReissueRequestedEvent" => {
-                let variant = serde_ipld_dagcbor::from_slice(body)?;
-                Ok(Self::WelcomeReissueRequestedEvent(Box::new(variant)))
-            }
-            unknown => Err(jacquard_common::error::DecodeError::UnknownEventType(
-                unknown.into(),
-            )),
-        }
-    }
-}
-
-///Stream response type for
-///blue.catbird.mlsChat.subscribeEvents
-pub struct SubscribeEventsStream;
-impl jacquard_common::xrpc::SubscriptionResp for SubscribeEventsStream {
-    const NSID: &'static str = "blue.catbird.mlsChat.subscribeEvents";
-    const ENCODING: jacquard_common::xrpc::MessageEncoding =
-        jacquard_common::xrpc::MessageEncoding::Json;
-    type Message<'de> = SubscribeEventsMessage<'de>;
-    type Error<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcSubscription for SubscribeEvents<'a> {
-    const NSID: &'static str = "blue.catbird.mlsChat.subscribeEvents";
-    const ENCODING: jacquard_common::xrpc::MessageEncoding =
-        jacquard_common::xrpc::MessageEncoding::Json;
-    type Stream = SubscribeEventsStream;
-}
-
-pub struct SubscribeEventsEndpoint;
-impl jacquard_common::xrpc::SubscriptionEndpoint for SubscribeEventsEndpoint {
-    const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.subscribeEvents";
-    const ENCODING: jacquard_common::xrpc::MessageEncoding =
-        jacquard_common::xrpc::MessageEncoding::Json;
-    type Params<'de> = SubscribeEvents<'de>;
-    type Stream = SubscribeEventsStream;
-}
-
-/// A membership change occurred (joined, left, removed, kicked)
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct MembershipChangeEvent<'a> {
-    /// Type of membership change
-    #[serde(borrow)]
-    pub action: jacquard_common::CowStr<'a>,
-    /// Conversation identifier
-    #[serde(borrow)]
-    pub convo_id: jacquard_common::CowStr<'a>,
-    /// Resume cursor
-    #[serde(borrow)]
-    pub cursor: jacquard_common::CowStr<'a>,
-    /// DID of the member involved
-    #[serde(borrow)]
-    pub did: jacquard_common::types::string::Did<'a>,
 }
 
 pub mod membership_change_event_state {
@@ -2613,247 +3163,238 @@ pub mod membership_change_event_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Cursor;
-        type ConvoId;
-        type Did;
         type Action;
+        type ConvoId;
+        type Cursor;
+        type Did;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Cursor = Unset;
-        type ConvoId = Unset;
-        type Did = Unset;
         type Action = Unset;
-    }
-    ///State transition - sets the `cursor` field to Set
-    pub struct SetCursor<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCursor<S> {}
-    impl<S: State> State for SetCursor<S> {
-        type Cursor = Set<members::cursor>;
-        type ConvoId = S::ConvoId;
-        type Did = S::Did;
-        type Action = S::Action;
-    }
-    ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type Cursor = S::Cursor;
-        type ConvoId = Set<members::convo_id>;
-        type Did = S::Did;
-        type Action = S::Action;
-    }
-    ///State transition - sets the `did` field to Set
-    pub struct SetDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDid<S> {}
-    impl<S: State> State for SetDid<S> {
-        type Cursor = S::Cursor;
-        type ConvoId = S::ConvoId;
-        type Did = Set<members::did>;
-        type Action = S::Action;
+        type ConvoId = Unset;
+        type Cursor = Unset;
+        type Did = Unset;
     }
     ///State transition - sets the `action` field to Set
-    pub struct SetAction<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetAction<S> {}
-    impl<S: State> State for SetAction<S> {
-        type Cursor = S::Cursor;
-        type ConvoId = S::ConvoId;
-        type Did = S::Did;
+    pub struct SetAction<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetAction<St> {}
+    impl<St: State> State for SetAction<St> {
         type Action = Set<members::action>;
+        type ConvoId = St::ConvoId;
+        type Cursor = St::Cursor;
+        type Did = St::Did;
+    }
+    ///State transition - sets the `convo_id` field to Set
+    pub struct SetConvoId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetConvoId<St> {}
+    impl<St: State> State for SetConvoId<St> {
+        type Action = St::Action;
+        type ConvoId = Set<members::convo_id>;
+        type Cursor = St::Cursor;
+        type Did = St::Did;
+    }
+    ///State transition - sets the `cursor` field to Set
+    pub struct SetCursor<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCursor<St> {}
+    impl<St: State> State for SetCursor<St> {
+        type Action = St::Action;
+        type ConvoId = St::ConvoId;
+        type Cursor = Set<members::cursor>;
+        type Did = St::Did;
+    }
+    ///State transition - sets the `did` field to Set
+    pub struct SetDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetDid<St> {}
+    impl<St: State> State for SetDid<St> {
+        type Action = St::Action;
+        type ConvoId = St::ConvoId;
+        type Cursor = St::Cursor;
+        type Did = Set<members::did>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `cursor` field
-        pub struct cursor(());
-        ///Marker type for the `convo_id` field
-        pub struct convo_id(());
-        ///Marker type for the `did` field
-        pub struct did(());
         ///Marker type for the `action` field
         pub struct action(());
+        ///Marker type for the `convo_id` field
+        pub struct convo_id(());
+        ///Marker type for the `cursor` field
+        pub struct cursor(());
+        ///Marker type for the `did` field
+        pub struct did(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct MembershipChangeEventBuilder<'a, S: membership_change_event_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct MembershipChangeEventBuilder<
+    St: membership_change_event_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<MembershipChangeEventAction<S>>,
+        core::option::Option<S>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> MembershipChangeEvent<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> MembershipChangeEventBuilder<'a, membership_change_event_state::Empty> {
+impl MembershipChangeEvent<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> MembershipChangeEventBuilder<
+        membership_change_event_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         MembershipChangeEventBuilder::new()
     }
 }
 
-impl<'a> MembershipChangeEventBuilder<'a, membership_change_event_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> MembershipChangeEvent<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> MembershipChangeEventBuilder<membership_change_event_state::Empty, S> {
+        MembershipChangeEventBuilder::builder()
+    }
+}
+
+impl
+    MembershipChangeEventBuilder<membership_change_event_state::Empty, jacquard_common::DefaultStr>
+{
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         MembershipChangeEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> MembershipChangeEventBuilder<'a, S>
+impl<S: jacquard_common::BosStr>
+    MembershipChangeEventBuilder<membership_change_event_state::Empty, S>
+{
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        MembershipChangeEventBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> MembershipChangeEventBuilder<St, S>
 where
-    S: membership_change_event_state::State,
-    S::Action: membership_change_event_state::IsUnset,
+    St: membership_change_event_state::State,
+    St::Action: membership_change_event_state::IsUnset,
 {
     /// Set the `action` field (required)
     pub fn action(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> MembershipChangeEventBuilder<'a, membership_change_event_state::SetAction<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<MembershipChangeEventAction<S>>,
+    ) -> MembershipChangeEventBuilder<membership_change_event_state::SetAction<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         MembershipChangeEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> MembershipChangeEventBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> MembershipChangeEventBuilder<St, S>
 where
-    S: membership_change_event_state::State,
-    S::ConvoId: membership_change_event_state::IsUnset,
+    St: membership_change_event_state::State,
+    St::ConvoId: membership_change_event_state::IsUnset,
 {
     /// Set the `convoId` field (required)
     pub fn convo_id(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> MembershipChangeEventBuilder<'a, membership_change_event_state::SetConvoId<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> MembershipChangeEventBuilder<membership_change_event_state::SetConvoId<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         MembershipChangeEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> MembershipChangeEventBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> MembershipChangeEventBuilder<St, S>
 where
-    S: membership_change_event_state::State,
-    S::Cursor: membership_change_event_state::IsUnset,
+    St: membership_change_event_state::State,
+    St::Cursor: membership_change_event_state::IsUnset,
 {
     /// Set the `cursor` field (required)
     pub fn cursor(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> MembershipChangeEventBuilder<'a, membership_change_event_state::SetCursor<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> MembershipChangeEventBuilder<membership_change_event_state::SetCursor<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         MembershipChangeEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> MembershipChangeEventBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> MembershipChangeEventBuilder<St, S>
 where
-    S: membership_change_event_state::State,
-    S::Did: membership_change_event_state::IsUnset,
+    St: membership_change_event_state::State,
+    St::Did: membership_change_event_state::IsUnset,
 {
     /// Set the `did` field (required)
     pub fn did(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> MembershipChangeEventBuilder<'a, membership_change_event_state::SetDid<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> MembershipChangeEventBuilder<membership_change_event_state::SetDid<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
         MembershipChangeEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> MembershipChangeEventBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> MembershipChangeEventBuilder<St, S>
 where
-    S: membership_change_event_state::State,
-    S::Cursor: membership_change_event_state::IsSet,
-    S::ConvoId: membership_change_event_state::IsSet,
-    S::Did: membership_change_event_state::IsSet,
-    S::Action: membership_change_event_state::IsSet,
+    St: membership_change_event_state::State,
+    St::Action: membership_change_event_state::IsSet,
+    St::ConvoId: membership_change_event_state::IsSet,
+    St::Cursor: membership_change_event_state::IsSet,
+    St::Did: membership_change_event_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> MembershipChangeEvent<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> MembershipChangeEvent<S> {
         MembershipChangeEvent {
-            action: self.__unsafe_private_named.0.unwrap(),
-            convo_id: self.__unsafe_private_named.1.unwrap(),
-            cursor: self.__unsafe_private_named.2.unwrap(),
-            did: self.__unsafe_private_named.3.unwrap(),
+            action: self._fields.0.unwrap(),
+            convo_id: self._fields.1.unwrap(),
+            cursor: self._fields.2.unwrap(),
+            did: self._fields.3.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> MembershipChangeEvent<'a> {
+    ) -> MembershipChangeEvent<S> {
         MembershipChangeEvent {
-            action: self.__unsafe_private_named.0.unwrap(),
-            convo_id: self.__unsafe_private_named.1.unwrap(),
-            cursor: self.__unsafe_private_named.2.unwrap(),
-            did: self.__unsafe_private_named.3.unwrap(),
+            action: self._fields.0.unwrap(),
+            convo_id: self._fields.1.unwrap(),
+            cursor: self._fields.2.unwrap(),
+            did: self._fields.3.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for MembershipChangeEvent<'a> {
-    fn nsid() -> &'static str {
-        "blue.catbird.mlsChat.subscribeEvents"
-    }
-    fn def_name() -> &'static str {
-        "membershipChangeEvent"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_blue_catbird_mlsChat_subscribeEvents()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-/// A new encrypted message was sent
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct MessageEvent<'a> {
-    /// Resume cursor for this event position
-    #[serde(borrow)]
-    pub cursor: jacquard_common::CowStr<'a>,
-    /// When true, this is an ephemeral signal (typing, read receipt, presence) that should NOT be shown in chat history. Omitted (defaults to false) for regular persistent messages.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub ephemeral: std::option::Option<bool>,
-    /// MLS epoch this message was encrypted at. Recipient SHOULD reject events where epoch < localJoinEpoch BEFORE feeding to unprotect_message.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub epoch: std::option::Option<i64>,
-    #[serde(borrow)]
-    pub message: crate::generated::blue_catbird::mlsChat::MessageView<'a>,
 }
 
 pub mod message_event_state {
@@ -2877,17 +3418,17 @@ pub mod message_event_state {
         type Message = Unset;
     }
     ///State transition - sets the `cursor` field to Set
-    pub struct SetCursor<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCursor<S> {}
-    impl<S: State> State for SetCursor<S> {
+    pub struct SetCursor<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCursor<St> {}
+    impl<St: State> State for SetCursor<St> {
         type Cursor = Set<members::cursor>;
-        type Message = S::Message;
+        type Message = St::Message;
     }
     ///State transition - sets the `message` field to Set
-    pub struct SetMessage<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetMessage<S> {}
-    impl<S: State> State for SetMessage<S> {
-        type Cursor = S::Cursor;
+    pub struct SetMessage<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetMessage<St> {}
+    impl<St: State> State for SetMessage<St> {
+        type Cursor = St::Cursor;
         type Message = Set<members::message>;
     }
     /// Marker types for field names
@@ -2900,189 +3441,153 @@ pub mod message_event_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct MessageEventBuilder<'a, S: message_event_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<bool>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<crate::generated::blue_catbird::mlsChat::MessageView<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct MessageEventBuilder<
+    St: message_event_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<bool>,
+        core::option::Option<i64>,
+        core::option::Option<crate::generated::blue_catbird::mlsChat::MessageView<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> MessageEvent<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> MessageEventBuilder<'a, message_event_state::Empty> {
+impl MessageEvent<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> MessageEventBuilder<message_event_state::Empty, jacquard_common::DefaultStr> {
         MessageEventBuilder::new()
     }
 }
 
-impl<'a> MessageEventBuilder<'a, message_event_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> MessageEvent<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> MessageEventBuilder<message_event_state::Empty, S> {
+        MessageEventBuilder::builder()
+    }
+}
+
+impl MessageEventBuilder<message_event_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         MessageEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> MessageEventBuilder<'a, S>
+impl<S: jacquard_common::BosStr> MessageEventBuilder<message_event_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        MessageEventBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> MessageEventBuilder<St, S>
 where
-    S: message_event_state::State,
-    S::Cursor: message_event_state::IsUnset,
+    St: message_event_state::State,
+    St::Cursor: message_event_state::IsUnset,
 {
     /// Set the `cursor` field (required)
     pub fn cursor(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> MessageEventBuilder<'a, message_event_state::SetCursor<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> MessageEventBuilder<message_event_state::SetCursor<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         MessageEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: message_event_state::State> MessageEventBuilder<'a, S> {
+impl<St: message_event_state::State, S: jacquard_common::BosStr> MessageEventBuilder<St, S> {
     /// Set the `ephemeral` field (optional)
     pub fn ephemeral(mut self, value: impl Into<Option<bool>>) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self._fields.1 = value.into();
         self
     }
     /// Set the `ephemeral` field to an Option value (optional)
     pub fn maybe_ephemeral(mut self, value: Option<bool>) -> Self {
-        self.__unsafe_private_named.1 = value;
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S: message_event_state::State> MessageEventBuilder<'a, S> {
+impl<St: message_event_state::State, S: jacquard_common::BosStr> MessageEventBuilder<St, S> {
     /// Set the `epoch` field (optional)
     pub fn epoch(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.2 = value.into();
+        self._fields.2 = value.into();
         self
     }
     /// Set the `epoch` field to an Option value (optional)
     pub fn maybe_epoch(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.2 = value;
+        self._fields.2 = value;
         self
     }
 }
 
-impl<'a, S> MessageEventBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> MessageEventBuilder<St, S>
 where
-    S: message_event_state::State,
-    S::Message: message_event_state::IsUnset,
+    St: message_event_state::State,
+    St::Message: message_event_state::IsUnset,
 {
     /// Set the `message` field (required)
     pub fn message(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::mlsChat::MessageView<'a>>,
-    ) -> MessageEventBuilder<'a, message_event_state::SetMessage<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        value: impl Into<crate::generated::blue_catbird::mlsChat::MessageView<S>>,
+    ) -> MessageEventBuilder<message_event_state::SetMessage<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
         MessageEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> MessageEventBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> MessageEventBuilder<St, S>
 where
-    S: message_event_state::State,
-    S::Cursor: message_event_state::IsSet,
-    S::Message: message_event_state::IsSet,
+    St: message_event_state::State,
+    St::Cursor: message_event_state::IsSet,
+    St::Message: message_event_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> MessageEvent<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> MessageEvent<S> {
         MessageEvent {
-            cursor: self.__unsafe_private_named.0.unwrap(),
-            ephemeral: self.__unsafe_private_named.1,
-            epoch: self.__unsafe_private_named.2,
-            message: self.__unsafe_private_named.3.unwrap(),
+            cursor: self._fields.0.unwrap(),
+            ephemeral: self._fields.1,
+            epoch: self._fields.2,
+            message: self._fields.3.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> MessageEvent<'a> {
+    ) -> MessageEvent<S> {
         MessageEvent {
-            cursor: self.__unsafe_private_named.0.unwrap(),
-            ephemeral: self.__unsafe_private_named.1,
-            epoch: self.__unsafe_private_named.2,
-            message: self.__unsafe_private_named.3.unwrap(),
+            cursor: self._fields.0.unwrap(),
+            ephemeral: self._fields.1,
+            epoch: self._fields.2,
+            message: self._fields.3.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for MessageEvent<'a> {
-    fn nsid() -> &'static str {
-        "blue.catbird.mlsChat.subscribeEvents"
-    }
-    fn def_name() -> &'static str {
-        "messageEvent"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_blue_catbird_mlsChat_subscribeEvents()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        if let Some(ref value) = self.epoch {
-            if *value < 0i64 {
-                return Err(::jacquard_lexicon::validation::ConstraintError::Minimum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("epoch"),
-                    min: 0i64,
-                    actual: *value,
-                });
-            }
-        }
-        Ok(())
-    }
-}
-
-/// A user registered a new device needing addition to the conversation
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct NewDeviceEvent<'a> {
-    /// Conversation identifier
-    #[serde(borrow)]
-    pub convo_id: jacquard_common::CowStr<'a>,
-    /// Resume cursor
-    #[serde(borrow)]
-    pub cursor: jacquard_common::CowStr<'a>,
-    /// Full device credential DID (did:plc:user#device-uuid)
-    #[serde(borrow)]
-    pub device_credential_did: jacquard_common::CowStr<'a>,
-    /// Device identifier
-    #[serde(borrow)]
-    pub device_id: jacquard_common::CowStr<'a>,
-    /// Human-readable device name
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub device_name: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// ID of the pending addition for claim/complete flow
-    #[serde(borrow)]
-    pub pending_addition_id: jacquard_common::CowStr<'a>,
-    /// Base user DID
-    #[serde(borrow)]
-    pub user_did: jacquard_common::types::string::Did<'a>,
 }
 
 pub mod new_device_event_state {
@@ -3095,353 +3600,332 @@ pub mod new_device_event_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Cursor;
         type ConvoId;
-        type UserDid;
-        type DeviceId;
+        type Cursor;
         type DeviceCredentialDid;
+        type DeviceId;
         type PendingAdditionId;
+        type UserDid;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Cursor = Unset;
         type ConvoId = Unset;
-        type UserDid = Unset;
-        type DeviceId = Unset;
+        type Cursor = Unset;
         type DeviceCredentialDid = Unset;
+        type DeviceId = Unset;
         type PendingAdditionId = Unset;
-    }
-    ///State transition - sets the `cursor` field to Set
-    pub struct SetCursor<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCursor<S> {}
-    impl<S: State> State for SetCursor<S> {
-        type Cursor = Set<members::cursor>;
-        type ConvoId = S::ConvoId;
-        type UserDid = S::UserDid;
-        type DeviceId = S::DeviceId;
-        type DeviceCredentialDid = S::DeviceCredentialDid;
-        type PendingAdditionId = S::PendingAdditionId;
+        type UserDid = Unset;
     }
     ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type Cursor = S::Cursor;
+    pub struct SetConvoId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetConvoId<St> {}
+    impl<St: State> State for SetConvoId<St> {
         type ConvoId = Set<members::convo_id>;
-        type UserDid = S::UserDid;
-        type DeviceId = S::DeviceId;
-        type DeviceCredentialDid = S::DeviceCredentialDid;
-        type PendingAdditionId = S::PendingAdditionId;
+        type Cursor = St::Cursor;
+        type DeviceCredentialDid = St::DeviceCredentialDid;
+        type DeviceId = St::DeviceId;
+        type PendingAdditionId = St::PendingAdditionId;
+        type UserDid = St::UserDid;
     }
-    ///State transition - sets the `user_did` field to Set
-    pub struct SetUserDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUserDid<S> {}
-    impl<S: State> State for SetUserDid<S> {
-        type Cursor = S::Cursor;
-        type ConvoId = S::ConvoId;
-        type UserDid = Set<members::user_did>;
-        type DeviceId = S::DeviceId;
-        type DeviceCredentialDid = S::DeviceCredentialDid;
-        type PendingAdditionId = S::PendingAdditionId;
-    }
-    ///State transition - sets the `device_id` field to Set
-    pub struct SetDeviceId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDeviceId<S> {}
-    impl<S: State> State for SetDeviceId<S> {
-        type Cursor = S::Cursor;
-        type ConvoId = S::ConvoId;
-        type UserDid = S::UserDid;
-        type DeviceId = Set<members::device_id>;
-        type DeviceCredentialDid = S::DeviceCredentialDid;
-        type PendingAdditionId = S::PendingAdditionId;
+    ///State transition - sets the `cursor` field to Set
+    pub struct SetCursor<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCursor<St> {}
+    impl<St: State> State for SetCursor<St> {
+        type ConvoId = St::ConvoId;
+        type Cursor = Set<members::cursor>;
+        type DeviceCredentialDid = St::DeviceCredentialDid;
+        type DeviceId = St::DeviceId;
+        type PendingAdditionId = St::PendingAdditionId;
+        type UserDid = St::UserDid;
     }
     ///State transition - sets the `device_credential_did` field to Set
-    pub struct SetDeviceCredentialDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDeviceCredentialDid<S> {}
-    impl<S: State> State for SetDeviceCredentialDid<S> {
-        type Cursor = S::Cursor;
-        type ConvoId = S::ConvoId;
-        type UserDid = S::UserDid;
-        type DeviceId = S::DeviceId;
+    pub struct SetDeviceCredentialDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetDeviceCredentialDid<St> {}
+    impl<St: State> State for SetDeviceCredentialDid<St> {
+        type ConvoId = St::ConvoId;
+        type Cursor = St::Cursor;
         type DeviceCredentialDid = Set<members::device_credential_did>;
-        type PendingAdditionId = S::PendingAdditionId;
+        type DeviceId = St::DeviceId;
+        type PendingAdditionId = St::PendingAdditionId;
+        type UserDid = St::UserDid;
+    }
+    ///State transition - sets the `device_id` field to Set
+    pub struct SetDeviceId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetDeviceId<St> {}
+    impl<St: State> State for SetDeviceId<St> {
+        type ConvoId = St::ConvoId;
+        type Cursor = St::Cursor;
+        type DeviceCredentialDid = St::DeviceCredentialDid;
+        type DeviceId = Set<members::device_id>;
+        type PendingAdditionId = St::PendingAdditionId;
+        type UserDid = St::UserDid;
     }
     ///State transition - sets the `pending_addition_id` field to Set
-    pub struct SetPendingAdditionId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetPendingAdditionId<S> {}
-    impl<S: State> State for SetPendingAdditionId<S> {
-        type Cursor = S::Cursor;
-        type ConvoId = S::ConvoId;
-        type UserDid = S::UserDid;
-        type DeviceId = S::DeviceId;
-        type DeviceCredentialDid = S::DeviceCredentialDid;
+    pub struct SetPendingAdditionId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetPendingAdditionId<St> {}
+    impl<St: State> State for SetPendingAdditionId<St> {
+        type ConvoId = St::ConvoId;
+        type Cursor = St::Cursor;
+        type DeviceCredentialDid = St::DeviceCredentialDid;
+        type DeviceId = St::DeviceId;
         type PendingAdditionId = Set<members::pending_addition_id>;
+        type UserDid = St::UserDid;
+    }
+    ///State transition - sets the `user_did` field to Set
+    pub struct SetUserDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetUserDid<St> {}
+    impl<St: State> State for SetUserDid<St> {
+        type ConvoId = St::ConvoId;
+        type Cursor = St::Cursor;
+        type DeviceCredentialDid = St::DeviceCredentialDid;
+        type DeviceId = St::DeviceId;
+        type PendingAdditionId = St::PendingAdditionId;
+        type UserDid = Set<members::user_did>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `cursor` field
-        pub struct cursor(());
         ///Marker type for the `convo_id` field
         pub struct convo_id(());
-        ///Marker type for the `user_did` field
-        pub struct user_did(());
-        ///Marker type for the `device_id` field
-        pub struct device_id(());
+        ///Marker type for the `cursor` field
+        pub struct cursor(());
         ///Marker type for the `device_credential_did` field
         pub struct device_credential_did(());
+        ///Marker type for the `device_id` field
+        pub struct device_id(());
         ///Marker type for the `pending_addition_id` field
         pub struct pending_addition_id(());
+        ///Marker type for the `user_did` field
+        pub struct user_did(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct NewDeviceEventBuilder<'a, S: new_device_event_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct NewDeviceEventBuilder<
+    St: new_device_event_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<S>,
+        core::option::Option<S>,
+        core::option::Option<S>,
+        core::option::Option<S>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> NewDeviceEvent<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> NewDeviceEventBuilder<'a, new_device_event_state::Empty> {
+impl NewDeviceEvent<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> NewDeviceEventBuilder<new_device_event_state::Empty, jacquard_common::DefaultStr>
+    {
         NewDeviceEventBuilder::new()
     }
 }
 
-impl<'a> NewDeviceEventBuilder<'a, new_device_event_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> NewDeviceEvent<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> NewDeviceEventBuilder<new_device_event_state::Empty, S> {
+        NewDeviceEventBuilder::builder()
+    }
+}
+
+impl NewDeviceEventBuilder<new_device_event_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         NewDeviceEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> NewDeviceEventBuilder<'a, S>
+impl<S: jacquard_common::BosStr> NewDeviceEventBuilder<new_device_event_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        NewDeviceEventBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> NewDeviceEventBuilder<St, S>
 where
-    S: new_device_event_state::State,
-    S::ConvoId: new_device_event_state::IsUnset,
+    St: new_device_event_state::State,
+    St::ConvoId: new_device_event_state::IsUnset,
 {
     /// Set the `convoId` field (required)
     pub fn convo_id(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> NewDeviceEventBuilder<'a, new_device_event_state::SetConvoId<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> NewDeviceEventBuilder<new_device_event_state::SetConvoId<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         NewDeviceEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> NewDeviceEventBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> NewDeviceEventBuilder<St, S>
 where
-    S: new_device_event_state::State,
-    S::Cursor: new_device_event_state::IsUnset,
+    St: new_device_event_state::State,
+    St::Cursor: new_device_event_state::IsUnset,
 {
     /// Set the `cursor` field (required)
     pub fn cursor(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> NewDeviceEventBuilder<'a, new_device_event_state::SetCursor<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> NewDeviceEventBuilder<new_device_event_state::SetCursor<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         NewDeviceEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> NewDeviceEventBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> NewDeviceEventBuilder<St, S>
 where
-    S: new_device_event_state::State,
-    S::DeviceCredentialDid: new_device_event_state::IsUnset,
+    St: new_device_event_state::State,
+    St::DeviceCredentialDid: new_device_event_state::IsUnset,
 {
     /// Set the `deviceCredentialDid` field (required)
     pub fn device_credential_did(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> NewDeviceEventBuilder<'a, new_device_event_state::SetDeviceCredentialDid<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> NewDeviceEventBuilder<new_device_event_state::SetDeviceCredentialDid<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         NewDeviceEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> NewDeviceEventBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> NewDeviceEventBuilder<St, S>
 where
-    S: new_device_event_state::State,
-    S::DeviceId: new_device_event_state::IsUnset,
+    St: new_device_event_state::State,
+    St::DeviceId: new_device_event_state::IsUnset,
 {
     /// Set the `deviceId` field (required)
     pub fn device_id(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> NewDeviceEventBuilder<'a, new_device_event_state::SetDeviceId<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> NewDeviceEventBuilder<new_device_event_state::SetDeviceId<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
         NewDeviceEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: new_device_event_state::State> NewDeviceEventBuilder<'a, S> {
+impl<St: new_device_event_state::State, S: jacquard_common::BosStr> NewDeviceEventBuilder<St, S> {
     /// Set the `deviceName` field (optional)
-    pub fn device_name(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.4 = value.into();
+    pub fn device_name(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.4 = value.into();
         self
     }
     /// Set the `deviceName` field to an Option value (optional)
-    pub fn maybe_device_name(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.4 = value;
+    pub fn maybe_device_name(mut self, value: Option<S>) -> Self {
+        self._fields.4 = value;
         self
     }
 }
 
-impl<'a, S> NewDeviceEventBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> NewDeviceEventBuilder<St, S>
 where
-    S: new_device_event_state::State,
-    S::PendingAdditionId: new_device_event_state::IsUnset,
+    St: new_device_event_state::State,
+    St::PendingAdditionId: new_device_event_state::IsUnset,
 {
     /// Set the `pendingAdditionId` field (required)
     pub fn pending_addition_id(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> NewDeviceEventBuilder<'a, new_device_event_state::SetPendingAdditionId<S>> {
-        self.__unsafe_private_named.5 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> NewDeviceEventBuilder<new_device_event_state::SetPendingAdditionId<St>, S> {
+        self._fields.5 = ::core::option::Option::Some(value.into());
         NewDeviceEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> NewDeviceEventBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> NewDeviceEventBuilder<St, S>
 where
-    S: new_device_event_state::State,
-    S::UserDid: new_device_event_state::IsUnset,
+    St: new_device_event_state::State,
+    St::UserDid: new_device_event_state::IsUnset,
 {
     /// Set the `userDid` field (required)
     pub fn user_did(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> NewDeviceEventBuilder<'a, new_device_event_state::SetUserDid<S>> {
-        self.__unsafe_private_named.6 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> NewDeviceEventBuilder<new_device_event_state::SetUserDid<St>, S> {
+        self._fields.6 = ::core::option::Option::Some(value.into());
         NewDeviceEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> NewDeviceEventBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> NewDeviceEventBuilder<St, S>
 where
-    S: new_device_event_state::State,
-    S::Cursor: new_device_event_state::IsSet,
-    S::ConvoId: new_device_event_state::IsSet,
-    S::UserDid: new_device_event_state::IsSet,
-    S::DeviceId: new_device_event_state::IsSet,
-    S::DeviceCredentialDid: new_device_event_state::IsSet,
-    S::PendingAdditionId: new_device_event_state::IsSet,
+    St: new_device_event_state::State,
+    St::ConvoId: new_device_event_state::IsSet,
+    St::Cursor: new_device_event_state::IsSet,
+    St::DeviceCredentialDid: new_device_event_state::IsSet,
+    St::DeviceId: new_device_event_state::IsSet,
+    St::PendingAdditionId: new_device_event_state::IsSet,
+    St::UserDid: new_device_event_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> NewDeviceEvent<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> NewDeviceEvent<S> {
         NewDeviceEvent {
-            convo_id: self.__unsafe_private_named.0.unwrap(),
-            cursor: self.__unsafe_private_named.1.unwrap(),
-            device_credential_did: self.__unsafe_private_named.2.unwrap(),
-            device_id: self.__unsafe_private_named.3.unwrap(),
-            device_name: self.__unsafe_private_named.4,
-            pending_addition_id: self.__unsafe_private_named.5.unwrap(),
-            user_did: self.__unsafe_private_named.6.unwrap(),
+            convo_id: self._fields.0.unwrap(),
+            cursor: self._fields.1.unwrap(),
+            device_credential_did: self._fields.2.unwrap(),
+            device_id: self._fields.3.unwrap(),
+            device_name: self._fields.4,
+            pending_addition_id: self._fields.5.unwrap(),
+            user_did: self._fields.6.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> NewDeviceEvent<'a> {
+    ) -> NewDeviceEvent<S> {
         NewDeviceEvent {
-            convo_id: self.__unsafe_private_named.0.unwrap(),
-            cursor: self.__unsafe_private_named.1.unwrap(),
-            device_credential_did: self.__unsafe_private_named.2.unwrap(),
-            device_id: self.__unsafe_private_named.3.unwrap(),
-            device_name: self.__unsafe_private_named.4,
-            pending_addition_id: self.__unsafe_private_named.5.unwrap(),
-            user_did: self.__unsafe_private_named.6.unwrap(),
+            convo_id: self._fields.0.unwrap(),
+            cursor: self._fields.1.unwrap(),
+            device_credential_did: self._fields.2.unwrap(),
+            device_id: self._fields.3.unwrap(),
+            device_name: self._fields.4,
+            pending_addition_id: self._fields.5.unwrap(),
+            user_did: self._fields.6.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for NewDeviceEvent<'a> {
-    fn nsid() -> &'static str {
-        "blue.catbird.mlsChat.subscribeEvents"
-    }
-    fn def_name() -> &'static str {
-        "newDeviceEvent"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_blue_catbird_mlsChat_subscribeEvents()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-/// A reaction was added or removed
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct ReactionEvent<'a> {
-    #[serde(borrow)]
-    pub action: jacquard_common::CowStr<'a>,
-    /// Conversation identifier
-    #[serde(borrow)]
-    pub convo_id: jacquard_common::CowStr<'a>,
-    /// Resume cursor
-    #[serde(borrow)]
-    pub cursor: jacquard_common::CowStr<'a>,
-    /// DID of the reactor
-    #[serde(borrow)]
-    pub did: jacquard_common::types::string::Did<'a>,
-    /// Message that was reacted to
-    #[serde(borrow)]
-    pub message_id: jacquard_common::CowStr<'a>,
-    /// Emoji or short code
-    #[serde(borrow)]
-    pub reaction: jacquard_common::CowStr<'a>,
 }
 
 pub mod reaction_event_state {
@@ -3454,394 +3938,315 @@ pub mod reaction_event_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Cursor;
-        type ConvoId;
-        type MessageId;
-        type Did;
-        type Reaction;
         type Action;
+        type ConvoId;
+        type Cursor;
+        type Did;
+        type MessageId;
+        type Reaction;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Cursor = Unset;
-        type ConvoId = Unset;
-        type MessageId = Unset;
-        type Did = Unset;
-        type Reaction = Unset;
         type Action = Unset;
-    }
-    ///State transition - sets the `cursor` field to Set
-    pub struct SetCursor<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCursor<S> {}
-    impl<S: State> State for SetCursor<S> {
-        type Cursor = Set<members::cursor>;
-        type ConvoId = S::ConvoId;
-        type MessageId = S::MessageId;
-        type Did = S::Did;
-        type Reaction = S::Reaction;
-        type Action = S::Action;
-    }
-    ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type Cursor = S::Cursor;
-        type ConvoId = Set<members::convo_id>;
-        type MessageId = S::MessageId;
-        type Did = S::Did;
-        type Reaction = S::Reaction;
-        type Action = S::Action;
-    }
-    ///State transition - sets the `message_id` field to Set
-    pub struct SetMessageId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetMessageId<S> {}
-    impl<S: State> State for SetMessageId<S> {
-        type Cursor = S::Cursor;
-        type ConvoId = S::ConvoId;
-        type MessageId = Set<members::message_id>;
-        type Did = S::Did;
-        type Reaction = S::Reaction;
-        type Action = S::Action;
-    }
-    ///State transition - sets the `did` field to Set
-    pub struct SetDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDid<S> {}
-    impl<S: State> State for SetDid<S> {
-        type Cursor = S::Cursor;
-        type ConvoId = S::ConvoId;
-        type MessageId = S::MessageId;
-        type Did = Set<members::did>;
-        type Reaction = S::Reaction;
-        type Action = S::Action;
-    }
-    ///State transition - sets the `reaction` field to Set
-    pub struct SetReaction<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetReaction<S> {}
-    impl<S: State> State for SetReaction<S> {
-        type Cursor = S::Cursor;
-        type ConvoId = S::ConvoId;
-        type MessageId = S::MessageId;
-        type Did = S::Did;
-        type Reaction = Set<members::reaction>;
-        type Action = S::Action;
+        type ConvoId = Unset;
+        type Cursor = Unset;
+        type Did = Unset;
+        type MessageId = Unset;
+        type Reaction = Unset;
     }
     ///State transition - sets the `action` field to Set
-    pub struct SetAction<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetAction<S> {}
-    impl<S: State> State for SetAction<S> {
-        type Cursor = S::Cursor;
-        type ConvoId = S::ConvoId;
-        type MessageId = S::MessageId;
-        type Did = S::Did;
-        type Reaction = S::Reaction;
+    pub struct SetAction<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetAction<St> {}
+    impl<St: State> State for SetAction<St> {
         type Action = Set<members::action>;
+        type ConvoId = St::ConvoId;
+        type Cursor = St::Cursor;
+        type Did = St::Did;
+        type MessageId = St::MessageId;
+        type Reaction = St::Reaction;
+    }
+    ///State transition - sets the `convo_id` field to Set
+    pub struct SetConvoId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetConvoId<St> {}
+    impl<St: State> State for SetConvoId<St> {
+        type Action = St::Action;
+        type ConvoId = Set<members::convo_id>;
+        type Cursor = St::Cursor;
+        type Did = St::Did;
+        type MessageId = St::MessageId;
+        type Reaction = St::Reaction;
+    }
+    ///State transition - sets the `cursor` field to Set
+    pub struct SetCursor<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCursor<St> {}
+    impl<St: State> State for SetCursor<St> {
+        type Action = St::Action;
+        type ConvoId = St::ConvoId;
+        type Cursor = Set<members::cursor>;
+        type Did = St::Did;
+        type MessageId = St::MessageId;
+        type Reaction = St::Reaction;
+    }
+    ///State transition - sets the `did` field to Set
+    pub struct SetDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetDid<St> {}
+    impl<St: State> State for SetDid<St> {
+        type Action = St::Action;
+        type ConvoId = St::ConvoId;
+        type Cursor = St::Cursor;
+        type Did = Set<members::did>;
+        type MessageId = St::MessageId;
+        type Reaction = St::Reaction;
+    }
+    ///State transition - sets the `message_id` field to Set
+    pub struct SetMessageId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetMessageId<St> {}
+    impl<St: State> State for SetMessageId<St> {
+        type Action = St::Action;
+        type ConvoId = St::ConvoId;
+        type Cursor = St::Cursor;
+        type Did = St::Did;
+        type MessageId = Set<members::message_id>;
+        type Reaction = St::Reaction;
+    }
+    ///State transition - sets the `reaction` field to Set
+    pub struct SetReaction<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetReaction<St> {}
+    impl<St: State> State for SetReaction<St> {
+        type Action = St::Action;
+        type ConvoId = St::ConvoId;
+        type Cursor = St::Cursor;
+        type Did = St::Did;
+        type MessageId = St::MessageId;
+        type Reaction = Set<members::reaction>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `cursor` field
-        pub struct cursor(());
-        ///Marker type for the `convo_id` field
-        pub struct convo_id(());
-        ///Marker type for the `message_id` field
-        pub struct message_id(());
-        ///Marker type for the `did` field
-        pub struct did(());
-        ///Marker type for the `reaction` field
-        pub struct reaction(());
         ///Marker type for the `action` field
         pub struct action(());
+        ///Marker type for the `convo_id` field
+        pub struct convo_id(());
+        ///Marker type for the `cursor` field
+        pub struct cursor(());
+        ///Marker type for the `did` field
+        pub struct did(());
+        ///Marker type for the `message_id` field
+        pub struct message_id(());
+        ///Marker type for the `reaction` field
+        pub struct reaction(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct ReactionEventBuilder<'a, S: reaction_event_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct ReactionEventBuilder<
+    St: reaction_event_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<ReactionEventAction<S>>,
+        core::option::Option<S>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<S>,
+        core::option::Option<S>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> ReactionEvent<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> ReactionEventBuilder<'a, reaction_event_state::Empty> {
+impl ReactionEvent<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> ReactionEventBuilder<reaction_event_state::Empty, jacquard_common::DefaultStr> {
         ReactionEventBuilder::new()
     }
 }
 
-impl<'a> ReactionEventBuilder<'a, reaction_event_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> ReactionEvent<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> ReactionEventBuilder<reaction_event_state::Empty, S> {
+        ReactionEventBuilder::builder()
+    }
+}
+
+impl ReactionEventBuilder<reaction_event_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ReactionEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ReactionEventBuilder<'a, S>
+impl<S: jacquard_common::BosStr> ReactionEventBuilder<reaction_event_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        ReactionEventBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ReactionEventBuilder<St, S>
 where
-    S: reaction_event_state::State,
-    S::Action: reaction_event_state::IsUnset,
+    St: reaction_event_state::State,
+    St::Action: reaction_event_state::IsUnset,
 {
     /// Set the `action` field (required)
     pub fn action(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> ReactionEventBuilder<'a, reaction_event_state::SetAction<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<ReactionEventAction<S>>,
+    ) -> ReactionEventBuilder<reaction_event_state::SetAction<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         ReactionEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ReactionEventBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ReactionEventBuilder<St, S>
 where
-    S: reaction_event_state::State,
-    S::ConvoId: reaction_event_state::IsUnset,
+    St: reaction_event_state::State,
+    St::ConvoId: reaction_event_state::IsUnset,
 {
     /// Set the `convoId` field (required)
     pub fn convo_id(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> ReactionEventBuilder<'a, reaction_event_state::SetConvoId<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> ReactionEventBuilder<reaction_event_state::SetConvoId<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         ReactionEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ReactionEventBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ReactionEventBuilder<St, S>
 where
-    S: reaction_event_state::State,
-    S::Cursor: reaction_event_state::IsUnset,
+    St: reaction_event_state::State,
+    St::Cursor: reaction_event_state::IsUnset,
 {
     /// Set the `cursor` field (required)
     pub fn cursor(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> ReactionEventBuilder<'a, reaction_event_state::SetCursor<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> ReactionEventBuilder<reaction_event_state::SetCursor<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         ReactionEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ReactionEventBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ReactionEventBuilder<St, S>
 where
-    S: reaction_event_state::State,
-    S::Did: reaction_event_state::IsUnset,
+    St: reaction_event_state::State,
+    St::Did: reaction_event_state::IsUnset,
 {
     /// Set the `did` field (required)
     pub fn did(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> ReactionEventBuilder<'a, reaction_event_state::SetDid<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> ReactionEventBuilder<reaction_event_state::SetDid<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
         ReactionEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ReactionEventBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ReactionEventBuilder<St, S>
 where
-    S: reaction_event_state::State,
-    S::MessageId: reaction_event_state::IsUnset,
+    St: reaction_event_state::State,
+    St::MessageId: reaction_event_state::IsUnset,
 {
     /// Set the `messageId` field (required)
     pub fn message_id(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> ReactionEventBuilder<'a, reaction_event_state::SetMessageId<S>> {
-        self.__unsafe_private_named.4 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> ReactionEventBuilder<reaction_event_state::SetMessageId<St>, S> {
+        self._fields.4 = ::core::option::Option::Some(value.into());
         ReactionEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ReactionEventBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ReactionEventBuilder<St, S>
 where
-    S: reaction_event_state::State,
-    S::Reaction: reaction_event_state::IsUnset,
+    St: reaction_event_state::State,
+    St::Reaction: reaction_event_state::IsUnset,
 {
     /// Set the `reaction` field (required)
     pub fn reaction(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> ReactionEventBuilder<'a, reaction_event_state::SetReaction<S>> {
-        self.__unsafe_private_named.5 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> ReactionEventBuilder<reaction_event_state::SetReaction<St>, S> {
+        self._fields.5 = ::core::option::Option::Some(value.into());
         ReactionEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ReactionEventBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ReactionEventBuilder<St, S>
 where
-    S: reaction_event_state::State,
-    S::Cursor: reaction_event_state::IsSet,
-    S::ConvoId: reaction_event_state::IsSet,
-    S::MessageId: reaction_event_state::IsSet,
-    S::Did: reaction_event_state::IsSet,
-    S::Reaction: reaction_event_state::IsSet,
-    S::Action: reaction_event_state::IsSet,
+    St: reaction_event_state::State,
+    St::Action: reaction_event_state::IsSet,
+    St::ConvoId: reaction_event_state::IsSet,
+    St::Cursor: reaction_event_state::IsSet,
+    St::Did: reaction_event_state::IsSet,
+    St::MessageId: reaction_event_state::IsSet,
+    St::Reaction: reaction_event_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> ReactionEvent<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> ReactionEvent<S> {
         ReactionEvent {
-            action: self.__unsafe_private_named.0.unwrap(),
-            convo_id: self.__unsafe_private_named.1.unwrap(),
-            cursor: self.__unsafe_private_named.2.unwrap(),
-            did: self.__unsafe_private_named.3.unwrap(),
-            message_id: self.__unsafe_private_named.4.unwrap(),
-            reaction: self.__unsafe_private_named.5.unwrap(),
+            action: self._fields.0.unwrap(),
+            convo_id: self._fields.1.unwrap(),
+            cursor: self._fields.2.unwrap(),
+            did: self._fields.3.unwrap(),
+            message_id: self._fields.4.unwrap(),
+            reaction: self._fields.5.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> ReactionEvent<'a> {
+    ) -> ReactionEvent<S> {
         ReactionEvent {
-            action: self.__unsafe_private_named.0.unwrap(),
-            convo_id: self.__unsafe_private_named.1.unwrap(),
-            cursor: self.__unsafe_private_named.2.unwrap(),
-            did: self.__unsafe_private_named.3.unwrap(),
-            message_id: self.__unsafe_private_named.4.unwrap(),
-            reaction: self.__unsafe_private_named.5.unwrap(),
+            action: self._fields.0.unwrap(),
+            convo_id: self._fields.1.unwrap(),
+            cursor: self._fields.2.unwrap(),
+            did: self._fields.3.unwrap(),
+            message_id: self._fields.4.unwrap(),
+            reaction: self._fields.5.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ReactionEvent<'a> {
-    fn nsid() -> &'static str {
-        "blue.catbird.mlsChat.subscribeEvents"
-    }
-    fn def_name() -> &'static str {
-        "reactionEvent"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_blue_catbird_mlsChat_subscribeEvents()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-/// A member re-addition was requested for a conversation
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic,
-    Default,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct ReadditionRequestedEvent<'a> {
-    /// Conversation identifier
-    #[serde(borrow)]
-    pub convo_id: jacquard_common::CowStr<'a>,
-    /// Resume cursor
-    #[serde(borrow)]
-    pub cursor: jacquard_common::CowStr<'a>,
-    /// When the re-addition was requested (RFC3339)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub requested_at: std::option::Option<jacquard_common::types::string::Datetime>,
-    /// DID of the member requesting re-addition
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub requested_by: std::option::Option<jacquard_common::types::string::Did<'a>>,
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ReadditionRequestedEvent<'a> {
-    fn nsid() -> &'static str {
-        "blue.catbird.mlsChat.subscribeEvents"
-    }
-    fn def_name() -> &'static str {
-        "readditionRequestedEvent"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_blue_catbird_mlsChat_subscribeEvents()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-/// Phase 2.5: an indirect trigger (quorum vote, system sweep, inline 409/404) has requested a crypto session reset. Active members are invited to respond by submitting new MLS group material via bootstrapResetGroup or commitGroupChange. First commit wins via UNIQUE (conversation_id, generation) tie-break. The previous groupResetEvent is also emitted for backward compatibility during Stage 1.
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct ResetRequestedEvent<'a> {
-    /// Conversation identifier
-    #[serde(borrow)]
-    pub convo_id: jacquard_common::CowStr<'a>,
-    /// Server-side opaque id of the crypto_session whose reset was requested (the prior session, now in state='reset_requested')
-    #[serde(borrow)]
-    pub crypto_session_id: jacquard_common::CowStr<'a>,
-    /// Resume cursor for this event position
-    #[serde(borrow)]
-    pub cursor: jacquard_common::CowStr<'a>,
-    /// If non-null, only this mls_group_id may activate. Phase 2.5 indirect triggers always emit null here; admin/bootstrap direct flows always provide a value.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub expected_new_mls_group_id: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// Generation number of the prior session — clients should activate at generation+1
-    pub generation: i64,
-    /// Human-readable reason for the reset
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub reason: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// Server-side opaque id of the crypto_session_reset_requested delivery_event for correlation
-    #[serde(borrow)]
-    pub request_event_id: jacquard_common::CowStr<'a>,
-    /// When the reset was requested (RFC3339)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub requested_at: std::option::Option<jacquard_common::types::string::Datetime>,
-    /// Which subsystem produced the reset request
-    #[serde(borrow)]
-    pub trigger: jacquard_common::CowStr<'a>,
 }
 
 pub mod reset_requested_event_state {
@@ -3854,277 +4259,300 @@ pub mod reset_requested_event_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Cursor;
         type ConvoId;
         type CryptoSessionId;
+        type Cursor;
         type Generation;
-        type Trigger;
         type RequestEventId;
+        type Trigger;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Cursor = Unset;
         type ConvoId = Unset;
         type CryptoSessionId = Unset;
+        type Cursor = Unset;
         type Generation = Unset;
-        type Trigger = Unset;
         type RequestEventId = Unset;
-    }
-    ///State transition - sets the `cursor` field to Set
-    pub struct SetCursor<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCursor<S> {}
-    impl<S: State> State for SetCursor<S> {
-        type Cursor = Set<members::cursor>;
-        type ConvoId = S::ConvoId;
-        type CryptoSessionId = S::CryptoSessionId;
-        type Generation = S::Generation;
-        type Trigger = S::Trigger;
-        type RequestEventId = S::RequestEventId;
+        type Trigger = Unset;
     }
     ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type Cursor = S::Cursor;
+    pub struct SetConvoId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetConvoId<St> {}
+    impl<St: State> State for SetConvoId<St> {
         type ConvoId = Set<members::convo_id>;
-        type CryptoSessionId = S::CryptoSessionId;
-        type Generation = S::Generation;
-        type Trigger = S::Trigger;
-        type RequestEventId = S::RequestEventId;
+        type CryptoSessionId = St::CryptoSessionId;
+        type Cursor = St::Cursor;
+        type Generation = St::Generation;
+        type RequestEventId = St::RequestEventId;
+        type Trigger = St::Trigger;
     }
     ///State transition - sets the `crypto_session_id` field to Set
-    pub struct SetCryptoSessionId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCryptoSessionId<S> {}
-    impl<S: State> State for SetCryptoSessionId<S> {
-        type Cursor = S::Cursor;
-        type ConvoId = S::ConvoId;
+    pub struct SetCryptoSessionId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCryptoSessionId<St> {}
+    impl<St: State> State for SetCryptoSessionId<St> {
+        type ConvoId = St::ConvoId;
         type CryptoSessionId = Set<members::crypto_session_id>;
-        type Generation = S::Generation;
-        type Trigger = S::Trigger;
-        type RequestEventId = S::RequestEventId;
+        type Cursor = St::Cursor;
+        type Generation = St::Generation;
+        type RequestEventId = St::RequestEventId;
+        type Trigger = St::Trigger;
+    }
+    ///State transition - sets the `cursor` field to Set
+    pub struct SetCursor<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCursor<St> {}
+    impl<St: State> State for SetCursor<St> {
+        type ConvoId = St::ConvoId;
+        type CryptoSessionId = St::CryptoSessionId;
+        type Cursor = Set<members::cursor>;
+        type Generation = St::Generation;
+        type RequestEventId = St::RequestEventId;
+        type Trigger = St::Trigger;
     }
     ///State transition - sets the `generation` field to Set
-    pub struct SetGeneration<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetGeneration<S> {}
-    impl<S: State> State for SetGeneration<S> {
-        type Cursor = S::Cursor;
-        type ConvoId = S::ConvoId;
-        type CryptoSessionId = S::CryptoSessionId;
+    pub struct SetGeneration<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetGeneration<St> {}
+    impl<St: State> State for SetGeneration<St> {
+        type ConvoId = St::ConvoId;
+        type CryptoSessionId = St::CryptoSessionId;
+        type Cursor = St::Cursor;
         type Generation = Set<members::generation>;
-        type Trigger = S::Trigger;
-        type RequestEventId = S::RequestEventId;
-    }
-    ///State transition - sets the `trigger` field to Set
-    pub struct SetTrigger<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetTrigger<S> {}
-    impl<S: State> State for SetTrigger<S> {
-        type Cursor = S::Cursor;
-        type ConvoId = S::ConvoId;
-        type CryptoSessionId = S::CryptoSessionId;
-        type Generation = S::Generation;
-        type Trigger = Set<members::trigger>;
-        type RequestEventId = S::RequestEventId;
+        type RequestEventId = St::RequestEventId;
+        type Trigger = St::Trigger;
     }
     ///State transition - sets the `request_event_id` field to Set
-    pub struct SetRequestEventId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRequestEventId<S> {}
-    impl<S: State> State for SetRequestEventId<S> {
-        type Cursor = S::Cursor;
-        type ConvoId = S::ConvoId;
-        type CryptoSessionId = S::CryptoSessionId;
-        type Generation = S::Generation;
-        type Trigger = S::Trigger;
+    pub struct SetRequestEventId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRequestEventId<St> {}
+    impl<St: State> State for SetRequestEventId<St> {
+        type ConvoId = St::ConvoId;
+        type CryptoSessionId = St::CryptoSessionId;
+        type Cursor = St::Cursor;
+        type Generation = St::Generation;
         type RequestEventId = Set<members::request_event_id>;
+        type Trigger = St::Trigger;
+    }
+    ///State transition - sets the `trigger` field to Set
+    pub struct SetTrigger<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetTrigger<St> {}
+    impl<St: State> State for SetTrigger<St> {
+        type ConvoId = St::ConvoId;
+        type CryptoSessionId = St::CryptoSessionId;
+        type Cursor = St::Cursor;
+        type Generation = St::Generation;
+        type RequestEventId = St::RequestEventId;
+        type Trigger = Set<members::trigger>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `cursor` field
-        pub struct cursor(());
         ///Marker type for the `convo_id` field
         pub struct convo_id(());
         ///Marker type for the `crypto_session_id` field
         pub struct crypto_session_id(());
+        ///Marker type for the `cursor` field
+        pub struct cursor(());
         ///Marker type for the `generation` field
         pub struct generation(());
-        ///Marker type for the `trigger` field
-        pub struct trigger(());
         ///Marker type for the `request_event_id` field
         pub struct request_event_id(());
+        ///Marker type for the `trigger` field
+        pub struct trigger(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct ResetRequestedEventBuilder<'a, S: reset_requested_event_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct ResetRequestedEventBuilder<
+    St: reset_requested_event_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<S>,
+        core::option::Option<S>,
+        core::option::Option<S>,
+        core::option::Option<i64>,
+        core::option::Option<S>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<ResetRequestedEventTrigger<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> ResetRequestedEvent<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> ResetRequestedEventBuilder<'a, reset_requested_event_state::Empty> {
+impl ResetRequestedEvent<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> ResetRequestedEventBuilder<reset_requested_event_state::Empty, jacquard_common::DefaultStr>
+    {
         ResetRequestedEventBuilder::new()
     }
 }
 
-impl<'a> ResetRequestedEventBuilder<'a, reset_requested_event_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> ResetRequestedEvent<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> ResetRequestedEventBuilder<reset_requested_event_state::Empty, S> {
+        ResetRequestedEventBuilder::builder()
+    }
+}
+
+impl ResetRequestedEventBuilder<reset_requested_event_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ResetRequestedEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ResetRequestedEventBuilder<'a, S>
+impl<S: jacquard_common::BosStr> ResetRequestedEventBuilder<reset_requested_event_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        ResetRequestedEventBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ResetRequestedEventBuilder<St, S>
 where
-    S: reset_requested_event_state::State,
-    S::ConvoId: reset_requested_event_state::IsUnset,
+    St: reset_requested_event_state::State,
+    St::ConvoId: reset_requested_event_state::IsUnset,
 {
     /// Set the `convoId` field (required)
     pub fn convo_id(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> ResetRequestedEventBuilder<'a, reset_requested_event_state::SetConvoId<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> ResetRequestedEventBuilder<reset_requested_event_state::SetConvoId<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         ResetRequestedEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ResetRequestedEventBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ResetRequestedEventBuilder<St, S>
 where
-    S: reset_requested_event_state::State,
-    S::CryptoSessionId: reset_requested_event_state::IsUnset,
+    St: reset_requested_event_state::State,
+    St::CryptoSessionId: reset_requested_event_state::IsUnset,
 {
     /// Set the `cryptoSessionId` field (required)
     pub fn crypto_session_id(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> ResetRequestedEventBuilder<'a, reset_requested_event_state::SetCryptoSessionId<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> ResetRequestedEventBuilder<reset_requested_event_state::SetCryptoSessionId<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         ResetRequestedEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ResetRequestedEventBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ResetRequestedEventBuilder<St, S>
 where
-    S: reset_requested_event_state::State,
-    S::Cursor: reset_requested_event_state::IsUnset,
+    St: reset_requested_event_state::State,
+    St::Cursor: reset_requested_event_state::IsUnset,
 {
     /// Set the `cursor` field (required)
     pub fn cursor(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> ResetRequestedEventBuilder<'a, reset_requested_event_state::SetCursor<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> ResetRequestedEventBuilder<reset_requested_event_state::SetCursor<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         ResetRequestedEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: reset_requested_event_state::State> ResetRequestedEventBuilder<'a, S> {
+impl<St: reset_requested_event_state::State, S: jacquard_common::BosStr>
+    ResetRequestedEventBuilder<St, S>
+{
     /// Set the `expectedNewMlsGroupId` field (optional)
-    pub fn expected_new_mls_group_id(
-        mut self,
-        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
-    ) -> Self {
-        self.__unsafe_private_named.3 = value.into();
+    pub fn expected_new_mls_group_id(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.3 = value.into();
         self
     }
     /// Set the `expectedNewMlsGroupId` field to an Option value (optional)
-    pub fn maybe_expected_new_mls_group_id(
-        mut self,
-        value: Option<jacquard_common::CowStr<'a>>,
-    ) -> Self {
-        self.__unsafe_private_named.3 = value;
+    pub fn maybe_expected_new_mls_group_id(mut self, value: Option<S>) -> Self {
+        self._fields.3 = value;
         self
     }
 }
 
-impl<'a, S> ResetRequestedEventBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ResetRequestedEventBuilder<St, S>
 where
-    S: reset_requested_event_state::State,
-    S::Generation: reset_requested_event_state::IsUnset,
+    St: reset_requested_event_state::State,
+    St::Generation: reset_requested_event_state::IsUnset,
 {
     /// Set the `generation` field (required)
     pub fn generation(
         mut self,
         value: impl Into<i64>,
-    ) -> ResetRequestedEventBuilder<'a, reset_requested_event_state::SetGeneration<S>> {
-        self.__unsafe_private_named.4 = ::core::option::Option::Some(value.into());
+    ) -> ResetRequestedEventBuilder<reset_requested_event_state::SetGeneration<St>, S> {
+        self._fields.4 = ::core::option::Option::Some(value.into());
         ResetRequestedEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: reset_requested_event_state::State> ResetRequestedEventBuilder<'a, S> {
+impl<St: reset_requested_event_state::State, S: jacquard_common::BosStr>
+    ResetRequestedEventBuilder<St, S>
+{
     /// Set the `reason` field (optional)
-    pub fn reason(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.5 = value.into();
+    pub fn reason(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.5 = value.into();
         self
     }
     /// Set the `reason` field to an Option value (optional)
-    pub fn maybe_reason(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.5 = value;
+    pub fn maybe_reason(mut self, value: Option<S>) -> Self {
+        self._fields.5 = value;
         self
     }
 }
 
-impl<'a, S> ResetRequestedEventBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ResetRequestedEventBuilder<St, S>
 where
-    S: reset_requested_event_state::State,
-    S::RequestEventId: reset_requested_event_state::IsUnset,
+    St: reset_requested_event_state::State,
+    St::RequestEventId: reset_requested_event_state::IsUnset,
 {
     /// Set the `requestEventId` field (required)
     pub fn request_event_id(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> ResetRequestedEventBuilder<'a, reset_requested_event_state::SetRequestEventId<S>> {
-        self.__unsafe_private_named.6 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> ResetRequestedEventBuilder<reset_requested_event_state::SetRequestEventId<St>, S> {
+        self._fields.6 = ::core::option::Option::Some(value.into());
         ResetRequestedEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: reset_requested_event_state::State> ResetRequestedEventBuilder<'a, S> {
+impl<St: reset_requested_event_state::State, S: jacquard_common::BosStr>
+    ResetRequestedEventBuilder<St, S>
+{
     /// Set the `requestedAt` field (optional)
     pub fn requested_at(
         mut self,
         value: impl Into<Option<jacquard_common::types::string::Datetime>>,
     ) -> Self {
-        self.__unsafe_private_named.7 = value.into();
+        self._fields.7 = value.into();
         self
     }
     /// Set the `requestedAt` field to an Option value (optional)
@@ -4132,113 +4560,76 @@ impl<'a, S: reset_requested_event_state::State> ResetRequestedEventBuilder<'a, S
         mut self,
         value: Option<jacquard_common::types::string::Datetime>,
     ) -> Self {
-        self.__unsafe_private_named.7 = value;
+        self._fields.7 = value;
         self
     }
 }
 
-impl<'a, S> ResetRequestedEventBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ResetRequestedEventBuilder<St, S>
 where
-    S: reset_requested_event_state::State,
-    S::Trigger: reset_requested_event_state::IsUnset,
+    St: reset_requested_event_state::State,
+    St::Trigger: reset_requested_event_state::IsUnset,
 {
     /// Set the `trigger` field (required)
     pub fn trigger(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> ResetRequestedEventBuilder<'a, reset_requested_event_state::SetTrigger<S>> {
-        self.__unsafe_private_named.8 = ::core::option::Option::Some(value.into());
+        value: impl Into<ResetRequestedEventTrigger<S>>,
+    ) -> ResetRequestedEventBuilder<reset_requested_event_state::SetTrigger<St>, S> {
+        self._fields.8 = ::core::option::Option::Some(value.into());
         ResetRequestedEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ResetRequestedEventBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ResetRequestedEventBuilder<St, S>
 where
-    S: reset_requested_event_state::State,
-    S::Cursor: reset_requested_event_state::IsSet,
-    S::ConvoId: reset_requested_event_state::IsSet,
-    S::CryptoSessionId: reset_requested_event_state::IsSet,
-    S::Generation: reset_requested_event_state::IsSet,
-    S::Trigger: reset_requested_event_state::IsSet,
-    S::RequestEventId: reset_requested_event_state::IsSet,
+    St: reset_requested_event_state::State,
+    St::ConvoId: reset_requested_event_state::IsSet,
+    St::CryptoSessionId: reset_requested_event_state::IsSet,
+    St::Cursor: reset_requested_event_state::IsSet,
+    St::Generation: reset_requested_event_state::IsSet,
+    St::RequestEventId: reset_requested_event_state::IsSet,
+    St::Trigger: reset_requested_event_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> ResetRequestedEvent<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> ResetRequestedEvent<S> {
         ResetRequestedEvent {
-            convo_id: self.__unsafe_private_named.0.unwrap(),
-            crypto_session_id: self.__unsafe_private_named.1.unwrap(),
-            cursor: self.__unsafe_private_named.2.unwrap(),
-            expected_new_mls_group_id: self.__unsafe_private_named.3,
-            generation: self.__unsafe_private_named.4.unwrap(),
-            reason: self.__unsafe_private_named.5,
-            request_event_id: self.__unsafe_private_named.6.unwrap(),
-            requested_at: self.__unsafe_private_named.7,
-            trigger: self.__unsafe_private_named.8.unwrap(),
+            convo_id: self._fields.0.unwrap(),
+            crypto_session_id: self._fields.1.unwrap(),
+            cursor: self._fields.2.unwrap(),
+            expected_new_mls_group_id: self._fields.3,
+            generation: self._fields.4.unwrap(),
+            reason: self._fields.5,
+            request_event_id: self._fields.6.unwrap(),
+            requested_at: self._fields.7,
+            trigger: self._fields.8.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> ResetRequestedEvent<'a> {
+    ) -> ResetRequestedEvent<S> {
         ResetRequestedEvent {
-            convo_id: self.__unsafe_private_named.0.unwrap(),
-            crypto_session_id: self.__unsafe_private_named.1.unwrap(),
-            cursor: self.__unsafe_private_named.2.unwrap(),
-            expected_new_mls_group_id: self.__unsafe_private_named.3,
-            generation: self.__unsafe_private_named.4.unwrap(),
-            reason: self.__unsafe_private_named.5,
-            request_event_id: self.__unsafe_private_named.6.unwrap(),
-            requested_at: self.__unsafe_private_named.7,
-            trigger: self.__unsafe_private_named.8.unwrap(),
+            convo_id: self._fields.0.unwrap(),
+            crypto_session_id: self._fields.1.unwrap(),
+            cursor: self._fields.2.unwrap(),
+            expected_new_mls_group_id: self._fields.3,
+            generation: self._fields.4.unwrap(),
+            reason: self._fields.5,
+            request_event_id: self._fields.6.unwrap(),
+            requested_at: self._fields.7,
+            trigger: self._fields.8.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ResetRequestedEvent<'a> {
-    fn nsid() -> &'static str {
-        "blue.catbird.mlsChat.subscribeEvents"
-    }
-    fn def_name() -> &'static str {
-        "resetRequestedEvent"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_blue_catbird_mlsChat_subscribeEvents()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-/// The canonical MLS tree state changed. Clients must compare confirmationTag against their local state and re-join if mismatched.
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct TreeChanged<'a> {
-    /// Confirmation tag of the new canonical tree
-    #[serde(with = "jacquard_common::serde_bytes_helper")]
-    pub confirmation_tag: bytes::Bytes,
-    /// Conversation identifier
-    #[serde(borrow)]
-    pub convo_id: jacquard_common::CowStr<'a>,
-    /// Resume cursor
-    #[serde(borrow)]
-    pub cursor: jacquard_common::CowStr<'a>,
-    /// New epoch number
-    pub epoch: i64,
 }
 
 pub mod tree_changed_state {
@@ -4251,247 +4642,231 @@ pub mod tree_changed_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Cursor;
-        type ConvoId;
         type ConfirmationTag;
+        type ConvoId;
+        type Cursor;
         type Epoch;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Cursor = Unset;
-        type ConvoId = Unset;
         type ConfirmationTag = Unset;
+        type ConvoId = Unset;
+        type Cursor = Unset;
         type Epoch = Unset;
     }
-    ///State transition - sets the `cursor` field to Set
-    pub struct SetCursor<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCursor<S> {}
-    impl<S: State> State for SetCursor<S> {
-        type Cursor = Set<members::cursor>;
-        type ConvoId = S::ConvoId;
-        type ConfirmationTag = S::ConfirmationTag;
-        type Epoch = S::Epoch;
+    ///State transition - sets the `confirmation_tag` field to Set
+    pub struct SetConfirmationTag<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetConfirmationTag<St> {}
+    impl<St: State> State for SetConfirmationTag<St> {
+        type ConfirmationTag = Set<members::confirmation_tag>;
+        type ConvoId = St::ConvoId;
+        type Cursor = St::Cursor;
+        type Epoch = St::Epoch;
     }
     ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type Cursor = S::Cursor;
+    pub struct SetConvoId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetConvoId<St> {}
+    impl<St: State> State for SetConvoId<St> {
+        type ConfirmationTag = St::ConfirmationTag;
         type ConvoId = Set<members::convo_id>;
-        type ConfirmationTag = S::ConfirmationTag;
-        type Epoch = S::Epoch;
+        type Cursor = St::Cursor;
+        type Epoch = St::Epoch;
     }
-    ///State transition - sets the `confirmation_tag` field to Set
-    pub struct SetConfirmationTag<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConfirmationTag<S> {}
-    impl<S: State> State for SetConfirmationTag<S> {
-        type Cursor = S::Cursor;
-        type ConvoId = S::ConvoId;
-        type ConfirmationTag = Set<members::confirmation_tag>;
-        type Epoch = S::Epoch;
+    ///State transition - sets the `cursor` field to Set
+    pub struct SetCursor<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCursor<St> {}
+    impl<St: State> State for SetCursor<St> {
+        type ConfirmationTag = St::ConfirmationTag;
+        type ConvoId = St::ConvoId;
+        type Cursor = Set<members::cursor>;
+        type Epoch = St::Epoch;
     }
     ///State transition - sets the `epoch` field to Set
-    pub struct SetEpoch<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetEpoch<S> {}
-    impl<S: State> State for SetEpoch<S> {
-        type Cursor = S::Cursor;
-        type ConvoId = S::ConvoId;
-        type ConfirmationTag = S::ConfirmationTag;
+    pub struct SetEpoch<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetEpoch<St> {}
+    impl<St: State> State for SetEpoch<St> {
+        type ConfirmationTag = St::ConfirmationTag;
+        type ConvoId = St::ConvoId;
+        type Cursor = St::Cursor;
         type Epoch = Set<members::epoch>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `cursor` field
-        pub struct cursor(());
-        ///Marker type for the `convo_id` field
-        pub struct convo_id(());
         ///Marker type for the `confirmation_tag` field
         pub struct confirmation_tag(());
+        ///Marker type for the `convo_id` field
+        pub struct convo_id(());
+        ///Marker type for the `cursor` field
+        pub struct cursor(());
         ///Marker type for the `epoch` field
         pub struct epoch(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct TreeChangedBuilder<'a, S: tree_changed_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<bytes::Bytes>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<i64>,
+/// Builder for constructing an instance of this type.
+pub struct TreeChangedBuilder<
+    St: tree_changed_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
+        core::option::Option<S>,
+        core::option::Option<S>,
+        core::option::Option<i64>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> TreeChanged<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> TreeChangedBuilder<'a, tree_changed_state::Empty> {
+impl TreeChanged<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> TreeChangedBuilder<tree_changed_state::Empty, jacquard_common::DefaultStr> {
         TreeChangedBuilder::new()
     }
 }
 
-impl<'a> TreeChangedBuilder<'a, tree_changed_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> TreeChanged<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> TreeChangedBuilder<tree_changed_state::Empty, S> {
+        TreeChangedBuilder::builder()
+    }
+}
+
+impl TreeChangedBuilder<tree_changed_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         TreeChangedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> TreeChangedBuilder<'a, S>
+impl<S: jacquard_common::BosStr> TreeChangedBuilder<tree_changed_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        TreeChangedBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> TreeChangedBuilder<St, S>
 where
-    S: tree_changed_state::State,
-    S::ConfirmationTag: tree_changed_state::IsUnset,
+    St: tree_changed_state::State,
+    St::ConfirmationTag: tree_changed_state::IsUnset,
 {
     /// Set the `confirmationTag` field (required)
     pub fn confirmation_tag(
         mut self,
-        value: impl Into<bytes::Bytes>,
-    ) -> TreeChangedBuilder<'a, tree_changed_state::SetConfirmationTag<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
+    ) -> TreeChangedBuilder<tree_changed_state::SetConfirmationTag<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         TreeChangedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> TreeChangedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> TreeChangedBuilder<St, S>
 where
-    S: tree_changed_state::State,
-    S::ConvoId: tree_changed_state::IsUnset,
+    St: tree_changed_state::State,
+    St::ConvoId: tree_changed_state::IsUnset,
 {
     /// Set the `convoId` field (required)
     pub fn convo_id(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> TreeChangedBuilder<'a, tree_changed_state::SetConvoId<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> TreeChangedBuilder<tree_changed_state::SetConvoId<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         TreeChangedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> TreeChangedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> TreeChangedBuilder<St, S>
 where
-    S: tree_changed_state::State,
-    S::Cursor: tree_changed_state::IsUnset,
+    St: tree_changed_state::State,
+    St::Cursor: tree_changed_state::IsUnset,
 {
     /// Set the `cursor` field (required)
     pub fn cursor(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> TreeChangedBuilder<'a, tree_changed_state::SetCursor<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> TreeChangedBuilder<tree_changed_state::SetCursor<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         TreeChangedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> TreeChangedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> TreeChangedBuilder<St, S>
 where
-    S: tree_changed_state::State,
-    S::Epoch: tree_changed_state::IsUnset,
+    St: tree_changed_state::State,
+    St::Epoch: tree_changed_state::IsUnset,
 {
     /// Set the `epoch` field (required)
     pub fn epoch(
         mut self,
         value: impl Into<i64>,
-    ) -> TreeChangedBuilder<'a, tree_changed_state::SetEpoch<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+    ) -> TreeChangedBuilder<tree_changed_state::SetEpoch<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
         TreeChangedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> TreeChangedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> TreeChangedBuilder<St, S>
 where
-    S: tree_changed_state::State,
-    S::Cursor: tree_changed_state::IsSet,
-    S::ConvoId: tree_changed_state::IsSet,
-    S::ConfirmationTag: tree_changed_state::IsSet,
-    S::Epoch: tree_changed_state::IsSet,
+    St: tree_changed_state::State,
+    St::ConfirmationTag: tree_changed_state::IsSet,
+    St::ConvoId: tree_changed_state::IsSet,
+    St::Cursor: tree_changed_state::IsSet,
+    St::Epoch: tree_changed_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> TreeChanged<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> TreeChanged<S> {
         TreeChanged {
-            confirmation_tag: self.__unsafe_private_named.0.unwrap(),
-            convo_id: self.__unsafe_private_named.1.unwrap(),
-            cursor: self.__unsafe_private_named.2.unwrap(),
-            epoch: self.__unsafe_private_named.3.unwrap(),
+            confirmation_tag: self._fields.0.unwrap(),
+            convo_id: self._fields.1.unwrap(),
+            cursor: self._fields.2.unwrap(),
+            epoch: self._fields.3.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> TreeChanged<'a> {
+    ) -> TreeChanged<S> {
         TreeChanged {
-            confirmation_tag: self.__unsafe_private_named.0.unwrap(),
-            convo_id: self.__unsafe_private_named.1.unwrap(),
-            cursor: self.__unsafe_private_named.2.unwrap(),
-            epoch: self.__unsafe_private_named.3.unwrap(),
+            confirmation_tag: self._fields.0.unwrap(),
+            convo_id: self._fields.1.unwrap(),
+            cursor: self._fields.2.unwrap(),
+            epoch: self._fields.3.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for TreeChanged<'a> {
-    fn nsid() -> &'static str {
-        "blue.catbird.mlsChat.subscribeEvents"
-    }
-    fn def_name() -> &'static str {
-        "treeChanged"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_blue_catbird_mlsChat_subscribeEvents()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-/// A user started or stopped typing
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct TypingEvent<'a> {
-    /// Conversation identifier
-    #[serde(borrow)]
-    pub convo_id: jacquard_common::CowStr<'a>,
-    /// Resume cursor
-    #[serde(borrow)]
-    pub cursor: jacquard_common::CowStr<'a>,
-    /// DID of the typist
-    #[serde(borrow)]
-    pub did: jacquard_common::types::string::Did<'a>,
-    /// True if started typing, false if stopped
-    pub is_typing: bool,
 }
 
 pub mod typing_event_state {
@@ -4504,8 +4879,8 @@ pub mod typing_event_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Cursor;
         type ConvoId;
+        type Cursor;
         type Did;
         type IsTyping;
     }
@@ -4513,54 +4888,54 @@ pub mod typing_event_state {
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Cursor = Unset;
         type ConvoId = Unset;
+        type Cursor = Unset;
         type Did = Unset;
         type IsTyping = Unset;
     }
-    ///State transition - sets the `cursor` field to Set
-    pub struct SetCursor<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCursor<S> {}
-    impl<S: State> State for SetCursor<S> {
-        type Cursor = Set<members::cursor>;
-        type ConvoId = S::ConvoId;
-        type Did = S::Did;
-        type IsTyping = S::IsTyping;
-    }
     ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type Cursor = S::Cursor;
+    pub struct SetConvoId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetConvoId<St> {}
+    impl<St: State> State for SetConvoId<St> {
         type ConvoId = Set<members::convo_id>;
-        type Did = S::Did;
-        type IsTyping = S::IsTyping;
+        type Cursor = St::Cursor;
+        type Did = St::Did;
+        type IsTyping = St::IsTyping;
+    }
+    ///State transition - sets the `cursor` field to Set
+    pub struct SetCursor<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCursor<St> {}
+    impl<St: State> State for SetCursor<St> {
+        type ConvoId = St::ConvoId;
+        type Cursor = Set<members::cursor>;
+        type Did = St::Did;
+        type IsTyping = St::IsTyping;
     }
     ///State transition - sets the `did` field to Set
-    pub struct SetDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDid<S> {}
-    impl<S: State> State for SetDid<S> {
-        type Cursor = S::Cursor;
-        type ConvoId = S::ConvoId;
+    pub struct SetDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetDid<St> {}
+    impl<St: State> State for SetDid<St> {
+        type ConvoId = St::ConvoId;
+        type Cursor = St::Cursor;
         type Did = Set<members::did>;
-        type IsTyping = S::IsTyping;
+        type IsTyping = St::IsTyping;
     }
     ///State transition - sets the `is_typing` field to Set
-    pub struct SetIsTyping<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetIsTyping<S> {}
-    impl<S: State> State for SetIsTyping<S> {
-        type Cursor = S::Cursor;
-        type ConvoId = S::ConvoId;
-        type Did = S::Did;
+    pub struct SetIsTyping<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetIsTyping<St> {}
+    impl<St: State> State for SetIsTyping<St> {
+        type ConvoId = St::ConvoId;
+        type Cursor = St::Cursor;
+        type Did = St::Did;
         type IsTyping = Set<members::is_typing>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `cursor` field
-        pub struct cursor(());
         ///Marker type for the `convo_id` field
         pub struct convo_id(());
+        ///Marker type for the `cursor` field
+        pub struct cursor(());
         ///Marker type for the `did` field
         pub struct did(());
         ///Marker type for the `is_typing` field
@@ -4568,186 +4943,167 @@ pub mod typing_event_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct TypingEventBuilder<'a, S: typing_event_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<bool>,
+/// Builder for constructing an instance of this type.
+pub struct TypingEventBuilder<
+    St: typing_event_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<bool>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> TypingEvent<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> TypingEventBuilder<'a, typing_event_state::Empty> {
+impl TypingEvent<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> TypingEventBuilder<typing_event_state::Empty, jacquard_common::DefaultStr> {
         TypingEventBuilder::new()
     }
 }
 
-impl<'a> TypingEventBuilder<'a, typing_event_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> TypingEvent<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> TypingEventBuilder<typing_event_state::Empty, S> {
+        TypingEventBuilder::builder()
+    }
+}
+
+impl TypingEventBuilder<typing_event_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         TypingEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> TypingEventBuilder<'a, S>
+impl<S: jacquard_common::BosStr> TypingEventBuilder<typing_event_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        TypingEventBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> TypingEventBuilder<St, S>
 where
-    S: typing_event_state::State,
-    S::ConvoId: typing_event_state::IsUnset,
+    St: typing_event_state::State,
+    St::ConvoId: typing_event_state::IsUnset,
 {
     /// Set the `convoId` field (required)
     pub fn convo_id(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> TypingEventBuilder<'a, typing_event_state::SetConvoId<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> TypingEventBuilder<typing_event_state::SetConvoId<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         TypingEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> TypingEventBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> TypingEventBuilder<St, S>
 where
-    S: typing_event_state::State,
-    S::Cursor: typing_event_state::IsUnset,
+    St: typing_event_state::State,
+    St::Cursor: typing_event_state::IsUnset,
 {
     /// Set the `cursor` field (required)
     pub fn cursor(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> TypingEventBuilder<'a, typing_event_state::SetCursor<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> TypingEventBuilder<typing_event_state::SetCursor<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         TypingEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> TypingEventBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> TypingEventBuilder<St, S>
 where
-    S: typing_event_state::State,
-    S::Did: typing_event_state::IsUnset,
+    St: typing_event_state::State,
+    St::Did: typing_event_state::IsUnset,
 {
     /// Set the `did` field (required)
     pub fn did(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> TypingEventBuilder<'a, typing_event_state::SetDid<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> TypingEventBuilder<typing_event_state::SetDid<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         TypingEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> TypingEventBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> TypingEventBuilder<St, S>
 where
-    S: typing_event_state::State,
-    S::IsTyping: typing_event_state::IsUnset,
+    St: typing_event_state::State,
+    St::IsTyping: typing_event_state::IsUnset,
 {
     /// Set the `isTyping` field (required)
     pub fn is_typing(
         mut self,
         value: impl Into<bool>,
-    ) -> TypingEventBuilder<'a, typing_event_state::SetIsTyping<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+    ) -> TypingEventBuilder<typing_event_state::SetIsTyping<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
         TypingEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> TypingEventBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> TypingEventBuilder<St, S>
 where
-    S: typing_event_state::State,
-    S::Cursor: typing_event_state::IsSet,
-    S::ConvoId: typing_event_state::IsSet,
-    S::Did: typing_event_state::IsSet,
-    S::IsTyping: typing_event_state::IsSet,
+    St: typing_event_state::State,
+    St::ConvoId: typing_event_state::IsSet,
+    St::Cursor: typing_event_state::IsSet,
+    St::Did: typing_event_state::IsSet,
+    St::IsTyping: typing_event_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> TypingEvent<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> TypingEvent<S> {
         TypingEvent {
-            convo_id: self.__unsafe_private_named.0.unwrap(),
-            cursor: self.__unsafe_private_named.1.unwrap(),
-            did: self.__unsafe_private_named.2.unwrap(),
-            is_typing: self.__unsafe_private_named.3.unwrap(),
+            convo_id: self._fields.0.unwrap(),
+            cursor: self._fields.1.unwrap(),
+            did: self._fields.2.unwrap(),
+            is_typing: self._fields.3.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> TypingEvent<'a> {
+    ) -> TypingEvent<S> {
         TypingEvent {
-            convo_id: self.__unsafe_private_named.0.unwrap(),
-            cursor: self.__unsafe_private_named.1.unwrap(),
-            did: self.__unsafe_private_named.2.unwrap(),
-            is_typing: self.__unsafe_private_named.3.unwrap(),
+            convo_id: self._fields.0.unwrap(),
+            cursor: self._fields.1.unwrap(),
+            did: self._fields.2.unwrap(),
+            is_typing: self._fields.3.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for TypingEvent<'a> {
-    fn nsid() -> &'static str {
-        "blue.catbird.mlsChat.subscribeEvents"
-    }
-    fn def_name() -> &'static str {
-        "typingEvent"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_blue_catbird_mlsChat_subscribeEvents()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-/// A recipient device called reissueWelcome because it cannot decrypt the original Welcome. Server pushes this event to the inviter, who is expected to re-stage a new commit with a fresh KP. Body fields mirror blue.catbird.mlsChat.defs#welcomeReissueRequest.
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct WelcomeReissueRequestedEvent<'a> {
-    /// Conversation needing a reissued Welcome.
-    #[serde(borrow)]
-    pub convo_id: jacquard_common::CowStr<'a>,
-    /// Resume cursor for this event position
-    #[serde(borrow)]
-    pub cursor: jacquard_common::CowStr<'a>,
-    /// Recipient device that cannot decrypt the original Welcome. This may be a device-qualified DID (did#deviceId).
-    #[serde(borrow)]
-    pub recipient_device_did: jacquard_common::CowStr<'a>,
-    /// Server-generated request identifier. Inviter echoes this in the replacement commit's idempotencyKey.
-    #[serde(borrow)]
-    pub request_id: jacquard_common::CowStr<'a>,
-    /// When the reissue was requested (RFC3339).
-    pub requested_at: jacquard_common::types::string::Datetime,
 }
 
 pub mod welcome_reissue_requested_event_state {
@@ -4760,279 +5116,292 @@ pub mod welcome_reissue_requested_event_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Cursor;
         type ConvoId;
+        type Cursor;
         type RecipientDeviceDid;
-        type RequestedAt;
         type RequestId;
+        type RequestedAt;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Cursor = Unset;
         type ConvoId = Unset;
+        type Cursor = Unset;
         type RecipientDeviceDid = Unset;
-        type RequestedAt = Unset;
         type RequestId = Unset;
-    }
-    ///State transition - sets the `cursor` field to Set
-    pub struct SetCursor<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCursor<S> {}
-    impl<S: State> State for SetCursor<S> {
-        type Cursor = Set<members::cursor>;
-        type ConvoId = S::ConvoId;
-        type RecipientDeviceDid = S::RecipientDeviceDid;
-        type RequestedAt = S::RequestedAt;
-        type RequestId = S::RequestId;
+        type RequestedAt = Unset;
     }
     ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type Cursor = S::Cursor;
+    pub struct SetConvoId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetConvoId<St> {}
+    impl<St: State> State for SetConvoId<St> {
         type ConvoId = Set<members::convo_id>;
-        type RecipientDeviceDid = S::RecipientDeviceDid;
-        type RequestedAt = S::RequestedAt;
-        type RequestId = S::RequestId;
+        type Cursor = St::Cursor;
+        type RecipientDeviceDid = St::RecipientDeviceDid;
+        type RequestId = St::RequestId;
+        type RequestedAt = St::RequestedAt;
+    }
+    ///State transition - sets the `cursor` field to Set
+    pub struct SetCursor<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCursor<St> {}
+    impl<St: State> State for SetCursor<St> {
+        type ConvoId = St::ConvoId;
+        type Cursor = Set<members::cursor>;
+        type RecipientDeviceDid = St::RecipientDeviceDid;
+        type RequestId = St::RequestId;
+        type RequestedAt = St::RequestedAt;
     }
     ///State transition - sets the `recipient_device_did` field to Set
-    pub struct SetRecipientDeviceDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRecipientDeviceDid<S> {}
-    impl<S: State> State for SetRecipientDeviceDid<S> {
-        type Cursor = S::Cursor;
-        type ConvoId = S::ConvoId;
+    pub struct SetRecipientDeviceDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRecipientDeviceDid<St> {}
+    impl<St: State> State for SetRecipientDeviceDid<St> {
+        type ConvoId = St::ConvoId;
+        type Cursor = St::Cursor;
         type RecipientDeviceDid = Set<members::recipient_device_did>;
-        type RequestedAt = S::RequestedAt;
-        type RequestId = S::RequestId;
-    }
-    ///State transition - sets the `requested_at` field to Set
-    pub struct SetRequestedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRequestedAt<S> {}
-    impl<S: State> State for SetRequestedAt<S> {
-        type Cursor = S::Cursor;
-        type ConvoId = S::ConvoId;
-        type RecipientDeviceDid = S::RecipientDeviceDid;
-        type RequestedAt = Set<members::requested_at>;
-        type RequestId = S::RequestId;
+        type RequestId = St::RequestId;
+        type RequestedAt = St::RequestedAt;
     }
     ///State transition - sets the `request_id` field to Set
-    pub struct SetRequestId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRequestId<S> {}
-    impl<S: State> State for SetRequestId<S> {
-        type Cursor = S::Cursor;
-        type ConvoId = S::ConvoId;
-        type RecipientDeviceDid = S::RecipientDeviceDid;
-        type RequestedAt = S::RequestedAt;
+    pub struct SetRequestId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRequestId<St> {}
+    impl<St: State> State for SetRequestId<St> {
+        type ConvoId = St::ConvoId;
+        type Cursor = St::Cursor;
+        type RecipientDeviceDid = St::RecipientDeviceDid;
         type RequestId = Set<members::request_id>;
+        type RequestedAt = St::RequestedAt;
+    }
+    ///State transition - sets the `requested_at` field to Set
+    pub struct SetRequestedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRequestedAt<St> {}
+    impl<St: State> State for SetRequestedAt<St> {
+        type ConvoId = St::ConvoId;
+        type Cursor = St::Cursor;
+        type RecipientDeviceDid = St::RecipientDeviceDid;
+        type RequestId = St::RequestId;
+        type RequestedAt = Set<members::requested_at>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `cursor` field
-        pub struct cursor(());
         ///Marker type for the `convo_id` field
         pub struct convo_id(());
+        ///Marker type for the `cursor` field
+        pub struct cursor(());
         ///Marker type for the `recipient_device_did` field
         pub struct recipient_device_did(());
-        ///Marker type for the `requested_at` field
-        pub struct requested_at(());
         ///Marker type for the `request_id` field
         pub struct request_id(());
+        ///Marker type for the `requested_at` field
+        pub struct requested_at(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct WelcomeReissueRequestedEventBuilder<'a, S: welcome_reissue_requested_event_state::State>
-{
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
+/// Builder for constructing an instance of this type.
+pub struct WelcomeReissueRequestedEventBuilder<
+    St: welcome_reissue_requested_event_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<S>,
+        core::option::Option<S>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> WelcomeReissueRequestedEvent<'a> {
-    /// Create a new builder for this type
-    pub fn new(
-    ) -> WelcomeReissueRequestedEventBuilder<'a, welcome_reissue_requested_event_state::Empty> {
+impl WelcomeReissueRequestedEvent<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> WelcomeReissueRequestedEventBuilder<
+        welcome_reissue_requested_event_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         WelcomeReissueRequestedEventBuilder::new()
     }
 }
 
-impl<'a> WelcomeReissueRequestedEventBuilder<'a, welcome_reissue_requested_event_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> WelcomeReissueRequestedEvent<S> {
+    /// Create a new builder for this type
+    pub fn builder(
+    ) -> WelcomeReissueRequestedEventBuilder<welcome_reissue_requested_event_state::Empty, S> {
+        WelcomeReissueRequestedEventBuilder::builder()
+    }
+}
+
+impl
+    WelcomeReissueRequestedEventBuilder<
+        welcome_reissue_requested_event_state::Empty,
+        jacquard_common::DefaultStr,
+    >
+{
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         WelcomeReissueRequestedEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> WelcomeReissueRequestedEventBuilder<'a, S>
+impl<S: jacquard_common::BosStr>
+    WelcomeReissueRequestedEventBuilder<welcome_reissue_requested_event_state::Empty, S>
+{
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        WelcomeReissueRequestedEventBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> WelcomeReissueRequestedEventBuilder<St, S>
 where
-    S: welcome_reissue_requested_event_state::State,
-    S::ConvoId: welcome_reissue_requested_event_state::IsUnset,
+    St: welcome_reissue_requested_event_state::State,
+    St::ConvoId: welcome_reissue_requested_event_state::IsUnset,
 {
     /// Set the `convoId` field (required)
     pub fn convo_id(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> WelcomeReissueRequestedEventBuilder<'a, welcome_reissue_requested_event_state::SetConvoId<S>>
+        value: impl Into<S>,
+    ) -> WelcomeReissueRequestedEventBuilder<welcome_reissue_requested_event_state::SetConvoId<St>, S>
     {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        self._fields.0 = ::core::option::Option::Some(value.into());
         WelcomeReissueRequestedEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> WelcomeReissueRequestedEventBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> WelcomeReissueRequestedEventBuilder<St, S>
 where
-    S: welcome_reissue_requested_event_state::State,
-    S::Cursor: welcome_reissue_requested_event_state::IsUnset,
+    St: welcome_reissue_requested_event_state::State,
+    St::Cursor: welcome_reissue_requested_event_state::IsUnset,
 {
     /// Set the `cursor` field (required)
     pub fn cursor(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> WelcomeReissueRequestedEventBuilder<'a, welcome_reissue_requested_event_state::SetCursor<S>>
+        value: impl Into<S>,
+    ) -> WelcomeReissueRequestedEventBuilder<welcome_reissue_requested_event_state::SetCursor<St>, S>
     {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        self._fields.1 = ::core::option::Option::Some(value.into());
         WelcomeReissueRequestedEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> WelcomeReissueRequestedEventBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> WelcomeReissueRequestedEventBuilder<St, S>
 where
-    S: welcome_reissue_requested_event_state::State,
-    S::RecipientDeviceDid: welcome_reissue_requested_event_state::IsUnset,
+    St: welcome_reissue_requested_event_state::State,
+    St::RecipientDeviceDid: welcome_reissue_requested_event_state::IsUnset,
 {
     /// Set the `recipientDeviceDid` field (required)
     pub fn recipient_device_did(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
+        value: impl Into<S>,
     ) -> WelcomeReissueRequestedEventBuilder<
-        'a,
-        welcome_reissue_requested_event_state::SetRecipientDeviceDid<S>,
+        welcome_reissue_requested_event_state::SetRecipientDeviceDid<St>,
+        S,
     > {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        self._fields.2 = ::core::option::Option::Some(value.into());
         WelcomeReissueRequestedEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> WelcomeReissueRequestedEventBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> WelcomeReissueRequestedEventBuilder<St, S>
 where
-    S: welcome_reissue_requested_event_state::State,
-    S::RequestId: welcome_reissue_requested_event_state::IsUnset,
+    St: welcome_reissue_requested_event_state::State,
+    St::RequestId: welcome_reissue_requested_event_state::IsUnset,
 {
     /// Set the `requestId` field (required)
     pub fn request_id(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
+        value: impl Into<S>,
     ) -> WelcomeReissueRequestedEventBuilder<
-        'a,
-        welcome_reissue_requested_event_state::SetRequestId<S>,
+        welcome_reissue_requested_event_state::SetRequestId<St>,
+        S,
     > {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        self._fields.3 = ::core::option::Option::Some(value.into());
         WelcomeReissueRequestedEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> WelcomeReissueRequestedEventBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> WelcomeReissueRequestedEventBuilder<St, S>
 where
-    S: welcome_reissue_requested_event_state::State,
-    S::RequestedAt: welcome_reissue_requested_event_state::IsUnset,
+    St: welcome_reissue_requested_event_state::State,
+    St::RequestedAt: welcome_reissue_requested_event_state::IsUnset,
 {
     /// Set the `requestedAt` field (required)
     pub fn requested_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
     ) -> WelcomeReissueRequestedEventBuilder<
-        'a,
-        welcome_reissue_requested_event_state::SetRequestedAt<S>,
+        welcome_reissue_requested_event_state::SetRequestedAt<St>,
+        S,
     > {
-        self.__unsafe_private_named.4 = ::core::option::Option::Some(value.into());
+        self._fields.4 = ::core::option::Option::Some(value.into());
         WelcomeReissueRequestedEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> WelcomeReissueRequestedEventBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> WelcomeReissueRequestedEventBuilder<St, S>
 where
-    S: welcome_reissue_requested_event_state::State,
-    S::Cursor: welcome_reissue_requested_event_state::IsSet,
-    S::ConvoId: welcome_reissue_requested_event_state::IsSet,
-    S::RecipientDeviceDid: welcome_reissue_requested_event_state::IsSet,
-    S::RequestedAt: welcome_reissue_requested_event_state::IsSet,
-    S::RequestId: welcome_reissue_requested_event_state::IsSet,
+    St: welcome_reissue_requested_event_state::State,
+    St::ConvoId: welcome_reissue_requested_event_state::IsSet,
+    St::Cursor: welcome_reissue_requested_event_state::IsSet,
+    St::RecipientDeviceDid: welcome_reissue_requested_event_state::IsSet,
+    St::RequestId: welcome_reissue_requested_event_state::IsSet,
+    St::RequestedAt: welcome_reissue_requested_event_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> WelcomeReissueRequestedEvent<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> WelcomeReissueRequestedEvent<S> {
         WelcomeReissueRequestedEvent {
-            convo_id: self.__unsafe_private_named.0.unwrap(),
-            cursor: self.__unsafe_private_named.1.unwrap(),
-            recipient_device_did: self.__unsafe_private_named.2.unwrap(),
-            request_id: self.__unsafe_private_named.3.unwrap(),
-            requested_at: self.__unsafe_private_named.4.unwrap(),
+            convo_id: self._fields.0.unwrap(),
+            cursor: self._fields.1.unwrap(),
+            recipient_device_did: self._fields.2.unwrap(),
+            request_id: self._fields.3.unwrap(),
+            requested_at: self._fields.4.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> WelcomeReissueRequestedEvent<'a> {
+    ) -> WelcomeReissueRequestedEvent<S> {
         WelcomeReissueRequestedEvent {
-            convo_id: self.__unsafe_private_named.0.unwrap(),
-            cursor: self.__unsafe_private_named.1.unwrap(),
-            recipient_device_did: self.__unsafe_private_named.2.unwrap(),
-            request_id: self.__unsafe_private_named.3.unwrap(),
-            requested_at: self.__unsafe_private_named.4.unwrap(),
+            convo_id: self._fields.0.unwrap(),
+            cursor: self._fields.1.unwrap(),
+            recipient_device_did: self._fields.2.unwrap(),
+            request_id: self._fields.3.unwrap(),
+            requested_at: self._fields.4.unwrap(),
             extra_data: Some(extra_data),
         }
-    }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for WelcomeReissueRequestedEvent<'a> {
-    fn nsid() -> &'static str {
-        "blue.catbird.mlsChat.subscribeEvents"
-    }
-    fn def_name() -> &'static str {
-        "welcomeReissueRequestedEvent"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_blue_catbird_mlsChat_subscribeEvents()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
     }
 }

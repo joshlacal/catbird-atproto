@@ -8,10 +8,62 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetStarterPack<'a> {
-    #[serde(borrow)]
-    pub starter_pack: jacquard_common::types::string::AtUri<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetStarterPack<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub starter_pack: jacquard_common::types::string::AtUri<S>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetStarterPackOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub starter_pack: crate::generated::app_bsky::graph::StarterPackView<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `app.bsky.graph.getStarterPack` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetStarterPackOutput<S>` for this endpoint.*/
+pub struct GetStarterPackResponse;
+impl jacquard_common::xrpc::XrpcResp for GetStarterPackResponse {
+    const NSID: &'static str = "app.bsky.graph.getStarterPack";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = GetStarterPackOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetStarterPack<S> {
+    const NSID: &'static str = "app.bsky.graph.getStarterPack";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = GetStarterPackResponse;
+}
+
+/** Endpoint marker for the `app.bsky.graph.getStarterPack` query.
+
+Path: `/xrpc/app.bsky.graph.getStarterPack`. The request payload type is `GetStarterPack<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct GetStarterPackRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for GetStarterPackRequest {
+    const PATH: &'static str = "/xrpc/app.bsky.graph.getStarterPack";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = GetStarterPack<S>;
+    type Response = GetStarterPackResponse;
 }
 
 pub mod get_starter_pack_state {
@@ -33,9 +85,9 @@ pub mod get_starter_pack_state {
         type StarterPack = Unset;
     }
     ///State transition - sets the `starter_pack` field to Set
-    pub struct SetStarterPack<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetStarterPack<S> {}
-    impl<S: State> State for SetStarterPack<S> {
+    pub struct SetStarterPack<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetStarterPack<St> {}
+    impl<St: State> State for SetStarterPack<St> {
         type StarterPack = Set<members::starter_pack>;
     }
     /// Marker types for field names
@@ -46,95 +98,81 @@ pub mod get_starter_pack_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct GetStarterPackBuilder<'a, S: get_starter_pack_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<jacquard_common::types::string::AtUri<'a>>,),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct GetStarterPackBuilder<
+    St: get_starter_pack_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<jacquard_common::types::string::AtUri<S>>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> GetStarterPack<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> GetStarterPackBuilder<'a, get_starter_pack_state::Empty> {
+impl GetStarterPack<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> GetStarterPackBuilder<get_starter_pack_state::Empty, jacquard_common::DefaultStr>
+    {
         GetStarterPackBuilder::new()
     }
 }
 
-impl<'a> GetStarterPackBuilder<'a, get_starter_pack_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> GetStarterPack<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> GetStarterPackBuilder<get_starter_pack_state::Empty, S> {
+        GetStarterPackBuilder::builder()
+    }
+}
+
+impl GetStarterPackBuilder<get_starter_pack_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetStarterPackBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GetStarterPackBuilder<'a, S>
+impl<S: jacquard_common::BosStr> GetStarterPackBuilder<get_starter_pack_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GetStarterPackBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> GetStarterPackBuilder<St, S>
 where
-    S: get_starter_pack_state::State,
-    S::StarterPack: get_starter_pack_state::IsUnset,
+    St: get_starter_pack_state::State,
+    St::StarterPack: get_starter_pack_state::IsUnset,
 {
     /// Set the `starterPack` field (required)
     pub fn starter_pack(
         mut self,
-        value: impl Into<jacquard_common::types::string::AtUri<'a>>,
-    ) -> GetStarterPackBuilder<'a, get_starter_pack_state::SetStarterPack<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::AtUri<S>>,
+    ) -> GetStarterPackBuilder<get_starter_pack_state::SetStarterPack<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         GetStarterPackBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GetStarterPackBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GetStarterPackBuilder<St, S>
 where
-    S: get_starter_pack_state::State,
-    S::StarterPack: get_starter_pack_state::IsSet,
+    St: get_starter_pack_state::State,
+    St::StarterPack: get_starter_pack_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> GetStarterPack<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> GetStarterPack<S> {
         GetStarterPack {
-            starter_pack: self.__unsafe_private_named.0.unwrap(),
+            starter_pack: self._fields.0.unwrap(),
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GetStarterPackOutput<'a> {
-    #[serde(borrow)]
-    pub starter_pack: crate::generated::app_bsky::graph::StarterPackView<'a>,
-}
-
-/// Response type for
-///app.bsky.graph.getStarterPack
-pub struct GetStarterPackResponse;
-impl jacquard_common::xrpc::XrpcResp for GetStarterPackResponse {
-    const NSID: &'static str = "app.bsky.graph.getStarterPack";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetStarterPackOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for GetStarterPack<'a> {
-    const NSID: &'static str = "app.bsky.graph.getStarterPack";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = GetStarterPackResponse;
-}
-
-/// Endpoint type for
-///app.bsky.graph.getStarterPack
-pub struct GetStarterPackRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for GetStarterPackRequest {
-    const PATH: &'static str = "/xrpc/app.bsky.graph.getStarterPack";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetStarterPack<'de>;
-    type Response = GetStarterPackResponse;
 }

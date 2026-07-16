@@ -6,15 +6,99 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 /// Record containing user settings for a particular Streamplace node
-#[jacquard_derive::lexicon]
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    rename = "place.stream.server.settings",
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct Settings<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Whether this node may archive your livestream for improving the service
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub debug_recording: core::option::Option<bool>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// Typed wrapper for GetRecord response with this collection's record type.
+
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
-pub struct Settings<'a> {
-    /// Whether this node may archive your livestream for improving the service
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub debug_recording: std::option::Option<bool>,
+pub struct SettingsGetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
+    pub uri: jacquard_common::types::string::AtUri<S>,
+    pub value: Settings<S>,
+}
+
+impl<S: jacquard_common::BosStr> Settings<S> {
+    pub fn uri(
+        uri: S,
+    ) -> Result<
+        jacquard_common::types::uri::RecordUri<S, SettingsRecord>,
+        jacquard_common::types::uri::UriError,
+    > {
+        jacquard_common::types::uri::RecordUri::try_from_uri(
+            jacquard_common::types::string::AtUri::new(uri)?,
+        )
+    }
+}
+
+/// Marker type for deserializing records from this collection.
+
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+pub struct SettingsRecord;
+impl jacquard_common::xrpc::XrpcResp for SettingsRecord {
+    const NSID: &'static str = "place.stream.server.settings";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = SettingsGetRecordOutput<S>;
+    type Err = jacquard_common::types::collection::RecordError;
+}
+
+impl<S: jacquard_common::BosStr> From<SettingsGetRecordOutput<S>> for Settings<S> {
+    fn from(output: SettingsGetRecordOutput<S>) -> Self {
+        output.value
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection for Settings<S> {
+    const NSID: &'static str = "place.stream.server.settings";
+    type Record = SettingsRecord;
+}
+
+impl jacquard_common::types::collection::Collection for SettingsRecord {
+    const NSID: &'static str = "place.stream.server.settings";
+    type Record = SettingsRecord;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Settings<S> {
+    fn nsid() -> &'static str {
+        "place.stream.server.settings"
+    }
+    fn def_name() -> &'static str {
+        "main"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_place_stream_server_settings()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
 }
 
 pub mod settings_state {
@@ -36,152 +120,99 @@ pub mod settings_state {
     pub mod members {}
 }
 
-/// Builder for constructing an instance of this type
-pub struct SettingsBuilder<'a, S: settings_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<bool>,),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct SettingsBuilder<
+    St: settings_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<bool>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> Settings<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> SettingsBuilder<'a, settings_state::Empty> {
+impl Settings<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> SettingsBuilder<settings_state::Empty, jacquard_common::DefaultStr> {
         SettingsBuilder::new()
     }
 }
 
-impl<'a> SettingsBuilder<'a, settings_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> Settings<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> SettingsBuilder<settings_state::Empty, S> {
+        SettingsBuilder::builder()
+    }
+}
+
+impl SettingsBuilder<settings_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         SettingsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: settings_state::State> SettingsBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> SettingsBuilder<settings_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        SettingsBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: settings_state::State, S: jacquard_common::BosStr> SettingsBuilder<St, S> {
     /// Set the `debugRecording` field (optional)
     pub fn debug_recording(mut self, value: impl Into<Option<bool>>) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+        self._fields.0 = value.into();
         self
     }
     /// Set the `debugRecording` field to an Option value (optional)
     pub fn maybe_debug_recording(mut self, value: Option<bool>) -> Self {
-        self.__unsafe_private_named.0 = value;
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S> SettingsBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> SettingsBuilder<St, S>
 where
-    S: settings_state::State,
+    St: settings_state::State,
 {
-    /// Build the final struct
-    pub fn build(self) -> Settings<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> Settings<S> {
         Settings {
-            debug_recording: self.__unsafe_private_named.0,
+            debug_recording: self._fields.0,
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> Settings<'a> {
+    ) -> Settings<S> {
         Settings {
-            debug_recording: self.__unsafe_private_named.0,
+            debug_recording: self._fields.0,
             extra_data: Some(extra_data),
         }
     }
 }
 
-impl<'a> Settings<'a> {
-    pub fn uri(
-        uri: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> Result<
-        jacquard_common::types::uri::RecordUri<'a, SettingsRecord>,
-        jacquard_common::types::uri::UriError,
-    > {
-        jacquard_common::types::uri::RecordUri::try_from_uri(
-            jacquard_common::types::string::AtUri::new_cow(uri.into())?,
-        )
-    }
-}
-
-/// Typed wrapper for GetRecord response with this collection's record type.
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct SettingsGetRecordOutput<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cid: std::option::Option<jacquard_common::types::string::Cid<'a>>,
-    #[serde(borrow)]
-    pub uri: jacquard_common::types::string::AtUri<'a>,
-    #[serde(borrow)]
-    pub value: Settings<'a>,
-}
-
-impl From<SettingsGetRecordOutput<'_>> for Settings<'_> {
-    fn from(output: SettingsGetRecordOutput<'_>) -> Self {
-        use jacquard_common::IntoStatic;
-        output.value.into_static()
-    }
-}
-
-impl jacquard_common::types::collection::Collection for Settings<'_> {
-    const NSID: &'static str = "place.stream.server.settings";
-    type Record = SettingsRecord;
-}
-
-/// Marker type for deserializing records from this collection.
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
-pub struct SettingsRecord;
-impl jacquard_common::xrpc::XrpcResp for SettingsRecord {
-    const NSID: &'static str = "place.stream.server.settings";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = SettingsGetRecordOutput<'de>;
-    type Err<'de> = jacquard_common::types::collection::RecordError<'de>;
-}
-
-impl jacquard_common::types::collection::Collection for SettingsRecord {
-    const NSID: &'static str = "place.stream.server.settings";
-    type Record = SettingsRecord;
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Settings<'a> {
-    fn nsid() -> &'static str {
-        "place.stream.server.settings"
-    }
-    fn def_name() -> &'static str {
-        "main"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_place_stream_server_settings()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-fn lexicon_doc_place_stream_server_settings() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_place_stream_server_settings() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("place.stream.server.settings"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
                 ::jacquard_lexicon::lexicon::LexUserType::Record(
                     ::jacquard_lexicon::lexicon::LexRecord {
                         description: Some(::jacquard_common::CowStr::new_static(
@@ -190,32 +221,31 @@ fn lexicon_doc_place_stream_server_settings() -> ::jacquard_lexicon::lexicon::Le
                         key: Some(::jacquard_common::CowStr::new_static("any")),
                         record: ::jacquard_lexicon::lexicon::LexRecordRecord::Object(
                             ::jacquard_lexicon::lexicon::LexObject {
-                                description: None,
                                 required: Some(vec![]),
-                                nullable: None,
                                 properties: {
                                     #[allow(unused_mut)]
-                                    let mut map = ::std::collections::BTreeMap::new();
+                                    let mut map = ::alloc::collections::BTreeMap::new();
                                     map.insert(
-                                        ::jacquard_common::smol_str::SmolStr::new_static(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                             "debugRecording",
                                         ),
                                         ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(
                                             ::jacquard_lexicon::lexicon::LexBoolean {
-                                                description: None,
-                                                default: None,
-                                                r#const: None,
+                                                ..Default::default()
                                             },
                                         ),
                                     );
                                     map
                                 },
+                                ..Default::default()
                             },
                         ),
+                        ..Default::default()
                     },
                 ),
             );
             map
         },
+        ..Default::default()
     }
 }

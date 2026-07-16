@@ -8,165 +8,22 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetGroupState<'a> {
-    #[serde(borrow)]
-    pub convo_id: jacquard_common::CowStr<'a>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub device_id: std::option::Option<jacquard_common::CowStr<'a>>,
-    ///(default: "groupInfo,epoch")
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub include: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub key_package_hashes: std::option::Option<Vec<jacquard_common::CowStr<'a>>>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetGroupState<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub convo_id: S,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub device_id: core::option::Option<S>,
+    /// Defaults to `"groupInfo,epoch"`.
+    #[serde(default = "_default_include")]
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub include: core::option::Option<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub key_package_hashes: core::option::Option<Vec<S>>,
 }
 
-pub mod get_group_state_state {
-
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
-    #[allow(unused)]
-    use core::marker::PhantomData;
-    mod sealed {
-        pub trait Sealed {}
-    }
-    /// State trait tracking which required fields have been set
-    pub trait State: sealed::Sealed {
-        type ConvoId;
-    }
-    /// Empty state - all required fields are unset
-    pub struct Empty(());
-    impl sealed::Sealed for Empty {}
-    impl State for Empty {
-        type ConvoId = Unset;
-    }
-    ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type ConvoId = Set<members::convo_id>;
-    }
-    /// Marker types for field names
-    #[allow(non_camel_case_types)]
-    pub mod members {
-        ///Marker type for the `convo_id` field
-        pub struct convo_id(());
-    }
-}
-
-/// Builder for constructing an instance of this type
-pub struct GetGroupStateBuilder<'a, S: get_group_state_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<Vec<jacquard_common::CowStr<'a>>>,
-    ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
-}
-
-impl<'a> GetGroupState<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> GetGroupStateBuilder<'a, get_group_state_state::Empty> {
-        GetGroupStateBuilder::new()
-    }
-}
-
-impl<'a> GetGroupStateBuilder<'a, get_group_state_state::Empty> {
-    /// Create a new builder with all fields unset
-    pub fn new() -> Self {
-        GetGroupStateBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> GetGroupStateBuilder<'a, S>
-where
-    S: get_group_state_state::State,
-    S::ConvoId: get_group_state_state::IsUnset,
-{
-    /// Set the `convoId` field (required)
-    pub fn convo_id(
-        mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> GetGroupStateBuilder<'a, get_group_state_state::SetConvoId<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
-        GetGroupStateBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S: get_group_state_state::State> GetGroupStateBuilder<'a, S> {
-    /// Set the `deviceId` field (optional)
-    pub fn device_id(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.1 = value.into();
-        self
-    }
-    /// Set the `deviceId` field to an Option value (optional)
-    pub fn maybe_device_id(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.1 = value;
-        self
-    }
-}
-
-impl<'a, S: get_group_state_state::State> GetGroupStateBuilder<'a, S> {
-    /// Set the `include` field (optional)
-    pub fn include(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.2 = value.into();
-        self
-    }
-    /// Set the `include` field to an Option value (optional)
-    pub fn maybe_include(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.2 = value;
-        self
-    }
-}
-
-impl<'a, S: get_group_state_state::State> GetGroupStateBuilder<'a, S> {
-    /// Set the `keyPackageHashes` field (optional)
-    pub fn key_package_hashes(
-        mut self,
-        value: impl Into<Option<Vec<jacquard_common::CowStr<'a>>>>,
-    ) -> Self {
-        self.__unsafe_private_named.3 = value.into();
-        self
-    }
-    /// Set the `keyPackageHashes` field to an Option value (optional)
-    pub fn maybe_key_package_hashes(
-        mut self,
-        value: Option<Vec<jacquard_common::CowStr<'a>>>,
-    ) -> Self {
-        self.__unsafe_private_named.3 = value;
-        self
-    }
-}
-
-impl<'a, S> GetGroupStateBuilder<'a, S>
-where
-    S: get_group_state_state::State,
-    S::ConvoId: get_group_state_state::IsSet,
-{
-    /// Build the final struct
-    pub fn build(self) -> GetGroupState<'a> {
-        GetGroupState {
-            convo_id: self.__unsafe_private_named.0.unwrap(),
-            device_id: self.__unsafe_private_named.1,
-            include: self.__unsafe_private_named.2,
-            key_package_hashes: self.__unsafe_private_named.3,
-        }
-    }
-}
-
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -177,25 +34,38 @@ where
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetGroupStateOutput<'a> {
-    /// Current MLS epoch number (present when 'epoch' included)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub epoch: std::option::Option<i64>,
-    /// When the GroupInfo becomes stale (typically 5 minutes)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub expires_at: std::option::Option<jacquard_common::types::string::Datetime>,
-    /// TLS-serialized GroupInfo (present when 'groupInfo' included)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetGroupStateOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Current MLS epoch number (present when 'epoch' included)
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub epoch: core::option::Option<i64>,
+    ///When the GroupInfo becomes stale (typically 5 minutes)
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub expires_at: core::option::Option<jacquard_common::types::string::Datetime>,
+    ///TLS-serialized GroupInfo (present when 'groupInfo' included)
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
     #[serde(default, with = "jacquard_common::opt_serde_bytes_helper")]
-    pub group_info: std::option::Option<bytes::Bytes>,
-    /// Pending MLS Welcome message (present when 'welcome' included and a Welcome exists)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    pub group_info: core::option::Option<jacquard_common::deps::bytes::Bytes>,
+    ///Pending MLS Welcome message (present when 'welcome' included and a Welcome exists)
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
     #[serde(default, with = "jacquard_common::opt_serde_bytes_helper")]
-    pub welcome: std::option::Option<bytes::Bytes>,
+    pub welcome: core::option::Option<jacquard_common::deps::bytes::Bytes>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::open_union]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -205,24 +75,28 @@ pub struct GetGroupStateOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum GetGroupStateError<'a> {
+pub enum GetGroupStateError {
     /// Conversation not found
     #[serde(rename = "NotFound")]
-    NotFound(std::option::Option<jacquard_common::CowStr<'a>>),
+    NotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// Not a current or past member
     #[serde(rename = "Unauthorized")]
-    Unauthorized(std::option::Option<jacquard_common::CowStr<'a>>),
+    Unauthorized(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// GroupInfo not yet generated for this conversation
     #[serde(rename = "GroupInfoUnavailable")]
-    GroupInfoUnavailable(std::option::Option<jacquard_common::CowStr<'a>>),
+    GroupInfoUnavailable(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
 }
 
-impl std::fmt::Display for GetGroupStateError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for GetGroupStateError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             Self::NotFound(msg) => {
                 write!(f, "NotFound")?;
@@ -245,33 +119,203 @@ impl std::fmt::Display for GetGroupStateError<'_> {
                 }
                 Ok(())
             }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
         }
     }
 }
 
-/// Response type for
-///blue.catbird.mlsChat.getGroupState
+/** Response marker for the `blue.catbird.mlsChat.getGroupState` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetGroupStateOutput<S>` for this endpoint.*/
 pub struct GetGroupStateResponse;
 impl jacquard_common::xrpc::XrpcResp for GetGroupStateResponse {
     const NSID: &'static str = "blue.catbird.mlsChat.getGroupState";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetGroupStateOutput<'de>;
-    type Err<'de> = GetGroupStateError<'de>;
+    type Output<S: jacquard_common::BosStr> = GetGroupStateOutput<S>;
+    type Err = GetGroupStateError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for GetGroupState<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetGroupState<S> {
     const NSID: &'static str = "blue.catbird.mlsChat.getGroupState";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = GetGroupStateResponse;
 }
 
-/// Endpoint type for
-///blue.catbird.mlsChat.getGroupState
+/** Endpoint marker for the `blue.catbird.mlsChat.getGroupState` query.
+
+Path: `/xrpc/blue.catbird.mlsChat.getGroupState`. The request payload type is `GetGroupState<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct GetGroupStateRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for GetGroupStateRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.getGroupState";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetGroupState<'de>;
+    type Request<S: jacquard_common::BosStr> = GetGroupState<S>;
     type Response = GetGroupStateResponse;
+}
+
+fn _default_include<S: jacquard_common::FromStaticStr>() -> Option<S> {
+    Some(S::from_static("groupInfo,epoch"))
+}
+
+pub mod get_group_state_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type ConvoId;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type ConvoId = Unset;
+    }
+    ///State transition - sets the `convo_id` field to Set
+    pub struct SetConvoId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetConvoId<St> {}
+    impl<St: State> State for SetConvoId<St> {
+        type ConvoId = Set<members::convo_id>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `convo_id` field
+        pub struct convo_id(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct GetGroupStateBuilder<
+    St: get_group_state_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<S>,
+        core::option::Option<S>,
+        core::option::Option<Vec<S>>,
+    ),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl GetGroupState<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> GetGroupStateBuilder<get_group_state_state::Empty, jacquard_common::DefaultStr>
+    {
+        GetGroupStateBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> GetGroupState<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> GetGroupStateBuilder<get_group_state_state::Empty, S> {
+        GetGroupStateBuilder::builder()
+    }
+}
+
+impl GetGroupStateBuilder<get_group_state_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        GetGroupStateBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> GetGroupStateBuilder<get_group_state_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GetGroupStateBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> GetGroupStateBuilder<St, S>
+where
+    St: get_group_state_state::State,
+    St::ConvoId: get_group_state_state::IsUnset,
+{
+    /// Set the `convoId` field (required)
+    pub fn convo_id(
+        mut self,
+        value: impl Into<S>,
+    ) -> GetGroupStateBuilder<get_group_state_state::SetConvoId<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        GetGroupStateBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: get_group_state_state::State, S: jacquard_common::BosStr> GetGroupStateBuilder<St, S> {
+    /// Set the `deviceId` field (optional)
+    pub fn device_id(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.1 = value.into();
+        self
+    }
+    /// Set the `deviceId` field to an Option value (optional)
+    pub fn maybe_device_id(mut self, value: Option<S>) -> Self {
+        self._fields.1 = value;
+        self
+    }
+}
+
+impl<St: get_group_state_state::State, S: jacquard_common::BosStr> GetGroupStateBuilder<St, S> {
+    /// Set the `include` field (optional)
+    pub fn include(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.2 = value.into();
+        self
+    }
+    /// Set the `include` field to an Option value (optional)
+    pub fn maybe_include(mut self, value: Option<S>) -> Self {
+        self._fields.2 = value;
+        self
+    }
+}
+
+impl<St: get_group_state_state::State, S: jacquard_common::BosStr> GetGroupStateBuilder<St, S> {
+    /// Set the `keyPackageHashes` field (optional)
+    pub fn key_package_hashes(mut self, value: impl Into<Option<Vec<S>>>) -> Self {
+        self._fields.3 = value.into();
+        self
+    }
+    /// Set the `keyPackageHashes` field to an Option value (optional)
+    pub fn maybe_key_package_hashes(mut self, value: Option<Vec<S>>) -> Self {
+        self._fields.3 = value;
+        self
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> GetGroupStateBuilder<St, S>
+where
+    St: get_group_state_state::State,
+    St::ConvoId: get_group_state_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> GetGroupState<S> {
+        GetGroupState {
+            convo_id: self._fields.0.unwrap(),
+            device_id: self._fields.1,
+            include: self._fields.2,
+            key_package_hashes: self._fields.3,
+        }
+    }
 }

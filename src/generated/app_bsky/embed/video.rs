@@ -5,15 +5,447 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct Caption<'a> {
-    #[serde(borrow)]
-    pub file: jacquard_common::types::blob::BlobRef<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct Caption<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub file: jacquard_common::types::blob::BlobRef<S>,
     pub lang: jacquard_common::types::string::Language,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct Video<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Alt text description of the video, for accessibility.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub alt: core::option::Option<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub aspect_ratio: core::option::Option<crate::generated::app_bsky::embed::AspectRatio<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub captions: core::option::Option<Vec<crate::generated::app_bsky::embed::video::Caption<S>>>,
+    ///A hint to the client about how to present the video.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub presentation: core::option::Option<VideoPresentation<S>>,
+    ///The mp4 video file. May be up to 100mb, formerly limited to 50mb.
+    pub video: jacquard_common::types::blob::BlobRef<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// A hint to the client about how to present the video.
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum VideoPresentation<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    Default,
+    Gif,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> VideoPresentation<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Default => "default",
+            Self::Gif => "gif",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "default" => Self::Default,
+            "gif" => Self::Gif,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for VideoPresentation<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for VideoPresentation<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for VideoPresentation<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for VideoPresentation<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for VideoPresentation<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for VideoPresentation<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = VideoPresentation<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            VideoPresentation::Default => VideoPresentation::Default,
+            VideoPresentation::Gif => VideoPresentation::Gif,
+            VideoPresentation::Other(v) => VideoPresentation::Other(v.into_static()),
+        }
+    }
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct View<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub alt: core::option::Option<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub aspect_ratio: core::option::Option<crate::generated::app_bsky::embed::AspectRatio<S>>,
+    pub cid: jacquard_common::types::string::Cid<S>,
+    pub playlist: jacquard_common::types::string::UriValue<S>,
+    ///A hint to the client about how to present the video.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub presentation: core::option::Option<ViewPresentation<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub thumbnail: core::option::Option<jacquard_common::types::string::UriValue<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// A hint to the client about how to present the video.
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum ViewPresentation<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    Default,
+    Gif,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> ViewPresentation<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Default => "default",
+            Self::Gif => "gif",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "default" => Self::Default,
+            "gif" => Self::Gif,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for ViewPresentation<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for ViewPresentation<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for ViewPresentation<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for ViewPresentation<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for ViewPresentation<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for ViewPresentation<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = ViewPresentation<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            ViewPresentation::Default => ViewPresentation::Default,
+            ViewPresentation::Gif => ViewPresentation::Gif,
+            ViewPresentation::Other(v) => ViewPresentation::Other(v.into_static()),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Caption<S> {
+    fn nsid() -> &'static str {
+        "app.bsky.embed.video"
+    }
+    fn def_name() -> &'static str {
+        "caption"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_app_bsky_embed_video()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.file;
+            {
+                let size = value.blob().size;
+                if size > 20000usize {
+                    return Err(
+                        jacquard_lexicon::validation::ConstraintError::BlobTooLarge {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field("file"),
+                            max: 20000usize,
+                            actual: size,
+                        },
+                    );
+                }
+            }
+        }
+        {
+            let value = &self.file;
+            {
+                let mime = value.blob().mime_type.as_str();
+                let accepted: &[&str] = &["text/vtt"];
+                let matched = accepted.iter().any(|pattern| {
+                    if *pattern == "*/*" {
+                        true
+                    } else if pattern.ends_with("/*") {
+                        let prefix = &pattern[..pattern.len() - 2];
+                        mime.starts_with(prefix) && mime.as_bytes().get(prefix.len()) == Some(&b'/')
+                    } else {
+                        mime == *pattern
+                    }
+                });
+                if !matched {
+                    return Err(
+                        jacquard_lexicon::validation::ConstraintError::BlobMimeTypeNotAccepted {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field("file"),
+                            accepted: vec!["text/vtt".to_string()],
+                            actual: mime.to_string(),
+                        },
+                    );
+                }
+            }
+        }
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Video<S> {
+    fn nsid() -> &'static str {
+        "app.bsky.embed.video"
+    }
+    fn def_name() -> &'static str {
+        "main"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_app_bsky_embed_video()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        if let Some(ref value) = self.alt {
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 10000usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("alt"),
+                    max: 10000usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        if let Some(ref value) = self.alt {
+            {
+                let count = jacquard_common::deps::codegen::unicode_segmentation::UnicodeSegmentation::graphemes(
+                        value.as_ref(),
+                        true,
+                    )
+                    .count();
+                if count > 1000usize {
+                    return Err(
+                        jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field("alt"),
+                            max: 1000usize,
+                            actual: count,
+                        },
+                    );
+                }
+            }
+        }
+        if let Some(ref value) = self.captions {
+            #[allow(unused_comparisons)]
+            if value.len() > 20usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("captions"),
+                    max: 20usize,
+                    actual: value.len(),
+                });
+            }
+        }
+        {
+            let value = &self.video;
+            {
+                let size = value.blob().size;
+                if size > 100000000usize {
+                    return Err(
+                        jacquard_lexicon::validation::ConstraintError::BlobTooLarge {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field("video"),
+                            max: 100000000usize,
+                            actual: size,
+                        },
+                    );
+                }
+            }
+        }
+        {
+            let value = &self.video;
+            {
+                let mime = value.blob().mime_type.as_str();
+                let accepted: &[&str] = &["video/mp4"];
+                let matched = accepted.iter().any(|pattern| {
+                    if *pattern == "*/*" {
+                        true
+                    } else if pattern.ends_with("/*") {
+                        let prefix = &pattern[..pattern.len() - 2];
+                        mime.starts_with(prefix) && mime.as_bytes().get(prefix.len()) == Some(&b'/')
+                    } else {
+                        mime == *pattern
+                    }
+                });
+                if !matched {
+                    return Err(
+                        jacquard_lexicon::validation::ConstraintError::BlobMimeTypeNotAccepted {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field("video"),
+                            accepted: vec!["video/mp4".to_string()],
+                            actual: mime.to_string(),
+                        },
+                    );
+                }
+            }
+        }
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for View<S> {
+    fn nsid() -> &'static str {
+        "app.bsky.embed.video"
+    }
+    fn def_name() -> &'static str {
+        "view"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_app_bsky_embed_video()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        if let Some(ref value) = self.alt {
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 10000usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("alt"),
+                    max: 10000usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        if let Some(ref value) = self.alt {
+            {
+                let count = jacquard_common::deps::codegen::unicode_segmentation::UnicodeSegmentation::graphemes(
+                        value.as_ref(),
+                        true,
+                    )
+                    .count();
+                if count > 1000usize {
+                    return Err(
+                        jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field("alt"),
+                            max: 1000usize,
+                            actual: count,
+                        },
+                    );
+                }
+            }
+        }
+        Ok(())
+    }
 }
 
 pub mod caption_state {
@@ -26,452 +458,369 @@ pub mod caption_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Lang;
         type File;
+        type Lang;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Lang = Unset;
         type File = Unset;
-    }
-    ///State transition - sets the `lang` field to Set
-    pub struct SetLang<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetLang<S> {}
-    impl<S: State> State for SetLang<S> {
-        type Lang = Set<members::lang>;
-        type File = S::File;
+        type Lang = Unset;
     }
     ///State transition - sets the `file` field to Set
-    pub struct SetFile<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetFile<S> {}
-    impl<S: State> State for SetFile<S> {
-        type Lang = S::Lang;
+    pub struct SetFile<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetFile<St> {}
+    impl<St: State> State for SetFile<St> {
         type File = Set<members::file>;
+        type Lang = St::Lang;
+    }
+    ///State transition - sets the `lang` field to Set
+    pub struct SetLang<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetLang<St> {}
+    impl<St: State> State for SetLang<St> {
+        type File = St::File;
+        type Lang = Set<members::lang>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `lang` field
-        pub struct lang(());
         ///Marker type for the `file` field
         pub struct file(());
+        ///Marker type for the `lang` field
+        pub struct lang(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct CaptionBuilder<'a, S: caption_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::blob::BlobRef<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Language>,
+/// Builder for constructing an instance of this type.
+pub struct CaptionBuilder<
+    St: caption_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::blob::BlobRef<S>>,
+        core::option::Option<jacquard_common::types::string::Language>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> Caption<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> CaptionBuilder<'a, caption_state::Empty> {
+impl Caption<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> CaptionBuilder<caption_state::Empty, jacquard_common::DefaultStr> {
         CaptionBuilder::new()
     }
 }
 
-impl<'a> CaptionBuilder<'a, caption_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> Caption<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> CaptionBuilder<caption_state::Empty, S> {
+        CaptionBuilder::builder()
+    }
+}
+
+impl CaptionBuilder<caption_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         CaptionBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> CaptionBuilder<'a, S>
+impl<S: jacquard_common::BosStr> CaptionBuilder<caption_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        CaptionBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> CaptionBuilder<St, S>
 where
-    S: caption_state::State,
-    S::File: caption_state::IsUnset,
+    St: caption_state::State,
+    St::File: caption_state::IsUnset,
 {
     /// Set the `file` field (required)
     pub fn file(
         mut self,
-        value: impl Into<jacquard_common::types::blob::BlobRef<'a>>,
-    ) -> CaptionBuilder<'a, caption_state::SetFile<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::blob::BlobRef<S>>,
+    ) -> CaptionBuilder<caption_state::SetFile<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         CaptionBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> CaptionBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> CaptionBuilder<St, S>
 where
-    S: caption_state::State,
-    S::Lang: caption_state::IsUnset,
+    St: caption_state::State,
+    St::Lang: caption_state::IsUnset,
 {
     /// Set the `lang` field (required)
     pub fn lang(
         mut self,
         value: impl Into<jacquard_common::types::string::Language>,
-    ) -> CaptionBuilder<'a, caption_state::SetLang<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+    ) -> CaptionBuilder<caption_state::SetLang<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         CaptionBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> CaptionBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> CaptionBuilder<St, S>
 where
-    S: caption_state::State,
-    S::Lang: caption_state::IsSet,
-    S::File: caption_state::IsSet,
+    St: caption_state::State,
+    St::File: caption_state::IsSet,
+    St::Lang: caption_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> Caption<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> Caption<S> {
         Caption {
-            file: self.__unsafe_private_named.0.unwrap(),
-            lang: self.__unsafe_private_named.1.unwrap(),
+            file: self._fields.0.unwrap(),
+            lang: self._fields.1.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> Caption<'a> {
+    ) -> Caption<S> {
         Caption {
-            file: self.__unsafe_private_named.0.unwrap(),
-            lang: self.__unsafe_private_named.1.unwrap(),
+            file: self._fields.0.unwrap(),
+            lang: self._fields.1.unwrap(),
             extra_data: Some(extra_data),
         }
     }
 }
 
-fn lexicon_doc_app_bsky_embed_video() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_app_bsky_embed_video() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("app.bsky.embed.video"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("caption"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("caption"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("lang"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("file"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("lang"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("file"),
                         ]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("file"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("file"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Blob(
                                     ::jacquard_lexicon::lexicon::LexBlob {
-                                        description: None,
-                                        accept: None,
-                                        max_size: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("lang"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("lang"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Language,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
-                        required: Some(vec![::jacquard_common::smol_str::SmolStr::new_static(
-                            "video",
-                        )]),
-                        nullable: None,
+                        required: Some(vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("video"),
+                        ]),
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("alt"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("alt"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
                                             "Alt text description of the video, for accessibility.",
                                         )),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
                                         max_length: Some(10000usize),
-                                        min_graphemes: None,
                                         max_graphemes: Some(1000usize),
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("aspectRatio"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "aspectRatio",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
                                     ::jacquard_lexicon::lexicon::LexRef {
-                                        description: None,
                                         r#ref: ::jacquard_common::CowStr::new_static(
                                             "app.bsky.embed.defs#aspectRatio",
                                         ),
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("captions"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("captions"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Array(
                                     ::jacquard_lexicon::lexicon::LexArray {
-                                        description: None,
                                         items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(
                                             ::jacquard_lexicon::lexicon::LexRef {
-                                                description: None,
                                                 r#ref: ::jacquard_common::CowStr::new_static(
                                                     "#caption",
                                                 ),
+                                                ..Default::default()
                                             },
                                         ),
-                                        min_length: None,
                                         max_length: Some(20usize),
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("presentation"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "presentation",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
                                             "A hint to the client about how to present the video.",
                                         )),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("video"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("video"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Blob(
                                     ::jacquard_lexicon::lexicon::LexBlob {
-                                        description: None,
-                                        accept: None,
-                                        max_size: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("view"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("view"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("cid"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("playlist"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("cid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("playlist"),
                         ]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("alt"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("alt"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
                                         max_length: Some(10000usize),
-                                        min_graphemes: None,
                                         max_graphemes: Some(1000usize),
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("aspectRatio"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "aspectRatio",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
                                     ::jacquard_lexicon::lexicon::LexRef {
-                                        description: None,
                                         r#ref: ::jacquard_common::CowStr::new_static(
                                             "app.bsky.embed.defs#aspectRatio",
                                         ),
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("cid"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("cid"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Cid,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("playlist"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("playlist"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Uri,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("presentation"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "presentation",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
                                             "A hint to the client about how to present the video.",
                                         )),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("thumbnail"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("thumbnail"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Uri,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map
         },
+        ..Default::default()
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Caption<'a> {
-    fn nsid() -> &'static str {
-        "app.bsky.embed.video"
-    }
-    fn def_name() -> &'static str {
-        "caption"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_app_bsky_embed_video()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct Video<'a> {
-    /// Alt text description of the video, for accessibility.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub alt: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub aspect_ratio: std::option::Option<crate::generated::app_bsky::embed::AspectRatio<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub captions: std::option::Option<Vec<crate::generated::app_bsky::embed::video::Caption<'a>>>,
-    /// A hint to the client about how to present the video.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub presentation: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// The mp4 video file. May be up to 100mb, formerly limited to 50mb.
-    #[serde(borrow)]
-    pub video: jacquard_common::types::blob::BlobRef<'a>,
 }
 
 pub mod video_state {
@@ -493,9 +842,9 @@ pub mod video_state {
         type Video = Unset;
     }
     ///State transition - sets the `video` field to Set
-    pub struct SetVideo<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetVideo<S> {}
-    impl<S: State> State for SetVideo<S> {
+    pub struct SetVideo<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetVideo<St> {}
+    impl<St: State> State for SetVideo<St> {
         type Video = Set<members::video>;
     }
     /// Marker types for field names
@@ -506,231 +855,174 @@ pub mod video_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct VideoBuilder<'a, S: video_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<crate::generated::app_bsky::embed::AspectRatio<'a>>,
-        ::core::option::Option<Vec<crate::generated::app_bsky::embed::video::Caption<'a>>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::blob::BlobRef<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct VideoBuilder<
+    St: video_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<crate::generated::app_bsky::embed::AspectRatio<S>>,
+        core::option::Option<Vec<crate::generated::app_bsky::embed::video::Caption<S>>>,
+        core::option::Option<VideoPresentation<S>>,
+        core::option::Option<jacquard_common::types::blob::BlobRef<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> Video<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> VideoBuilder<'a, video_state::Empty> {
+impl Video<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> VideoBuilder<video_state::Empty, jacquard_common::DefaultStr> {
         VideoBuilder::new()
     }
 }
 
-impl<'a> VideoBuilder<'a, video_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> Video<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> VideoBuilder<video_state::Empty, S> {
+        VideoBuilder::builder()
+    }
+}
+
+impl VideoBuilder<video_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         VideoBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: video_state::State> VideoBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> VideoBuilder<video_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        VideoBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: video_state::State, S: jacquard_common::BosStr> VideoBuilder<St, S> {
     /// Set the `alt` field (optional)
-    pub fn alt(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+    pub fn alt(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.0 = value.into();
         self
     }
     /// Set the `alt` field to an Option value (optional)
-    pub fn maybe_alt(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.0 = value;
+    pub fn maybe_alt(mut self, value: Option<S>) -> Self {
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S: video_state::State> VideoBuilder<'a, S> {
+impl<St: video_state::State, S: jacquard_common::BosStr> VideoBuilder<St, S> {
     /// Set the `aspectRatio` field (optional)
     pub fn aspect_ratio(
         mut self,
-        value: impl Into<Option<crate::generated::app_bsky::embed::AspectRatio<'a>>>,
+        value: impl Into<Option<crate::generated::app_bsky::embed::AspectRatio<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self._fields.1 = value.into();
         self
     }
     /// Set the `aspectRatio` field to an Option value (optional)
     pub fn maybe_aspect_ratio(
         mut self,
-        value: Option<crate::generated::app_bsky::embed::AspectRatio<'a>>,
+        value: Option<crate::generated::app_bsky::embed::AspectRatio<S>>,
     ) -> Self {
-        self.__unsafe_private_named.1 = value;
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S: video_state::State> VideoBuilder<'a, S> {
+impl<St: video_state::State, S: jacquard_common::BosStr> VideoBuilder<St, S> {
     /// Set the `captions` field (optional)
     pub fn captions(
         mut self,
-        value: impl Into<Option<Vec<crate::generated::app_bsky::embed::video::Caption<'a>>>>,
+        value: impl Into<Option<Vec<crate::generated::app_bsky::embed::video::Caption<S>>>>,
     ) -> Self {
-        self.__unsafe_private_named.2 = value.into();
+        self._fields.2 = value.into();
         self
     }
     /// Set the `captions` field to an Option value (optional)
     pub fn maybe_captions(
         mut self,
-        value: Option<Vec<crate::generated::app_bsky::embed::video::Caption<'a>>>,
+        value: Option<Vec<crate::generated::app_bsky::embed::video::Caption<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.2 = value;
+        self._fields.2 = value;
         self
     }
 }
 
-impl<'a, S: video_state::State> VideoBuilder<'a, S> {
+impl<St: video_state::State, S: jacquard_common::BosStr> VideoBuilder<St, S> {
     /// Set the `presentation` field (optional)
-    pub fn presentation(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.3 = value.into();
+    pub fn presentation(mut self, value: impl Into<Option<VideoPresentation<S>>>) -> Self {
+        self._fields.3 = value.into();
         self
     }
     /// Set the `presentation` field to an Option value (optional)
-    pub fn maybe_presentation(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.3 = value;
+    pub fn maybe_presentation(mut self, value: Option<VideoPresentation<S>>) -> Self {
+        self._fields.3 = value;
         self
     }
 }
 
-impl<'a, S> VideoBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> VideoBuilder<St, S>
 where
-    S: video_state::State,
-    S::Video: video_state::IsUnset,
+    St: video_state::State,
+    St::Video: video_state::IsUnset,
 {
     /// Set the `video` field (required)
     pub fn video(
         mut self,
-        value: impl Into<jacquard_common::types::blob::BlobRef<'a>>,
-    ) -> VideoBuilder<'a, video_state::SetVideo<S>> {
-        self.__unsafe_private_named.4 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::blob::BlobRef<S>>,
+    ) -> VideoBuilder<video_state::SetVideo<St>, S> {
+        self._fields.4 = ::core::option::Option::Some(value.into());
         VideoBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> VideoBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> VideoBuilder<St, S>
 where
-    S: video_state::State,
-    S::Video: video_state::IsSet,
+    St: video_state::State,
+    St::Video: video_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> Video<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> Video<S> {
         Video {
-            alt: self.__unsafe_private_named.0,
-            aspect_ratio: self.__unsafe_private_named.1,
-            captions: self.__unsafe_private_named.2,
-            presentation: self.__unsafe_private_named.3,
-            video: self.__unsafe_private_named.4.unwrap(),
+            alt: self._fields.0,
+            aspect_ratio: self._fields.1,
+            captions: self._fields.2,
+            presentation: self._fields.3,
+            video: self._fields.4.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> Video<'a> {
+    ) -> Video<S> {
         Video {
-            alt: self.__unsafe_private_named.0,
-            aspect_ratio: self.__unsafe_private_named.1,
-            captions: self.__unsafe_private_named.2,
-            presentation: self.__unsafe_private_named.3,
-            video: self.__unsafe_private_named.4.unwrap(),
+            alt: self._fields.0,
+            aspect_ratio: self._fields.1,
+            captions: self._fields.2,
+            presentation: self._fields.3,
+            video: self._fields.4.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Video<'a> {
-    fn nsid() -> &'static str {
-        "app.bsky.embed.video"
-    }
-    fn def_name() -> &'static str {
-        "main"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_app_bsky_embed_video()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        if let Some(ref value) = self.alt {
-            #[allow(unused_comparisons)]
-            if <str>::len(value.as_ref()) > 10000usize {
-                return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("alt"),
-                    max: 10000usize,
-                    actual: <str>::len(value.as_ref()),
-                });
-            }
-        }
-        if let Some(ref value) = self.alt {
-            {
-                let count =
-                    ::unicode_segmentation::UnicodeSegmentation::graphemes(value.as_ref(), true)
-                        .count();
-                if count > 1000usize {
-                    return Err(
-                        ::jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
-                            path: ::jacquard_lexicon::validation::ValidationPath::from_field("alt"),
-                            max: 1000usize,
-                            actual: count,
-                        },
-                    );
-                }
-            }
-        }
-        if let Some(ref value) = self.captions {
-            #[allow(unused_comparisons)]
-            if value.len() > 20usize {
-                return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("captions"),
-                    max: 20usize,
-                    actual: value.len(),
-                });
-            }
-        }
-        Ok(())
-    }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct View<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub alt: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub aspect_ratio: std::option::Option<crate::generated::app_bsky::embed::AspectRatio<'a>>,
-    #[serde(borrow)]
-    pub cid: jacquard_common::types::string::Cid<'a>,
-    #[serde(borrow)]
-    pub playlist: jacquard_common::types::string::Uri<'a>,
-    /// A hint to the client about how to present the video.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub presentation: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub thumbnail: std::option::Option<jacquard_common::types::string::Uri<'a>>,
 }
 
 pub mod view_state {
@@ -754,17 +1046,17 @@ pub mod view_state {
         type Playlist = Unset;
     }
     ///State transition - sets the `cid` field to Set
-    pub struct SetCid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCid<S> {}
-    impl<S: State> State for SetCid<S> {
+    pub struct SetCid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCid<St> {}
+    impl<St: State> State for SetCid<St> {
         type Cid = Set<members::cid>;
-        type Playlist = S::Playlist;
+        type Playlist = St::Playlist;
     }
     ///State transition - sets the `playlist` field to Set
-    pub struct SetPlaylist<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetPlaylist<S> {}
-    impl<S: State> State for SetPlaylist<S> {
-        type Cid = S::Cid;
+    pub struct SetPlaylist<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetPlaylist<St> {}
+    impl<St: State> State for SetPlaylist<St> {
+        type Cid = St::Cid;
         type Playlist = Set<members::playlist>;
     }
     /// Marker types for field names
@@ -777,217 +1069,195 @@ pub mod view_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct ViewBuilder<'a, S: view_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<crate::generated::app_bsky::embed::AspectRatio<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Cid<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Uri<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Uri<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct ViewBuilder<
+    St: view_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<crate::generated::app_bsky::embed::AspectRatio<S>>,
+        core::option::Option<jacquard_common::types::string::Cid<S>>,
+        core::option::Option<jacquard_common::types::string::UriValue<S>>,
+        core::option::Option<ViewPresentation<S>>,
+        core::option::Option<jacquard_common::types::string::UriValue<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> View<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> ViewBuilder<'a, view_state::Empty> {
+impl View<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> ViewBuilder<view_state::Empty, jacquard_common::DefaultStr> {
         ViewBuilder::new()
     }
 }
 
-impl<'a> ViewBuilder<'a, view_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> View<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> ViewBuilder<view_state::Empty, S> {
+        ViewBuilder::builder()
+    }
+}
+
+impl ViewBuilder<view_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: view_state::State> ViewBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> ViewBuilder<view_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        ViewBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: view_state::State, S: jacquard_common::BosStr> ViewBuilder<St, S> {
     /// Set the `alt` field (optional)
-    pub fn alt(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+    pub fn alt(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.0 = value.into();
         self
     }
     /// Set the `alt` field to an Option value (optional)
-    pub fn maybe_alt(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.0 = value;
+    pub fn maybe_alt(mut self, value: Option<S>) -> Self {
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S: view_state::State> ViewBuilder<'a, S> {
+impl<St: view_state::State, S: jacquard_common::BosStr> ViewBuilder<St, S> {
     /// Set the `aspectRatio` field (optional)
     pub fn aspect_ratio(
         mut self,
-        value: impl Into<Option<crate::generated::app_bsky::embed::AspectRatio<'a>>>,
+        value: impl Into<Option<crate::generated::app_bsky::embed::AspectRatio<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self._fields.1 = value.into();
         self
     }
     /// Set the `aspectRatio` field to an Option value (optional)
     pub fn maybe_aspect_ratio(
         mut self,
-        value: Option<crate::generated::app_bsky::embed::AspectRatio<'a>>,
+        value: Option<crate::generated::app_bsky::embed::AspectRatio<S>>,
     ) -> Self {
-        self.__unsafe_private_named.1 = value;
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S> ViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ViewBuilder<St, S>
 where
-    S: view_state::State,
-    S::Cid: view_state::IsUnset,
+    St: view_state::State,
+    St::Cid: view_state::IsUnset,
 {
     /// Set the `cid` field (required)
     pub fn cid(
         mut self,
-        value: impl Into<jacquard_common::types::string::Cid<'a>>,
-    ) -> ViewBuilder<'a, view_state::SetCid<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Cid<S>>,
+    ) -> ViewBuilder<view_state::SetCid<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         ViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ViewBuilder<St, S>
 where
-    S: view_state::State,
-    S::Playlist: view_state::IsUnset,
+    St: view_state::State,
+    St::Playlist: view_state::IsUnset,
 {
     /// Set the `playlist` field (required)
     pub fn playlist(
         mut self,
-        value: impl Into<jacquard_common::types::string::Uri<'a>>,
-    ) -> ViewBuilder<'a, view_state::SetPlaylist<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::UriValue<S>>,
+    ) -> ViewBuilder<view_state::SetPlaylist<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
         ViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: view_state::State> ViewBuilder<'a, S> {
+impl<St: view_state::State, S: jacquard_common::BosStr> ViewBuilder<St, S> {
     /// Set the `presentation` field (optional)
-    pub fn presentation(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.4 = value.into();
+    pub fn presentation(mut self, value: impl Into<Option<ViewPresentation<S>>>) -> Self {
+        self._fields.4 = value.into();
         self
     }
     /// Set the `presentation` field to an Option value (optional)
-    pub fn maybe_presentation(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.4 = value;
+    pub fn maybe_presentation(mut self, value: Option<ViewPresentation<S>>) -> Self {
+        self._fields.4 = value;
         self
     }
 }
 
-impl<'a, S: view_state::State> ViewBuilder<'a, S> {
+impl<St: view_state::State, S: jacquard_common::BosStr> ViewBuilder<St, S> {
     /// Set the `thumbnail` field (optional)
     pub fn thumbnail(
         mut self,
-        value: impl Into<Option<jacquard_common::types::string::Uri<'a>>>,
+        value: impl Into<Option<jacquard_common::types::string::UriValue<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.5 = value.into();
+        self._fields.5 = value.into();
         self
     }
     /// Set the `thumbnail` field to an Option value (optional)
     pub fn maybe_thumbnail(
         mut self,
-        value: Option<jacquard_common::types::string::Uri<'a>>,
+        value: Option<jacquard_common::types::string::UriValue<S>>,
     ) -> Self {
-        self.__unsafe_private_named.5 = value;
+        self._fields.5 = value;
         self
     }
 }
 
-impl<'a, S> ViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ViewBuilder<St, S>
 where
-    S: view_state::State,
-    S::Cid: view_state::IsSet,
-    S::Playlist: view_state::IsSet,
+    St: view_state::State,
+    St::Cid: view_state::IsSet,
+    St::Playlist: view_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> View<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> View<S> {
         View {
-            alt: self.__unsafe_private_named.0,
-            aspect_ratio: self.__unsafe_private_named.1,
-            cid: self.__unsafe_private_named.2.unwrap(),
-            playlist: self.__unsafe_private_named.3.unwrap(),
-            presentation: self.__unsafe_private_named.4,
-            thumbnail: self.__unsafe_private_named.5,
+            alt: self._fields.0,
+            aspect_ratio: self._fields.1,
+            cid: self._fields.2.unwrap(),
+            playlist: self._fields.3.unwrap(),
+            presentation: self._fields.4,
+            thumbnail: self._fields.5,
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> View<'a> {
+    ) -> View<S> {
         View {
-            alt: self.__unsafe_private_named.0,
-            aspect_ratio: self.__unsafe_private_named.1,
-            cid: self.__unsafe_private_named.2.unwrap(),
-            playlist: self.__unsafe_private_named.3.unwrap(),
-            presentation: self.__unsafe_private_named.4,
-            thumbnail: self.__unsafe_private_named.5,
+            alt: self._fields.0,
+            aspect_ratio: self._fields.1,
+            cid: self._fields.2.unwrap(),
+            playlist: self._fields.3.unwrap(),
+            presentation: self._fields.4,
+            thumbnail: self._fields.5,
             extra_data: Some(extra_data),
         }
-    }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for View<'a> {
-    fn nsid() -> &'static str {
-        "app.bsky.embed.video"
-    }
-    fn def_name() -> &'static str {
-        "view"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_app_bsky_embed_video()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        if let Some(ref value) = self.alt {
-            #[allow(unused_comparisons)]
-            if <str>::len(value.as_ref()) > 10000usize {
-                return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("alt"),
-                    max: 10000usize,
-                    actual: <str>::len(value.as_ref()),
-                });
-            }
-        }
-        if let Some(ref value) = self.alt {
-            {
-                let count =
-                    ::unicode_segmentation::UnicodeSegmentation::graphemes(value.as_ref(), true)
-                        .count();
-                if count > 1000usize {
-                    return Err(
-                        ::jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
-                            path: ::jacquard_lexicon::validation::ValidationPath::from_field("alt"),
-                            max: 1000usize,
-                            actual: count,
-                        },
-                    );
-                }
-            }
-        }
-        Ok(())
     }
 }

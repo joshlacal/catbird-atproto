@@ -8,14 +8,78 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetSuggestedUsersForSeeMore<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub category: std::option::Option<jacquard_common::CowStr<'a>>,
-    ///(default: 25, min: 1, max: 50)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub limit: std::option::Option<i64>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetSuggestedUsersForSeeMore<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub category: core::option::Option<S>,
+    /// Defaults to `25`. Min: 1. Max: 50.
+    #[serde(default = "_default_limit")]
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub limit: core::option::Option<i64>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetSuggestedUsersForSeeMoreOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    pub actors: Vec<crate::generated::app_bsky::actor::ProfileView<S>>,
+    ///Snowflake for this recommendation, use when submitting recommendation events.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub rec_id_str: core::option::Option<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `app.bsky.unspecced.getSuggestedUsersForSeeMore` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetSuggestedUsersForSeeMoreOutput<S>` for this endpoint.*/
+pub struct GetSuggestedUsersForSeeMoreResponse;
+impl jacquard_common::xrpc::XrpcResp for GetSuggestedUsersForSeeMoreResponse {
+    const NSID: &'static str = "app.bsky.unspecced.getSuggestedUsersForSeeMore";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = GetSuggestedUsersForSeeMoreOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
+    for GetSuggestedUsersForSeeMore<S>
+{
+    const NSID: &'static str = "app.bsky.unspecced.getSuggestedUsersForSeeMore";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = GetSuggestedUsersForSeeMoreResponse;
+}
+
+/** Endpoint marker for the `app.bsky.unspecced.getSuggestedUsersForSeeMore` query.
+
+Path: `/xrpc/app.bsky.unspecced.getSuggestedUsersForSeeMore`. The request payload type is `GetSuggestedUsersForSeeMore<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct GetSuggestedUsersForSeeMoreRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for GetSuggestedUsersForSeeMoreRequest {
+    const PATH: &'static str = "/xrpc/app.bsky.unspecced.getSuggestedUsersForSeeMore";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = GetSuggestedUsersForSeeMore<S>;
+    type Response = GetSuggestedUsersForSeeMoreResponse;
+}
+
+fn _default_limit() -> core::option::Option<i64> {
+    Some(25i64)
 }
 
 pub mod get_suggested_users_for_see_more_state {
@@ -37,115 +101,102 @@ pub mod get_suggested_users_for_see_more_state {
     pub mod members {}
 }
 
-/// Builder for constructing an instance of this type
-pub struct GetSuggestedUsersForSeeMoreBuilder<'a, S: get_suggested_users_for_see_more_state::State>
-{
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<i64>,
-    ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct GetSuggestedUsersForSeeMoreBuilder<
+    St: get_suggested_users_for_see_more_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<S>, core::option::Option<i64>),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> GetSuggestedUsersForSeeMore<'a> {
-    /// Create a new builder for this type
-    pub fn new(
-    ) -> GetSuggestedUsersForSeeMoreBuilder<'a, get_suggested_users_for_see_more_state::Empty> {
+impl GetSuggestedUsersForSeeMore<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> GetSuggestedUsersForSeeMoreBuilder<
+        get_suggested_users_for_see_more_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         GetSuggestedUsersForSeeMoreBuilder::new()
     }
 }
 
-impl<'a> GetSuggestedUsersForSeeMoreBuilder<'a, get_suggested_users_for_see_more_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> GetSuggestedUsersForSeeMore<S> {
+    /// Create a new builder for this type
+    pub fn builder(
+    ) -> GetSuggestedUsersForSeeMoreBuilder<get_suggested_users_for_see_more_state::Empty, S> {
+        GetSuggestedUsersForSeeMoreBuilder::builder()
+    }
+}
+
+impl
+    GetSuggestedUsersForSeeMoreBuilder<
+        get_suggested_users_for_see_more_state::Empty,
+        jacquard_common::DefaultStr,
+    >
+{
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetSuggestedUsersForSeeMoreBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: get_suggested_users_for_see_more_state::State>
-    GetSuggestedUsersForSeeMoreBuilder<'a, S>
+impl<S: jacquard_common::BosStr>
+    GetSuggestedUsersForSeeMoreBuilder<get_suggested_users_for_see_more_state::Empty, S>
+{
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GetSuggestedUsersForSeeMoreBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: get_suggested_users_for_see_more_state::State, S: jacquard_common::BosStr>
+    GetSuggestedUsersForSeeMoreBuilder<St, S>
 {
     /// Set the `category` field (optional)
-    pub fn category(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+    pub fn category(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.0 = value.into();
         self
     }
     /// Set the `category` field to an Option value (optional)
-    pub fn maybe_category(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.0 = value;
+    pub fn maybe_category(mut self, value: Option<S>) -> Self {
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S: get_suggested_users_for_see_more_state::State>
-    GetSuggestedUsersForSeeMoreBuilder<'a, S>
+impl<St: get_suggested_users_for_see_more_state::State, S: jacquard_common::BosStr>
+    GetSuggestedUsersForSeeMoreBuilder<St, S>
 {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self._fields.1 = value.into();
         self
     }
     /// Set the `limit` field to an Option value (optional)
     pub fn maybe_limit(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.1 = value;
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S> GetSuggestedUsersForSeeMoreBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GetSuggestedUsersForSeeMoreBuilder<St, S>
 where
-    S: get_suggested_users_for_see_more_state::State,
+    St: get_suggested_users_for_see_more_state::State,
 {
-    /// Build the final struct
-    pub fn build(self) -> GetSuggestedUsersForSeeMore<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> GetSuggestedUsersForSeeMore<S> {
         GetSuggestedUsersForSeeMore {
-            category: self.__unsafe_private_named.0,
-            limit: self.__unsafe_private_named.1,
+            category: self._fields.0,
+            limit: self._fields.1,
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GetSuggestedUsersForSeeMoreOutput<'a> {
-    #[serde(borrow)]
-    pub actors: Vec<crate::generated::app_bsky::actor::ProfileView<'a>>,
-    /// Snowflake for this recommendation, use when submitting recommendation events.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub rec_id_str: std::option::Option<jacquard_common::CowStr<'a>>,
-}
-
-/// Response type for
-///app.bsky.unspecced.getSuggestedUsersForSeeMore
-pub struct GetSuggestedUsersForSeeMoreResponse;
-impl jacquard_common::xrpc::XrpcResp for GetSuggestedUsersForSeeMoreResponse {
-    const NSID: &'static str = "app.bsky.unspecced.getSuggestedUsersForSeeMore";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetSuggestedUsersForSeeMoreOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for GetSuggestedUsersForSeeMore<'a> {
-    const NSID: &'static str = "app.bsky.unspecced.getSuggestedUsersForSeeMore";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = GetSuggestedUsersForSeeMoreResponse;
-}
-
-/// Endpoint type for
-///app.bsky.unspecced.getSuggestedUsersForSeeMore
-pub struct GetSuggestedUsersForSeeMoreRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for GetSuggestedUsersForSeeMoreRequest {
-    const PATH: &'static str = "/xrpc/app.bsky.unspecced.getSuggestedUsersForSeeMore";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetSuggestedUsersForSeeMore<'de>;
-    type Response = GetSuggestedUsersForSeeMoreResponse;
 }

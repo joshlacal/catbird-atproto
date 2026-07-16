@@ -5,177 +5,58 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct CompleteDeviceAuthBinding<'a> {
-    /// Opaque identifier returned by beginDeviceAuthBinding.
-    #[serde(borrow)]
-    pub challenge_id: jacquard_common::CowStr<'a>,
-    /// Ed25519 signature over the exact canonical challenge bytes.
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct CompleteDeviceAuthBinding<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Opaque identifier returned by beginDeviceAuthBinding.
+    pub challenge_id: S,
+    ///Ed25519 signature over the exact canonical challenge bytes.
     #[serde(with = "jacquard_common::serde_bytes_helper")]
-    pub signature: bytes::Bytes,
-}
-
-pub mod complete_device_auth_binding_state {
-
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
-    #[allow(unused)]
-    use core::marker::PhantomData;
-    mod sealed {
-        pub trait Sealed {}
-    }
-    /// State trait tracking which required fields have been set
-    pub trait State: sealed::Sealed {
-        type ChallengeId;
-        type Signature;
-    }
-    /// Empty state - all required fields are unset
-    pub struct Empty(());
-    impl sealed::Sealed for Empty {}
-    impl State for Empty {
-        type ChallengeId = Unset;
-        type Signature = Unset;
-    }
-    ///State transition - sets the `challenge_id` field to Set
-    pub struct SetChallengeId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetChallengeId<S> {}
-    impl<S: State> State for SetChallengeId<S> {
-        type ChallengeId = Set<members::challenge_id>;
-        type Signature = S::Signature;
-    }
-    ///State transition - sets the `signature` field to Set
-    pub struct SetSignature<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetSignature<S> {}
-    impl<S: State> State for SetSignature<S> {
-        type ChallengeId = S::ChallengeId;
-        type Signature = Set<members::signature>;
-    }
-    /// Marker types for field names
-    #[allow(non_camel_case_types)]
-    pub mod members {
-        ///Marker type for the `challenge_id` field
-        pub struct challenge_id(());
-        ///Marker type for the `signature` field
-        pub struct signature(());
-    }
-}
-
-/// Builder for constructing an instance of this type
-pub struct CompleteDeviceAuthBindingBuilder<'a, S: complete_device_auth_binding_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<bytes::Bytes>,
-    ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
-}
-
-impl<'a> CompleteDeviceAuthBinding<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> CompleteDeviceAuthBindingBuilder<'a, complete_device_auth_binding_state::Empty>
-    {
-        CompleteDeviceAuthBindingBuilder::new()
-    }
-}
-
-impl<'a> CompleteDeviceAuthBindingBuilder<'a, complete_device_auth_binding_state::Empty> {
-    /// Create a new builder with all fields unset
-    pub fn new() -> Self {
-        CompleteDeviceAuthBindingBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> CompleteDeviceAuthBindingBuilder<'a, S>
-where
-    S: complete_device_auth_binding_state::State,
-    S::ChallengeId: complete_device_auth_binding_state::IsUnset,
-{
-    /// Set the `challengeId` field (required)
-    pub fn challenge_id(
-        mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> CompleteDeviceAuthBindingBuilder<'a, complete_device_auth_binding_state::SetChallengeId<S>>
-    {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
-        CompleteDeviceAuthBindingBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> CompleteDeviceAuthBindingBuilder<'a, S>
-where
-    S: complete_device_auth_binding_state::State,
-    S::Signature: complete_device_auth_binding_state::IsUnset,
-{
-    /// Set the `signature` field (required)
-    pub fn signature(
-        mut self,
-        value: impl Into<bytes::Bytes>,
-    ) -> CompleteDeviceAuthBindingBuilder<'a, complete_device_auth_binding_state::SetSignature<S>>
-    {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
-        CompleteDeviceAuthBindingBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> CompleteDeviceAuthBindingBuilder<'a, S>
-where
-    S: complete_device_auth_binding_state::State,
-    S::ChallengeId: complete_device_auth_binding_state::IsSet,
-    S::Signature: complete_device_auth_binding_state::IsSet,
-{
-    /// Build the final struct
-    pub fn build(self) -> CompleteDeviceAuthBinding<'a> {
-        CompleteDeviceAuthBinding {
-            challenge_id: self.__unsafe_private_named.0.unwrap(),
-            signature: self.__unsafe_private_named.1.unwrap(),
-            extra_data: Default::default(),
-        }
-    }
-    /// Build the final struct with custom extra_data
-    pub fn build_with_data(
-        self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+    pub signature: jacquard_common::deps::bytes::Bytes,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> CompleteDeviceAuthBinding<'a> {
-        CompleteDeviceAuthBinding {
-            challenge_id: self.__unsafe_private_named.0.unwrap(),
-            signature: self.__unsafe_private_named.1.unwrap(),
-            extra_data: Some(extra_data),
-        }
-    }
+    >,
 }
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct CompleteDeviceAuthBindingOutput<'a> {
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct CompleteDeviceAuthBindingOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
+{
     pub binding_version: i64,
     pub bound_at: jacquard_common::types::string::Datetime,
-    /// Bound server-issued device registration UUID.
-    #[serde(borrow)]
-    pub device_id: jacquard_common::CowStr<'a>,
+    ///Bound server-issued device registration UUID.
+    pub device_id: S,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::open_union]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -185,33 +66,37 @@ pub struct CompleteDeviceAuthBindingOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum CompleteDeviceAuthBindingError<'a> {
+pub enum CompleteDeviceAuthBindingError {
     #[serde(rename = "DpopRequired")]
-    DpopRequired(std::option::Option<jacquard_common::CowStr<'a>>),
+    DpopRequired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "ChallengeNotFound")]
-    ChallengeNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
+    ChallengeNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "ChallengeExpired")]
-    ChallengeExpired(std::option::Option<jacquard_common::CowStr<'a>>),
+    ChallengeExpired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "ChallengeAlreadyUsed")]
-    ChallengeAlreadyUsed(std::option::Option<jacquard_common::CowStr<'a>>),
+    ChallengeAlreadyUsed(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "BindingMismatch")]
-    BindingMismatch(std::option::Option<jacquard_common::CowStr<'a>>),
+    BindingMismatch(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "InvalidSignature")]
-    InvalidSignature(std::option::Option<jacquard_common::CowStr<'a>>),
+    InvalidSignature(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "DeviceNotFound")]
-    DeviceNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
+    DeviceNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "Unauthorized")]
-    Unauthorized(std::option::Option<jacquard_common::CowStr<'a>>),
+    Unauthorized(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "BindingUnavailable")]
-    BindingUnavailable(std::option::Option<jacquard_common::CowStr<'a>>),
+    BindingUnavailable(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
 }
 
-impl std::fmt::Display for CompleteDeviceAuthBindingError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for CompleteDeviceAuthBindingError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             Self::DpopRequired(msg) => {
                 write!(f, "DpopRequired")?;
@@ -276,35 +161,219 @@ impl std::fmt::Display for CompleteDeviceAuthBindingError<'_> {
                 }
                 Ok(())
             }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
         }
     }
 }
 
-/// Response type for
-///blue.catbird.mlsChat.completeDeviceAuthBinding
+/** Response marker for the `blue.catbird.mlsChat.completeDeviceAuthBinding` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `CompleteDeviceAuthBindingOutput<S>` for this endpoint.*/
 pub struct CompleteDeviceAuthBindingResponse;
 impl jacquard_common::xrpc::XrpcResp for CompleteDeviceAuthBindingResponse {
     const NSID: &'static str = "blue.catbird.mlsChat.completeDeviceAuthBinding";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = CompleteDeviceAuthBindingOutput<'de>;
-    type Err<'de> = CompleteDeviceAuthBindingError<'de>;
+    type Output<S: jacquard_common::BosStr> = CompleteDeviceAuthBindingOutput<S>;
+    type Err = CompleteDeviceAuthBindingError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for CompleteDeviceAuthBinding<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
+    for CompleteDeviceAuthBinding<S>
+{
     const NSID: &'static str = "blue.catbird.mlsChat.completeDeviceAuthBinding";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = CompleteDeviceAuthBindingResponse;
 }
 
-/// Endpoint type for
-///blue.catbird.mlsChat.completeDeviceAuthBinding
+/** Endpoint marker for the `blue.catbird.mlsChat.completeDeviceAuthBinding` procedure.
+
+Path: `/xrpc/blue.catbird.mlsChat.completeDeviceAuthBinding`. The request payload type is `CompleteDeviceAuthBinding<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct CompleteDeviceAuthBindingRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for CompleteDeviceAuthBindingRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.completeDeviceAuthBinding";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = CompleteDeviceAuthBinding<'de>;
+    type Request<S: jacquard_common::BosStr> = CompleteDeviceAuthBinding<S>;
     type Response = CompleteDeviceAuthBindingResponse;
+}
+
+pub mod complete_device_auth_binding_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type ChallengeId;
+        type Signature;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type ChallengeId = Unset;
+        type Signature = Unset;
+    }
+    ///State transition - sets the `challenge_id` field to Set
+    pub struct SetChallengeId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetChallengeId<St> {}
+    impl<St: State> State for SetChallengeId<St> {
+        type ChallengeId = Set<members::challenge_id>;
+        type Signature = St::Signature;
+    }
+    ///State transition - sets the `signature` field to Set
+    pub struct SetSignature<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSignature<St> {}
+    impl<St: State> State for SetSignature<St> {
+        type ChallengeId = St::ChallengeId;
+        type Signature = Set<members::signature>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `challenge_id` field
+        pub struct challenge_id(());
+        ///Marker type for the `signature` field
+        pub struct signature(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct CompleteDeviceAuthBindingBuilder<
+    St: complete_device_auth_binding_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
+    ),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl CompleteDeviceAuthBinding<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> CompleteDeviceAuthBindingBuilder<
+        complete_device_auth_binding_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
+        CompleteDeviceAuthBindingBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> CompleteDeviceAuthBinding<S> {
+    /// Create a new builder for this type
+    pub fn builder(
+    ) -> CompleteDeviceAuthBindingBuilder<complete_device_auth_binding_state::Empty, S> {
+        CompleteDeviceAuthBindingBuilder::builder()
+    }
+}
+
+impl
+    CompleteDeviceAuthBindingBuilder<
+        complete_device_auth_binding_state::Empty,
+        jacquard_common::DefaultStr,
+    >
+{
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        CompleteDeviceAuthBindingBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr>
+    CompleteDeviceAuthBindingBuilder<complete_device_auth_binding_state::Empty, S>
+{
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        CompleteDeviceAuthBindingBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> CompleteDeviceAuthBindingBuilder<St, S>
+where
+    St: complete_device_auth_binding_state::State,
+    St::ChallengeId: complete_device_auth_binding_state::IsUnset,
+{
+    /// Set the `challengeId` field (required)
+    pub fn challenge_id(
+        mut self,
+        value: impl Into<S>,
+    ) -> CompleteDeviceAuthBindingBuilder<complete_device_auth_binding_state::SetChallengeId<St>, S>
+    {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        CompleteDeviceAuthBindingBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> CompleteDeviceAuthBindingBuilder<St, S>
+where
+    St: complete_device_auth_binding_state::State,
+    St::Signature: complete_device_auth_binding_state::IsUnset,
+{
+    /// Set the `signature` field (required)
+    pub fn signature(
+        mut self,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
+    ) -> CompleteDeviceAuthBindingBuilder<complete_device_auth_binding_state::SetSignature<St>, S>
+    {
+        self._fields.1 = ::core::option::Option::Some(value.into());
+        CompleteDeviceAuthBindingBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> CompleteDeviceAuthBindingBuilder<St, S>
+where
+    St: complete_device_auth_binding_state::State,
+    St::ChallengeId: complete_device_auth_binding_state::IsSet,
+    St::Signature: complete_device_auth_binding_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> CompleteDeviceAuthBinding<S> {
+        CompleteDeviceAuthBinding {
+            challenge_id: self._fields.0.unwrap(),
+            signature: self._fields.1.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> CompleteDeviceAuthBinding<S> {
+        CompleteDeviceAuthBinding {
+            challenge_id: self._fields.0.unwrap(),
+            signature: self._fields.1.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
 }

@@ -6,23 +6,105 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 /// Record granting moderation permissions to a user for this streamer's content.
-#[jacquard_derive::lexicon]
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    rename = "place.stream.moderation.permission",
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct Permission<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Client-declared timestamp when this moderator was added.
+    pub created_at: jacquard_common::types::string::Datetime,
+    ///Optional expiration time for this delegation. If set, the delegation is invalid after this time.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub expiration_time: core::option::Option<jacquard_common::types::string::Datetime>,
+    ///The DID of the user granted moderator permissions.
+    pub moderator: jacquard_common::types::string::Did<S>,
+    ///Array of permissions granted to this moderator. 'ban' covers blocks/bans (with optional expiration), 'hide' covers message gates, 'livestream.manage' allows updating livestream metadata.
+    pub permissions: Vec<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// Typed wrapper for GetRecord response with this collection's record type.
+
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
-pub struct Permission<'a> {
-    /// Client-declared timestamp when this moderator was added.
-    pub created_at: jacquard_common::types::string::Datetime,
-    /// Optional expiration time for this delegation. If set, the delegation is invalid after this time.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub expiration_time: std::option::Option<jacquard_common::types::string::Datetime>,
-    /// The DID of the user granted moderator permissions.
-    #[serde(borrow)]
-    pub moderator: jacquard_common::types::string::Did<'a>,
-    /// Array of permissions granted to this moderator. 'ban' covers blocks/bans (with optional expiration), 'hide' covers message gates, 'livestream.manage' allows updating livestream metadata.
-    #[serde(borrow)]
-    pub permissions: Vec<jacquard_common::CowStr<'a>>,
+pub struct PermissionGetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
+    pub uri: jacquard_common::types::string::AtUri<S>,
+    pub value: Permission<S>,
+}
+
+impl<S: jacquard_common::BosStr> Permission<S> {
+    pub fn uri(
+        uri: S,
+    ) -> Result<
+        jacquard_common::types::uri::RecordUri<S, PermissionRecord>,
+        jacquard_common::types::uri::UriError,
+    > {
+        jacquard_common::types::uri::RecordUri::try_from_uri(
+            jacquard_common::types::string::AtUri::new(uri)?,
+        )
+    }
+}
+
+/// Marker type for deserializing records from this collection.
+
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+pub struct PermissionRecord;
+impl jacquard_common::xrpc::XrpcResp for PermissionRecord {
+    const NSID: &'static str = "place.stream.moderation.permission";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = PermissionGetRecordOutput<S>;
+    type Err = jacquard_common::types::collection::RecordError;
+}
+
+impl<S: jacquard_common::BosStr> From<PermissionGetRecordOutput<S>> for Permission<S> {
+    fn from(output: PermissionGetRecordOutput<S>) -> Self {
+        output.value
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection for Permission<S> {
+    const NSID: &'static str = "place.stream.moderation.permission";
+    type Record = PermissionRecord;
+}
+
+impl jacquard_common::types::collection::Collection for PermissionRecord {
+    const NSID: &'static str = "place.stream.moderation.permission";
+    type Record = PermissionRecord;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Permission<S> {
+    fn nsid() -> &'static str {
+        "place.stream.moderation.permission"
+    }
+    fn def_name() -> &'static str {
+        "main"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_place_stream_moderation_permission()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
 }
 
 pub mod permission_state {
@@ -35,110 +117,131 @@ pub mod permission_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
+        type CreatedAt;
         type Moderator;
         type Permissions;
-        type CreatedAt;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
+        type CreatedAt = Unset;
         type Moderator = Unset;
         type Permissions = Unset;
-        type CreatedAt = Unset;
-    }
-    ///State transition - sets the `moderator` field to Set
-    pub struct SetModerator<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetModerator<S> {}
-    impl<S: State> State for SetModerator<S> {
-        type Moderator = Set<members::moderator>;
-        type Permissions = S::Permissions;
-        type CreatedAt = S::CreatedAt;
-    }
-    ///State transition - sets the `permissions` field to Set
-    pub struct SetPermissions<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetPermissions<S> {}
-    impl<S: State> State for SetPermissions<S> {
-        type Moderator = S::Moderator;
-        type Permissions = Set<members::permissions>;
-        type CreatedAt = S::CreatedAt;
     }
     ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type Moderator = S::Moderator;
-        type Permissions = S::Permissions;
+    pub struct SetCreatedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCreatedAt<St> {}
+    impl<St: State> State for SetCreatedAt<St> {
         type CreatedAt = Set<members::created_at>;
+        type Moderator = St::Moderator;
+        type Permissions = St::Permissions;
+    }
+    ///State transition - sets the `moderator` field to Set
+    pub struct SetModerator<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetModerator<St> {}
+    impl<St: State> State for SetModerator<St> {
+        type CreatedAt = St::CreatedAt;
+        type Moderator = Set<members::moderator>;
+        type Permissions = St::Permissions;
+    }
+    ///State transition - sets the `permissions` field to Set
+    pub struct SetPermissions<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetPermissions<St> {}
+    impl<St: State> State for SetPermissions<St> {
+        type CreatedAt = St::CreatedAt;
+        type Moderator = St::Moderator;
+        type Permissions = Set<members::permissions>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
+        ///Marker type for the `created_at` field
+        pub struct created_at(());
         ///Marker type for the `moderator` field
         pub struct moderator(());
         ///Marker type for the `permissions` field
         pub struct permissions(());
-        ///Marker type for the `created_at` field
-        pub struct created_at(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct PermissionBuilder<'a, S: permission_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<Vec<jacquard_common::CowStr<'a>>>,
+/// Builder for constructing an instance of this type.
+pub struct PermissionBuilder<
+    St: permission_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<Vec<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> Permission<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> PermissionBuilder<'a, permission_state::Empty> {
+impl Permission<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> PermissionBuilder<permission_state::Empty, jacquard_common::DefaultStr> {
         PermissionBuilder::new()
     }
 }
 
-impl<'a> PermissionBuilder<'a, permission_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> Permission<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> PermissionBuilder<permission_state::Empty, S> {
+        PermissionBuilder::builder()
+    }
+}
+
+impl PermissionBuilder<permission_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         PermissionBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> PermissionBuilder<'a, S>
+impl<S: jacquard_common::BosStr> PermissionBuilder<permission_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        PermissionBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> PermissionBuilder<St, S>
 where
-    S: permission_state::State,
-    S::CreatedAt: permission_state::IsUnset,
+    St: permission_state::State,
+    St::CreatedAt: permission_state::IsUnset,
 {
     /// Set the `createdAt` field (required)
     pub fn created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> PermissionBuilder<'a, permission_state::SetCreatedAt<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+    ) -> PermissionBuilder<permission_state::SetCreatedAt<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         PermissionBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: permission_state::State> PermissionBuilder<'a, S> {
+impl<St: permission_state::State, S: jacquard_common::BosStr> PermissionBuilder<St, S> {
     /// Set the `expirationTime` field (optional)
     pub fn expiration_time(
         mut self,
         value: impl Into<Option<jacquard_common::types::string::Datetime>>,
     ) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self._fields.1 = value.into();
         self
     }
     /// Set the `expirationTime` field to an Option value (optional)
@@ -146,167 +249,93 @@ impl<'a, S: permission_state::State> PermissionBuilder<'a, S> {
         mut self,
         value: Option<jacquard_common::types::string::Datetime>,
     ) -> Self {
-        self.__unsafe_private_named.1 = value;
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S> PermissionBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> PermissionBuilder<St, S>
 where
-    S: permission_state::State,
-    S::Moderator: permission_state::IsUnset,
+    St: permission_state::State,
+    St::Moderator: permission_state::IsUnset,
 {
     /// Set the `moderator` field (required)
     pub fn moderator(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> PermissionBuilder<'a, permission_state::SetModerator<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> PermissionBuilder<permission_state::SetModerator<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         PermissionBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> PermissionBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> PermissionBuilder<St, S>
 where
-    S: permission_state::State,
-    S::Permissions: permission_state::IsUnset,
+    St: permission_state::State,
+    St::Permissions: permission_state::IsUnset,
 {
     /// Set the `permissions` field (required)
     pub fn permissions(
         mut self,
-        value: impl Into<Vec<jacquard_common::CowStr<'a>>>,
-    ) -> PermissionBuilder<'a, permission_state::SetPermissions<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        value: impl Into<Vec<S>>,
+    ) -> PermissionBuilder<permission_state::SetPermissions<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
         PermissionBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> PermissionBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> PermissionBuilder<St, S>
 where
-    S: permission_state::State,
-    S::Moderator: permission_state::IsSet,
-    S::Permissions: permission_state::IsSet,
-    S::CreatedAt: permission_state::IsSet,
+    St: permission_state::State,
+    St::CreatedAt: permission_state::IsSet,
+    St::Moderator: permission_state::IsSet,
+    St::Permissions: permission_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> Permission<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> Permission<S> {
         Permission {
-            created_at: self.__unsafe_private_named.0.unwrap(),
-            expiration_time: self.__unsafe_private_named.1,
-            moderator: self.__unsafe_private_named.2.unwrap(),
-            permissions: self.__unsafe_private_named.3.unwrap(),
+            created_at: self._fields.0.unwrap(),
+            expiration_time: self._fields.1,
+            moderator: self._fields.2.unwrap(),
+            permissions: self._fields.3.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> Permission<'a> {
+    ) -> Permission<S> {
         Permission {
-            created_at: self.__unsafe_private_named.0.unwrap(),
-            expiration_time: self.__unsafe_private_named.1,
-            moderator: self.__unsafe_private_named.2.unwrap(),
-            permissions: self.__unsafe_private_named.3.unwrap(),
+            created_at: self._fields.0.unwrap(),
+            expiration_time: self._fields.1,
+            moderator: self._fields.2.unwrap(),
+            permissions: self._fields.3.unwrap(),
             extra_data: Some(extra_data),
         }
     }
 }
 
-impl<'a> Permission<'a> {
-    pub fn uri(
-        uri: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> Result<
-        jacquard_common::types::uri::RecordUri<'a, PermissionRecord>,
-        jacquard_common::types::uri::UriError,
-    > {
-        jacquard_common::types::uri::RecordUri::try_from_uri(
-            jacquard_common::types::string::AtUri::new_cow(uri.into())?,
-        )
-    }
-}
-
-/// Typed wrapper for GetRecord response with this collection's record type.
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct PermissionGetRecordOutput<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cid: std::option::Option<jacquard_common::types::string::Cid<'a>>,
-    #[serde(borrow)]
-    pub uri: jacquard_common::types::string::AtUri<'a>,
-    #[serde(borrow)]
-    pub value: Permission<'a>,
-}
-
-impl From<PermissionGetRecordOutput<'_>> for Permission<'_> {
-    fn from(output: PermissionGetRecordOutput<'_>) -> Self {
-        use jacquard_common::IntoStatic;
-        output.value.into_static()
-    }
-}
-
-impl jacquard_common::types::collection::Collection for Permission<'_> {
-    const NSID: &'static str = "place.stream.moderation.permission";
-    type Record = PermissionRecord;
-}
-
-/// Marker type for deserializing records from this collection.
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
-pub struct PermissionRecord;
-impl jacquard_common::xrpc::XrpcResp for PermissionRecord {
-    const NSID: &'static str = "place.stream.moderation.permission";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = PermissionGetRecordOutput<'de>;
-    type Err<'de> = jacquard_common::types::collection::RecordError<'de>;
-}
-
-impl jacquard_common::types::collection::Collection for PermissionRecord {
-    const NSID: &'static str = "place.stream.moderation.permission";
-    type Record = PermissionRecord;
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Permission<'a> {
-    fn nsid() -> &'static str {
-        "place.stream.moderation.permission"
-    }
-    fn def_name() -> &'static str {
-        "main"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_place_stream_moderation_permission()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-fn lexicon_doc_place_stream_moderation_permission(
-) -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_place_stream_moderation_permission() -> jacquard_lexicon::lexicon::LexiconDoc<'static>
+{
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("place.stream.moderation.permission"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
                 ::jacquard_lexicon::lexicon::LexUserType::Record(::jacquard_lexicon::lexicon::LexRecord {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
@@ -315,20 +344,18 @@ fn lexicon_doc_place_stream_moderation_permission(
                     ),
                     key: Some(::jacquard_common::CowStr::new_static("tid")),
                     record: ::jacquard_lexicon::lexicon::LexRecordRecord::Object(::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(
                             vec![
-                                ::jacquard_common::smol_str::SmolStr::new_static("moderator"),
-                                ::jacquard_common::smol_str::SmolStr::new_static("permissions"),
-                                ::jacquard_common::smol_str::SmolStr::new_static("createdAt")
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("moderator"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("permissions"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt")
                             ],
                         ),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "createdAt",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -340,18 +367,11 @@ fn lexicon_doc_place_stream_moderation_permission(
                                     format: Some(
                                         ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                     ),
-                                    default: None,
-                                    min_length: None,
-                                    max_length: None,
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "expirationTime",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -363,18 +383,11 @@ fn lexicon_doc_place_stream_moderation_permission(
                                     format: Some(
                                         ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                     ),
-                                    default: None,
-                                    min_length: None,
-                                    max_length: None,
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "moderator",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -386,18 +399,11 @@ fn lexicon_doc_place_stream_moderation_permission(
                                     format: Some(
                                         ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                     ),
-                                    default: None,
-                                    min_length: None,
-                                    max_length: None,
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "permissions",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
@@ -407,27 +413,20 @@ fn lexicon_doc_place_stream_moderation_permission(
                                         ),
                                     ),
                                     items: ::jacquard_lexicon::lexicon::LexArrayItem::String(::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     }),
-                                    min_length: None,
-                                    max_length: None,
+                                    ..Default::default()
                                 }),
                             );
                             map
                         },
+                        ..Default::default()
                     }),
+                    ..Default::default()
                 }),
             );
             map
         },
+        ..Default::default()
     }
 }

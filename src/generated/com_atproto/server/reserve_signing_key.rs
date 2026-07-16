@@ -5,7 +5,6 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -16,15 +15,27 @@
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct ReserveSigningKey<'a> {
-    /// The DID to reserve a key for.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub did: std::option::Option<jacquard_common::types::string::Did<'a>>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ReserveSigningKey<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///The DID to reserve a key for.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub did: core::option::Option<jacquard_common::types::string::Did<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -35,37 +46,52 @@ pub struct ReserveSigningKey<'a> {
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct ReserveSigningKeyOutput<'a> {
-    /// The public key for the reserved signing key, in did:key serialization.
-    #[serde(borrow)]
-    pub signing_key: jacquard_common::CowStr<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ReserveSigningKeyOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///The public key for the reserved signing key, in did:key serialization.
+    pub signing_key: S,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-/// Response type for
-///com.atproto.server.reserveSigningKey
+/** Response marker for the `com.atproto.server.reserveSigningKey` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `ReserveSigningKeyOutput<S>` for this endpoint.*/
 pub struct ReserveSigningKeyResponse;
 impl jacquard_common::xrpc::XrpcResp for ReserveSigningKeyResponse {
     const NSID: &'static str = "com.atproto.server.reserveSigningKey";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = ReserveSigningKeyOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
+    type Output<S: jacquard_common::BosStr> = ReserveSigningKeyOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for ReserveSigningKey<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for ReserveSigningKey<S> {
     const NSID: &'static str = "com.atproto.server.reserveSigningKey";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = ReserveSigningKeyResponse;
 }
 
-/// Endpoint type for
-///com.atproto.server.reserveSigningKey
+/** Endpoint marker for the `com.atproto.server.reserveSigningKey` procedure.
+
+Path: `/xrpc/com.atproto.server.reserveSigningKey`. The request payload type is `ReserveSigningKey<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct ReserveSigningKeyRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for ReserveSigningKeyRequest {
     const PATH: &'static str = "/xrpc/com.atproto.server.reserveSigningKey";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = ReserveSigningKey<'de>;
+    type Request<S: jacquard_common::BosStr> = ReserveSigningKey<S>;
     type Response = ReserveSigningKeyResponse;
 }

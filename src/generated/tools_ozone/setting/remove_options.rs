@@ -5,16 +5,164 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct RemoveOptions<'a> {
-    #[serde(borrow)]
-    pub keys: Vec<jacquard_common::types::string::Nsid<'a>>,
-    #[serde(borrow)]
-    pub scope: jacquard_common::CowStr<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct RemoveOptions<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub keys: Vec<jacquard_common::types::string::Nsid<S>>,
+    pub scope: RemoveOptionsScope<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum RemoveOptionsScope<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    Instance,
+    Personal,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> RemoveOptionsScope<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Instance => "instance",
+            Self::Personal => "personal",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "instance" => Self::Instance,
+            "personal" => Self::Personal,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for RemoveOptionsScope<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for RemoveOptionsScope<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for RemoveOptionsScope<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for RemoveOptionsScope<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for RemoveOptionsScope<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for RemoveOptionsScope<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = RemoveOptionsScope<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            RemoveOptionsScope::Instance => RemoveOptionsScope::Instance,
+            RemoveOptionsScope::Personal => RemoveOptionsScope::Personal,
+            RemoveOptionsScope::Other(v) => RemoveOptionsScope::Other(v.into_static()),
+        }
+    }
+}
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic,
+    Default,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct RemoveOptionsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `tools.ozone.setting.removeOptions` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `RemoveOptionsOutput<S>` for this endpoint.*/
+pub struct RemoveOptionsResponse;
+impl jacquard_common::xrpc::XrpcResp for RemoveOptionsResponse {
+    const NSID: &'static str = "tools.ozone.setting.removeOptions";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = RemoveOptionsOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for RemoveOptions<S> {
+    const NSID: &'static str = "tools.ozone.setting.removeOptions";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Response = RemoveOptionsResponse;
+}
+
+/** Endpoint marker for the `tools.ozone.setting.removeOptions` procedure.
+
+Path: `/xrpc/tools.ozone.setting.removeOptions`. The request payload type is `RemoveOptions<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct RemoveOptionsRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for RemoveOptionsRequest {
+    const PATH: &'static str = "/xrpc/tools.ozone.setting.removeOptions";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Request<S: jacquard_common::BosStr> = RemoveOptions<S>;
+    type Response = RemoveOptionsResponse;
 }
 
 pub mod remove_options_state {
@@ -38,17 +186,17 @@ pub mod remove_options_state {
         type Scope = Unset;
     }
     ///State transition - sets the `keys` field to Set
-    pub struct SetKeys<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetKeys<S> {}
-    impl<S: State> State for SetKeys<S> {
+    pub struct SetKeys<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetKeys<St> {}
+    impl<St: State> State for SetKeys<St> {
         type Keys = Set<members::keys>;
-        type Scope = S::Scope;
+        type Scope = St::Scope;
     }
     ///State transition - sets the `scope` field to Set
-    pub struct SetScope<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetScope<S> {}
-    impl<S: State> State for SetScope<S> {
-        type Keys = S::Keys;
+    pub struct SetScope<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetScope<St> {}
+    impl<St: State> State for SetScope<St> {
+        type Keys = St::Keys;
         type Scope = Set<members::scope>;
     }
     /// Marker types for field names
@@ -61,139 +209,119 @@ pub mod remove_options_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct RemoveOptionsBuilder<'a, S: remove_options_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<Vec<jacquard_common::types::string::Nsid<'a>>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct RemoveOptionsBuilder<
+    St: remove_options_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<Vec<jacquard_common::types::string::Nsid<S>>>,
+        core::option::Option<RemoveOptionsScope<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> RemoveOptions<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> RemoveOptionsBuilder<'a, remove_options_state::Empty> {
+impl RemoveOptions<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> RemoveOptionsBuilder<remove_options_state::Empty, jacquard_common::DefaultStr> {
         RemoveOptionsBuilder::new()
     }
 }
 
-impl<'a> RemoveOptionsBuilder<'a, remove_options_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> RemoveOptions<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> RemoveOptionsBuilder<remove_options_state::Empty, S> {
+        RemoveOptionsBuilder::builder()
+    }
+}
+
+impl RemoveOptionsBuilder<remove_options_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         RemoveOptionsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> RemoveOptionsBuilder<'a, S>
+impl<S: jacquard_common::BosStr> RemoveOptionsBuilder<remove_options_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        RemoveOptionsBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> RemoveOptionsBuilder<St, S>
 where
-    S: remove_options_state::State,
-    S::Keys: remove_options_state::IsUnset,
+    St: remove_options_state::State,
+    St::Keys: remove_options_state::IsUnset,
 {
     /// Set the `keys` field (required)
     pub fn keys(
         mut self,
-        value: impl Into<Vec<jacquard_common::types::string::Nsid<'a>>>,
-    ) -> RemoveOptionsBuilder<'a, remove_options_state::SetKeys<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<Vec<jacquard_common::types::string::Nsid<S>>>,
+    ) -> RemoveOptionsBuilder<remove_options_state::SetKeys<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         RemoveOptionsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> RemoveOptionsBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> RemoveOptionsBuilder<St, S>
 where
-    S: remove_options_state::State,
-    S::Scope: remove_options_state::IsUnset,
+    St: remove_options_state::State,
+    St::Scope: remove_options_state::IsUnset,
 {
     /// Set the `scope` field (required)
     pub fn scope(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> RemoveOptionsBuilder<'a, remove_options_state::SetScope<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<RemoveOptionsScope<S>>,
+    ) -> RemoveOptionsBuilder<remove_options_state::SetScope<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         RemoveOptionsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> RemoveOptionsBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> RemoveOptionsBuilder<St, S>
 where
-    S: remove_options_state::State,
-    S::Keys: remove_options_state::IsSet,
-    S::Scope: remove_options_state::IsSet,
+    St: remove_options_state::State,
+    St::Keys: remove_options_state::IsSet,
+    St::Scope: remove_options_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> RemoveOptions<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> RemoveOptions<S> {
         RemoveOptions {
-            keys: self.__unsafe_private_named.0.unwrap(),
-            scope: self.__unsafe_private_named.1.unwrap(),
+            keys: self._fields.0.unwrap(),
+            scope: self._fields.1.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> RemoveOptions<'a> {
+    ) -> RemoveOptions<S> {
         RemoveOptions {
-            keys: self.__unsafe_private_named.0.unwrap(),
-            scope: self.__unsafe_private_named.1.unwrap(),
+            keys: self._fields.0.unwrap(),
+            scope: self._fields.1.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic,
-    Default,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct RemoveOptionsOutput<'a> {}
-/// Response type for
-///tools.ozone.setting.removeOptions
-pub struct RemoveOptionsResponse;
-impl jacquard_common::xrpc::XrpcResp for RemoveOptionsResponse {
-    const NSID: &'static str = "tools.ozone.setting.removeOptions";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = RemoveOptionsOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for RemoveOptions<'a> {
-    const NSID: &'static str = "tools.ozone.setting.removeOptions";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Response = RemoveOptionsResponse;
-}
-
-/// Endpoint type for
-///tools.ozone.setting.removeOptions
-pub struct RemoveOptionsRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for RemoveOptionsRequest {
-    const PATH: &'static str = "/xrpc/tools.ozone.setting.removeOptions";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = RemoveOptions<'de>;
-    type Response = RemoveOptionsResponse;
 }

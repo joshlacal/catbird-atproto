@@ -6,891 +6,194 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 /// Maps a member DID to the SHA-256 hash of the key package consumed to wrap their Welcome.
-#[jacquard_derive::lexicon]
+
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct KeyPackageHashEntry<'a> {
-    /// DID of the member
-    #[serde(borrow)]
-    pub did: jacquard_common::types::string::Did<'a>,
-    /// Hex-encoded SHA-256 hash of the key package used
-    #[serde(borrow)]
-    pub hash: jacquard_common::CowStr<'a>,
-}
-
-pub mod key_package_hash_entry_state {
-
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
-    #[allow(unused)]
-    use core::marker::PhantomData;
-    mod sealed {
-        pub trait Sealed {}
-    }
-    /// State trait tracking which required fields have been set
-    pub trait State: sealed::Sealed {
-        type Did;
-        type Hash;
-    }
-    /// Empty state - all required fields are unset
-    pub struct Empty(());
-    impl sealed::Sealed for Empty {}
-    impl State for Empty {
-        type Did = Unset;
-        type Hash = Unset;
-    }
-    ///State transition - sets the `did` field to Set
-    pub struct SetDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDid<S> {}
-    impl<S: State> State for SetDid<S> {
-        type Did = Set<members::did>;
-        type Hash = S::Hash;
-    }
-    ///State transition - sets the `hash` field to Set
-    pub struct SetHash<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetHash<S> {}
-    impl<S: State> State for SetHash<S> {
-        type Did = S::Did;
-        type Hash = Set<members::hash>;
-    }
-    /// Marker types for field names
-    #[allow(non_camel_case_types)]
-    pub mod members {
-        ///Marker type for the `did` field
-        pub struct did(());
-        ///Marker type for the `hash` field
-        pub struct hash(());
-    }
-}
-
-/// Builder for constructing an instance of this type
-pub struct KeyPackageHashEntryBuilder<'a, S: key_package_hash_entry_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-    ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
-}
-
-impl<'a> KeyPackageHashEntry<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> KeyPackageHashEntryBuilder<'a, key_package_hash_entry_state::Empty> {
-        KeyPackageHashEntryBuilder::new()
-    }
-}
-
-impl<'a> KeyPackageHashEntryBuilder<'a, key_package_hash_entry_state::Empty> {
-    /// Create a new builder with all fields unset
-    pub fn new() -> Self {
-        KeyPackageHashEntryBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> KeyPackageHashEntryBuilder<'a, S>
-where
-    S: key_package_hash_entry_state::State,
-    S::Did: key_package_hash_entry_state::IsUnset,
-{
-    /// Set the `did` field (required)
-    pub fn did(
-        mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> KeyPackageHashEntryBuilder<'a, key_package_hash_entry_state::SetDid<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
-        KeyPackageHashEntryBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> KeyPackageHashEntryBuilder<'a, S>
-where
-    S: key_package_hash_entry_state::State,
-    S::Hash: key_package_hash_entry_state::IsUnset,
-{
-    /// Set the `hash` field (required)
-    pub fn hash(
-        mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> KeyPackageHashEntryBuilder<'a, key_package_hash_entry_state::SetHash<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
-        KeyPackageHashEntryBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> KeyPackageHashEntryBuilder<'a, S>
-where
-    S: key_package_hash_entry_state::State,
-    S::Did: key_package_hash_entry_state::IsSet,
-    S::Hash: key_package_hash_entry_state::IsSet,
-{
-    /// Build the final struct
-    pub fn build(self) -> KeyPackageHashEntry<'a> {
-        KeyPackageHashEntry {
-            did: self.__unsafe_private_named.0.unwrap(),
-            hash: self.__unsafe_private_named.1.unwrap(),
-            extra_data: Default::default(),
-        }
-    }
-    /// Build the final struct with custom extra_data
-    pub fn build_with_data(
-        self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
-        >,
-    ) -> KeyPackageHashEntry<'a> {
-        KeyPackageHashEntry {
-            did: self.__unsafe_private_named.0.unwrap(),
-            hash: self.__unsafe_private_named.1.unwrap(),
-            extra_data: Some(extra_data),
-        }
-    }
-}
-
-fn lexicon_doc_blue_catbird_mlsChat_bootstrapResetGroup(
-) -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-    ::jacquard_lexicon::lexicon::LexiconDoc {
-        lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
-        id: ::jacquard_common::CowStr::new_static("blue.catbird.mlsChat.bootstrapResetGroup"),
-        revision: None,
-        description: None,
-        defs: {
-            let mut map = ::std::collections::BTreeMap::new();
-            map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("keyPackageHashEntry"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: Some(
-                        ::jacquard_common::CowStr::new_static(
-                            "Maps a member DID to the SHA-256 hash of the key package consumed to wrap their Welcome.",
-                        ),
-                    ),
-                    required: Some(
-                        vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("did"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("hash")
-                        ],
-                    ),
-                    nullable: None,
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("did"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static("DID of the member"),
-                                ),
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
-                                ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("hash"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "Hex-encoded SHA-256 hash of the key package used",
-                                    ),
-                                ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map
-                    },
-                }),
-            );
-            map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
-                ::jacquard_lexicon::lexicon::LexUserType::XrpcProcedure(::jacquard_lexicon::lexicon::LexXrpcProcedure {
-                    description: None,
-                    parameters: None,
-                    input: Some(::jacquard_lexicon::lexicon::LexXrpcBody {
-                        description: None,
-                        encoding: ::jacquard_common::CowStr::new_static(
-                            "application/json",
-                        ),
-                        schema: Some(
-                            ::jacquard_lexicon::lexicon::LexXrpcBodySchema::Object(::jacquard_lexicon::lexicon::LexObject {
-                                description: None,
-                                required: Some(
-                                    vec![
-                                        ::jacquard_common::smol_str::SmolStr::new_static("originalConvoId"),
-                                        ::jacquard_common::smol_str::SmolStr::new_static("newGroupId"),
-                                        ::jacquard_common::smol_str::SmolStr::new_static("cipherSuite"),
-                                        ::jacquard_common::smol_str::SmolStr::new_static("groupInfo"),
-                                        ::jacquard_common::smol_str::SmolStr::new_static("members")
-                                    ],
-                                ),
-                                nullable: None,
-                                properties: {
-                                    #[allow(unused_mut)]
-                                    let mut map = ::std::collections::BTreeMap::new();
-                                    map.insert(
-                                        ::jacquard_common::smol_str::SmolStr::new_static(
-                                            "cipherSuite",
-                                        ),
-                                        ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                            description: Some(
-                                                ::jacquard_common::CowStr::new_static(
-                                                    "MLS cipher suite for the new group",
-                                                ),
-                                            ),
-                                            format: None,
-                                            default: None,
-                                            min_length: None,
-                                            max_length: None,
-                                            min_graphemes: None,
-                                            max_graphemes: None,
-                                            r#enum: None,
-                                            r#const: None,
-                                            known_values: None,
-                                        }),
-                                    );
-                                    map.insert(
-                                        ::jacquard_common::smol_str::SmolStr::new_static(
-                                            "currentEpoch",
-                                        ),
-                                        ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                            description: None,
-                                            default: None,
-                                            minimum: Some(1i64),
-                                            maximum: None,
-                                            r#enum: None,
-                                            r#const: None,
-                                        }),
-                                    );
-                                    map.insert(
-                                        ::jacquard_common::smol_str::SmolStr::new_static(
-                                            "groupInfo",
-                                        ),
-                                        ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
-                                            description: None,
-                                            max_length: None,
-                                            min_length: None,
-                                        }),
-                                    );
-                                    map.insert(
-                                        ::jacquard_common::smol_str::SmolStr::new_static(
-                                            "keyPackageHashes",
-                                        ),
-                                        ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
-                                            description: Some(
-                                                ::jacquard_common::CowStr::new_static(
-                                                    "Per-member key package hashes used in the Welcome",
-                                                ),
-                                            ),
-                                            items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                                description: None,
-                                                r#ref: ::jacquard_common::CowStr::new_static(
-                                                    "#keyPackageHashEntry",
-                                                ),
-                                            }),
-                                            min_length: None,
-                                            max_length: None,
-                                        }),
-                                    );
-                                    map.insert(
-                                        ::jacquard_common::smol_str::SmolStr::new_static("members"),
-                                        ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
-                                            description: Some(
-                                                ::jacquard_common::CowStr::new_static(
-                                                    "DIDs of the bootstrapped roster (typically read from getConvos pre-bootstrap). Sent for diagnostic/audit purposes; server uses the persisted members table (preserved across reset) as the authoritative roster.",
-                                                ),
-                                            ),
-                                            items: ::jacquard_lexicon::lexicon::LexArrayItem::String(::jacquard_lexicon::lexicon::LexString {
-                                                description: None,
-                                                format: Some(
-                                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
-                                                ),
-                                                default: None,
-                                                min_length: None,
-                                                max_length: None,
-                                                min_graphemes: None,
-                                                max_graphemes: None,
-                                                r#enum: None,
-                                                r#const: None,
-                                                known_values: None,
-                                            }),
-                                            min_length: None,
-                                            max_length: Some(999usize),
-                                        }),
-                                    );
-                                    map.insert(
-                                        ::jacquard_common::smol_str::SmolStr::new_static(
-                                            "metadataBlobLocator",
-                                        ),
-                                        ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                            description: Some(
-                                                ::jacquard_common::CowStr::new_static(
-                                                    "Optional locator for encrypted group metadata re-published for newGroupId. The blob itself is uploaded through putGroupMetadataBlob; this field lets clients declare the locator used by the reset winner.",
-                                                ),
-                                            ),
-                                            format: None,
-                                            default: None,
-                                            min_length: None,
-                                            max_length: None,
-                                            min_graphemes: None,
-                                            max_graphemes: None,
-                                            r#enum: None,
-                                            r#const: None,
-                                            known_values: None,
-                                        }),
-                                    );
-                                    map.insert(
-                                        ::jacquard_common::smol_str::SmolStr::new_static(
-                                            "metadataVersion",
-                                        ),
-                                        ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                            description: None,
-                                            default: None,
-                                            minimum: Some(1i64),
-                                            maximum: None,
-                                            r#enum: None,
-                                            r#const: None,
-                                        }),
-                                    );
-                                    map.insert(
-                                        ::jacquard_common::smol_str::SmolStr::new_static(
-                                            "newGroupId",
-                                        ),
-                                        ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                            description: Some(
-                                                ::jacquard_common::CowStr::new_static(
-                                                    "Hex-encoded post-reset MLS group id. Must match the conversations.group_id value set by the auto-reset that emitted the groupResetEvent.",
-                                                ),
-                                            ),
-                                            format: None,
-                                            default: None,
-                                            min_length: None,
-                                            max_length: Some(128usize),
-                                            min_graphemes: None,
-                                            max_graphemes: None,
-                                            r#enum: None,
-                                            r#const: None,
-                                            known_values: None,
-                                        }),
-                                    );
-                                    map.insert(
-                                        ::jacquard_common::smol_str::SmolStr::new_static(
-                                            "originalConvoId",
-                                        ),
-                                        ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                            description: Some(
-                                                ::jacquard_common::CowStr::new_static(
-                                                    "Stable conversation id (unchanged across resets). Matches conversations.id.",
-                                                ),
-                                            ),
-                                            format: None,
-                                            default: None,
-                                            min_length: None,
-                                            max_length: Some(128usize),
-                                            min_graphemes: None,
-                                            max_graphemes: None,
-                                            r#enum: None,
-                                            r#const: None,
-                                            known_values: None,
-                                        }),
-                                    );
-                                    map.insert(
-                                        ::jacquard_common::smol_str::SmolStr::new_static(
-                                            "welcomeMessage",
-                                        ),
-                                        ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
-                                            description: None,
-                                            max_length: None,
-                                            min_length: None,
-                                        }),
-                                    );
-                                    map
-                                },
-                            }),
-                        ),
-                    }),
-                    output: None,
-                    errors: None,
-                }),
-            );
-            map
-        },
-    }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for KeyPackageHashEntry<'a> {
-    fn nsid() -> &'static str {
-        "blue.catbird.mlsChat.bootstrapResetGroup"
-    }
-    fn def_name() -> &'static str {
-        "keyPackageHashEntry"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_blue_catbird_mlsChat_bootstrapResetGroup()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-#[serde(rename_all = "camelCase")]
-pub struct BootstrapResetGroup<'a> {
-    /// MLS cipher suite for the new group
-    #[serde(borrow)]
-    pub cipher_suite: jacquard_common::CowStr<'a>,
-    /// Bootstrap epoch (always 1 — fresh group at epoch 1). Sent for telemetry; server hard-sets current_epoch = 1.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub current_epoch: std::option::Option<i64>,
-    /// Encoded MLS GroupInfo for the new group at epoch 1
-    #[serde(with = "jacquard_common::serde_bytes_helper")]
-    pub group_info: bytes::Bytes,
-    /// Per-member key package hashes used in the Welcome
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub key_package_hashes: std::option::Option<
-        Vec<
-            crate::generated::blue_catbird::mlsChat::bootstrap_reset_group::KeyPackageHashEntry<'a>,
+pub struct KeyPackageHashEntry<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///DID of the member
+    pub did: jacquard_common::types::string::Did<S>,
+    ///Hex-encoded SHA-256 hash of the key package used
+    pub hash: S,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
     >,
-    /// DIDs of the bootstrapped roster (typically read from getConvos pre-bootstrap). Sent for diagnostic/audit purposes; server uses the persisted members table (preserved across reset) as the authoritative roster.
-    #[serde(borrow)]
-    pub members: Vec<jacquard_common::types::string::Did<'a>>,
-    /// Optional locator for encrypted group metadata re-published for newGroupId. The blob itself is uploaded through putGroupMetadataBlob; this field lets clients declare the locator used by the reset winner.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub metadata_blob_locator: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// Optional encrypted metadata version associated with metadataBlobLocator.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub metadata_version: std::option::Option<i64>,
-    /// Hex-encoded post-reset MLS group id. Must match the conversations.group_id value set by the auto-reset that emitted the groupResetEvent.
-    #[serde(borrow)]
-    pub new_group_id: jacquard_common::CowStr<'a>,
-    /// Stable conversation id (unchanged across resets). Matches conversations.id.
-    #[serde(borrow)]
-    pub original_convo_id: jacquard_common::CowStr<'a>,
-    /// MLS Welcome envelope for ALL members. Stored per-recipient based on keyPackageHashes.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(default, with = "jacquard_common::opt_serde_bytes_helper")]
-    pub welcome_message: std::option::Option<bytes::Bytes>,
 }
 
-pub mod bootstrap_reset_group_state {
-
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
-    #[allow(unused)]
-    use core::marker::PhantomData;
-    mod sealed {
-        pub trait Sealed {}
-    }
-    /// State trait tracking which required fields have been set
-    pub trait State: sealed::Sealed {
-        type OriginalConvoId;
-        type NewGroupId;
-        type CipherSuite;
-        type GroupInfo;
-        type Members;
-    }
-    /// Empty state - all required fields are unset
-    pub struct Empty(());
-    impl sealed::Sealed for Empty {}
-    impl State for Empty {
-        type OriginalConvoId = Unset;
-        type NewGroupId = Unset;
-        type CipherSuite = Unset;
-        type GroupInfo = Unset;
-        type Members = Unset;
-    }
-    ///State transition - sets the `original_convo_id` field to Set
-    pub struct SetOriginalConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetOriginalConvoId<S> {}
-    impl<S: State> State for SetOriginalConvoId<S> {
-        type OriginalConvoId = Set<members::original_convo_id>;
-        type NewGroupId = S::NewGroupId;
-        type CipherSuite = S::CipherSuite;
-        type GroupInfo = S::GroupInfo;
-        type Members = S::Members;
-    }
-    ///State transition - sets the `new_group_id` field to Set
-    pub struct SetNewGroupId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetNewGroupId<S> {}
-    impl<S: State> State for SetNewGroupId<S> {
-        type OriginalConvoId = S::OriginalConvoId;
-        type NewGroupId = Set<members::new_group_id>;
-        type CipherSuite = S::CipherSuite;
-        type GroupInfo = S::GroupInfo;
-        type Members = S::Members;
-    }
-    ///State transition - sets the `cipher_suite` field to Set
-    pub struct SetCipherSuite<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCipherSuite<S> {}
-    impl<S: State> State for SetCipherSuite<S> {
-        type OriginalConvoId = S::OriginalConvoId;
-        type NewGroupId = S::NewGroupId;
-        type CipherSuite = Set<members::cipher_suite>;
-        type GroupInfo = S::GroupInfo;
-        type Members = S::Members;
-    }
-    ///State transition - sets the `group_info` field to Set
-    pub struct SetGroupInfo<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetGroupInfo<S> {}
-    impl<S: State> State for SetGroupInfo<S> {
-        type OriginalConvoId = S::OriginalConvoId;
-        type NewGroupId = S::NewGroupId;
-        type CipherSuite = S::CipherSuite;
-        type GroupInfo = Set<members::group_info>;
-        type Members = S::Members;
-    }
-    ///State transition - sets the `members` field to Set
-    pub struct SetMembers<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetMembers<S> {}
-    impl<S: State> State for SetMembers<S> {
-        type OriginalConvoId = S::OriginalConvoId;
-        type NewGroupId = S::NewGroupId;
-        type CipherSuite = S::CipherSuite;
-        type GroupInfo = S::GroupInfo;
-        type Members = Set<members::members>;
-    }
-    /// Marker types for field names
-    #[allow(non_camel_case_types)]
-    pub mod members {
-        ///Marker type for the `original_convo_id` field
-        pub struct original_convo_id(());
-        ///Marker type for the `new_group_id` field
-        pub struct new_group_id(());
-        ///Marker type for the `cipher_suite` field
-        pub struct cipher_suite(());
-        ///Marker type for the `group_info` field
-        pub struct group_info(());
-        ///Marker type for the `members` field
-        pub struct members(());
-    }
-}
-
-/// Builder for constructing an instance of this type
-pub struct BootstrapResetGroupBuilder<'a, S: bootstrap_reset_group_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<bytes::Bytes>,
-        ::core::option::Option<
-            Vec<
-                crate::generated::blue_catbird::mlsChat::bootstrap_reset_group::KeyPackageHashEntry<
-                    'a,
-                >,
-            >,
-        >,
-        ::core::option::Option<Vec<jacquard_common::types::string::Did<'a>>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<bytes::Bytes>,
-    ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
-}
-
-impl<'a> BootstrapResetGroup<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> BootstrapResetGroupBuilder<'a, bootstrap_reset_group_state::Empty> {
-        BootstrapResetGroupBuilder::new()
-    }
-}
-
-impl<'a> BootstrapResetGroupBuilder<'a, bootstrap_reset_group_state::Empty> {
-    /// Create a new builder with all fields unset
-    pub fn new() -> Self {
-        BootstrapResetGroupBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None, None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> BootstrapResetGroupBuilder<'a, S>
-where
-    S: bootstrap_reset_group_state::State,
-    S::CipherSuite: bootstrap_reset_group_state::IsUnset,
-{
-    /// Set the `cipherSuite` field (required)
-    pub fn cipher_suite(
-        mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> BootstrapResetGroupBuilder<'a, bootstrap_reset_group_state::SetCipherSuite<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
-        BootstrapResetGroupBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S: bootstrap_reset_group_state::State> BootstrapResetGroupBuilder<'a, S> {
-    /// Set the `currentEpoch` field (optional)
-    pub fn current_epoch(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.1 = value.into();
-        self
-    }
-    /// Set the `currentEpoch` field to an Option value (optional)
-    pub fn maybe_current_epoch(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.1 = value;
-        self
-    }
-}
-
-impl<'a, S> BootstrapResetGroupBuilder<'a, S>
-where
-    S: bootstrap_reset_group_state::State,
-    S::GroupInfo: bootstrap_reset_group_state::IsUnset,
-{
-    /// Set the `groupInfo` field (required)
-    pub fn group_info(
-        mut self,
-        value: impl Into<bytes::Bytes>,
-    ) -> BootstrapResetGroupBuilder<'a, bootstrap_reset_group_state::SetGroupInfo<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
-        BootstrapResetGroupBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S: bootstrap_reset_group_state::State> BootstrapResetGroupBuilder<'a, S> {
-    /// Set the `keyPackageHashes` field (optional)
-    pub fn key_package_hashes(
-        mut self,
-        value: impl Into<
-            Option<
-                Vec<
-                    crate::generated::blue_catbird::mlsChat::bootstrap_reset_group::KeyPackageHashEntry<
-                        'a,
-                    >,
-                >,
-            >,
-        >,
-    ) -> Self {
-        self.__unsafe_private_named.3 = value.into();
-        self
-    }
-    /// Set the `keyPackageHashes` field to an Option value (optional)
-    pub fn maybe_key_package_hashes(
-        mut self,
-        value: Option<
-            Vec<
-                crate::generated::blue_catbird::mlsChat::bootstrap_reset_group::KeyPackageHashEntry<
-                    'a,
-                >,
-            >,
-        >,
-    ) -> Self {
-        self.__unsafe_private_named.3 = value;
-        self
-    }
-}
-
-impl<'a, S> BootstrapResetGroupBuilder<'a, S>
-where
-    S: bootstrap_reset_group_state::State,
-    S::Members: bootstrap_reset_group_state::IsUnset,
-{
-    /// Set the `members` field (required)
-    pub fn members(
-        mut self,
-        value: impl Into<Vec<jacquard_common::types::string::Did<'a>>>,
-    ) -> BootstrapResetGroupBuilder<'a, bootstrap_reset_group_state::SetMembers<S>> {
-        self.__unsafe_private_named.4 = ::core::option::Option::Some(value.into());
-        BootstrapResetGroupBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S: bootstrap_reset_group_state::State> BootstrapResetGroupBuilder<'a, S> {
-    /// Set the `metadataBlobLocator` field (optional)
-    pub fn metadata_blob_locator(
-        mut self,
-        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
-    ) -> Self {
-        self.__unsafe_private_named.5 = value.into();
-        self
-    }
-    /// Set the `metadataBlobLocator` field to an Option value (optional)
-    pub fn maybe_metadata_blob_locator(
-        mut self,
-        value: Option<jacquard_common::CowStr<'a>>,
-    ) -> Self {
-        self.__unsafe_private_named.5 = value;
-        self
-    }
-}
-
-impl<'a, S: bootstrap_reset_group_state::State> BootstrapResetGroupBuilder<'a, S> {
-    /// Set the `metadataVersion` field (optional)
-    pub fn metadata_version(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.6 = value.into();
-        self
-    }
-    /// Set the `metadataVersion` field to an Option value (optional)
-    pub fn maybe_metadata_version(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.6 = value;
-        self
-    }
-}
-
-impl<'a, S> BootstrapResetGroupBuilder<'a, S>
-where
-    S: bootstrap_reset_group_state::State,
-    S::NewGroupId: bootstrap_reset_group_state::IsUnset,
-{
-    /// Set the `newGroupId` field (required)
-    pub fn new_group_id(
-        mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> BootstrapResetGroupBuilder<'a, bootstrap_reset_group_state::SetNewGroupId<S>> {
-        self.__unsafe_private_named.7 = ::core::option::Option::Some(value.into());
-        BootstrapResetGroupBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> BootstrapResetGroupBuilder<'a, S>
-where
-    S: bootstrap_reset_group_state::State,
-    S::OriginalConvoId: bootstrap_reset_group_state::IsUnset,
-{
-    /// Set the `originalConvoId` field (required)
-    pub fn original_convo_id(
-        mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> BootstrapResetGroupBuilder<'a, bootstrap_reset_group_state::SetOriginalConvoId<S>> {
-        self.__unsafe_private_named.8 = ::core::option::Option::Some(value.into());
-        BootstrapResetGroupBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S: bootstrap_reset_group_state::State> BootstrapResetGroupBuilder<'a, S> {
-    /// Set the `welcomeMessage` field (optional)
-    pub fn welcome_message(mut self, value: impl Into<Option<bytes::Bytes>>) -> Self {
-        self.__unsafe_private_named.9 = value.into();
-        self
-    }
-    /// Set the `welcomeMessage` field to an Option value (optional)
-    pub fn maybe_welcome_message(mut self, value: Option<bytes::Bytes>) -> Self {
-        self.__unsafe_private_named.9 = value;
-        self
-    }
-}
-
-impl<'a, S> BootstrapResetGroupBuilder<'a, S>
-where
-    S: bootstrap_reset_group_state::State,
-    S::OriginalConvoId: bootstrap_reset_group_state::IsSet,
-    S::NewGroupId: bootstrap_reset_group_state::IsSet,
-    S::CipherSuite: bootstrap_reset_group_state::IsSet,
-    S::GroupInfo: bootstrap_reset_group_state::IsSet,
-    S::Members: bootstrap_reset_group_state::IsSet,
-{
-    /// Build the final struct
-    pub fn build(self) -> BootstrapResetGroup<'a> {
-        BootstrapResetGroup {
-            cipher_suite: self.__unsafe_private_named.0.unwrap(),
-            current_epoch: self.__unsafe_private_named.1,
-            group_info: self.__unsafe_private_named.2.unwrap(),
-            key_package_hashes: self.__unsafe_private_named.3,
-            members: self.__unsafe_private_named.4.unwrap(),
-            metadata_blob_locator: self.__unsafe_private_named.5,
-            metadata_version: self.__unsafe_private_named.6,
-            new_group_id: self.__unsafe_private_named.7.unwrap(),
-            original_convo_id: self.__unsafe_private_named.8.unwrap(),
-            welcome_message: self.__unsafe_private_named.9,
-            extra_data: Default::default(),
-        }
-    }
-    /// Build the final struct with custom extra_data
-    pub fn build_with_data(
-        self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
-        >,
-    ) -> BootstrapResetGroup<'a> {
-        BootstrapResetGroup {
-            cipher_suite: self.__unsafe_private_named.0.unwrap(),
-            current_epoch: self.__unsafe_private_named.1,
-            group_info: self.__unsafe_private_named.2.unwrap(),
-            key_package_hashes: self.__unsafe_private_named.3,
-            members: self.__unsafe_private_named.4.unwrap(),
-            metadata_blob_locator: self.__unsafe_private_named.5,
-            metadata_version: self.__unsafe_private_named.6,
-            new_group_id: self.__unsafe_private_named.7.unwrap(),
-            original_convo_id: self.__unsafe_private_named.8.unwrap(),
-            welcome_message: self.__unsafe_private_named.9,
-            extra_data: Some(extra_data),
-        }
-    }
-}
-
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct BootstrapResetGroupOutput<'a> {
-    /// The now-bootstrapped conversation view, including the preserved member roster
-    #[serde(borrow)]
-    pub convo: crate::generated::blue_catbird::mlsChat::ConvoView<'a>,
-    /// Generation number of the now-active crypto_session (preserved across self-heal; freshly minted across activate). Clients seed pendingResetGeneration with this value on bootstrap success so subsequent SSE replay events carrying a stale `gen` are short-circuited before destructive recovery (e.g. deleteGroup) fires. Optional for backward compatibility — older clients that miss the field fall back to fetching it via getConversation/getGroupState.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub generation: std::option::Option<i64>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct BootstrapResetGroup<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///MLS cipher suite for the new group
+    pub cipher_suite: BootstrapResetGroupCipherSuite<S>,
+    ///Bootstrap epoch (always 1 — fresh group at epoch 1). Sent for telemetry; server hard-sets current_epoch = 1.  Defaults to `1`.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(default = "_default_bootstrap_reset_group_current_epoch")]
+    pub current_epoch: core::option::Option<i64>,
+    ///Encoded MLS GroupInfo for the new group at epoch 1
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub group_info: jacquard_common::deps::bytes::Bytes,
+    ///Per-member key package hashes used in the Welcome
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub key_package_hashes: core::option::Option<
+        Vec<crate::generated::blue_catbird::mlsChat::bootstrap_reset_group::KeyPackageHashEntry<S>>,
+    >,
+    ///DIDs of the bootstrapped roster (typically read from getConvos pre-bootstrap). Sent for diagnostic/audit purposes; server uses the persisted members table (preserved across reset) as the authoritative roster.
+    pub members: Vec<jacquard_common::types::string::Did<S>>,
+    ///Optional locator for encrypted group metadata re-published for newGroupId. The blob itself is uploaded through putGroupMetadataBlob; this field lets clients declare the locator used by the reset winner.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub metadata_blob_locator: core::option::Option<S>,
+    ///Optional encrypted metadata version associated with metadataBlobLocator.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub metadata_version: core::option::Option<i64>,
+    ///Hex-encoded post-reset MLS group id. Must match the conversations.group_id value set by the auto-reset that emitted the groupResetEvent.
+    pub new_group_id: S,
+    ///Stable conversation id (unchanged across resets). Matches conversations.id.
+    pub original_convo_id: S,
+    ///MLS Welcome envelope for ALL members. Stored per-recipient based on keyPackageHashes.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(default, with = "jacquard_common::opt_serde_bytes_helper")]
+    pub welcome_message: core::option::Option<jacquard_common::deps::bytes::Bytes>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::open_union]
+/// MLS cipher suite for the new group
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum BootstrapResetGroupCipherSuite<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    Mls256XwingChacha20poly1305Sha256Ed25519,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> BootstrapResetGroupCipherSuite<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Mls256XwingChacha20poly1305Sha256Ed25519 => {
+                "MLS_256_XWING_CHACHA20POLY1305_SHA256_Ed25519"
+            }
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "MLS_256_XWING_CHACHA20POLY1305_SHA256_Ed25519" => {
+                Self::Mls256XwingChacha20poly1305Sha256Ed25519
+            }
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for BootstrapResetGroupCipherSuite<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for BootstrapResetGroupCipherSuite<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for BootstrapResetGroupCipherSuite<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for BootstrapResetGroupCipherSuite<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for BootstrapResetGroupCipherSuite<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for BootstrapResetGroupCipherSuite<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = BootstrapResetGroupCipherSuite<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            BootstrapResetGroupCipherSuite::Mls256XwingChacha20poly1305Sha256Ed25519 => {
+                BootstrapResetGroupCipherSuite::Mls256XwingChacha20poly1305Sha256Ed25519
+            }
+            BootstrapResetGroupCipherSuite::Other(v) => {
+                BootstrapResetGroupCipherSuite::Other(v.into_static())
+            }
+        }
+    }
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct BootstrapResetGroupOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///The now-bootstrapped conversation view, including the preserved member roster
+    pub convo: crate::generated::blue_catbird::mlsChat::ConvoView<S>,
+    ///Generation number of the now-active crypto_session (preserved across self-heal; freshly minted across activate). Clients seed pendingResetGeneration with this value on bootstrap success so subsequent SSE replay events carrying a stale `gen` are short-circuited before destructive recovery (e.g. deleteGroup) fires. Optional for backward compatibility — older clients that miss the field fall back to fetching it via getConversation/getGroupState.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub generation: core::option::Option<i64>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -900,27 +203,31 @@ pub struct BootstrapResetGroupOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum BootstrapResetGroupError<'a> {
+pub enum BootstrapResetGroupError {
     /// No conversation row matches (originalConvoId, newGroupId). Either the convo doesn't exist, or the post-reset group_id has already been overwritten by a subsequent reset.
     #[serde(rename = "BootstrapTargetNotFound")]
-    BootstrapTargetNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
+    BootstrapTargetNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// The post-reset row has already been bootstrapped by another caller (group_info IS NOT NULL). Caller lost the first-responder race; fall back to receiving the Welcome from the winner.
     #[serde(rename = "AlreadyBootstrapped")]
-    AlreadyBootstrapped(std::option::Option<jacquard_common::CowStr<'a>>),
+    AlreadyBootstrapped(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// Caller is not in the existing member roster for this convo and so is not allowed to bootstrap it.
     #[serde(rename = "NotMember")]
-    NotMember(std::option::Option<jacquard_common::CowStr<'a>>),
+    NotMember(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// The specified cipher suite is not supported.
     #[serde(rename = "InvalidCipherSuite")]
-    InvalidCipherSuite(std::option::Option<jacquard_common::CowStr<'a>>),
+    InvalidCipherSuite(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
 }
 
-impl std::fmt::Display for BootstrapResetGroupError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for BootstrapResetGroupError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             Self::BootstrapTargetNotFound(msg) => {
                 write!(f, "BootstrapTargetNotFound")?;
@@ -950,35 +257,853 @@ impl std::fmt::Display for BootstrapResetGroupError<'_> {
                 }
                 Ok(())
             }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
         }
     }
 }
 
-/// Response type for
-///blue.catbird.mlsChat.bootstrapResetGroup
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+    for KeyPackageHashEntry<S>
+{
+    fn nsid() -> &'static str {
+        "blue.catbird.mlsChat.bootstrapResetGroup"
+    }
+    fn def_name() -> &'static str {
+        "keyPackageHashEntry"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_blue_catbird_mlsChat_bootstrapResetGroup()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+/** Response marker for the `blue.catbird.mlsChat.bootstrapResetGroup` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `BootstrapResetGroupOutput<S>` for this endpoint.*/
 pub struct BootstrapResetGroupResponse;
 impl jacquard_common::xrpc::XrpcResp for BootstrapResetGroupResponse {
     const NSID: &'static str = "blue.catbird.mlsChat.bootstrapResetGroup";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = BootstrapResetGroupOutput<'de>;
-    type Err<'de> = BootstrapResetGroupError<'de>;
+    type Output<S: jacquard_common::BosStr> = BootstrapResetGroupOutput<S>;
+    type Err = BootstrapResetGroupError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for BootstrapResetGroup<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for BootstrapResetGroup<S> {
     const NSID: &'static str = "blue.catbird.mlsChat.bootstrapResetGroup";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = BootstrapResetGroupResponse;
 }
 
-/// Endpoint type for
-///blue.catbird.mlsChat.bootstrapResetGroup
+/** Endpoint marker for the `blue.catbird.mlsChat.bootstrapResetGroup` procedure.
+
+Path: `/xrpc/blue.catbird.mlsChat.bootstrapResetGroup`. The request payload type is `BootstrapResetGroup<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct BootstrapResetGroupRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for BootstrapResetGroupRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.bootstrapResetGroup";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = BootstrapResetGroup<'de>;
+    type Request<S: jacquard_common::BosStr> = BootstrapResetGroup<S>;
     type Response = BootstrapResetGroupResponse;
+}
+
+pub mod key_package_hash_entry_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type Did;
+        type Hash;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type Did = Unset;
+        type Hash = Unset;
+    }
+    ///State transition - sets the `did` field to Set
+    pub struct SetDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetDid<St> {}
+    impl<St: State> State for SetDid<St> {
+        type Did = Set<members::did>;
+        type Hash = St::Hash;
+    }
+    ///State transition - sets the `hash` field to Set
+    pub struct SetHash<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetHash<St> {}
+    impl<St: State> State for SetHash<St> {
+        type Did = St::Did;
+        type Hash = Set<members::hash>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `did` field
+        pub struct did(());
+        ///Marker type for the `hash` field
+        pub struct hash(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct KeyPackageHashEntryBuilder<
+    St: key_package_hash_entry_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<S>,
+    ),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl KeyPackageHashEntry<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> KeyPackageHashEntryBuilder<key_package_hash_entry_state::Empty, jacquard_common::DefaultStr>
+    {
+        KeyPackageHashEntryBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> KeyPackageHashEntry<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> KeyPackageHashEntryBuilder<key_package_hash_entry_state::Empty, S> {
+        KeyPackageHashEntryBuilder::builder()
+    }
+}
+
+impl KeyPackageHashEntryBuilder<key_package_hash_entry_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        KeyPackageHashEntryBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr>
+    KeyPackageHashEntryBuilder<key_package_hash_entry_state::Empty, S>
+{
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        KeyPackageHashEntryBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> KeyPackageHashEntryBuilder<St, S>
+where
+    St: key_package_hash_entry_state::State,
+    St::Did: key_package_hash_entry_state::IsUnset,
+{
+    /// Set the `did` field (required)
+    pub fn did(
+        mut self,
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> KeyPackageHashEntryBuilder<key_package_hash_entry_state::SetDid<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        KeyPackageHashEntryBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> KeyPackageHashEntryBuilder<St, S>
+where
+    St: key_package_hash_entry_state::State,
+    St::Hash: key_package_hash_entry_state::IsUnset,
+{
+    /// Set the `hash` field (required)
+    pub fn hash(
+        mut self,
+        value: impl Into<S>,
+    ) -> KeyPackageHashEntryBuilder<key_package_hash_entry_state::SetHash<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
+        KeyPackageHashEntryBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> KeyPackageHashEntryBuilder<St, S>
+where
+    St: key_package_hash_entry_state::State,
+    St::Did: key_package_hash_entry_state::IsSet,
+    St::Hash: key_package_hash_entry_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> KeyPackageHashEntry<S> {
+        KeyPackageHashEntry {
+            did: self._fields.0.unwrap(),
+            hash: self._fields.1.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> KeyPackageHashEntry<S> {
+        KeyPackageHashEntry {
+            did: self._fields.0.unwrap(),
+            hash: self._fields.1.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
+}
+
+fn lexicon_doc_blue_catbird_mlsChat_bootstrapResetGroup(
+) -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+    ::jacquard_lexicon::lexicon::LexiconDoc {
+        lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
+        id: ::jacquard_common::CowStr::new_static("blue.catbird.mlsChat.bootstrapResetGroup"),
+        defs: {
+            let mut map = ::alloc::collections::BTreeMap::new();
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "keyPackageHashEntry",
+                ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
+                            "Maps a member DID to the SHA-256 hash of the key package consumed to wrap their Welcome.",
+                        ),
+                    ),
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("hash")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "did",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static("DID of the member"),
+                                ),
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "hash",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Hex-encoded SHA-256 hash of the key package used",
+                                    ),
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map
+                    },
+                    ..Default::default()
+                }),
+            );
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
+                ::jacquard_lexicon::lexicon::LexUserType::XrpcProcedure(::jacquard_lexicon::lexicon::LexXrpcProcedure {
+                    input: Some(::jacquard_lexicon::lexicon::LexXrpcBody {
+                        encoding: ::jacquard_common::CowStr::new_static(
+                            "application/json",
+                        ),
+                        schema: Some(
+                            ::jacquard_lexicon::lexicon::LexXrpcBodySchema::Object(::jacquard_lexicon::lexicon::LexObject {
+                                required: Some(
+                                    vec![
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static("originalConvoId"),
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static("newGroupId"),
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static("cipherSuite"),
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static("groupInfo"),
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static("members")
+                                    ],
+                                ),
+                                properties: {
+                                    #[allow(unused_mut)]
+                                    let mut map = ::alloc::collections::BTreeMap::new();
+                                    map.insert(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "cipherSuite",
+                                        ),
+                                        ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                            description: Some(
+                                                ::jacquard_common::CowStr::new_static(
+                                                    "MLS cipher suite for the new group",
+                                                ),
+                                            ),
+                                            ..Default::default()
+                                        }),
+                                    );
+                                    map.insert(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "currentEpoch",
+                                        ),
+                                        ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                            minimum: Some(1i64),
+                                            ..Default::default()
+                                        }),
+                                    );
+                                    map.insert(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "groupInfo",
+                                        ),
+                                        ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                            ..Default::default()
+                                        }),
+                                    );
+                                    map.insert(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "keyPackageHashes",
+                                        ),
+                                        ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                            description: Some(
+                                                ::jacquard_common::CowStr::new_static(
+                                                    "Per-member key package hashes used in the Welcome",
+                                                ),
+                                            ),
+                                            items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                                r#ref: ::jacquard_common::CowStr::new_static(
+                                                    "#keyPackageHashEntry",
+                                                ),
+                                                ..Default::default()
+                                            }),
+                                            ..Default::default()
+                                        }),
+                                    );
+                                    map.insert(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "members",
+                                        ),
+                                        ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                            description: Some(
+                                                ::jacquard_common::CowStr::new_static(
+                                                    "DIDs of the bootstrapped roster (typically read from getConvos pre-bootstrap). Sent for diagnostic/audit purposes; server uses the persisted members table (preserved across reset) as the authoritative roster.",
+                                                ),
+                                            ),
+                                            items: ::jacquard_lexicon::lexicon::LexArrayItem::String(::jacquard_lexicon::lexicon::LexString {
+                                                format: Some(
+                                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                                ),
+                                                ..Default::default()
+                                            }),
+                                            max_length: Some(999usize),
+                                            ..Default::default()
+                                        }),
+                                    );
+                                    map.insert(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "metadataBlobLocator",
+                                        ),
+                                        ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                            description: Some(
+                                                ::jacquard_common::CowStr::new_static(
+                                                    "Optional locator for encrypted group metadata re-published for newGroupId. The blob itself is uploaded through putGroupMetadataBlob; this field lets clients declare the locator used by the reset winner.",
+                                                ),
+                                            ),
+                                            ..Default::default()
+                                        }),
+                                    );
+                                    map.insert(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "metadataVersion",
+                                        ),
+                                        ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                            minimum: Some(1i64),
+                                            ..Default::default()
+                                        }),
+                                    );
+                                    map.insert(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "newGroupId",
+                                        ),
+                                        ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                            description: Some(
+                                                ::jacquard_common::CowStr::new_static(
+                                                    "Hex-encoded post-reset MLS group id. Must match the conversations.group_id value set by the auto-reset that emitted the groupResetEvent.",
+                                                ),
+                                            ),
+                                            max_length: Some(128usize),
+                                            ..Default::default()
+                                        }),
+                                    );
+                                    map.insert(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "originalConvoId",
+                                        ),
+                                        ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                            description: Some(
+                                                ::jacquard_common::CowStr::new_static(
+                                                    "Stable conversation id (unchanged across resets). Matches conversations.id.",
+                                                ),
+                                            ),
+                                            max_length: Some(128usize),
+                                            ..Default::default()
+                                        }),
+                                    );
+                                    map.insert(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "welcomeMessage",
+                                        ),
+                                        ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                            ..Default::default()
+                                        }),
+                                    );
+                                    map
+                                },
+                                ..Default::default()
+                            }),
+                        ),
+                        ..Default::default()
+                    }),
+                    ..Default::default()
+                }),
+            );
+            map
+        },
+        ..Default::default()
+    }
+}
+
+fn _default_bootstrap_reset_group_current_epoch() -> core::option::Option<i64> {
+    Some(1i64)
+}
+
+pub mod bootstrap_reset_group_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type CipherSuite;
+        type GroupInfo;
+        type Members;
+        type NewGroupId;
+        type OriginalConvoId;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type CipherSuite = Unset;
+        type GroupInfo = Unset;
+        type Members = Unset;
+        type NewGroupId = Unset;
+        type OriginalConvoId = Unset;
+    }
+    ///State transition - sets the `cipher_suite` field to Set
+    pub struct SetCipherSuite<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCipherSuite<St> {}
+    impl<St: State> State for SetCipherSuite<St> {
+        type CipherSuite = Set<members::cipher_suite>;
+        type GroupInfo = St::GroupInfo;
+        type Members = St::Members;
+        type NewGroupId = St::NewGroupId;
+        type OriginalConvoId = St::OriginalConvoId;
+    }
+    ///State transition - sets the `group_info` field to Set
+    pub struct SetGroupInfo<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetGroupInfo<St> {}
+    impl<St: State> State for SetGroupInfo<St> {
+        type CipherSuite = St::CipherSuite;
+        type GroupInfo = Set<members::group_info>;
+        type Members = St::Members;
+        type NewGroupId = St::NewGroupId;
+        type OriginalConvoId = St::OriginalConvoId;
+    }
+    ///State transition - sets the `members` field to Set
+    pub struct SetMembers<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetMembers<St> {}
+    impl<St: State> State for SetMembers<St> {
+        type CipherSuite = St::CipherSuite;
+        type GroupInfo = St::GroupInfo;
+        type Members = Set<members::members>;
+        type NewGroupId = St::NewGroupId;
+        type OriginalConvoId = St::OriginalConvoId;
+    }
+    ///State transition - sets the `new_group_id` field to Set
+    pub struct SetNewGroupId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetNewGroupId<St> {}
+    impl<St: State> State for SetNewGroupId<St> {
+        type CipherSuite = St::CipherSuite;
+        type GroupInfo = St::GroupInfo;
+        type Members = St::Members;
+        type NewGroupId = Set<members::new_group_id>;
+        type OriginalConvoId = St::OriginalConvoId;
+    }
+    ///State transition - sets the `original_convo_id` field to Set
+    pub struct SetOriginalConvoId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetOriginalConvoId<St> {}
+    impl<St: State> State for SetOriginalConvoId<St> {
+        type CipherSuite = St::CipherSuite;
+        type GroupInfo = St::GroupInfo;
+        type Members = St::Members;
+        type NewGroupId = St::NewGroupId;
+        type OriginalConvoId = Set<members::original_convo_id>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `cipher_suite` field
+        pub struct cipher_suite(());
+        ///Marker type for the `group_info` field
+        pub struct group_info(());
+        ///Marker type for the `members` field
+        pub struct members(());
+        ///Marker type for the `new_group_id` field
+        pub struct new_group_id(());
+        ///Marker type for the `original_convo_id` field
+        pub struct original_convo_id(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct BootstrapResetGroupBuilder<
+    St: bootstrap_reset_group_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<BootstrapResetGroupCipherSuite<S>>,
+        core::option::Option<i64>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
+        core::option::Option<
+            Vec<
+                crate::generated::blue_catbird::mlsChat::bootstrap_reset_group::KeyPackageHashEntry<
+                    S,
+                >,
+            >,
+        >,
+        core::option::Option<Vec<jacquard_common::types::string::Did<S>>>,
+        core::option::Option<S>,
+        core::option::Option<i64>,
+        core::option::Option<S>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
+    ),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl BootstrapResetGroup<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> BootstrapResetGroupBuilder<bootstrap_reset_group_state::Empty, jacquard_common::DefaultStr>
+    {
+        BootstrapResetGroupBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> BootstrapResetGroup<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> BootstrapResetGroupBuilder<bootstrap_reset_group_state::Empty, S> {
+        BootstrapResetGroupBuilder::builder()
+    }
+}
+
+impl BootstrapResetGroupBuilder<bootstrap_reset_group_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        BootstrapResetGroupBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> BootstrapResetGroupBuilder<bootstrap_reset_group_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        BootstrapResetGroupBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> BootstrapResetGroupBuilder<St, S>
+where
+    St: bootstrap_reset_group_state::State,
+    St::CipherSuite: bootstrap_reset_group_state::IsUnset,
+{
+    /// Set the `cipherSuite` field (required)
+    pub fn cipher_suite(
+        mut self,
+        value: impl Into<BootstrapResetGroupCipherSuite<S>>,
+    ) -> BootstrapResetGroupBuilder<bootstrap_reset_group_state::SetCipherSuite<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        BootstrapResetGroupBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: bootstrap_reset_group_state::State, S: jacquard_common::BosStr>
+    BootstrapResetGroupBuilder<St, S>
+{
+    /// Set the `currentEpoch` field (optional)
+    pub fn current_epoch(mut self, value: impl Into<Option<i64>>) -> Self {
+        self._fields.1 = value.into();
+        self
+    }
+    /// Set the `currentEpoch` field to an Option value (optional)
+    pub fn maybe_current_epoch(mut self, value: Option<i64>) -> Self {
+        self._fields.1 = value;
+        self
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> BootstrapResetGroupBuilder<St, S>
+where
+    St: bootstrap_reset_group_state::State,
+    St::GroupInfo: bootstrap_reset_group_state::IsUnset,
+{
+    /// Set the `groupInfo` field (required)
+    pub fn group_info(
+        mut self,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
+    ) -> BootstrapResetGroupBuilder<bootstrap_reset_group_state::SetGroupInfo<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
+        BootstrapResetGroupBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: bootstrap_reset_group_state::State, S: jacquard_common::BosStr>
+    BootstrapResetGroupBuilder<St, S>
+{
+    /// Set the `keyPackageHashes` field (optional)
+    pub fn key_package_hashes(
+        mut self,
+        value: impl Into<
+            Option<
+                Vec<
+                    crate::generated::blue_catbird::mlsChat::bootstrap_reset_group::KeyPackageHashEntry<
+                        S,
+                    >,
+                >,
+            >,
+        >,
+    ) -> Self {
+        self._fields.3 = value.into();
+        self
+    }
+    /// Set the `keyPackageHashes` field to an Option value (optional)
+    pub fn maybe_key_package_hashes(
+        mut self,
+        value: Option<
+            Vec<
+                crate::generated::blue_catbird::mlsChat::bootstrap_reset_group::KeyPackageHashEntry<
+                    S,
+                >,
+            >,
+        >,
+    ) -> Self {
+        self._fields.3 = value;
+        self
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> BootstrapResetGroupBuilder<St, S>
+where
+    St: bootstrap_reset_group_state::State,
+    St::Members: bootstrap_reset_group_state::IsUnset,
+{
+    /// Set the `members` field (required)
+    pub fn members(
+        mut self,
+        value: impl Into<Vec<jacquard_common::types::string::Did<S>>>,
+    ) -> BootstrapResetGroupBuilder<bootstrap_reset_group_state::SetMembers<St>, S> {
+        self._fields.4 = ::core::option::Option::Some(value.into());
+        BootstrapResetGroupBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: bootstrap_reset_group_state::State, S: jacquard_common::BosStr>
+    BootstrapResetGroupBuilder<St, S>
+{
+    /// Set the `metadataBlobLocator` field (optional)
+    pub fn metadata_blob_locator(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.5 = value.into();
+        self
+    }
+    /// Set the `metadataBlobLocator` field to an Option value (optional)
+    pub fn maybe_metadata_blob_locator(mut self, value: Option<S>) -> Self {
+        self._fields.5 = value;
+        self
+    }
+}
+
+impl<St: bootstrap_reset_group_state::State, S: jacquard_common::BosStr>
+    BootstrapResetGroupBuilder<St, S>
+{
+    /// Set the `metadataVersion` field (optional)
+    pub fn metadata_version(mut self, value: impl Into<Option<i64>>) -> Self {
+        self._fields.6 = value.into();
+        self
+    }
+    /// Set the `metadataVersion` field to an Option value (optional)
+    pub fn maybe_metadata_version(mut self, value: Option<i64>) -> Self {
+        self._fields.6 = value;
+        self
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> BootstrapResetGroupBuilder<St, S>
+where
+    St: bootstrap_reset_group_state::State,
+    St::NewGroupId: bootstrap_reset_group_state::IsUnset,
+{
+    /// Set the `newGroupId` field (required)
+    pub fn new_group_id(
+        mut self,
+        value: impl Into<S>,
+    ) -> BootstrapResetGroupBuilder<bootstrap_reset_group_state::SetNewGroupId<St>, S> {
+        self._fields.7 = ::core::option::Option::Some(value.into());
+        BootstrapResetGroupBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> BootstrapResetGroupBuilder<St, S>
+where
+    St: bootstrap_reset_group_state::State,
+    St::OriginalConvoId: bootstrap_reset_group_state::IsUnset,
+{
+    /// Set the `originalConvoId` field (required)
+    pub fn original_convo_id(
+        mut self,
+        value: impl Into<S>,
+    ) -> BootstrapResetGroupBuilder<bootstrap_reset_group_state::SetOriginalConvoId<St>, S> {
+        self._fields.8 = ::core::option::Option::Some(value.into());
+        BootstrapResetGroupBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: bootstrap_reset_group_state::State, S: jacquard_common::BosStr>
+    BootstrapResetGroupBuilder<St, S>
+{
+    /// Set the `welcomeMessage` field (optional)
+    pub fn welcome_message(
+        mut self,
+        value: impl Into<Option<jacquard_common::deps::bytes::Bytes>>,
+    ) -> Self {
+        self._fields.9 = value.into();
+        self
+    }
+    /// Set the `welcomeMessage` field to an Option value (optional)
+    pub fn maybe_welcome_message(
+        mut self,
+        value: Option<jacquard_common::deps::bytes::Bytes>,
+    ) -> Self {
+        self._fields.9 = value;
+        self
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> BootstrapResetGroupBuilder<St, S>
+where
+    St: bootstrap_reset_group_state::State,
+    St::CipherSuite: bootstrap_reset_group_state::IsSet,
+    St::GroupInfo: bootstrap_reset_group_state::IsSet,
+    St::Members: bootstrap_reset_group_state::IsSet,
+    St::NewGroupId: bootstrap_reset_group_state::IsSet,
+    St::OriginalConvoId: bootstrap_reset_group_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> BootstrapResetGroup<S> {
+        BootstrapResetGroup {
+            cipher_suite: self._fields.0.unwrap(),
+            current_epoch: self._fields.1.or_else(|| Some(1i64)),
+            group_info: self._fields.2.unwrap(),
+            key_package_hashes: self._fields.3,
+            members: self._fields.4.unwrap(),
+            metadata_blob_locator: self._fields.5,
+            metadata_version: self._fields.6,
+            new_group_id: self._fields.7.unwrap(),
+            original_convo_id: self._fields.8.unwrap(),
+            welcome_message: self._fields.9,
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> BootstrapResetGroup<S> {
+        BootstrapResetGroup {
+            cipher_suite: self._fields.0.unwrap(),
+            current_epoch: self._fields.1.or_else(|| Some(1i64)),
+            group_info: self._fields.2.unwrap(),
+            key_package_hashes: self._fields.3,
+            members: self._fields.4.unwrap(),
+            metadata_blob_locator: self._fields.5,
+            metadata_version: self._fields.6,
+            new_group_id: self._fields.7.unwrap(),
+            original_convo_id: self._fields.8.unwrap(),
+            welcome_message: self._fields.9,
+            extra_data: Some(extra_data),
+        }
+    }
 }

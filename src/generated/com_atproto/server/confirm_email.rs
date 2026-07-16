@@ -5,7 +5,6 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -16,15 +15,26 @@
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct ConfirmEmail<'a> {
-    #[serde(borrow)]
-    pub email: jacquard_common::CowStr<'a>,
-    #[serde(borrow)]
-    pub token: jacquard_common::CowStr<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ConfirmEmail<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub email: S,
+    pub token: S,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::open_union]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -34,23 +44,27 @@ pub struct ConfirmEmail<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum ConfirmEmailError<'a> {
+pub enum ConfirmEmailError {
     #[serde(rename = "AccountNotFound")]
-    AccountNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
+    AccountNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "ExpiredToken")]
-    ExpiredToken(std::option::Option<jacquard_common::CowStr<'a>>),
+    ExpiredToken(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "InvalidToken")]
-    InvalidToken(std::option::Option<jacquard_common::CowStr<'a>>),
+    InvalidToken(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "InvalidEmail")]
-    InvalidEmail(std::option::Option<jacquard_common::CowStr<'a>>),
+    InvalidEmail(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
 }
 
-impl std::fmt::Display for ConfirmEmailError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for ConfirmEmailError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             Self::AccountNotFound(msg) => {
                 write!(f, "AccountNotFound")?;
@@ -80,35 +94,43 @@ impl std::fmt::Display for ConfirmEmailError<'_> {
                 }
                 Ok(())
             }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
         }
     }
 }
 
-/// Response type for
-///com.atproto.server.confirmEmail
+/** Response marker for the `com.atproto.server.confirmEmail` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `()` for this endpoint.*/
 pub struct ConfirmEmailResponse;
 impl jacquard_common::xrpc::XrpcResp for ConfirmEmailResponse {
     const NSID: &'static str = "com.atproto.server.confirmEmail";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = ();
-    type Err<'de> = ConfirmEmailError<'de>;
+    type Output<S: jacquard_common::BosStr> = ();
+    type Err = ConfirmEmailError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for ConfirmEmail<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for ConfirmEmail<S> {
     const NSID: &'static str = "com.atproto.server.confirmEmail";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = ConfirmEmailResponse;
 }
 
-/// Endpoint type for
-///com.atproto.server.confirmEmail
+/** Endpoint marker for the `com.atproto.server.confirmEmail` procedure.
+
+Path: `/xrpc/com.atproto.server.confirmEmail`. The request payload type is `ConfirmEmail<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct ConfirmEmailRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for ConfirmEmailRequest {
     const PATH: &'static str = "/xrpc/com.atproto.server.confirmEmail";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = ConfirmEmail<'de>;
+    type Request<S: jacquard_common::BosStr> = ConfirmEmail<S>;
     type Response = ConfirmEmailResponse;
 }

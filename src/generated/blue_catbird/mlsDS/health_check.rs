@@ -5,45 +5,59 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct HealthCheckOutput<'a> {
-    /// Service DID of this delivery service
-    #[serde(borrow)]
-    pub did: jacquard_common::CowStr<'a>,
-    /// List of supported federation capabilities
-    #[serde(borrow)]
-    pub federation_capabilities: Vec<jacquard_common::CowStr<'a>>,
-    /// Server uptime in seconds
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct HealthCheckOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Service DID of this delivery service
+    pub did: S,
+    ///List of supported federation capabilities
+    pub federation_capabilities: Vec<S>,
+    ///Server uptime in seconds
     pub uptime: i64,
-    /// Server version
-    #[serde(borrow)]
-    pub version: jacquard_common::CowStr<'a>,
+    ///Server version
+    pub version: S,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-/// XRPC request marker type
+/** Request marker for the `blue.catbird.mlsDS.healthCheck` query.
+
+This endpoint has no request parameters or input body; send this marker with `jacquard::Client`.*/
+
 #[derive(
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
     serde::Serialize,
     serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
     jacquard_derive::IntoStatic,
+    Copy,
 )]
 pub struct HealthCheck;
-/// Response type for
-///blue.catbird.mlsDS.healthCheck
+/** Response marker for the `blue.catbird.mlsDS.healthCheck` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `HealthCheckOutput<S>` for this endpoint.*/
 pub struct HealthCheckResponse;
 impl jacquard_common::xrpc::XrpcResp for HealthCheckResponse {
     const NSID: &'static str = "blue.catbird.mlsDS.healthCheck";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = HealthCheckOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
+    type Output<S: jacquard_common::BosStr> = HealthCheckOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
 }
 
 impl jacquard_common::xrpc::XrpcRequest for HealthCheck {
@@ -52,12 +66,13 @@ impl jacquard_common::xrpc::XrpcRequest for HealthCheck {
     type Response = HealthCheckResponse;
 }
 
-/// Endpoint type for
-///blue.catbird.mlsDS.healthCheck
+/** Endpoint marker for the `blue.catbird.mlsDS.healthCheck` query.
+
+Path: `/xrpc/blue.catbird.mlsDS.healthCheck`. The request payload type is `HealthCheck`; use this marker with lower-level `XrpcEndpoint` APIs when you need endpoint metadata.*/
 pub struct HealthCheckRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for HealthCheckRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.mlsDS.healthCheck";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = HealthCheck;
+    type Request<S: jacquard_common::BosStr> = HealthCheck;
     type Response = HealthCheckResponse;
 }

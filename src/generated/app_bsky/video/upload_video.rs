@@ -10,27 +10,40 @@
 )]
 #[serde(rename_all = "camelCase")]
 pub struct UploadVideo {
-    pub body: bytes::Bytes,
+    pub body: jacquard_common::deps::bytes::Bytes,
 }
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct UploadVideoOutput<'a> {
-    #[serde(borrow)]
-    pub job_status: crate::generated::app_bsky::video::JobStatus<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct UploadVideoOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub job_status: crate::generated::app_bsky::video::JobStatus<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-/// Response type for
-///app.bsky.video.uploadVideo
+/** Response marker for the `app.bsky.video.uploadVideo` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `UploadVideoOutput<S>` for this endpoint.*/
 pub struct UploadVideoResponse;
 impl jacquard_common::xrpc::XrpcResp for UploadVideoResponse {
     const NSID: &'static str = "app.bsky.video.uploadVideo";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = UploadVideoOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
+    type Output<S: jacquard_common::BosStr> = UploadVideoOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
 }
 
 impl jacquard_common::xrpc::XrpcRequest for UploadVideo {
@@ -38,26 +51,30 @@ impl jacquard_common::xrpc::XrpcRequest for UploadVideo {
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("video/mp4");
     type Response = UploadVideoResponse;
-    fn encode_body(&self) -> Result<Vec<u8>, jacquard_common::xrpc::EncodeError> {
-        Ok(self.body.to_vec())
+    fn encode_body(&self, buffer: &mut Vec<u8>) -> Result<(), jacquard_common::xrpc::EncodeError>
+    where
+        Self: serde::Serialize,
+    {
+        Ok(buffer.extend_from_slice(self.body.as_ref()))
     }
-    fn decode_body<'de>(body: &'de [u8]) -> Result<Box<Self>, jacquard_common::error::DecodeError>
+    fn decode_body<'de>(body: &'de [u8]) -> Result<Self, jacquard_common::error::DecodeError>
     where
         Self: serde::Deserialize<'de>,
     {
-        Ok(Box::new(Self {
-            body: bytes::Bytes::copy_from_slice(body),
-        }))
+        Ok(Self {
+            body: jacquard_common::deps::bytes::Bytes::copy_from_slice(body),
+        })
     }
 }
 
-/// Endpoint type for
-///app.bsky.video.uploadVideo
+/** Endpoint marker for the `app.bsky.video.uploadVideo` procedure.
+
+Path: `/xrpc/app.bsky.video.uploadVideo`. The request payload type is `UploadVideo`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct UploadVideoRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for UploadVideoRequest {
     const PATH: &'static str = "/xrpc/app.bsky.video.uploadVideo";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("video/mp4");
-    type Request<'de> = UploadVideo;
+    type Request<S: jacquard_common::BosStr> = UploadVideo;
     type Response = UploadVideoResponse;
 }

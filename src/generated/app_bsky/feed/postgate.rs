@@ -6,7 +6,7 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 /// Disables embedding of this post.
-#[jacquard_derive::lexicon]
+
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -17,35 +17,191 @@
     jacquard_derive::IntoStatic,
     Default,
 )]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct DisableRule<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// Record defining interaction rules for a post. The record key (rkey) of the postgate record must match the record key of the post, and that record must be in the same repository.
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    rename = "app.bsky.feed.postgate",
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct Postgate<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub created_at: jacquard_common::types::string::Datetime,
+    ///List of AT-URIs embedding this post that the author has detached from.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub detached_embedding_uris:
+        core::option::Option<Vec<jacquard_common::types::string::AtUri<S>>>,
+    ///List of rules defining who can embed this post. If value is an empty array or is undefined, no particular rules apply and anyone can embed.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub embedding_rules:
+        core::option::Option<Vec<crate::generated::app_bsky::feed::postgate::DisableRule<S>>>,
+    ///Reference (AT-URI) to the post record.
+    pub post: jacquard_common::types::string::AtUri<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// Typed wrapper for GetRecord response with this collection's record type.
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
 #[serde(rename_all = "camelCase")]
-pub struct DisableRule<'a> {}
-fn lexicon_doc_app_bsky_feed_postgate() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+pub struct PostgateGetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
+    pub uri: jacquard_common::types::string::AtUri<S>,
+    pub value: Postgate<S>,
+}
+
+impl<S: jacquard_common::BosStr> Postgate<S> {
+    pub fn uri(
+        uri: S,
+    ) -> Result<
+        jacquard_common::types::uri::RecordUri<S, PostgateRecord>,
+        jacquard_common::types::uri::UriError,
+    > {
+        jacquard_common::types::uri::RecordUri::try_from_uri(
+            jacquard_common::types::string::AtUri::new(uri)?,
+        )
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for DisableRule<S> {
+    fn nsid() -> &'static str {
+        "app.bsky.feed.postgate"
+    }
+    fn def_name() -> &'static str {
+        "disableRule"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_app_bsky_feed_postgate()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+/// Marker type for deserializing records from this collection.
+
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+pub struct PostgateRecord;
+impl jacquard_common::xrpc::XrpcResp for PostgateRecord {
+    const NSID: &'static str = "app.bsky.feed.postgate";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = PostgateGetRecordOutput<S>;
+    type Err = jacquard_common::types::collection::RecordError;
+}
+
+impl<S: jacquard_common::BosStr> From<PostgateGetRecordOutput<S>> for Postgate<S> {
+    fn from(output: PostgateGetRecordOutput<S>) -> Self {
+        output.value
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection for Postgate<S> {
+    const NSID: &'static str = "app.bsky.feed.postgate";
+    type Record = PostgateRecord;
+}
+
+impl jacquard_common::types::collection::Collection for PostgateRecord {
+    const NSID: &'static str = "app.bsky.feed.postgate";
+    type Record = PostgateRecord;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Postgate<S> {
+    fn nsid() -> &'static str {
+        "app.bsky.feed.postgate"
+    }
+    fn def_name() -> &'static str {
+        "main"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_app_bsky_feed_postgate()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        if let Some(ref value) = self.detached_embedding_uris {
+            #[allow(unused_comparisons)]
+            if value.len() > 50usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "detached_embedding_uris",
+                    ),
+                    max: 50usize,
+                    actual: value.len(),
+                });
+            }
+        }
+        if let Some(ref value) = self.embedding_rules {
+            #[allow(unused_comparisons)]
+            if value.len() > 5usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "embedding_rules",
+                    ),
+                    max: 5usize,
+                    actual: value.len(),
+                });
+            }
+        }
+        Ok(())
+    }
+}
+
+fn lexicon_doc_app_bsky_feed_postgate() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("app.bsky.feed.postgate"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("disableRule"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("disableRule"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
                         description: Some(::jacquard_common::CowStr::new_static(
                             "Disables embedding of this post.",
                         )),
-                        required: None,
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
                 ::jacquard_lexicon::lexicon::LexUserType::Record(::jacquard_lexicon::lexicon::LexRecord {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
@@ -54,38 +210,28 @@ fn lexicon_doc_app_bsky_feed_postgate() -> ::jacquard_lexicon::lexicon::LexiconD
                     ),
                     key: Some(::jacquard_common::CowStr::new_static("tid")),
                     record: ::jacquard_lexicon::lexicon::LexRecordRecord::Object(::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(
                             vec![
-                                ::jacquard_common::smol_str::SmolStr::new_static("post"),
-                                ::jacquard_common::smol_str::SmolStr::new_static("createdAt")
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("post"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt")
                             ],
                         ),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "createdAt",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                    description: None,
                                     format: Some(
                                         ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                     ),
-                                    default: None,
-                                    min_length: None,
-                                    max_length: None,
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "detachedEmbeddingUris",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
@@ -95,25 +241,17 @@ fn lexicon_doc_app_bsky_feed_postgate() -> ::jacquard_lexicon::lexicon::LexiconD
                                         ),
                                     ),
                                     items: ::jacquard_lexicon::lexicon::LexArrayItem::String(::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     }),
-                                    min_length: None,
                                     max_length: Some(50usize),
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "embeddingRules",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
@@ -123,18 +261,19 @@ fn lexicon_doc_app_bsky_feed_postgate() -> ::jacquard_lexicon::lexicon::LexiconD
                                         ),
                                     ),
                                     items: ::jacquard_lexicon::lexicon::LexArrayItem::Union(::jacquard_lexicon::lexicon::LexRefUnion {
-                                        description: None,
                                         refs: vec![
                                             ::jacquard_common::CowStr::new_static("#disableRule")
                                         ],
-                                        closed: None,
+                                        ..Default::default()
                                     }),
-                                    min_length: None,
                                     max_length: Some(5usize),
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("post"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "post",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                     description: Some(
                                         ::jacquard_common::CowStr::new_static(
@@ -144,64 +283,20 @@ fn lexicon_doc_app_bsky_feed_postgate() -> ::jacquard_lexicon::lexicon::LexiconD
                                     format: Some(
                                         ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
                                     ),
-                                    default: None,
-                                    min_length: None,
-                                    max_length: None,
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
                             );
                             map
                         },
+                        ..Default::default()
                     }),
+                    ..Default::default()
                 }),
             );
             map
         },
+        ..Default::default()
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for DisableRule<'a> {
-    fn nsid() -> &'static str {
-        "app.bsky.feed.postgate"
-    }
-    fn def_name() -> &'static str {
-        "disableRule"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_app_bsky_feed_postgate()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-/// Record defining interaction rules for a post. The record key (rkey) of the postgate record must match the record key of the post, and that record must be in the same repository.
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct Postgate<'a> {
-    pub created_at: jacquard_common::types::string::Datetime,
-    /// List of AT-URIs embedding this post that the author has detached from.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub detached_embedding_uris:
-        std::option::Option<Vec<jacquard_common::types::string::AtUri<'a>>>,
-    /// List of rules defining who can embed this post. If value is an empty array or is undefined, no particular rules apply and anyone can embed.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub embedding_rules:
-        std::option::Option<Vec<crate::generated::app_bsky::feed::postgate::DisableRule<'a>>>,
-    /// Reference (AT-URI) to the post record.
-    #[serde(borrow)]
-    pub post: jacquard_common::types::string::AtUri<'a>,
 }
 
 pub mod postgate_state {
@@ -214,272 +309,197 @@ pub mod postgate_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Post;
         type CreatedAt;
+        type Post;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Post = Unset;
         type CreatedAt = Unset;
-    }
-    ///State transition - sets the `post` field to Set
-    pub struct SetPost<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetPost<S> {}
-    impl<S: State> State for SetPost<S> {
-        type Post = Set<members::post>;
-        type CreatedAt = S::CreatedAt;
+        type Post = Unset;
     }
     ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type Post = S::Post;
+    pub struct SetCreatedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCreatedAt<St> {}
+    impl<St: State> State for SetCreatedAt<St> {
         type CreatedAt = Set<members::created_at>;
+        type Post = St::Post;
+    }
+    ///State transition - sets the `post` field to Set
+    pub struct SetPost<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetPost<St> {}
+    impl<St: State> State for SetPost<St> {
+        type CreatedAt = St::CreatedAt;
+        type Post = Set<members::post>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `post` field
-        pub struct post(());
         ///Marker type for the `created_at` field
         pub struct created_at(());
+        ///Marker type for the `post` field
+        pub struct post(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct PostgateBuilder<'a, S: postgate_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<Vec<jacquard_common::types::string::AtUri<'a>>>,
-        ::core::option::Option<Vec<crate::generated::app_bsky::feed::postgate::DisableRule<'a>>>,
-        ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct PostgateBuilder<
+    St: postgate_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<Vec<jacquard_common::types::string::AtUri<S>>>,
+        core::option::Option<Vec<crate::generated::app_bsky::feed::postgate::DisableRule<S>>>,
+        core::option::Option<jacquard_common::types::string::AtUri<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> Postgate<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> PostgateBuilder<'a, postgate_state::Empty> {
+impl Postgate<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> PostgateBuilder<postgate_state::Empty, jacquard_common::DefaultStr> {
         PostgateBuilder::new()
     }
 }
 
-impl<'a> PostgateBuilder<'a, postgate_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> Postgate<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> PostgateBuilder<postgate_state::Empty, S> {
+        PostgateBuilder::builder()
+    }
+}
+
+impl PostgateBuilder<postgate_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         PostgateBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> PostgateBuilder<'a, S>
+impl<S: jacquard_common::BosStr> PostgateBuilder<postgate_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        PostgateBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> PostgateBuilder<St, S>
 where
-    S: postgate_state::State,
-    S::CreatedAt: postgate_state::IsUnset,
+    St: postgate_state::State,
+    St::CreatedAt: postgate_state::IsUnset,
 {
     /// Set the `createdAt` field (required)
     pub fn created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> PostgateBuilder<'a, postgate_state::SetCreatedAt<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+    ) -> PostgateBuilder<postgate_state::SetCreatedAt<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         PostgateBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: postgate_state::State> PostgateBuilder<'a, S> {
+impl<St: postgate_state::State, S: jacquard_common::BosStr> PostgateBuilder<St, S> {
     /// Set the `detachedEmbeddingUris` field (optional)
     pub fn detached_embedding_uris(
         mut self,
-        value: impl Into<Option<Vec<jacquard_common::types::string::AtUri<'a>>>>,
+        value: impl Into<Option<Vec<jacquard_common::types::string::AtUri<S>>>>,
     ) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self._fields.1 = value.into();
         self
     }
     /// Set the `detachedEmbeddingUris` field to an Option value (optional)
     pub fn maybe_detached_embedding_uris(
         mut self,
-        value: Option<Vec<jacquard_common::types::string::AtUri<'a>>>,
+        value: Option<Vec<jacquard_common::types::string::AtUri<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.1 = value;
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S: postgate_state::State> PostgateBuilder<'a, S> {
+impl<St: postgate_state::State, S: jacquard_common::BosStr> PostgateBuilder<St, S> {
     /// Set the `embeddingRules` field (optional)
     pub fn embedding_rules(
         mut self,
-        value: impl Into<Option<Vec<crate::generated::app_bsky::feed::postgate::DisableRule<'a>>>>,
+        value: impl Into<Option<Vec<crate::generated::app_bsky::feed::postgate::DisableRule<S>>>>,
     ) -> Self {
-        self.__unsafe_private_named.2 = value.into();
+        self._fields.2 = value.into();
         self
     }
     /// Set the `embeddingRules` field to an Option value (optional)
     pub fn maybe_embedding_rules(
         mut self,
-        value: Option<Vec<crate::generated::app_bsky::feed::postgate::DisableRule<'a>>>,
+        value: Option<Vec<crate::generated::app_bsky::feed::postgate::DisableRule<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.2 = value;
+        self._fields.2 = value;
         self
     }
 }
 
-impl<'a, S> PostgateBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> PostgateBuilder<St, S>
 where
-    S: postgate_state::State,
-    S::Post: postgate_state::IsUnset,
+    St: postgate_state::State,
+    St::Post: postgate_state::IsUnset,
 {
     /// Set the `post` field (required)
     pub fn post(
         mut self,
-        value: impl Into<jacquard_common::types::string::AtUri<'a>>,
-    ) -> PostgateBuilder<'a, postgate_state::SetPost<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::AtUri<S>>,
+    ) -> PostgateBuilder<postgate_state::SetPost<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
         PostgateBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> PostgateBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> PostgateBuilder<St, S>
 where
-    S: postgate_state::State,
-    S::Post: postgate_state::IsSet,
-    S::CreatedAt: postgate_state::IsSet,
+    St: postgate_state::State,
+    St::CreatedAt: postgate_state::IsSet,
+    St::Post: postgate_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> Postgate<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> Postgate<S> {
         Postgate {
-            created_at: self.__unsafe_private_named.0.unwrap(),
-            detached_embedding_uris: self.__unsafe_private_named.1,
-            embedding_rules: self.__unsafe_private_named.2,
-            post: self.__unsafe_private_named.3.unwrap(),
+            created_at: self._fields.0.unwrap(),
+            detached_embedding_uris: self._fields.1,
+            embedding_rules: self._fields.2,
+            post: self._fields.3.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> Postgate<'a> {
+    ) -> Postgate<S> {
         Postgate {
-            created_at: self.__unsafe_private_named.0.unwrap(),
-            detached_embedding_uris: self.__unsafe_private_named.1,
-            embedding_rules: self.__unsafe_private_named.2,
-            post: self.__unsafe_private_named.3.unwrap(),
+            created_at: self._fields.0.unwrap(),
+            detached_embedding_uris: self._fields.1,
+            embedding_rules: self._fields.2,
+            post: self._fields.3.unwrap(),
             extra_data: Some(extra_data),
         }
-    }
-}
-
-impl<'a> Postgate<'a> {
-    pub fn uri(
-        uri: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> Result<
-        jacquard_common::types::uri::RecordUri<'a, PostgateRecord>,
-        jacquard_common::types::uri::UriError,
-    > {
-        jacquard_common::types::uri::RecordUri::try_from_uri(
-            jacquard_common::types::string::AtUri::new_cow(uri.into())?,
-        )
-    }
-}
-
-/// Typed wrapper for GetRecord response with this collection's record type.
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct PostgateGetRecordOutput<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cid: std::option::Option<jacquard_common::types::string::Cid<'a>>,
-    #[serde(borrow)]
-    pub uri: jacquard_common::types::string::AtUri<'a>,
-    #[serde(borrow)]
-    pub value: Postgate<'a>,
-}
-
-impl From<PostgateGetRecordOutput<'_>> for Postgate<'_> {
-    fn from(output: PostgateGetRecordOutput<'_>) -> Self {
-        use jacquard_common::IntoStatic;
-        output.value.into_static()
-    }
-}
-
-impl jacquard_common::types::collection::Collection for Postgate<'_> {
-    const NSID: &'static str = "app.bsky.feed.postgate";
-    type Record = PostgateRecord;
-}
-
-/// Marker type for deserializing records from this collection.
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
-pub struct PostgateRecord;
-impl jacquard_common::xrpc::XrpcResp for PostgateRecord {
-    const NSID: &'static str = "app.bsky.feed.postgate";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = PostgateGetRecordOutput<'de>;
-    type Err<'de> = jacquard_common::types::collection::RecordError<'de>;
-}
-
-impl jacquard_common::types::collection::Collection for PostgateRecord {
-    const NSID: &'static str = "app.bsky.feed.postgate";
-    type Record = PostgateRecord;
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Postgate<'a> {
-    fn nsid() -> &'static str {
-        "app.bsky.feed.postgate"
-    }
-    fn def_name() -> &'static str {
-        "main"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_app_bsky_feed_postgate()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        if let Some(ref value) = self.detached_embedding_uris {
-            #[allow(unused_comparisons)]
-            if value.len() > 50usize {
-                return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
-                        "detached_embedding_uris",
-                    ),
-                    max: 50usize,
-                    actual: value.len(),
-                });
-            }
-        }
-        if let Some(ref value) = self.embedding_rules {
-            #[allow(unused_comparisons)]
-            if value.len() > 5usize {
-                return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
-                        "embedding_rules",
-                    ),
-                    max: 5usize,
-                    actual: value.len(),
-                });
-            }
-        }
-        Ok(())
     }
 }

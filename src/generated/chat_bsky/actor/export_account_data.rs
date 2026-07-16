@@ -10,42 +10,50 @@
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ExportAccountDataOutput {
-    pub body: bytes::Bytes,
+    pub body: jacquard_common::deps::bytes::Bytes,
 }
 
-/// XRPC request marker type
+/** Request marker for the `chat.bsky.actor.exportAccountData` query.
+
+This endpoint has no request parameters or input body; send this marker with `jacquard::Client`.*/
+
 #[derive(
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
     serde::Serialize,
     serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
     jacquard_derive::IntoStatic,
+    Copy,
 )]
 pub struct ExportAccountData;
-/// Response type for
-///chat.bsky.actor.exportAccountData
+/** Response marker for the `chat.bsky.actor.exportAccountData` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `ExportAccountDataOutput` for this endpoint.*/
 pub struct ExportAccountDataResponse;
 impl jacquard_common::xrpc::XrpcResp for ExportAccountDataResponse {
     const NSID: &'static str = "chat.bsky.actor.exportAccountData";
     const ENCODING: &'static str = "application/jsonl";
-    type Output<'de> = ExportAccountDataOutput;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-    fn encode_output(
-        output: &Self::Output<'_>,
-    ) -> Result<Vec<u8>, jacquard_common::xrpc::EncodeError> {
+    type Output<S: jacquard_common::BosStr> = ExportAccountDataOutput;
+    type Err = jacquard_common::xrpc::GenericError;
+    fn encode_output<S: jacquard_common::BosStr>(
+        output: &Self::Output<S>,
+    ) -> Result<Vec<u8>, jacquard_common::xrpc::EncodeError>
+    where
+        Self::Output<S>: serde::Serialize,
+    {
         Ok(output.body.to_vec())
     }
-    fn decode_output<'de>(
+    fn decode_output<'de, S>(
         body: &'de [u8],
-    ) -> Result<Self::Output<'de>, jacquard_common::error::DecodeError>
+    ) -> Result<Self::Output<S>, jacquard_common::error::DecodeError>
     where
-        Self::Output<'de>: serde::Deserialize<'de>,
+        S: jacquard_common::BosStr + serde::Deserialize<'de>,
+        Self::Output<S>: serde::Deserialize<'de>,
     {
         Ok(ExportAccountDataOutput {
-            body: bytes::Bytes::copy_from_slice(body),
+            body: jacquard_common::deps::bytes::Bytes::copy_from_slice(body),
         })
     }
 }
@@ -56,12 +64,13 @@ impl jacquard_common::xrpc::XrpcRequest for ExportAccountData {
     type Response = ExportAccountDataResponse;
 }
 
-/// Endpoint type for
-///chat.bsky.actor.exportAccountData
+/** Endpoint marker for the `chat.bsky.actor.exportAccountData` query.
+
+Path: `/xrpc/chat.bsky.actor.exportAccountData`. The request payload type is `ExportAccountData`; use this marker with lower-level `XrpcEndpoint` APIs when you need endpoint metadata.*/
 pub struct ExportAccountDataRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for ExportAccountDataRequest {
     const PATH: &'static str = "/xrpc/chat.bsky.actor.exportAccountData";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = ExportAccountData;
+    type Request<S: jacquard_common::BosStr> = ExportAccountData;
     type Response = ExportAccountDataResponse;
 }

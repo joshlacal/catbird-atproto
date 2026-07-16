@@ -5,7 +5,6 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -16,59 +15,75 @@
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct UpdateWebhook<'a> {
-    /// Whether this webhook should be active.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub active: std::option::Option<bool>,
-    /// A description of what this webhook is used for.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub description: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// The types of events this webhook should receive.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub events: std::option::Option<Vec<jacquard_common::CowStr<'a>>>,
-    /// The ID of the webhook to update.
-    #[serde(borrow)]
-    pub id: jacquard_common::CowStr<'a>,
-    /// Words to filter out from chat messages. Messages containing any of these words will not be forwarded.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub mute_words: std::option::Option<Vec<jacquard_common::CowStr<'a>>>,
-    /// A user-friendly name for this webhook.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub name: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// Text to prepend to webhook messages.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub prefix: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// Text replacement rules for webhook messages.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub rewrite: std::option::Option<Vec<crate::generated::place_stream::server::RewriteRule<'a>>>,
-    /// Text to append to webhook messages.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub suffix: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// The webhook URL where events will be sent.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub url: std::option::Option<jacquard_common::types::string::Uri<'a>>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct UpdateWebhook<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Whether this webhook should be active.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub active: core::option::Option<bool>,
+    ///A description of what this webhook is used for.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub description: core::option::Option<S>,
+    ///The types of events this webhook should receive.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub events: core::option::Option<Vec<S>>,
+    ///The ID of the webhook to update.
+    pub id: S,
+    ///Words to filter out from chat messages. Messages containing any of these words will not be forwarded.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub mute_words: core::option::Option<Vec<S>>,
+    ///A user-friendly name for this webhook.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub name: core::option::Option<S>,
+    ///Text to prepend to webhook messages.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub prefix: core::option::Option<S>,
+    ///Text replacement rules for webhook messages.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub rewrite: core::option::Option<Vec<crate::generated::place_stream::server::RewriteRule<S>>>,
+    ///Text to append to webhook messages.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub suffix: core::option::Option<S>,
+    ///The webhook URL where events will be sent.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub url: core::option::Option<jacquard_common::types::string::UriValue<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct UpdateWebhookOutput<'a> {
-    #[serde(borrow)]
-    pub webhook: crate::generated::place_stream::server::Webhook<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct UpdateWebhookOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub webhook: crate::generated::place_stream::server::Webhook<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::open_union]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -78,27 +93,31 @@ pub struct UpdateWebhookOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum UpdateWebhookError<'a> {
+pub enum UpdateWebhookError {
     /// The specified webhook was not found.
     #[serde(rename = "WebhookNotFound")]
-    WebhookNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
+    WebhookNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// The authenticated user does not have access to this webhook.
     #[serde(rename = "Unauthorized")]
-    Unauthorized(std::option::Option<jacquard_common::CowStr<'a>>),
+    Unauthorized(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// The provided webhook URL is invalid or unreachable.
     #[serde(rename = "InvalidUrl")]
-    InvalidUrl(std::option::Option<jacquard_common::CowStr<'a>>),
+    InvalidUrl(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// A webhook with this URL already exists for this user.
     #[serde(rename = "DuplicateWebhook")]
-    DuplicateWebhook(std::option::Option<jacquard_common::CowStr<'a>>),
+    DuplicateWebhook(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
 }
 
-impl std::fmt::Display for UpdateWebhookError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for UpdateWebhookError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             Self::WebhookNotFound(msg) => {
                 write!(f, "WebhookNotFound")?;
@@ -128,35 +147,43 @@ impl std::fmt::Display for UpdateWebhookError<'_> {
                 }
                 Ok(())
             }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
         }
     }
 }
 
-/// Response type for
-///place.stream.server.updateWebhook
+/** Response marker for the `place.stream.server.updateWebhook` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `UpdateWebhookOutput<S>` for this endpoint.*/
 pub struct UpdateWebhookResponse;
 impl jacquard_common::xrpc::XrpcResp for UpdateWebhookResponse {
     const NSID: &'static str = "place.stream.server.updateWebhook";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = UpdateWebhookOutput<'de>;
-    type Err<'de> = UpdateWebhookError<'de>;
+    type Output<S: jacquard_common::BosStr> = UpdateWebhookOutput<S>;
+    type Err = UpdateWebhookError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for UpdateWebhook<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for UpdateWebhook<S> {
     const NSID: &'static str = "place.stream.server.updateWebhook";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = UpdateWebhookResponse;
 }
 
-/// Endpoint type for
-///place.stream.server.updateWebhook
+/** Endpoint marker for the `place.stream.server.updateWebhook` procedure.
+
+Path: `/xrpc/place.stream.server.updateWebhook`. The request payload type is `UpdateWebhook<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct UpdateWebhookRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for UpdateWebhookRequest {
     const PATH: &'static str = "/xrpc/place.stream.server.updateWebhook";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = UpdateWebhook<'de>;
+    type Request<S: jacquard_common::BosStr> = UpdateWebhook<S>;
     type Response = UpdateWebhookResponse;
 }
