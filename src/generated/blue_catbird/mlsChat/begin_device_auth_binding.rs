@@ -5,7 +5,6 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -16,30 +15,54 @@
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct BeginDeviceAuthBinding<'a> {
-    /// Server-issued device registration UUID.
-    #[serde(borrow)]
-    pub device_id: jacquard_common::CowStr<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct BeginDeviceAuthBinding<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Server-issued device registration UUID.
+    pub device_id: S,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct BeginDeviceAuthBindingOutput<'a> {
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct BeginDeviceAuthBindingOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub binding_version: i64,
-    /// Canonical versioned challenge bytes to sign without transformation.
+    ///Canonical versioned challenge bytes to sign without transformation.
     #[serde(with = "jacquard_common::serde_bytes_helper")]
-    pub challenge: bytes::Bytes,
-    /// Opaque single-use challenge identifier.
-    #[serde(borrow)]
-    pub challenge_id: jacquard_common::CowStr<'a>,
+    pub challenge: jacquard_common::deps::bytes::Bytes,
+    ///Opaque single-use challenge identifier.
+    pub challenge_id: S,
     pub expires_at: jacquard_common::types::string::Datetime,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::open_union]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -49,25 +72,29 @@ pub struct BeginDeviceAuthBindingOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum BeginDeviceAuthBindingError<'a> {
+pub enum BeginDeviceAuthBindingError {
     #[serde(rename = "DpopRequired")]
-    DpopRequired(std::option::Option<jacquard_common::CowStr<'a>>),
+    DpopRequired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "DeviceNotFound")]
-    DeviceNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
+    DeviceNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "Unauthorized")]
-    Unauthorized(std::option::Option<jacquard_common::CowStr<'a>>),
+    Unauthorized(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "InvalidDeviceId")]
-    InvalidDeviceId(std::option::Option<jacquard_common::CowStr<'a>>),
+    InvalidDeviceId(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "BindingUnavailable")]
-    BindingUnavailable(std::option::Option<jacquard_common::CowStr<'a>>),
+    BindingUnavailable(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
 }
 
-impl std::fmt::Display for BeginDeviceAuthBindingError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for BeginDeviceAuthBindingError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             Self::DpopRequired(msg) => {
                 write!(f, "DpopRequired")?;
@@ -104,35 +131,43 @@ impl std::fmt::Display for BeginDeviceAuthBindingError<'_> {
                 }
                 Ok(())
             }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
         }
     }
 }
 
-/// Response type for
-///blue.catbird.mlsChat.beginDeviceAuthBinding
+/** Response marker for the `blue.catbird.mlsChat.beginDeviceAuthBinding` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `BeginDeviceAuthBindingOutput<S>` for this endpoint.*/
 pub struct BeginDeviceAuthBindingResponse;
 impl jacquard_common::xrpc::XrpcResp for BeginDeviceAuthBindingResponse {
     const NSID: &'static str = "blue.catbird.mlsChat.beginDeviceAuthBinding";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = BeginDeviceAuthBindingOutput<'de>;
-    type Err<'de> = BeginDeviceAuthBindingError<'de>;
+    type Output<S: jacquard_common::BosStr> = BeginDeviceAuthBindingOutput<S>;
+    type Err = BeginDeviceAuthBindingError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for BeginDeviceAuthBinding<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for BeginDeviceAuthBinding<S> {
     const NSID: &'static str = "blue.catbird.mlsChat.beginDeviceAuthBinding";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = BeginDeviceAuthBindingResponse;
 }
 
-/// Endpoint type for
-///blue.catbird.mlsChat.beginDeviceAuthBinding
+/** Endpoint marker for the `blue.catbird.mlsChat.beginDeviceAuthBinding` procedure.
+
+Path: `/xrpc/blue.catbird.mlsChat.beginDeviceAuthBinding`. The request payload type is `BeginDeviceAuthBinding<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct BeginDeviceAuthBindingRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for BeginDeviceAuthBindingRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.beginDeviceAuthBinding";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = BeginDeviceAuthBinding<'de>;
+    type Request<S: jacquard_common::BosStr> = BeginDeviceAuthBinding<S>;
     type Response = BeginDeviceAuthBindingResponse;
 }

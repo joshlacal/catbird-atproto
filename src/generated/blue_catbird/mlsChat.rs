@@ -6,9 +6,11 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 //! Generated bindings for the `blue.catbird.mlsChat` Lexicon namespace/module.
+pub mod begin_device_auth_binding;
 pub mod bootstrap_reset_group;
 pub mod check_blocks;
 pub mod commit_group_change;
+pub mod complete_device_auth_binding;
 pub mod create_convo;
 pub mod delete_blob;
 pub mod device;
