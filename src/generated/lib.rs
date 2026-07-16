@@ -22,5 +22,8 @@ pub mod com_germnetwork;
 #[cfg(feature = "place_stream")]
 pub mod place_stream;
 
+#[cfg(feature = "site_standard")]
+pub mod site_standard;
+
 #[cfg(feature = "tools_ozone")]
 pub mod tools_ozone;

@@ -533,8 +533,6 @@ fn lexicon_doc_tools_ozone_queue_defs() -> ::jacquard_lexicon::lexicon::LexiconD
                         vec![
                             ::jacquard_common::smol_str::SmolStr::new_static("id"),
                             ::jacquard_common::smol_str::SmolStr::new_static("name"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("subjectTypes"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("reportTypes"),
                             ::jacquard_common::smol_str::SmolStr::new_static("createdBy"),
                             ::jacquard_common::smol_str::SmolStr::new_static("createdAt"),
                             ::jacquard_common::smol_str::SmolStr::new_static("updatedAt"),
@@ -715,7 +713,7 @@ fn lexicon_doc_tools_ozone_queue_defs() -> ::jacquard_lexicon::lexicon::LexiconD
                                     r#const: None,
                                     known_values: None,
                                 }),
-                                min_length: Some(1usize),
+                                min_length: None,
                                 max_length: None,
                             }),
                         );
@@ -748,7 +746,7 @@ fn lexicon_doc_tools_ozone_queue_defs() -> ::jacquard_lexicon::lexicon::LexiconD
                                     r#const: None,
                                     known_values: None,
                                 }),
-                                min_length: Some(1usize),
+                                min_length: None,
                                 max_length: None,
                             }),
                         );
@@ -879,14 +877,16 @@ pub struct QueueView<'a> {
     #[serde(borrow)]
     pub name: jacquard_common::CowStr<'a>,
     /// Report reason types this queue accepts (fully qualified NSIDs)
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub report_types: Vec<jacquard_common::CowStr<'a>>,
+    pub report_types: std::option::Option<Vec<jacquard_common::CowStr<'a>>>,
     /// Statistics about this queue
     #[serde(borrow)]
     pub stats: crate::generated::tools_ozone::queue::QueueStats<'a>,
     /// Subject types this queue accepts.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub subject_types: Vec<jacquard_common::CowStr<'a>>,
+    pub subject_types: std::option::Option<Vec<jacquard_common::CowStr<'a>>>,
     pub updated_at: jacquard_common::types::string::Datetime,
 }
 
@@ -902,8 +902,6 @@ pub mod queue_view_state {
     pub trait State: sealed::Sealed {
         type Id;
         type Name;
-        type SubjectTypes;
-        type ReportTypes;
         type CreatedBy;
         type CreatedAt;
         type UpdatedAt;
@@ -916,8 +914,6 @@ pub mod queue_view_state {
     impl State for Empty {
         type Id = Unset;
         type Name = Unset;
-        type SubjectTypes = Unset;
-        type ReportTypes = Unset;
         type CreatedBy = Unset;
         type CreatedAt = Unset;
         type UpdatedAt = Unset;
@@ -930,8 +926,6 @@ pub mod queue_view_state {
     impl<S: State> State for SetId<S> {
         type Id = Set<members::id>;
         type Name = S::Name;
-        type SubjectTypes = S::SubjectTypes;
-        type ReportTypes = S::ReportTypes;
         type CreatedBy = S::CreatedBy;
         type CreatedAt = S::CreatedAt;
         type UpdatedAt = S::UpdatedAt;
@@ -944,36 +938,6 @@ pub mod queue_view_state {
     impl<S: State> State for SetName<S> {
         type Id = S::Id;
         type Name = Set<members::name>;
-        type SubjectTypes = S::SubjectTypes;
-        type ReportTypes = S::ReportTypes;
-        type CreatedBy = S::CreatedBy;
-        type CreatedAt = S::CreatedAt;
-        type UpdatedAt = S::UpdatedAt;
-        type Enabled = S::Enabled;
-        type Stats = S::Stats;
-    }
-    ///State transition - sets the `subject_types` field to Set
-    pub struct SetSubjectTypes<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetSubjectTypes<S> {}
-    impl<S: State> State for SetSubjectTypes<S> {
-        type Id = S::Id;
-        type Name = S::Name;
-        type SubjectTypes = Set<members::subject_types>;
-        type ReportTypes = S::ReportTypes;
-        type CreatedBy = S::CreatedBy;
-        type CreatedAt = S::CreatedAt;
-        type UpdatedAt = S::UpdatedAt;
-        type Enabled = S::Enabled;
-        type Stats = S::Stats;
-    }
-    ///State transition - sets the `report_types` field to Set
-    pub struct SetReportTypes<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetReportTypes<S> {}
-    impl<S: State> State for SetReportTypes<S> {
-        type Id = S::Id;
-        type Name = S::Name;
-        type SubjectTypes = S::SubjectTypes;
-        type ReportTypes = Set<members::report_types>;
         type CreatedBy = S::CreatedBy;
         type CreatedAt = S::CreatedAt;
         type UpdatedAt = S::UpdatedAt;
@@ -986,8 +950,6 @@ pub mod queue_view_state {
     impl<S: State> State for SetCreatedBy<S> {
         type Id = S::Id;
         type Name = S::Name;
-        type SubjectTypes = S::SubjectTypes;
-        type ReportTypes = S::ReportTypes;
         type CreatedBy = Set<members::created_by>;
         type CreatedAt = S::CreatedAt;
         type UpdatedAt = S::UpdatedAt;
@@ -1000,8 +962,6 @@ pub mod queue_view_state {
     impl<S: State> State for SetCreatedAt<S> {
         type Id = S::Id;
         type Name = S::Name;
-        type SubjectTypes = S::SubjectTypes;
-        type ReportTypes = S::ReportTypes;
         type CreatedBy = S::CreatedBy;
         type CreatedAt = Set<members::created_at>;
         type UpdatedAt = S::UpdatedAt;
@@ -1014,8 +974,6 @@ pub mod queue_view_state {
     impl<S: State> State for SetUpdatedAt<S> {
         type Id = S::Id;
         type Name = S::Name;
-        type SubjectTypes = S::SubjectTypes;
-        type ReportTypes = S::ReportTypes;
         type CreatedBy = S::CreatedBy;
         type CreatedAt = S::CreatedAt;
         type UpdatedAt = Set<members::updated_at>;
@@ -1028,8 +986,6 @@ pub mod queue_view_state {
     impl<S: State> State for SetEnabled<S> {
         type Id = S::Id;
         type Name = S::Name;
-        type SubjectTypes = S::SubjectTypes;
-        type ReportTypes = S::ReportTypes;
         type CreatedBy = S::CreatedBy;
         type CreatedAt = S::CreatedAt;
         type UpdatedAt = S::UpdatedAt;
@@ -1042,8 +998,6 @@ pub mod queue_view_state {
     impl<S: State> State for SetStats<S> {
         type Id = S::Id;
         type Name = S::Name;
-        type SubjectTypes = S::SubjectTypes;
-        type ReportTypes = S::ReportTypes;
         type CreatedBy = S::CreatedBy;
         type CreatedAt = S::CreatedAt;
         type UpdatedAt = S::UpdatedAt;
@@ -1057,10 +1011,6 @@ pub mod queue_view_state {
         pub struct id(());
         ///Marker type for the `name` field
         pub struct name(());
-        ///Marker type for the `subject_types` field
-        pub struct subject_types(());
-        ///Marker type for the `report_types` field
-        pub struct report_types(());
         ///Marker type for the `created_by` field
         pub struct created_by(());
         ///Marker type for the `created_at` field
@@ -1257,22 +1207,19 @@ where
     }
 }
 
-impl<'a, S> QueueViewBuilder<'a, S>
-where
-    S: queue_view_state::State,
-    S::ReportTypes: queue_view_state::IsUnset,
-{
-    /// Set the `reportTypes` field (required)
+impl<'a, S: queue_view_state::State> QueueViewBuilder<'a, S> {
+    /// Set the `reportTypes` field (optional)
     pub fn report_types(
         mut self,
-        value: impl Into<Vec<jacquard_common::CowStr<'a>>>,
-    ) -> QueueViewBuilder<'a, queue_view_state::SetReportTypes<S>> {
-        self.__unsafe_private_named.8 = ::core::option::Option::Some(value.into());
-        QueueViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
+        value: impl Into<Option<Vec<jacquard_common::CowStr<'a>>>>,
+    ) -> Self {
+        self.__unsafe_private_named.8 = value.into();
+        self
+    }
+    /// Set the `reportTypes` field to an Option value (optional)
+    pub fn maybe_report_types(mut self, value: Option<Vec<jacquard_common::CowStr<'a>>>) -> Self {
+        self.__unsafe_private_named.8 = value;
+        self
     }
 }
 
@@ -1295,22 +1242,19 @@ where
     }
 }
 
-impl<'a, S> QueueViewBuilder<'a, S>
-where
-    S: queue_view_state::State,
-    S::SubjectTypes: queue_view_state::IsUnset,
-{
-    /// Set the `subjectTypes` field (required)
+impl<'a, S: queue_view_state::State> QueueViewBuilder<'a, S> {
+    /// Set the `subjectTypes` field (optional)
     pub fn subject_types(
         mut self,
-        value: impl Into<Vec<jacquard_common::CowStr<'a>>>,
-    ) -> QueueViewBuilder<'a, queue_view_state::SetSubjectTypes<S>> {
-        self.__unsafe_private_named.10 = ::core::option::Option::Some(value.into());
-        QueueViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
+        value: impl Into<Option<Vec<jacquard_common::CowStr<'a>>>>,
+    ) -> Self {
+        self.__unsafe_private_named.10 = value.into();
+        self
+    }
+    /// Set the `subjectTypes` field to an Option value (optional)
+    pub fn maybe_subject_types(mut self, value: Option<Vec<jacquard_common::CowStr<'a>>>) -> Self {
+        self.__unsafe_private_named.10 = value;
+        self
     }
 }
 
@@ -1338,8 +1282,6 @@ where
     S: queue_view_state::State,
     S::Id: queue_view_state::IsSet,
     S::Name: queue_view_state::IsSet,
-    S::SubjectTypes: queue_view_state::IsSet,
-    S::ReportTypes: queue_view_state::IsSet,
     S::CreatedBy: queue_view_state::IsSet,
     S::CreatedAt: queue_view_state::IsSet,
     S::UpdatedAt: queue_view_state::IsSet,
@@ -1357,9 +1299,9 @@ where
             enabled: self.__unsafe_private_named.5.unwrap(),
             id: self.__unsafe_private_named.6.unwrap(),
             name: self.__unsafe_private_named.7.unwrap(),
-            report_types: self.__unsafe_private_named.8.unwrap(),
+            report_types: self.__unsafe_private_named.8,
             stats: self.__unsafe_private_named.9.unwrap(),
-            subject_types: self.__unsafe_private_named.10.unwrap(),
+            subject_types: self.__unsafe_private_named.10,
             updated_at: self.__unsafe_private_named.11.unwrap(),
             extra_data: Default::default(),
         }
@@ -1381,9 +1323,9 @@ where
             enabled: self.__unsafe_private_named.5.unwrap(),
             id: self.__unsafe_private_named.6.unwrap(),
             name: self.__unsafe_private_named.7.unwrap(),
-            report_types: self.__unsafe_private_named.8.unwrap(),
+            report_types: self.__unsafe_private_named.8,
             stats: self.__unsafe_private_named.9.unwrap(),
-            subject_types: self.__unsafe_private_named.10.unwrap(),
+            subject_types: self.__unsafe_private_named.10,
             updated_at: self.__unsafe_private_named.11.unwrap(),
             extra_data: Some(extra_data),
         }
@@ -1403,32 +1345,6 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for QueueView<'a> {
     fn validate(
         &self,
     ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        {
-            let value = &self.report_types;
-            #[allow(unused_comparisons)]
-            if value.len() < 1usize {
-                return Err(::jacquard_lexicon::validation::ConstraintError::MinLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
-                        "report_types",
-                    ),
-                    min: 1usize,
-                    actual: value.len(),
-                });
-            }
-        }
-        {
-            let value = &self.subject_types;
-            #[allow(unused_comparisons)]
-            if value.len() < 1usize {
-                return Err(::jacquard_lexicon::validation::ConstraintError::MinLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
-                        "subject_types",
-                    ),
-                    min: 1usize,
-                    actual: value.len(),
-                });
-            }
-        }
         Ok(())
     }
 }

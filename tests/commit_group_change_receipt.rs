@@ -1,3 +1,5 @@
+#![cfg(feature = "namespace-bluecatbird")]
+
 use catbird_atproto::generated::blue_catbird::mlsChat::commit_group_change::CommitGroupChangeOutput;
 
 #[test]

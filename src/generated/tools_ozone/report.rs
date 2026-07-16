@@ -1312,6 +1312,16 @@ fn lexicon_doc_tools_ozone_report_defs() -> ::jacquard_lexicon::lexicon::Lexicon
                             }),
                         );
                         map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "isAutomated",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
+                                description: None,
+                                default: None,
+                                r#const: None,
+                            }),
+                        );
+                        map.insert(
                             ::jacquard_common::smol_str::SmolStr::new_static("isMuted"),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
                                 description: None,
@@ -4097,6 +4107,9 @@ pub struct ReportView<'a> {
     pub event_id: i64,
     /// Report ID
     pub id: i64,
+    /// Whether this report was emitted by automated tooling.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    pub is_automated: std::option::Option<bool>,
     /// Whether this report is muted. A report is muted if the reporter was muted or the subject was muted at the time the report was created.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     pub is_muted: std::option::Option<bool>,
@@ -4306,6 +4319,7 @@ pub struct ReportViewBuilder<'a, S: report_view_state::State> {
         ::core::option::Option<i64>,
         ::core::option::Option<i64>,
         ::core::option::Option<bool>,
+        ::core::option::Option<bool>,
         ::core::option::Option<crate::generated::tools_ozone::queue::QueueView<'a>>,
         ::core::option::Option<jacquard_common::types::string::Datetime>,
         ::core::option::Option<i64>,
@@ -4334,7 +4348,7 @@ impl<'a> ReportViewBuilder<'a, report_view_state::Empty> {
             _phantom_state: ::core::marker::PhantomData,
             __unsafe_private_named: (
                 None, None, None, None, None, None, None, None, None, None, None, None, None, None,
-                None, None, None, None, None,
+                None, None, None, None, None, None,
             ),
             _phantom: ::core::marker::PhantomData,
         }
@@ -4476,14 +4490,27 @@ where
 }
 
 impl<'a, S: report_view_state::State> ReportViewBuilder<'a, S> {
+    /// Set the `isAutomated` field (optional)
+    pub fn is_automated(mut self, value: impl Into<Option<bool>>) -> Self {
+        self.__unsafe_private_named.8 = value.into();
+        self
+    }
+    /// Set the `isAutomated` field to an Option value (optional)
+    pub fn maybe_is_automated(mut self, value: Option<bool>) -> Self {
+        self.__unsafe_private_named.8 = value;
+        self
+    }
+}
+
+impl<'a, S: report_view_state::State> ReportViewBuilder<'a, S> {
     /// Set the `isMuted` field (optional)
     pub fn is_muted(mut self, value: impl Into<Option<bool>>) -> Self {
-        self.__unsafe_private_named.8 = value.into();
+        self.__unsafe_private_named.9 = value.into();
         self
     }
     /// Set the `isMuted` field to an Option value (optional)
     pub fn maybe_is_muted(mut self, value: Option<bool>) -> Self {
-        self.__unsafe_private_named.8 = value;
+        self.__unsafe_private_named.9 = value;
         self
     }
 }
@@ -4494,7 +4521,7 @@ impl<'a, S: report_view_state::State> ReportViewBuilder<'a, S> {
         mut self,
         value: impl Into<Option<crate::generated::tools_ozone::queue::QueueView<'a>>>,
     ) -> Self {
-        self.__unsafe_private_named.9 = value.into();
+        self.__unsafe_private_named.10 = value.into();
         self
     }
     /// Set the `queue` field to an Option value (optional)
@@ -4502,7 +4529,7 @@ impl<'a, S: report_view_state::State> ReportViewBuilder<'a, S> {
         mut self,
         value: Option<crate::generated::tools_ozone::queue::QueueView<'a>>,
     ) -> Self {
-        self.__unsafe_private_named.9 = value;
+        self.__unsafe_private_named.10 = value;
         self
     }
 }
@@ -4513,7 +4540,7 @@ impl<'a, S: report_view_state::State> ReportViewBuilder<'a, S> {
         mut self,
         value: impl Into<Option<jacquard_common::types::string::Datetime>>,
     ) -> Self {
-        self.__unsafe_private_named.10 = value.into();
+        self.__unsafe_private_named.11 = value.into();
         self
     }
     /// Set the `queuedAt` field to an Option value (optional)
@@ -4521,7 +4548,7 @@ impl<'a, S: report_view_state::State> ReportViewBuilder<'a, S> {
         mut self,
         value: Option<jacquard_common::types::string::Datetime>,
     ) -> Self {
-        self.__unsafe_private_named.10 = value;
+        self.__unsafe_private_named.11 = value;
         self
     }
 }
@@ -4529,12 +4556,12 @@ impl<'a, S: report_view_state::State> ReportViewBuilder<'a, S> {
 impl<'a, S: report_view_state::State> ReportViewBuilder<'a, S> {
     /// Set the `relatedReportCount` field (optional)
     pub fn related_report_count(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.11 = value.into();
+        self.__unsafe_private_named.12 = value.into();
         self
     }
     /// Set the `relatedReportCount` field to an Option value (optional)
     pub fn maybe_related_report_count(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.11 = value;
+        self.__unsafe_private_named.12 = value;
         self
     }
 }
@@ -4549,7 +4576,7 @@ where
         mut self,
         value: impl Into<crate::generated::com_atproto::moderation::ReasonType<'a>>,
     ) -> ReportViewBuilder<'a, report_view_state::SetReportType<S>> {
-        self.__unsafe_private_named.12 = ::core::option::Option::Some(value.into());
+        self.__unsafe_private_named.13 = ::core::option::Option::Some(value.into());
         ReportViewBuilder {
             _phantom_state: ::core::marker::PhantomData,
             __unsafe_private_named: self.__unsafe_private_named,
@@ -4568,7 +4595,7 @@ where
         mut self,
         value: impl Into<jacquard_common::types::string::Did<'a>>,
     ) -> ReportViewBuilder<'a, report_view_state::SetReportedBy<S>> {
-        self.__unsafe_private_named.13 = ::core::option::Option::Some(value.into());
+        self.__unsafe_private_named.14 = ::core::option::Option::Some(value.into());
         ReportViewBuilder {
             _phantom_state: ::core::marker::PhantomData,
             __unsafe_private_named: self.__unsafe_private_named,
@@ -4587,7 +4614,7 @@ where
         mut self,
         value: impl Into<crate::generated::tools_ozone::moderation::SubjectView<'a>>,
     ) -> ReportViewBuilder<'a, report_view_state::SetReporter<S>> {
-        self.__unsafe_private_named.14 = ::core::option::Option::Some(value.into());
+        self.__unsafe_private_named.15 = ::core::option::Option::Some(value.into());
         ReportViewBuilder {
             _phantom_state: ::core::marker::PhantomData,
             __unsafe_private_named: self.__unsafe_private_named,
@@ -4606,7 +4633,7 @@ where
         mut self,
         value: impl Into<jacquard_common::CowStr<'a>>,
     ) -> ReportViewBuilder<'a, report_view_state::SetStatus<S>> {
-        self.__unsafe_private_named.15 = ::core::option::Option::Some(value.into());
+        self.__unsafe_private_named.16 = ::core::option::Option::Some(value.into());
         ReportViewBuilder {
             _phantom_state: ::core::marker::PhantomData,
             __unsafe_private_named: self.__unsafe_private_named,
@@ -4625,7 +4652,7 @@ where
         mut self,
         value: impl Into<crate::generated::tools_ozone::moderation::SubjectView<'a>>,
     ) -> ReportViewBuilder<'a, report_view_state::SetSubject<S>> {
-        self.__unsafe_private_named.16 = ::core::option::Option::Some(value.into());
+        self.__unsafe_private_named.17 = ::core::option::Option::Some(value.into());
         ReportViewBuilder {
             _phantom_state: ::core::marker::PhantomData,
             __unsafe_private_named: self.__unsafe_private_named,
@@ -4640,7 +4667,7 @@ impl<'a, S: report_view_state::State> ReportViewBuilder<'a, S> {
         mut self,
         value: impl Into<Option<crate::generated::tools_ozone::moderation::SubjectStatusView<'a>>>,
     ) -> Self {
-        self.__unsafe_private_named.17 = value.into();
+        self.__unsafe_private_named.18 = value.into();
         self
     }
     /// Set the `subjectStatus` field to an Option value (optional)
@@ -4648,7 +4675,7 @@ impl<'a, S: report_view_state::State> ReportViewBuilder<'a, S> {
         mut self,
         value: Option<crate::generated::tools_ozone::moderation::SubjectStatusView<'a>>,
     ) -> Self {
-        self.__unsafe_private_named.17 = value;
+        self.__unsafe_private_named.18 = value;
         self
     }
 }
@@ -4659,7 +4686,7 @@ impl<'a, S: report_view_state::State> ReportViewBuilder<'a, S> {
         mut self,
         value: impl Into<Option<jacquard_common::types::string::Datetime>>,
     ) -> Self {
-        self.__unsafe_private_named.18 = value.into();
+        self.__unsafe_private_named.19 = value.into();
         self
     }
     /// Set the `updatedAt` field to an Option value (optional)
@@ -4667,7 +4694,7 @@ impl<'a, S: report_view_state::State> ReportViewBuilder<'a, S> {
         mut self,
         value: Option<jacquard_common::types::string::Datetime>,
     ) -> Self {
-        self.__unsafe_private_named.18 = value;
+        self.__unsafe_private_named.19 = value;
         self
     }
 }
@@ -4695,17 +4722,18 @@ where
             created_at: self.__unsafe_private_named.5.unwrap(),
             event_id: self.__unsafe_private_named.6.unwrap(),
             id: self.__unsafe_private_named.7.unwrap(),
-            is_muted: self.__unsafe_private_named.8,
-            queue: self.__unsafe_private_named.9,
-            queued_at: self.__unsafe_private_named.10,
-            related_report_count: self.__unsafe_private_named.11,
-            report_type: self.__unsafe_private_named.12.unwrap(),
-            reported_by: self.__unsafe_private_named.13.unwrap(),
-            reporter: self.__unsafe_private_named.14.unwrap(),
-            status: self.__unsafe_private_named.15.unwrap(),
-            subject: self.__unsafe_private_named.16.unwrap(),
-            subject_status: self.__unsafe_private_named.17,
-            updated_at: self.__unsafe_private_named.18,
+            is_automated: self.__unsafe_private_named.8,
+            is_muted: self.__unsafe_private_named.9,
+            queue: self.__unsafe_private_named.10,
+            queued_at: self.__unsafe_private_named.11,
+            related_report_count: self.__unsafe_private_named.12,
+            report_type: self.__unsafe_private_named.13.unwrap(),
+            reported_by: self.__unsafe_private_named.14.unwrap(),
+            reporter: self.__unsafe_private_named.15.unwrap(),
+            status: self.__unsafe_private_named.16.unwrap(),
+            subject: self.__unsafe_private_named.17.unwrap(),
+            subject_status: self.__unsafe_private_named.18,
+            updated_at: self.__unsafe_private_named.19,
             extra_data: Default::default(),
         }
     }
@@ -4726,17 +4754,18 @@ where
             created_at: self.__unsafe_private_named.5.unwrap(),
             event_id: self.__unsafe_private_named.6.unwrap(),
             id: self.__unsafe_private_named.7.unwrap(),
-            is_muted: self.__unsafe_private_named.8,
-            queue: self.__unsafe_private_named.9,
-            queued_at: self.__unsafe_private_named.10,
-            related_report_count: self.__unsafe_private_named.11,
-            report_type: self.__unsafe_private_named.12.unwrap(),
-            reported_by: self.__unsafe_private_named.13.unwrap(),
-            reporter: self.__unsafe_private_named.14.unwrap(),
-            status: self.__unsafe_private_named.15.unwrap(),
-            subject: self.__unsafe_private_named.16.unwrap(),
-            subject_status: self.__unsafe_private_named.17,
-            updated_at: self.__unsafe_private_named.18,
+            is_automated: self.__unsafe_private_named.8,
+            is_muted: self.__unsafe_private_named.9,
+            queue: self.__unsafe_private_named.10,
+            queued_at: self.__unsafe_private_named.11,
+            related_report_count: self.__unsafe_private_named.12,
+            report_type: self.__unsafe_private_named.13.unwrap(),
+            reported_by: self.__unsafe_private_named.14.unwrap(),
+            reporter: self.__unsafe_private_named.15.unwrap(),
+            status: self.__unsafe_private_named.16.unwrap(),
+            subject: self.__unsafe_private_named.17.unwrap(),
+            subject_status: self.__unsafe_private_named.18,
+            updated_at: self.__unsafe_private_named.19,
             extra_data: Some(extra_data),
         }
     }

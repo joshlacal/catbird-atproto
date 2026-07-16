@@ -7,7 +7,14 @@
 
 #[jacquard_derive::lexicon]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic,
+    Default,
 )]
 #[serde(rename_all = "camelCase")]
 pub struct CreateQueue<'a> {
@@ -23,226 +30,13 @@ pub struct CreateQueue<'a> {
     #[serde(borrow)]
     pub name: jacquard_common::CowStr<'a>,
     /// Report reason types (fully qualified NSIDs)
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub report_types: Vec<jacquard_common::CowStr<'a>>,
+    pub report_types: std::option::Option<Vec<jacquard_common::CowStr<'a>>>,
     /// Subject types this queue accepts
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]
-    pub subject_types: Vec<jacquard_common::CowStr<'a>>,
-}
-
-pub mod create_queue_state {
-
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
-    #[allow(unused)]
-    use core::marker::PhantomData;
-    mod sealed {
-        pub trait Sealed {}
-    }
-    /// State trait tracking which required fields have been set
-    pub trait State: sealed::Sealed {
-        type Name;
-        type SubjectTypes;
-        type ReportTypes;
-    }
-    /// Empty state - all required fields are unset
-    pub struct Empty(());
-    impl sealed::Sealed for Empty {}
-    impl State for Empty {
-        type Name = Unset;
-        type SubjectTypes = Unset;
-        type ReportTypes = Unset;
-    }
-    ///State transition - sets the `name` field to Set
-    pub struct SetName<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetName<S> {}
-    impl<S: State> State for SetName<S> {
-        type Name = Set<members::name>;
-        type SubjectTypes = S::SubjectTypes;
-        type ReportTypes = S::ReportTypes;
-    }
-    ///State transition - sets the `subject_types` field to Set
-    pub struct SetSubjectTypes<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetSubjectTypes<S> {}
-    impl<S: State> State for SetSubjectTypes<S> {
-        type Name = S::Name;
-        type SubjectTypes = Set<members::subject_types>;
-        type ReportTypes = S::ReportTypes;
-    }
-    ///State transition - sets the `report_types` field to Set
-    pub struct SetReportTypes<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetReportTypes<S> {}
-    impl<S: State> State for SetReportTypes<S> {
-        type Name = S::Name;
-        type SubjectTypes = S::SubjectTypes;
-        type ReportTypes = Set<members::report_types>;
-    }
-    /// Marker types for field names
-    #[allow(non_camel_case_types)]
-    pub mod members {
-        ///Marker type for the `name` field
-        pub struct name(());
-        ///Marker type for the `subject_types` field
-        pub struct subject_types(());
-        ///Marker type for the `report_types` field
-        pub struct report_types(());
-    }
-}
-
-/// Builder for constructing an instance of this type
-pub struct CreateQueueBuilder<'a, S: create_queue_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Nsid<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<Vec<jacquard_common::CowStr<'a>>>,
-        ::core::option::Option<Vec<jacquard_common::CowStr<'a>>>,
-    ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
-}
-
-impl<'a> CreateQueue<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> CreateQueueBuilder<'a, create_queue_state::Empty> {
-        CreateQueueBuilder::new()
-    }
-}
-
-impl<'a> CreateQueueBuilder<'a, create_queue_state::Empty> {
-    /// Create a new builder with all fields unset
-    pub fn new() -> Self {
-        CreateQueueBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S: create_queue_state::State> CreateQueueBuilder<'a, S> {
-    /// Set the `collection` field (optional)
-    pub fn collection(
-        mut self,
-        value: impl Into<Option<jacquard_common::types::string::Nsid<'a>>>,
-    ) -> Self {
-        self.__unsafe_private_named.0 = value.into();
-        self
-    }
-    /// Set the `collection` field to an Option value (optional)
-    pub fn maybe_collection(
-        mut self,
-        value: Option<jacquard_common::types::string::Nsid<'a>>,
-    ) -> Self {
-        self.__unsafe_private_named.0 = value;
-        self
-    }
-}
-
-impl<'a, S: create_queue_state::State> CreateQueueBuilder<'a, S> {
-    /// Set the `description` field (optional)
-    pub fn description(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.1 = value.into();
-        self
-    }
-    /// Set the `description` field to an Option value (optional)
-    pub fn maybe_description(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.1 = value;
-        self
-    }
-}
-
-impl<'a, S> CreateQueueBuilder<'a, S>
-where
-    S: create_queue_state::State,
-    S::Name: create_queue_state::IsUnset,
-{
-    /// Set the `name` field (required)
-    pub fn name(
-        mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> CreateQueueBuilder<'a, create_queue_state::SetName<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
-        CreateQueueBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> CreateQueueBuilder<'a, S>
-where
-    S: create_queue_state::State,
-    S::ReportTypes: create_queue_state::IsUnset,
-{
-    /// Set the `reportTypes` field (required)
-    pub fn report_types(
-        mut self,
-        value: impl Into<Vec<jacquard_common::CowStr<'a>>>,
-    ) -> CreateQueueBuilder<'a, create_queue_state::SetReportTypes<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
-        CreateQueueBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> CreateQueueBuilder<'a, S>
-where
-    S: create_queue_state::State,
-    S::SubjectTypes: create_queue_state::IsUnset,
-{
-    /// Set the `subjectTypes` field (required)
-    pub fn subject_types(
-        mut self,
-        value: impl Into<Vec<jacquard_common::CowStr<'a>>>,
-    ) -> CreateQueueBuilder<'a, create_queue_state::SetSubjectTypes<S>> {
-        self.__unsafe_private_named.4 = ::core::option::Option::Some(value.into());
-        CreateQueueBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> CreateQueueBuilder<'a, S>
-where
-    S: create_queue_state::State,
-    S::Name: create_queue_state::IsSet,
-    S::SubjectTypes: create_queue_state::IsSet,
-    S::ReportTypes: create_queue_state::IsSet,
-{
-    /// Build the final struct
-    pub fn build(self) -> CreateQueue<'a> {
-        CreateQueue {
-            collection: self.__unsafe_private_named.0,
-            description: self.__unsafe_private_named.1,
-            name: self.__unsafe_private_named.2.unwrap(),
-            report_types: self.__unsafe_private_named.3.unwrap(),
-            subject_types: self.__unsafe_private_named.4.unwrap(),
-            extra_data: Default::default(),
-        }
-    }
-    /// Build the final struct with custom extra_data
-    pub fn build_with_data(
-        self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
-        >,
-    ) -> CreateQueue<'a> {
-        CreateQueue {
-            collection: self.__unsafe_private_named.0,
-            description: self.__unsafe_private_named.1,
-            name: self.__unsafe_private_named.2.unwrap(),
-            report_types: self.__unsafe_private_named.3.unwrap(),
-            subject_types: self.__unsafe_private_named.4.unwrap(),
-            extra_data: Some(extra_data),
-        }
-    }
+    pub subject_types: std::option::Option<Vec<jacquard_common::CowStr<'a>>>,
 }
 
 #[jacquard_derive::lexicon]

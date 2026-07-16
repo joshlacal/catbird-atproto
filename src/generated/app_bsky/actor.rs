@@ -221,6 +221,16 @@ fn lexicon_doc_app_bsky_actor_defs() -> ::jacquard_lexicon::lexicon::LexiconDoc<
                             }),
                         );
                         map.insert(
+                            ::jacquard_common::smol_str::SmolStr::new_static(
+                                "isBetaUser",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
+                                description: None,
+                                default: None,
+                                r#const: None,
+                            }),
+                        );
+                        map.insert(
                             ::jacquard_common::smol_str::SmolStr::new_static("nuxs"),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
                                 description: Some(
@@ -2966,6 +2976,9 @@ pub struct BskyAppStatePref<'a> {
     #[serde(borrow)]
     pub active_progress_guide:
         std::option::Option<crate::generated::app_bsky::actor::BskyAppProgressGuide<'a>>,
+    /// Indicates if the user is participating in the beta features program.
+    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    pub is_beta_user: std::option::Option<bool>,
     /// Storage for NUXs the user has encountered.
     #[serde(skip_serializing_if = "std::option::Option::is_none")]
     #[serde(borrow)]

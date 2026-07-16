@@ -226,6 +226,7 @@ dependencies = [
  "serde_ipld_dagcbor",
  "serde_json",
  "thiserror 1.0.69",
+ "unicode-segmentation",
 ]
 
 [[package]]

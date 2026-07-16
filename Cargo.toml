@@ -7,6 +7,7 @@ description = "Shared generated AT Protocol lexicon surface for Catbird Rust cra
 [features]
 default = ["namespace-bluecatbird"]
 namespace-bluecatbird = []
+namespace-site-standard = []
 streaming = ["jacquard-common/websocket", "dep:serde_ipld_dagcbor"]
 
 [dependencies]
@@ -20,3 +21,4 @@ serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 serde_ipld_dagcbor = { version = "0.6", optional = true }
 thiserror = "1"
+unicode-segmentation = "1"

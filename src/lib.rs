@@ -1,13 +1,30 @@
 #![allow(non_snake_case)]
 
-pub mod generated;
+#[allow(
+    clippy::new_ret_no_self,
+    clippy::new_without_default,
+    clippy::type_complexity
+)]
+pub mod generated {
+    #[cfg(feature = "namespace-bluecatbird")]
+    pub mod blue_catbird;
+    pub mod builder_types;
+    #[cfg(feature = "namespace-site-standard")]
+    pub mod com_atproto;
+    #[cfg(feature = "namespace-site-standard")]
+    pub mod site_standard;
+}
 
+#[cfg(feature = "namespace-bluecatbird")]
 pub use generated::blue_catbird;
 pub use generated::builder_types;
+#[cfg(feature = "namespace-site-standard")]
+pub use generated::site_standard;
 pub use jacquard_common;
 pub use jacquard_common::types;
 pub use jacquard_derive;
 
+#[cfg(feature = "namespace-bluecatbird")]
 pub mod catbird {
     pub mod bsky_chat {
         pub mod push_heartbeat {
@@ -763,7 +780,7 @@ pub mod catbird {
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "namespace-bluecatbird"))]
 mod bytes_test {
     use crate::catbird::mls_chat::register_device;
 
