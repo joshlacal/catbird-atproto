@@ -5,18 +5,87 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct SendNotification<'a> {
-    /// The DID of who this notification comes from.
-    #[serde(borrow)]
-    pub from: jacquard_common::types::string::Did<'a>,
-    /// The DID of who this notification should go to.
-    #[serde(borrow)]
-    pub to: jacquard_common::types::string::Did<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct SendNotification<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///The DID of who this notification comes from.
+    pub from: jacquard_common::types::string::Did<S>,
+    ///The DID of who this notification should go to.
+    pub to: jacquard_common::types::string::Did<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic,
+    Default,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct SendNotificationOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `app.bsky.contact.sendNotification` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `SendNotificationOutput<S>` for this endpoint.*/
+pub struct SendNotificationResponse;
+impl jacquard_common::xrpc::XrpcResp for SendNotificationResponse {
+    const NSID: &'static str = "app.bsky.contact.sendNotification";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = SendNotificationOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for SendNotification<S> {
+    const NSID: &'static str = "app.bsky.contact.sendNotification";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Response = SendNotificationResponse;
+}
+
+/** Endpoint marker for the `app.bsky.contact.sendNotification` procedure.
+
+Path: `/xrpc/app.bsky.contact.sendNotification`. The request payload type is `SendNotification<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct SendNotificationRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for SendNotificationRequest {
+    const PATH: &'static str = "/xrpc/app.bsky.contact.sendNotification";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Request<S: jacquard_common::BosStr> = SendNotification<S>;
+    type Response = SendNotificationResponse;
 }
 
 pub mod send_notification_state {
@@ -40,17 +109,17 @@ pub mod send_notification_state {
         type To = Unset;
     }
     ///State transition - sets the `from` field to Set
-    pub struct SetFrom<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetFrom<S> {}
-    impl<S: State> State for SetFrom<S> {
+    pub struct SetFrom<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetFrom<St> {}
+    impl<St: State> State for SetFrom<St> {
         type From = Set<members::from>;
-        type To = S::To;
+        type To = St::To;
     }
     ///State transition - sets the `to` field to Set
-    pub struct SetTo<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetTo<S> {}
-    impl<S: State> State for SetTo<S> {
-        type From = S::From;
+    pub struct SetTo<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetTo<St> {}
+    impl<St: State> State for SetTo<St> {
+        type From = St::From;
         type To = Set<members::to>;
     }
     /// Marker types for field names
@@ -63,139 +132,120 @@ pub mod send_notification_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct SendNotificationBuilder<'a, S: send_notification_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct SendNotificationBuilder<
+    St: send_notification_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> SendNotification<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> SendNotificationBuilder<'a, send_notification_state::Empty> {
+impl SendNotification<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> SendNotificationBuilder<send_notification_state::Empty, jacquard_common::DefaultStr> {
         SendNotificationBuilder::new()
     }
 }
 
-impl<'a> SendNotificationBuilder<'a, send_notification_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> SendNotification<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> SendNotificationBuilder<send_notification_state::Empty, S> {
+        SendNotificationBuilder::builder()
+    }
+}
+
+impl SendNotificationBuilder<send_notification_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         SendNotificationBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> SendNotificationBuilder<'a, S>
+impl<S: jacquard_common::BosStr> SendNotificationBuilder<send_notification_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        SendNotificationBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> SendNotificationBuilder<St, S>
 where
-    S: send_notification_state::State,
-    S::From: send_notification_state::IsUnset,
+    St: send_notification_state::State,
+    St::From: send_notification_state::IsUnset,
 {
     /// Set the `from` field (required)
     pub fn from(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> SendNotificationBuilder<'a, send_notification_state::SetFrom<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> SendNotificationBuilder<send_notification_state::SetFrom<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         SendNotificationBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> SendNotificationBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> SendNotificationBuilder<St, S>
 where
-    S: send_notification_state::State,
-    S::To: send_notification_state::IsUnset,
+    St: send_notification_state::State,
+    St::To: send_notification_state::IsUnset,
 {
     /// Set the `to` field (required)
     pub fn to(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> SendNotificationBuilder<'a, send_notification_state::SetTo<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> SendNotificationBuilder<send_notification_state::SetTo<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         SendNotificationBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> SendNotificationBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> SendNotificationBuilder<St, S>
 where
-    S: send_notification_state::State,
-    S::From: send_notification_state::IsSet,
-    S::To: send_notification_state::IsSet,
+    St: send_notification_state::State,
+    St::From: send_notification_state::IsSet,
+    St::To: send_notification_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> SendNotification<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> SendNotification<S> {
         SendNotification {
-            from: self.__unsafe_private_named.0.unwrap(),
-            to: self.__unsafe_private_named.1.unwrap(),
+            from: self._fields.0.unwrap(),
+            to: self._fields.1.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> SendNotification<'a> {
+    ) -> SendNotification<S> {
         SendNotification {
-            from: self.__unsafe_private_named.0.unwrap(),
-            to: self.__unsafe_private_named.1.unwrap(),
+            from: self._fields.0.unwrap(),
+            to: self._fields.1.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic,
-    Default,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct SendNotificationOutput<'a> {}
-/// Response type for
-///app.bsky.contact.sendNotification
-pub struct SendNotificationResponse;
-impl jacquard_common::xrpc::XrpcResp for SendNotificationResponse {
-    const NSID: &'static str = "app.bsky.contact.sendNotification";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = SendNotificationOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for SendNotification<'a> {
-    const NSID: &'static str = "app.bsky.contact.sendNotification";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Response = SendNotificationResponse;
-}
-
-/// Endpoint type for
-///app.bsky.contact.sendNotification
-pub struct SendNotificationRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for SendNotificationRequest {
-    const PATH: &'static str = "/xrpc/app.bsky.contact.sendNotification";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = SendNotification<'de>;
-    type Response = SendNotificationResponse;
 }

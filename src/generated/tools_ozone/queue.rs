@@ -5,6 +5,7 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
+//! Generated bindings for the `tools.ozone.queue` Lexicon namespace/module.
 pub mod assign_moderator;
 pub mod create_queue;
 pub mod delete_queue;
@@ -14,24 +15,176 @@ pub mod route_reports;
 pub mod unassign_moderator;
 pub mod update_queue;
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct AssignmentView<'a> {
-    #[serde(borrow)]
-    pub did: jacquard_common::types::string::Did<'a>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub end_at: std::option::Option<jacquard_common::types::string::Datetime>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct AssignmentView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub did: jacquard_common::types::string::Did<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub end_at: core::option::Option<jacquard_common::types::string::Datetime>,
     pub id: i64,
-    /// The moderator assigned to this queue
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub moderator: std::option::Option<crate::generated::tools_ozone::team::Member<'a>>,
-    #[serde(borrow)]
-    pub queue: crate::generated::tools_ozone::queue::QueueView<'a>,
+    ///The moderator assigned to this queue
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub moderator: core::option::Option<crate::generated::tools_ozone::team::Member<S>>,
+    pub queue: crate::generated::tools_ozone::queue::QueueView<S>,
     pub start_at: jacquard_common::types::string::Datetime,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic,
+    Default,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct QueueStats<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Percentage of reports actioned (actionedCount / inboundCount * 100), rounded to nearest integer. Absent when inboundCount is 0.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub action_rate: core::option::Option<i64>,
+    ///Number of reports in 'closed' status
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub actioned_count: core::option::Option<i64>,
+    ///Average time in seconds from report creation to close, for reports closed in this period.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub avg_handling_time_sec: core::option::Option<i64>,
+    ///Number of reports in 'escalated' status
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub escalated_count: core::option::Option<i64>,
+    ///Reports received in this queue in the last 24 hours.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub inbound_count: core::option::Option<i64>,
+    ///When these statistics were last computed
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub last_updated: core::option::Option<jacquard_common::types::string::Datetime>,
+    ///Number of reports in 'open' status
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub pending_count: core::option::Option<i64>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct QueueView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Collection name for record subjects (e.g., 'app.bsky.feed.post')
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub collection: core::option::Option<jacquard_common::types::string::Nsid<S>>,
+    pub created_at: jacquard_common::types::string::Datetime,
+    ///DID of moderator who created this queue
+    pub created_by: jacquard_common::types::string::Did<S>,
+    ///When the queue was deleted, if applicable
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub deleted_at: core::option::Option<jacquard_common::types::string::Datetime>,
+    ///Optional description of the queue
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub description: core::option::Option<S>,
+    ///Whether this queue is currently active
+    pub enabled: bool,
+    ///Queue ID
+    pub id: i64,
+    ///Display name of the queue
+    pub name: S,
+    ///Report reason types this queue accepts (fully qualified NSIDs)
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub report_types: core::option::Option<Vec<S>>,
+    ///Statistics about this queue
+    pub stats: crate::generated::tools_ozone::queue::QueueStats<S>,
+    ///Subject types this queue accepts.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub subject_types: core::option::Option<Vec<S>>,
+    pub updated_at: jacquard_common::types::string::Datetime,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for AssignmentView<S> {
+    fn nsid() -> &'static str {
+        "tools.ozone.queue.defs"
+    }
+    fn def_name() -> &'static str {
+        "assignmentView"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_tools_ozone_queue_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for QueueStats<S> {
+    fn nsid() -> &'static str {
+        "tools.ozone.queue.defs"
+    }
+    fn def_name() -> &'static str {
+        "queueStats"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_tools_ozone_queue_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for QueueView<S> {
+    fn nsid() -> &'static str {
+        "tools.ozone.queue.defs"
+    }
+    fn def_name() -> &'static str {
+        "queueView"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_tools_ozone_queue_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
 }
 
 pub mod assignment_view_state {
@@ -44,8 +197,8 @@ pub mod assignment_view_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Id;
         type Did;
+        type Id;
         type Queue;
         type StartAt;
     }
@@ -53,54 +206,54 @@ pub mod assignment_view_state {
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Id = Unset;
         type Did = Unset;
+        type Id = Unset;
         type Queue = Unset;
         type StartAt = Unset;
     }
-    ///State transition - sets the `id` field to Set
-    pub struct SetId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetId<S> {}
-    impl<S: State> State for SetId<S> {
-        type Id = Set<members::id>;
-        type Did = S::Did;
-        type Queue = S::Queue;
-        type StartAt = S::StartAt;
-    }
     ///State transition - sets the `did` field to Set
-    pub struct SetDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDid<S> {}
-    impl<S: State> State for SetDid<S> {
-        type Id = S::Id;
+    pub struct SetDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetDid<St> {}
+    impl<St: State> State for SetDid<St> {
         type Did = Set<members::did>;
-        type Queue = S::Queue;
-        type StartAt = S::StartAt;
+        type Id = St::Id;
+        type Queue = St::Queue;
+        type StartAt = St::StartAt;
+    }
+    ///State transition - sets the `id` field to Set
+    pub struct SetId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetId<St> {}
+    impl<St: State> State for SetId<St> {
+        type Did = St::Did;
+        type Id = Set<members::id>;
+        type Queue = St::Queue;
+        type StartAt = St::StartAt;
     }
     ///State transition - sets the `queue` field to Set
-    pub struct SetQueue<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetQueue<S> {}
-    impl<S: State> State for SetQueue<S> {
-        type Id = S::Id;
-        type Did = S::Did;
+    pub struct SetQueue<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetQueue<St> {}
+    impl<St: State> State for SetQueue<St> {
+        type Did = St::Did;
+        type Id = St::Id;
         type Queue = Set<members::queue>;
-        type StartAt = S::StartAt;
+        type StartAt = St::StartAt;
     }
     ///State transition - sets the `start_at` field to Set
-    pub struct SetStartAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetStartAt<S> {}
-    impl<S: State> State for SetStartAt<S> {
-        type Id = S::Id;
-        type Did = S::Did;
-        type Queue = S::Queue;
+    pub struct SetStartAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetStartAt<St> {}
+    impl<St: State> State for SetStartAt<St> {
+        type Did = St::Did;
+        type Id = St::Id;
+        type Queue = St::Queue;
         type StartAt = Set<members::start_at>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `id` field
-        pub struct id(());
         ///Marker type for the `did` field
         pub struct did(());
+        ///Marker type for the `id` field
+        pub struct id(());
         ///Marker type for the `queue` field
         pub struct queue(());
         ///Marker type for the `start_at` field
@@ -108,386 +261,359 @@ pub mod assignment_view_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct AssignmentViewBuilder<'a, S: assignment_view_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<crate::generated::tools_ozone::team::Member<'a>>,
-        ::core::option::Option<crate::generated::tools_ozone::queue::QueueView<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
+/// Builder for constructing an instance of this type.
+pub struct AssignmentViewBuilder<
+    St: assignment_view_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<i64>,
+        core::option::Option<crate::generated::tools_ozone::team::Member<S>>,
+        core::option::Option<crate::generated::tools_ozone::queue::QueueView<S>>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> AssignmentView<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> AssignmentViewBuilder<'a, assignment_view_state::Empty> {
+impl AssignmentView<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> AssignmentViewBuilder<assignment_view_state::Empty, jacquard_common::DefaultStr>
+    {
         AssignmentViewBuilder::new()
     }
 }
 
-impl<'a> AssignmentViewBuilder<'a, assignment_view_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> AssignmentView<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> AssignmentViewBuilder<assignment_view_state::Empty, S> {
+        AssignmentViewBuilder::builder()
+    }
+}
+
+impl AssignmentViewBuilder<assignment_view_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         AssignmentViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> AssignmentViewBuilder<'a, S>
+impl<S: jacquard_common::BosStr> AssignmentViewBuilder<assignment_view_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        AssignmentViewBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> AssignmentViewBuilder<St, S>
 where
-    S: assignment_view_state::State,
-    S::Did: assignment_view_state::IsUnset,
+    St: assignment_view_state::State,
+    St::Did: assignment_view_state::IsUnset,
 {
     /// Set the `did` field (required)
     pub fn did(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> AssignmentViewBuilder<'a, assignment_view_state::SetDid<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> AssignmentViewBuilder<assignment_view_state::SetDid<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         AssignmentViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: assignment_view_state::State> AssignmentViewBuilder<'a, S> {
+impl<St: assignment_view_state::State, S: jacquard_common::BosStr> AssignmentViewBuilder<St, S> {
     /// Set the `endAt` field (optional)
     pub fn end_at(
         mut self,
         value: impl Into<Option<jacquard_common::types::string::Datetime>>,
     ) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self._fields.1 = value.into();
         self
     }
     /// Set the `endAt` field to an Option value (optional)
     pub fn maybe_end_at(mut self, value: Option<jacquard_common::types::string::Datetime>) -> Self {
-        self.__unsafe_private_named.1 = value;
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S> AssignmentViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> AssignmentViewBuilder<St, S>
 where
-    S: assignment_view_state::State,
-    S::Id: assignment_view_state::IsUnset,
+    St: assignment_view_state::State,
+    St::Id: assignment_view_state::IsUnset,
 {
     /// Set the `id` field (required)
     pub fn id(
         mut self,
         value: impl Into<i64>,
-    ) -> AssignmentViewBuilder<'a, assignment_view_state::SetId<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+    ) -> AssignmentViewBuilder<assignment_view_state::SetId<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         AssignmentViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: assignment_view_state::State> AssignmentViewBuilder<'a, S> {
+impl<St: assignment_view_state::State, S: jacquard_common::BosStr> AssignmentViewBuilder<St, S> {
     /// Set the `moderator` field (optional)
     pub fn moderator(
         mut self,
-        value: impl Into<Option<crate::generated::tools_ozone::team::Member<'a>>>,
+        value: impl Into<Option<crate::generated::tools_ozone::team::Member<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.3 = value.into();
+        self._fields.3 = value.into();
         self
     }
     /// Set the `moderator` field to an Option value (optional)
     pub fn maybe_moderator(
         mut self,
-        value: Option<crate::generated::tools_ozone::team::Member<'a>>,
+        value: Option<crate::generated::tools_ozone::team::Member<S>>,
     ) -> Self {
-        self.__unsafe_private_named.3 = value;
+        self._fields.3 = value;
         self
     }
 }
 
-impl<'a, S> AssignmentViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> AssignmentViewBuilder<St, S>
 where
-    S: assignment_view_state::State,
-    S::Queue: assignment_view_state::IsUnset,
+    St: assignment_view_state::State,
+    St::Queue: assignment_view_state::IsUnset,
 {
     /// Set the `queue` field (required)
     pub fn queue(
         mut self,
-        value: impl Into<crate::generated::tools_ozone::queue::QueueView<'a>>,
-    ) -> AssignmentViewBuilder<'a, assignment_view_state::SetQueue<S>> {
-        self.__unsafe_private_named.4 = ::core::option::Option::Some(value.into());
+        value: impl Into<crate::generated::tools_ozone::queue::QueueView<S>>,
+    ) -> AssignmentViewBuilder<assignment_view_state::SetQueue<St>, S> {
+        self._fields.4 = ::core::option::Option::Some(value.into());
         AssignmentViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> AssignmentViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> AssignmentViewBuilder<St, S>
 where
-    S: assignment_view_state::State,
-    S::StartAt: assignment_view_state::IsUnset,
+    St: assignment_view_state::State,
+    St::StartAt: assignment_view_state::IsUnset,
 {
     /// Set the `startAt` field (required)
     pub fn start_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> AssignmentViewBuilder<'a, assignment_view_state::SetStartAt<S>> {
-        self.__unsafe_private_named.5 = ::core::option::Option::Some(value.into());
+    ) -> AssignmentViewBuilder<assignment_view_state::SetStartAt<St>, S> {
+        self._fields.5 = ::core::option::Option::Some(value.into());
         AssignmentViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> AssignmentViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> AssignmentViewBuilder<St, S>
 where
-    S: assignment_view_state::State,
-    S::Id: assignment_view_state::IsSet,
-    S::Did: assignment_view_state::IsSet,
-    S::Queue: assignment_view_state::IsSet,
-    S::StartAt: assignment_view_state::IsSet,
+    St: assignment_view_state::State,
+    St::Did: assignment_view_state::IsSet,
+    St::Id: assignment_view_state::IsSet,
+    St::Queue: assignment_view_state::IsSet,
+    St::StartAt: assignment_view_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> AssignmentView<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> AssignmentView<S> {
         AssignmentView {
-            did: self.__unsafe_private_named.0.unwrap(),
-            end_at: self.__unsafe_private_named.1,
-            id: self.__unsafe_private_named.2.unwrap(),
-            moderator: self.__unsafe_private_named.3,
-            queue: self.__unsafe_private_named.4.unwrap(),
-            start_at: self.__unsafe_private_named.5.unwrap(),
+            did: self._fields.0.unwrap(),
+            end_at: self._fields.1,
+            id: self._fields.2.unwrap(),
+            moderator: self._fields.3,
+            queue: self._fields.4.unwrap(),
+            start_at: self._fields.5.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> AssignmentView<'a> {
+    ) -> AssignmentView<S> {
         AssignmentView {
-            did: self.__unsafe_private_named.0.unwrap(),
-            end_at: self.__unsafe_private_named.1,
-            id: self.__unsafe_private_named.2.unwrap(),
-            moderator: self.__unsafe_private_named.3,
-            queue: self.__unsafe_private_named.4.unwrap(),
-            start_at: self.__unsafe_private_named.5.unwrap(),
+            did: self._fields.0.unwrap(),
+            end_at: self._fields.1,
+            id: self._fields.2.unwrap(),
+            moderator: self._fields.3,
+            queue: self._fields.4.unwrap(),
+            start_at: self._fields.5.unwrap(),
             extra_data: Some(extra_data),
         }
     }
 }
 
-fn lexicon_doc_tools_ozone_queue_defs() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_tools_ozone_queue_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("tools.ozone.queue.defs"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("assignmentView"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("assignmentView"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("id"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("did"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("queue"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("startAt"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("id"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("queue"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("startAt"),
                         ]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("did"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("endAt"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("endAt"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("id"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("id"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
                                     ::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
-                                        minimum: None,
-                                        maximum: None,
-                                        r#enum: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("moderator"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("moderator"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
                                     ::jacquard_lexicon::lexicon::LexRef {
-                                        description: None,
                                         r#ref: ::jacquard_common::CowStr::new_static(
                                             "tools.ozone.team.defs#member",
                                         ),
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("queue"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("queue"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
                                     ::jacquard_lexicon::lexicon::LexRef {
-                                        description: None,
                                         r#ref: ::jacquard_common::CowStr::new_static("#queueView"),
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("startAt"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("startAt"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("queueStats"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("queueStats"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(vec![]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("actionRate"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "actionRate",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
                                     ::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
-                                        minimum: None,
-                                        maximum: None,
-                                        r#enum: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("actionedCount"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "actionedCount",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
                                     ::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
-                                        minimum: None,
-                                        maximum: None,
-                                        r#enum: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "avgHandlingTimeSec",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
                                     ::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
-                                        minimum: None,
-                                        maximum: None,
-                                        r#enum: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("escalatedCount"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "escalatedCount",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
                                     ::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
-                                        minimum: None,
-                                        maximum: None,
-                                        r#enum: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("inboundCount"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "inboundCount",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
                                     ::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
-                                        minimum: None,
-                                        maximum: None,
-                                        r#enum: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("lastUpdated"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "lastUpdated",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
@@ -496,56 +622,45 @@ fn lexicon_doc_tools_ozone_queue_defs() -> ::jacquard_lexicon::lexicon::LexiconD
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("pendingCount"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "pendingCount",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
                                     ::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
-                                        minimum: None,
-                                        maximum: None,
-                                        r#enum: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("queueView"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("queueView"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: None,
                     required: Some(
                         vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("id"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("name"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("createdBy"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("createdAt"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("updatedAt"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("enabled"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("stats")
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("id"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("name"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("createdBy"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("updatedAt"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("enabled"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("stats")
                         ],
                     ),
-                    nullable: None,
                     properties: {
                         #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
+                        let mut map = ::alloc::collections::BTreeMap::new();
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "collection",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -557,37 +672,22 @@ fn lexicon_doc_tools_ozone_queue_defs() -> ::jacquard_lexicon::lexicon::LexiconD
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Nsid,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "createdAt",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "createdBy",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -599,18 +699,11 @@ fn lexicon_doc_tools_ozone_queue_defs() -> ::jacquard_lexicon::lexicon::LexiconD
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "deletedAt",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -622,18 +715,11 @@ fn lexicon_doc_tools_ozone_queue_defs() -> ::jacquard_lexicon::lexicon::LexiconD
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "description",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -642,57 +728,38 @@ fn lexicon_doc_tools_ozone_queue_defs() -> ::jacquard_lexicon::lexicon::LexiconD
                                         "Optional description of the queue",
                                     ),
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("enabled"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "enabled",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
-                                description: None,
-                                default: None,
-                                r#const: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("id"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("id"),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                description: None,
-                                default: None,
-                                minimum: None,
-                                maximum: None,
-                                r#enum: None,
-                                r#const: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("name"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "name",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
                                         "Display name of the queue",
                                     ),
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "reportTypes",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
@@ -702,30 +769,22 @@ fn lexicon_doc_tools_ozone_queue_defs() -> ::jacquard_lexicon::lexicon::LexiconD
                                     ),
                                 ),
                                 items: ::jacquard_lexicon::lexicon::LexArrayItem::String(::jacquard_lexicon::lexicon::LexString {
-                                    description: None,
-                                    format: None,
-                                    default: None,
-                                    min_length: None,
-                                    max_length: None,
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
-                                min_length: None,
-                                max_length: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("stats"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "stats",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                description: None,
                                 r#ref: ::jacquard_common::CowStr::new_static("#queueStats"),
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "subjectTypes",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
@@ -735,159 +794,31 @@ fn lexicon_doc_tools_ozone_queue_defs() -> ::jacquard_lexicon::lexicon::LexiconD
                                     ),
                                 ),
                                 items: ::jacquard_lexicon::lexicon::LexArrayItem::String(::jacquard_lexicon::lexicon::LexString {
-                                    description: None,
-                                    format: None,
-                                    default: None,
-                                    min_length: None,
-                                    max_length: None,
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
-                                min_length: None,
-                                max_length: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "updatedAt",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map
                     },
+                    ..Default::default()
                 }),
             );
             map
         },
+        ..Default::default()
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for AssignmentView<'a> {
-    fn nsid() -> &'static str {
-        "tools.ozone.queue.defs"
-    }
-    fn def_name() -> &'static str {
-        "assignmentView"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_tools_ozone_queue_defs()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic,
-    Default,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct QueueStats<'a> {
-    /// Percentage of reports actioned (actionedCount / inboundCount * 100), rounded to nearest integer. Absent when inboundCount is 0.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub action_rate: std::option::Option<i64>,
-    /// Number of reports in 'closed' status
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub actioned_count: std::option::Option<i64>,
-    /// Average time in seconds from report creation to close, for reports closed in this period.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub avg_handling_time_sec: std::option::Option<i64>,
-    /// Number of reports in 'escalated' status
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub escalated_count: std::option::Option<i64>,
-    /// Reports received in this queue in the last 24 hours.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub inbound_count: std::option::Option<i64>,
-    /// When these statistics were last computed
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub last_updated: std::option::Option<jacquard_common::types::string::Datetime>,
-    /// Number of reports in 'open' status
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub pending_count: std::option::Option<i64>,
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for QueueStats<'a> {
-    fn nsid() -> &'static str {
-        "tools.ozone.queue.defs"
-    }
-    fn def_name() -> &'static str {
-        "queueStats"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_tools_ozone_queue_defs()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct QueueView<'a> {
-    /// Collection name for record subjects (e.g., 'app.bsky.feed.post')
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub collection: std::option::Option<jacquard_common::types::string::Nsid<'a>>,
-    pub created_at: jacquard_common::types::string::Datetime,
-    /// DID of moderator who created this queue
-    #[serde(borrow)]
-    pub created_by: jacquard_common::types::string::Did<'a>,
-    /// When the queue was deleted, if applicable
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub deleted_at: std::option::Option<jacquard_common::types::string::Datetime>,
-    /// Optional description of the queue
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub description: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// Whether this queue is currently active
-    pub enabled: bool,
-    /// Queue ID
-    pub id: i64,
-    /// Display name of the queue
-    #[serde(borrow)]
-    pub name: jacquard_common::CowStr<'a>,
-    /// Report reason types this queue accepts (fully qualified NSIDs)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub report_types: std::option::Option<Vec<jacquard_common::CowStr<'a>>>,
-    /// Statistics about this queue
-    #[serde(borrow)]
-    pub stats: crate::generated::tools_ozone::queue::QueueStats<'a>,
-    /// Subject types this queue accepts.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub subject_types: std::option::Option<Vec<jacquard_common::CowStr<'a>>>,
-    pub updated_at: jacquard_common::types::string::Datetime,
 }
 
 pub mod queue_view_state {
@@ -900,234 +831,257 @@ pub mod queue_view_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
+        type CreatedAt;
+        type CreatedBy;
+        type Enabled;
         type Id;
         type Name;
-        type CreatedBy;
-        type CreatedAt;
-        type UpdatedAt;
-        type Enabled;
         type Stats;
+        type UpdatedAt;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
+        type CreatedAt = Unset;
+        type CreatedBy = Unset;
+        type Enabled = Unset;
         type Id = Unset;
         type Name = Unset;
-        type CreatedBy = Unset;
-        type CreatedAt = Unset;
-        type UpdatedAt = Unset;
-        type Enabled = Unset;
         type Stats = Unset;
-    }
-    ///State transition - sets the `id` field to Set
-    pub struct SetId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetId<S> {}
-    impl<S: State> State for SetId<S> {
-        type Id = Set<members::id>;
-        type Name = S::Name;
-        type CreatedBy = S::CreatedBy;
-        type CreatedAt = S::CreatedAt;
-        type UpdatedAt = S::UpdatedAt;
-        type Enabled = S::Enabled;
-        type Stats = S::Stats;
-    }
-    ///State transition - sets the `name` field to Set
-    pub struct SetName<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetName<S> {}
-    impl<S: State> State for SetName<S> {
-        type Id = S::Id;
-        type Name = Set<members::name>;
-        type CreatedBy = S::CreatedBy;
-        type CreatedAt = S::CreatedAt;
-        type UpdatedAt = S::UpdatedAt;
-        type Enabled = S::Enabled;
-        type Stats = S::Stats;
-    }
-    ///State transition - sets the `created_by` field to Set
-    pub struct SetCreatedBy<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedBy<S> {}
-    impl<S: State> State for SetCreatedBy<S> {
-        type Id = S::Id;
-        type Name = S::Name;
-        type CreatedBy = Set<members::created_by>;
-        type CreatedAt = S::CreatedAt;
-        type UpdatedAt = S::UpdatedAt;
-        type Enabled = S::Enabled;
-        type Stats = S::Stats;
+        type UpdatedAt = Unset;
     }
     ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type Id = S::Id;
-        type Name = S::Name;
-        type CreatedBy = S::CreatedBy;
+    pub struct SetCreatedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCreatedAt<St> {}
+    impl<St: State> State for SetCreatedAt<St> {
         type CreatedAt = Set<members::created_at>;
-        type UpdatedAt = S::UpdatedAt;
-        type Enabled = S::Enabled;
-        type Stats = S::Stats;
+        type CreatedBy = St::CreatedBy;
+        type Enabled = St::Enabled;
+        type Id = St::Id;
+        type Name = St::Name;
+        type Stats = St::Stats;
+        type UpdatedAt = St::UpdatedAt;
     }
-    ///State transition - sets the `updated_at` field to Set
-    pub struct SetUpdatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUpdatedAt<S> {}
-    impl<S: State> State for SetUpdatedAt<S> {
-        type Id = S::Id;
-        type Name = S::Name;
-        type CreatedBy = S::CreatedBy;
-        type CreatedAt = S::CreatedAt;
-        type UpdatedAt = Set<members::updated_at>;
-        type Enabled = S::Enabled;
-        type Stats = S::Stats;
+    ///State transition - sets the `created_by` field to Set
+    pub struct SetCreatedBy<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCreatedBy<St> {}
+    impl<St: State> State for SetCreatedBy<St> {
+        type CreatedAt = St::CreatedAt;
+        type CreatedBy = Set<members::created_by>;
+        type Enabled = St::Enabled;
+        type Id = St::Id;
+        type Name = St::Name;
+        type Stats = St::Stats;
+        type UpdatedAt = St::UpdatedAt;
     }
     ///State transition - sets the `enabled` field to Set
-    pub struct SetEnabled<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetEnabled<S> {}
-    impl<S: State> State for SetEnabled<S> {
-        type Id = S::Id;
-        type Name = S::Name;
-        type CreatedBy = S::CreatedBy;
-        type CreatedAt = S::CreatedAt;
-        type UpdatedAt = S::UpdatedAt;
+    pub struct SetEnabled<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetEnabled<St> {}
+    impl<St: State> State for SetEnabled<St> {
+        type CreatedAt = St::CreatedAt;
+        type CreatedBy = St::CreatedBy;
         type Enabled = Set<members::enabled>;
-        type Stats = S::Stats;
+        type Id = St::Id;
+        type Name = St::Name;
+        type Stats = St::Stats;
+        type UpdatedAt = St::UpdatedAt;
+    }
+    ///State transition - sets the `id` field to Set
+    pub struct SetId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetId<St> {}
+    impl<St: State> State for SetId<St> {
+        type CreatedAt = St::CreatedAt;
+        type CreatedBy = St::CreatedBy;
+        type Enabled = St::Enabled;
+        type Id = Set<members::id>;
+        type Name = St::Name;
+        type Stats = St::Stats;
+        type UpdatedAt = St::UpdatedAt;
+    }
+    ///State transition - sets the `name` field to Set
+    pub struct SetName<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetName<St> {}
+    impl<St: State> State for SetName<St> {
+        type CreatedAt = St::CreatedAt;
+        type CreatedBy = St::CreatedBy;
+        type Enabled = St::Enabled;
+        type Id = St::Id;
+        type Name = Set<members::name>;
+        type Stats = St::Stats;
+        type UpdatedAt = St::UpdatedAt;
     }
     ///State transition - sets the `stats` field to Set
-    pub struct SetStats<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetStats<S> {}
-    impl<S: State> State for SetStats<S> {
-        type Id = S::Id;
-        type Name = S::Name;
-        type CreatedBy = S::CreatedBy;
-        type CreatedAt = S::CreatedAt;
-        type UpdatedAt = S::UpdatedAt;
-        type Enabled = S::Enabled;
+    pub struct SetStats<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetStats<St> {}
+    impl<St: State> State for SetStats<St> {
+        type CreatedAt = St::CreatedAt;
+        type CreatedBy = St::CreatedBy;
+        type Enabled = St::Enabled;
+        type Id = St::Id;
+        type Name = St::Name;
         type Stats = Set<members::stats>;
+        type UpdatedAt = St::UpdatedAt;
+    }
+    ///State transition - sets the `updated_at` field to Set
+    pub struct SetUpdatedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetUpdatedAt<St> {}
+    impl<St: State> State for SetUpdatedAt<St> {
+        type CreatedAt = St::CreatedAt;
+        type CreatedBy = St::CreatedBy;
+        type Enabled = St::Enabled;
+        type Id = St::Id;
+        type Name = St::Name;
+        type Stats = St::Stats;
+        type UpdatedAt = Set<members::updated_at>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
+        ///Marker type for the `created_at` field
+        pub struct created_at(());
+        ///Marker type for the `created_by` field
+        pub struct created_by(());
+        ///Marker type for the `enabled` field
+        pub struct enabled(());
         ///Marker type for the `id` field
         pub struct id(());
         ///Marker type for the `name` field
         pub struct name(());
-        ///Marker type for the `created_by` field
-        pub struct created_by(());
-        ///Marker type for the `created_at` field
-        pub struct created_at(());
-        ///Marker type for the `updated_at` field
-        pub struct updated_at(());
-        ///Marker type for the `enabled` field
-        pub struct enabled(());
         ///Marker type for the `stats` field
         pub struct stats(());
+        ///Marker type for the `updated_at` field
+        pub struct updated_at(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct QueueViewBuilder<'a, S: queue_view_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Nsid<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<bool>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<Vec<jacquard_common::CowStr<'a>>>,
-        ::core::option::Option<crate::generated::tools_ozone::queue::QueueStats<'a>>,
-        ::core::option::Option<Vec<jacquard_common::CowStr<'a>>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
+/// Builder for constructing an instance of this type.
+pub struct QueueViewBuilder<
+    St: queue_view_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Nsid<S>>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<S>,
+        core::option::Option<bool>,
+        core::option::Option<i64>,
+        core::option::Option<S>,
+        core::option::Option<Vec<S>>,
+        core::option::Option<crate::generated::tools_ozone::queue::QueueStats<S>>,
+        core::option::Option<Vec<S>>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> QueueView<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> QueueViewBuilder<'a, queue_view_state::Empty> {
+impl QueueView<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> QueueViewBuilder<queue_view_state::Empty, jacquard_common::DefaultStr> {
         QueueViewBuilder::new()
     }
 }
 
-impl<'a> QueueViewBuilder<'a, queue_view_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> QueueView<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> QueueViewBuilder<queue_view_state::Empty, S> {
+        QueueViewBuilder::builder()
+    }
+}
+
+impl QueueViewBuilder<queue_view_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         QueueViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (
+            _state: ::core::marker::PhantomData,
+            _fields: (
                 None, None, None, None, None, None, None, None, None, None, None, None,
             ),
-            _phantom: ::core::marker::PhantomData,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: queue_view_state::State> QueueViewBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> QueueViewBuilder<queue_view_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        QueueViewBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (
+                None, None, None, None, None, None, None, None, None, None, None, None,
+            ),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: queue_view_state::State, S: jacquard_common::BosStr> QueueViewBuilder<St, S> {
     /// Set the `collection` field (optional)
     pub fn collection(
         mut self,
-        value: impl Into<Option<jacquard_common::types::string::Nsid<'a>>>,
+        value: impl Into<Option<jacquard_common::types::string::Nsid<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+        self._fields.0 = value.into();
         self
     }
     /// Set the `collection` field to an Option value (optional)
     pub fn maybe_collection(
         mut self,
-        value: Option<jacquard_common::types::string::Nsid<'a>>,
+        value: Option<jacquard_common::types::string::Nsid<S>>,
     ) -> Self {
-        self.__unsafe_private_named.0 = value;
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S> QueueViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> QueueViewBuilder<St, S>
 where
-    S: queue_view_state::State,
-    S::CreatedAt: queue_view_state::IsUnset,
+    St: queue_view_state::State,
+    St::CreatedAt: queue_view_state::IsUnset,
 {
     /// Set the `createdAt` field (required)
     pub fn created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> QueueViewBuilder<'a, queue_view_state::SetCreatedAt<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+    ) -> QueueViewBuilder<queue_view_state::SetCreatedAt<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         QueueViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> QueueViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> QueueViewBuilder<St, S>
 where
-    S: queue_view_state::State,
-    S::CreatedBy: queue_view_state::IsUnset,
+    St: queue_view_state::State,
+    St::CreatedBy: queue_view_state::IsUnset,
 {
     /// Set the `createdBy` field (required)
     pub fn created_by(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> QueueViewBuilder<'a, queue_view_state::SetCreatedBy<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> QueueViewBuilder<queue_view_state::SetCreatedBy<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         QueueViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: queue_view_state::State> QueueViewBuilder<'a, S> {
+impl<St: queue_view_state::State, S: jacquard_common::BosStr> QueueViewBuilder<St, S> {
     /// Set the `deletedAt` field (optional)
     pub fn deleted_at(
         mut self,
         value: impl Into<Option<jacquard_common::types::string::Datetime>>,
     ) -> Self {
-        self.__unsafe_private_named.3 = value.into();
+        self._fields.3 = value.into();
         self
     }
     /// Set the `deletedAt` field to an Option value (optional)
@@ -1135,216 +1089,193 @@ impl<'a, S: queue_view_state::State> QueueViewBuilder<'a, S> {
         mut self,
         value: Option<jacquard_common::types::string::Datetime>,
     ) -> Self {
-        self.__unsafe_private_named.3 = value;
+        self._fields.3 = value;
         self
     }
 }
 
-impl<'a, S: queue_view_state::State> QueueViewBuilder<'a, S> {
+impl<St: queue_view_state::State, S: jacquard_common::BosStr> QueueViewBuilder<St, S> {
     /// Set the `description` field (optional)
-    pub fn description(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.4 = value.into();
+    pub fn description(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.4 = value.into();
         self
     }
     /// Set the `description` field to an Option value (optional)
-    pub fn maybe_description(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.4 = value;
+    pub fn maybe_description(mut self, value: Option<S>) -> Self {
+        self._fields.4 = value;
         self
     }
 }
 
-impl<'a, S> QueueViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> QueueViewBuilder<St, S>
 where
-    S: queue_view_state::State,
-    S::Enabled: queue_view_state::IsUnset,
+    St: queue_view_state::State,
+    St::Enabled: queue_view_state::IsUnset,
 {
     /// Set the `enabled` field (required)
     pub fn enabled(
         mut self,
         value: impl Into<bool>,
-    ) -> QueueViewBuilder<'a, queue_view_state::SetEnabled<S>> {
-        self.__unsafe_private_named.5 = ::core::option::Option::Some(value.into());
+    ) -> QueueViewBuilder<queue_view_state::SetEnabled<St>, S> {
+        self._fields.5 = ::core::option::Option::Some(value.into());
         QueueViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> QueueViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> QueueViewBuilder<St, S>
 where
-    S: queue_view_state::State,
-    S::Id: queue_view_state::IsUnset,
+    St: queue_view_state::State,
+    St::Id: queue_view_state::IsUnset,
 {
     /// Set the `id` field (required)
-    pub fn id(mut self, value: impl Into<i64>) -> QueueViewBuilder<'a, queue_view_state::SetId<S>> {
-        self.__unsafe_private_named.6 = ::core::option::Option::Some(value.into());
+    pub fn id(mut self, value: impl Into<i64>) -> QueueViewBuilder<queue_view_state::SetId<St>, S> {
+        self._fields.6 = ::core::option::Option::Some(value.into());
         QueueViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> QueueViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> QueueViewBuilder<St, S>
 where
-    S: queue_view_state::State,
-    S::Name: queue_view_state::IsUnset,
+    St: queue_view_state::State,
+    St::Name: queue_view_state::IsUnset,
 {
     /// Set the `name` field (required)
     pub fn name(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> QueueViewBuilder<'a, queue_view_state::SetName<S>> {
-        self.__unsafe_private_named.7 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> QueueViewBuilder<queue_view_state::SetName<St>, S> {
+        self._fields.7 = ::core::option::Option::Some(value.into());
         QueueViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: queue_view_state::State> QueueViewBuilder<'a, S> {
+impl<St: queue_view_state::State, S: jacquard_common::BosStr> QueueViewBuilder<St, S> {
     /// Set the `reportTypes` field (optional)
-    pub fn report_types(
-        mut self,
-        value: impl Into<Option<Vec<jacquard_common::CowStr<'a>>>>,
-    ) -> Self {
-        self.__unsafe_private_named.8 = value.into();
+    pub fn report_types(mut self, value: impl Into<Option<Vec<S>>>) -> Self {
+        self._fields.8 = value.into();
         self
     }
     /// Set the `reportTypes` field to an Option value (optional)
-    pub fn maybe_report_types(mut self, value: Option<Vec<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.8 = value;
+    pub fn maybe_report_types(mut self, value: Option<Vec<S>>) -> Self {
+        self._fields.8 = value;
         self
     }
 }
 
-impl<'a, S> QueueViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> QueueViewBuilder<St, S>
 where
-    S: queue_view_state::State,
-    S::Stats: queue_view_state::IsUnset,
+    St: queue_view_state::State,
+    St::Stats: queue_view_state::IsUnset,
 {
     /// Set the `stats` field (required)
     pub fn stats(
         mut self,
-        value: impl Into<crate::generated::tools_ozone::queue::QueueStats<'a>>,
-    ) -> QueueViewBuilder<'a, queue_view_state::SetStats<S>> {
-        self.__unsafe_private_named.9 = ::core::option::Option::Some(value.into());
+        value: impl Into<crate::generated::tools_ozone::queue::QueueStats<S>>,
+    ) -> QueueViewBuilder<queue_view_state::SetStats<St>, S> {
+        self._fields.9 = ::core::option::Option::Some(value.into());
         QueueViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: queue_view_state::State> QueueViewBuilder<'a, S> {
+impl<St: queue_view_state::State, S: jacquard_common::BosStr> QueueViewBuilder<St, S> {
     /// Set the `subjectTypes` field (optional)
-    pub fn subject_types(
-        mut self,
-        value: impl Into<Option<Vec<jacquard_common::CowStr<'a>>>>,
-    ) -> Self {
-        self.__unsafe_private_named.10 = value.into();
+    pub fn subject_types(mut self, value: impl Into<Option<Vec<S>>>) -> Self {
+        self._fields.10 = value.into();
         self
     }
     /// Set the `subjectTypes` field to an Option value (optional)
-    pub fn maybe_subject_types(mut self, value: Option<Vec<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.10 = value;
+    pub fn maybe_subject_types(mut self, value: Option<Vec<S>>) -> Self {
+        self._fields.10 = value;
         self
     }
 }
 
-impl<'a, S> QueueViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> QueueViewBuilder<St, S>
 where
-    S: queue_view_state::State,
-    S::UpdatedAt: queue_view_state::IsUnset,
+    St: queue_view_state::State,
+    St::UpdatedAt: queue_view_state::IsUnset,
 {
     /// Set the `updatedAt` field (required)
     pub fn updated_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> QueueViewBuilder<'a, queue_view_state::SetUpdatedAt<S>> {
-        self.__unsafe_private_named.11 = ::core::option::Option::Some(value.into());
+    ) -> QueueViewBuilder<queue_view_state::SetUpdatedAt<St>, S> {
+        self._fields.11 = ::core::option::Option::Some(value.into());
         QueueViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> QueueViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> QueueViewBuilder<St, S>
 where
-    S: queue_view_state::State,
-    S::Id: queue_view_state::IsSet,
-    S::Name: queue_view_state::IsSet,
-    S::CreatedBy: queue_view_state::IsSet,
-    S::CreatedAt: queue_view_state::IsSet,
-    S::UpdatedAt: queue_view_state::IsSet,
-    S::Enabled: queue_view_state::IsSet,
-    S::Stats: queue_view_state::IsSet,
+    St: queue_view_state::State,
+    St::CreatedAt: queue_view_state::IsSet,
+    St::CreatedBy: queue_view_state::IsSet,
+    St::Enabled: queue_view_state::IsSet,
+    St::Id: queue_view_state::IsSet,
+    St::Name: queue_view_state::IsSet,
+    St::Stats: queue_view_state::IsSet,
+    St::UpdatedAt: queue_view_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> QueueView<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> QueueView<S> {
         QueueView {
-            collection: self.__unsafe_private_named.0,
-            created_at: self.__unsafe_private_named.1.unwrap(),
-            created_by: self.__unsafe_private_named.2.unwrap(),
-            deleted_at: self.__unsafe_private_named.3,
-            description: self.__unsafe_private_named.4,
-            enabled: self.__unsafe_private_named.5.unwrap(),
-            id: self.__unsafe_private_named.6.unwrap(),
-            name: self.__unsafe_private_named.7.unwrap(),
-            report_types: self.__unsafe_private_named.8,
-            stats: self.__unsafe_private_named.9.unwrap(),
-            subject_types: self.__unsafe_private_named.10,
-            updated_at: self.__unsafe_private_named.11.unwrap(),
+            collection: self._fields.0,
+            created_at: self._fields.1.unwrap(),
+            created_by: self._fields.2.unwrap(),
+            deleted_at: self._fields.3,
+            description: self._fields.4,
+            enabled: self._fields.5.unwrap(),
+            id: self._fields.6.unwrap(),
+            name: self._fields.7.unwrap(),
+            report_types: self._fields.8,
+            stats: self._fields.9.unwrap(),
+            subject_types: self._fields.10,
+            updated_at: self._fields.11.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> QueueView<'a> {
+    ) -> QueueView<S> {
         QueueView {
-            collection: self.__unsafe_private_named.0,
-            created_at: self.__unsafe_private_named.1.unwrap(),
-            created_by: self.__unsafe_private_named.2.unwrap(),
-            deleted_at: self.__unsafe_private_named.3,
-            description: self.__unsafe_private_named.4,
-            enabled: self.__unsafe_private_named.5.unwrap(),
-            id: self.__unsafe_private_named.6.unwrap(),
-            name: self.__unsafe_private_named.7.unwrap(),
-            report_types: self.__unsafe_private_named.8,
-            stats: self.__unsafe_private_named.9.unwrap(),
-            subject_types: self.__unsafe_private_named.10,
-            updated_at: self.__unsafe_private_named.11.unwrap(),
+            collection: self._fields.0,
+            created_at: self._fields.1.unwrap(),
+            created_by: self._fields.2.unwrap(),
+            deleted_at: self._fields.3,
+            description: self._fields.4,
+            enabled: self._fields.5.unwrap(),
+            id: self._fields.6.unwrap(),
+            name: self._fields.7.unwrap(),
+            report_types: self._fields.8,
+            stats: self._fields.9.unwrap(),
+            subject_types: self._fields.10,
+            updated_at: self._fields.11.unwrap(),
             extra_data: Some(extra_data),
         }
-    }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for QueueView<'a> {
-    fn nsid() -> &'static str {
-        "tools.ozone.queue.defs"
-    }
-    fn def_name() -> &'static str {
-        "queueView"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_tools_ozone_queue_defs()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
     }
 }

@@ -6,7 +6,7 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 /// Allow replies from actors who follow you.
-#[jacquard_derive::lexicon]
+
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -17,90 +17,381 @@
     jacquard_derive::IntoStatic,
     Default,
 )]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct FollowerRule<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// Allow replies from actors you follow.
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic,
+    Default,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct FollowingRule<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// Allow replies from actors on a list.
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ListRule<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub list: jacquard_common::types::string::AtUri<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// Record defining interaction gating rules for a thread (aka, reply controls). The record key (rkey) of the threadgate record must match the record key of the thread's root post, and that record must be in the same repository.
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    rename = "app.bsky.feed.threadgate",
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct Threadgate<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///List of rules defining who can reply to this post. If value is an empty array, no one can reply. If value is undefined, anyone can reply.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub allow: core::option::Option<Vec<ThreadgateAllowItem<S>>>,
+    pub created_at: jacquard_common::types::string::Datetime,
+    ///List of hidden reply URIs.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub hidden_replies: core::option::Option<Vec<jacquard_common::types::string::AtUri<S>>>,
+    ///Reference (AT-URI) to the post record.
+    pub post: jacquard_common::types::string::AtUri<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[jacquard_derive::open_union]
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub enum ThreadgateAllowItem<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(rename = "app.bsky.feed.threadgate#mentionRule")]
+    MentionRule(Box<crate::generated::app_bsky::feed::threadgate::MentionRule<S>>),
+    #[serde(rename = "app.bsky.feed.threadgate#followerRule")]
+    FollowerRule(Box<crate::generated::app_bsky::feed::threadgate::FollowerRule<S>>),
+    #[serde(rename = "app.bsky.feed.threadgate#followingRule")]
+    FollowingRule(Box<crate::generated::app_bsky::feed::threadgate::FollowingRule<S>>),
+    #[serde(rename = "app.bsky.feed.threadgate#listRule")]
+    ListRule(Box<crate::generated::app_bsky::feed::threadgate::ListRule<S>>),
+}
+
+/// Typed wrapper for GetRecord response with this collection's record type.
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
 #[serde(rename_all = "camelCase")]
-pub struct FollowerRule<'a> {}
-fn lexicon_doc_app_bsky_feed_threadgate() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+pub struct ThreadgateGetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
+    pub uri: jacquard_common::types::string::AtUri<S>,
+    pub value: Threadgate<S>,
+}
+
+/// Allow replies from actors mentioned in your post.
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic,
+    Default,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct MentionRule<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+impl<S: jacquard_common::BosStr> Threadgate<S> {
+    pub fn uri(
+        uri: S,
+    ) -> Result<
+        jacquard_common::types::uri::RecordUri<S, ThreadgateRecord>,
+        jacquard_common::types::uri::UriError,
+    > {
+        jacquard_common::types::uri::RecordUri::try_from_uri(
+            jacquard_common::types::string::AtUri::new(uri)?,
+        )
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for FollowerRule<S> {
+    fn nsid() -> &'static str {
+        "app.bsky.feed.threadgate"
+    }
+    fn def_name() -> &'static str {
+        "followerRule"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_app_bsky_feed_threadgate()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for FollowingRule<S> {
+    fn nsid() -> &'static str {
+        "app.bsky.feed.threadgate"
+    }
+    fn def_name() -> &'static str {
+        "followingRule"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_app_bsky_feed_threadgate()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ListRule<S> {
+    fn nsid() -> &'static str {
+        "app.bsky.feed.threadgate"
+    }
+    fn def_name() -> &'static str {
+        "listRule"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_app_bsky_feed_threadgate()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+/// Marker type for deserializing records from this collection.
+
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+pub struct ThreadgateRecord;
+impl jacquard_common::xrpc::XrpcResp for ThreadgateRecord {
+    const NSID: &'static str = "app.bsky.feed.threadgate";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = ThreadgateGetRecordOutput<S>;
+    type Err = jacquard_common::types::collection::RecordError;
+}
+
+impl<S: jacquard_common::BosStr> From<ThreadgateGetRecordOutput<S>> for Threadgate<S> {
+    fn from(output: ThreadgateGetRecordOutput<S>) -> Self {
+        output.value
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection for Threadgate<S> {
+    const NSID: &'static str = "app.bsky.feed.threadgate";
+    type Record = ThreadgateRecord;
+}
+
+impl jacquard_common::types::collection::Collection for ThreadgateRecord {
+    const NSID: &'static str = "app.bsky.feed.threadgate";
+    type Record = ThreadgateRecord;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Threadgate<S> {
+    fn nsid() -> &'static str {
+        "app.bsky.feed.threadgate"
+    }
+    fn def_name() -> &'static str {
+        "main"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_app_bsky_feed_threadgate()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        if let Some(ref value) = self.allow {
+            #[allow(unused_comparisons)]
+            if value.len() > 5usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("allow"),
+                    max: 5usize,
+                    actual: value.len(),
+                });
+            }
+        }
+        if let Some(ref value) = self.hidden_replies {
+            #[allow(unused_comparisons)]
+            if value.len() > 300usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "hidden_replies",
+                    ),
+                    max: 300usize,
+                    actual: value.len(),
+                });
+            }
+        }
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for MentionRule<S> {
+    fn nsid() -> &'static str {
+        "app.bsky.feed.threadgate"
+    }
+    fn def_name() -> &'static str {
+        "mentionRule"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_app_bsky_feed_threadgate()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+fn lexicon_doc_app_bsky_feed_threadgate() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("app.bsky.feed.threadgate"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("followerRule"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("followerRule"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
                         description: Some(::jacquard_common::CowStr::new_static(
                             "Allow replies from actors who follow you.",
                         )),
-                        required: None,
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("followingRule"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("followingRule"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
                         description: Some(::jacquard_common::CowStr::new_static(
                             "Allow replies from actors you follow.",
                         )),
-                        required: None,
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("listRule"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("listRule"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
                         description: Some(::jacquard_common::CowStr::new_static(
                             "Allow replies from actors on a list.",
                         )),
-                        required: Some(vec![::jacquard_common::smol_str::SmolStr::new_static(
-                            "list",
-                        )]),
-                        nullable: None,
+                        required: Some(vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("list"),
+                        ]),
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("list"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("list"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
                 ::jacquard_lexicon::lexicon::LexUserType::Record(::jacquard_lexicon::lexicon::LexRecord {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
@@ -109,19 +400,19 @@ fn lexicon_doc_app_bsky_feed_threadgate() -> ::jacquard_lexicon::lexicon::Lexico
                     ),
                     key: Some(::jacquard_common::CowStr::new_static("tid")),
                     record: ::jacquard_lexicon::lexicon::LexRecordRecord::Object(::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(
                             vec![
-                                ::jacquard_common::smol_str::SmolStr::new_static("post"),
-                                ::jacquard_common::smol_str::SmolStr::new_static("createdAt")
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("post"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt")
                             ],
                         ),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("allow"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "allow",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
                                     description: Some(
                                         ::jacquard_common::CowStr::new_static(
@@ -129,40 +420,31 @@ fn lexicon_doc_app_bsky_feed_threadgate() -> ::jacquard_lexicon::lexicon::Lexico
                                         ),
                                     ),
                                     items: ::jacquard_lexicon::lexicon::LexArrayItem::Union(::jacquard_lexicon::lexicon::LexRefUnion {
-                                        description: None,
                                         refs: vec![
                                             ::jacquard_common::CowStr::new_static("#mentionRule"),
                                             ::jacquard_common::CowStr::new_static("#followerRule"),
                                             ::jacquard_common::CowStr::new_static("#followingRule"),
                                             ::jacquard_common::CowStr::new_static("#listRule")
                                         ],
-                                        closed: None,
+                                        ..Default::default()
                                     }),
-                                    min_length: None,
                                     max_length: Some(5usize),
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "createdAt",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                    description: None,
                                     format: Some(
                                         ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                     ),
-                                    default: None,
-                                    min_length: None,
-                                    max_length: None,
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "hiddenReplies",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
@@ -172,25 +454,19 @@ fn lexicon_doc_app_bsky_feed_threadgate() -> ::jacquard_lexicon::lexicon::Lexico
                                         ),
                                     ),
                                     items: ::jacquard_lexicon::lexicon::LexArrayItem::String(::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     }),
-                                    min_length: None,
                                     max_length: Some(300usize),
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("post"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "post",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                     description: Some(
                                         ::jacquard_common::CowStr::new_static(
@@ -200,100 +476,36 @@ fn lexicon_doc_app_bsky_feed_threadgate() -> ::jacquard_lexicon::lexicon::Lexico
                                     format: Some(
                                         ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
                                     ),
-                                    default: None,
-                                    min_length: None,
-                                    max_length: None,
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
                             );
                             map
                         },
+                        ..Default::default()
                     }),
+                    ..Default::default()
                 }),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("mentionRule"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("mentionRule"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
                         description: Some(::jacquard_common::CowStr::new_static(
                             "Allow replies from actors mentioned in your post.",
                         )),
-                        required: None,
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map
         },
+        ..Default::default()
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for FollowerRule<'a> {
-    fn nsid() -> &'static str {
-        "app.bsky.feed.threadgate"
-    }
-    fn def_name() -> &'static str {
-        "followerRule"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_app_bsky_feed_threadgate()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-/// Allow replies from actors you follow.
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic,
-    Default,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct FollowingRule<'a> {}
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for FollowingRule<'a> {
-    fn nsid() -> &'static str {
-        "app.bsky.feed.threadgate"
-    }
-    fn def_name() -> &'static str {
-        "followingRule"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_app_bsky_feed_threadgate()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-/// Allow replies from actors on a list.
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct ListRule<'a> {
-    #[serde(borrow)]
-    pub list: jacquard_common::types::string::AtUri<'a>,
 }
 
 pub mod list_rule_state {
@@ -315,9 +527,9 @@ pub mod list_rule_state {
         type List = Unset;
     }
     ///State transition - sets the `list` field to Set
-    pub struct SetList<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetList<S> {}
-    impl<S: State> State for SetList<S> {
+    pub struct SetList<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetList<St> {}
+    impl<St: State> State for SetList<St> {
         type List = Set<members::list>;
     }
     /// Marker types for field names
@@ -328,113 +540,96 @@ pub mod list_rule_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct ListRuleBuilder<'a, S: list_rule_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<jacquard_common::types::string::AtUri<'a>>,),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct ListRuleBuilder<
+    St: list_rule_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<jacquard_common::types::string::AtUri<S>>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> ListRule<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> ListRuleBuilder<'a, list_rule_state::Empty> {
+impl ListRule<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> ListRuleBuilder<list_rule_state::Empty, jacquard_common::DefaultStr> {
         ListRuleBuilder::new()
     }
 }
 
-impl<'a> ListRuleBuilder<'a, list_rule_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> ListRule<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> ListRuleBuilder<list_rule_state::Empty, S> {
+        ListRuleBuilder::builder()
+    }
+}
+
+impl ListRuleBuilder<list_rule_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ListRuleBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ListRuleBuilder<'a, S>
+impl<S: jacquard_common::BosStr> ListRuleBuilder<list_rule_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        ListRuleBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ListRuleBuilder<St, S>
 where
-    S: list_rule_state::State,
-    S::List: list_rule_state::IsUnset,
+    St: list_rule_state::State,
+    St::List: list_rule_state::IsUnset,
 {
     /// Set the `list` field (required)
     pub fn list(
         mut self,
-        value: impl Into<jacquard_common::types::string::AtUri<'a>>,
-    ) -> ListRuleBuilder<'a, list_rule_state::SetList<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::AtUri<S>>,
+    ) -> ListRuleBuilder<list_rule_state::SetList<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         ListRuleBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ListRuleBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ListRuleBuilder<St, S>
 where
-    S: list_rule_state::State,
-    S::List: list_rule_state::IsSet,
+    St: list_rule_state::State,
+    St::List: list_rule_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> ListRule<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> ListRule<S> {
         ListRule {
-            list: self.__unsafe_private_named.0.unwrap(),
+            list: self._fields.0.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> ListRule<'a> {
+    ) -> ListRule<S> {
         ListRule {
-            list: self.__unsafe_private_named.0.unwrap(),
+            list: self._fields.0.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ListRule<'a> {
-    fn nsid() -> &'static str {
-        "app.bsky.feed.threadgate"
-    }
-    fn def_name() -> &'static str {
-        "listRule"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_app_bsky_feed_threadgate()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-/// Record defining interaction gating rules for a thread (aka, reply controls). The record key (rkey) of the threadgate record must match the record key of the thread's root post, and that record must be in the same repository.
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct Threadgate<'a> {
-    /// List of rules defining who can reply to this post. If value is an empty array, no one can reply. If value is undefined, anyone can reply.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub allow: std::option::Option<Vec<ThreadgateAllowItem<'a>>>,
-    pub created_at: jacquard_common::types::string::Datetime,
-    /// List of hidden reply URIs.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub hidden_replies: std::option::Option<Vec<jacquard_common::types::string::AtUri<'a>>>,
-    /// Reference (AT-URI) to the post record.
-    #[serde(borrow)]
-    pub post: jacquard_common::types::string::AtUri<'a>,
 }
 
 pub mod threadgate_state {
@@ -447,312 +642,191 @@ pub mod threadgate_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Post;
         type CreatedAt;
+        type Post;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Post = Unset;
         type CreatedAt = Unset;
-    }
-    ///State transition - sets the `post` field to Set
-    pub struct SetPost<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetPost<S> {}
-    impl<S: State> State for SetPost<S> {
-        type Post = Set<members::post>;
-        type CreatedAt = S::CreatedAt;
+        type Post = Unset;
     }
     ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type Post = S::Post;
+    pub struct SetCreatedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCreatedAt<St> {}
+    impl<St: State> State for SetCreatedAt<St> {
         type CreatedAt = Set<members::created_at>;
+        type Post = St::Post;
+    }
+    ///State transition - sets the `post` field to Set
+    pub struct SetPost<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetPost<St> {}
+    impl<St: State> State for SetPost<St> {
+        type CreatedAt = St::CreatedAt;
+        type Post = Set<members::post>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `post` field
-        pub struct post(());
         ///Marker type for the `created_at` field
         pub struct created_at(());
+        ///Marker type for the `post` field
+        pub struct post(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct ThreadgateBuilder<'a, S: threadgate_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<Vec<ThreadgateAllowItem<'a>>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<Vec<jacquard_common::types::string::AtUri<'a>>>,
-        ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct ThreadgateBuilder<
+    St: threadgate_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<Vec<ThreadgateAllowItem<S>>>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<Vec<jacquard_common::types::string::AtUri<S>>>,
+        core::option::Option<jacquard_common::types::string::AtUri<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> Threadgate<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> ThreadgateBuilder<'a, threadgate_state::Empty> {
+impl Threadgate<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> ThreadgateBuilder<threadgate_state::Empty, jacquard_common::DefaultStr> {
         ThreadgateBuilder::new()
     }
 }
 
-impl<'a> ThreadgateBuilder<'a, threadgate_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> Threadgate<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> ThreadgateBuilder<threadgate_state::Empty, S> {
+        ThreadgateBuilder::builder()
+    }
+}
+
+impl ThreadgateBuilder<threadgate_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ThreadgateBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: threadgate_state::State> ThreadgateBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> ThreadgateBuilder<threadgate_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        ThreadgateBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: threadgate_state::State, S: jacquard_common::BosStr> ThreadgateBuilder<St, S> {
     /// Set the `allow` field (optional)
-    pub fn allow(mut self, value: impl Into<Option<Vec<ThreadgateAllowItem<'a>>>>) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+    pub fn allow(mut self, value: impl Into<Option<Vec<ThreadgateAllowItem<S>>>>) -> Self {
+        self._fields.0 = value.into();
         self
     }
     /// Set the `allow` field to an Option value (optional)
-    pub fn maybe_allow(mut self, value: Option<Vec<ThreadgateAllowItem<'a>>>) -> Self {
-        self.__unsafe_private_named.0 = value;
+    pub fn maybe_allow(mut self, value: Option<Vec<ThreadgateAllowItem<S>>>) -> Self {
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S> ThreadgateBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ThreadgateBuilder<St, S>
 where
-    S: threadgate_state::State,
-    S::CreatedAt: threadgate_state::IsUnset,
+    St: threadgate_state::State,
+    St::CreatedAt: threadgate_state::IsUnset,
 {
     /// Set the `createdAt` field (required)
     pub fn created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> ThreadgateBuilder<'a, threadgate_state::SetCreatedAt<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+    ) -> ThreadgateBuilder<threadgate_state::SetCreatedAt<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         ThreadgateBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: threadgate_state::State> ThreadgateBuilder<'a, S> {
+impl<St: threadgate_state::State, S: jacquard_common::BosStr> ThreadgateBuilder<St, S> {
     /// Set the `hiddenReplies` field (optional)
     pub fn hidden_replies(
         mut self,
-        value: impl Into<Option<Vec<jacquard_common::types::string::AtUri<'a>>>>,
+        value: impl Into<Option<Vec<jacquard_common::types::string::AtUri<S>>>>,
     ) -> Self {
-        self.__unsafe_private_named.2 = value.into();
+        self._fields.2 = value.into();
         self
     }
     /// Set the `hiddenReplies` field to an Option value (optional)
     pub fn maybe_hidden_replies(
         mut self,
-        value: Option<Vec<jacquard_common::types::string::AtUri<'a>>>,
+        value: Option<Vec<jacquard_common::types::string::AtUri<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.2 = value;
+        self._fields.2 = value;
         self
     }
 }
 
-impl<'a, S> ThreadgateBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ThreadgateBuilder<St, S>
 where
-    S: threadgate_state::State,
-    S::Post: threadgate_state::IsUnset,
+    St: threadgate_state::State,
+    St::Post: threadgate_state::IsUnset,
 {
     /// Set the `post` field (required)
     pub fn post(
         mut self,
-        value: impl Into<jacquard_common::types::string::AtUri<'a>>,
-    ) -> ThreadgateBuilder<'a, threadgate_state::SetPost<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::AtUri<S>>,
+    ) -> ThreadgateBuilder<threadgate_state::SetPost<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
         ThreadgateBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ThreadgateBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ThreadgateBuilder<St, S>
 where
-    S: threadgate_state::State,
-    S::Post: threadgate_state::IsSet,
-    S::CreatedAt: threadgate_state::IsSet,
+    St: threadgate_state::State,
+    St::CreatedAt: threadgate_state::IsSet,
+    St::Post: threadgate_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> Threadgate<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> Threadgate<S> {
         Threadgate {
-            allow: self.__unsafe_private_named.0,
-            created_at: self.__unsafe_private_named.1.unwrap(),
-            hidden_replies: self.__unsafe_private_named.2,
-            post: self.__unsafe_private_named.3.unwrap(),
+            allow: self._fields.0,
+            created_at: self._fields.1.unwrap(),
+            hidden_replies: self._fields.2,
+            post: self._fields.3.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> Threadgate<'a> {
+    ) -> Threadgate<S> {
         Threadgate {
-            allow: self.__unsafe_private_named.0,
-            created_at: self.__unsafe_private_named.1.unwrap(),
-            hidden_replies: self.__unsafe_private_named.2,
-            post: self.__unsafe_private_named.3.unwrap(),
+            allow: self._fields.0,
+            created_at: self._fields.1.unwrap(),
+            hidden_replies: self._fields.2,
+            post: self._fields.3.unwrap(),
             extra_data: Some(extra_data),
         }
-    }
-}
-
-impl<'a> Threadgate<'a> {
-    pub fn uri(
-        uri: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> Result<
-        jacquard_common::types::uri::RecordUri<'a, ThreadgateRecord>,
-        jacquard_common::types::uri::UriError,
-    > {
-        jacquard_common::types::uri::RecordUri::try_from_uri(
-            jacquard_common::types::string::AtUri::new_cow(uri.into())?,
-        )
-    }
-}
-
-#[jacquard_derive::open_union]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(tag = "$type")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum ThreadgateAllowItem<'a> {
-    #[serde(rename = "app.bsky.feed.threadgate#mentionRule")]
-    MentionRule(Box<crate::generated::app_bsky::feed::threadgate::MentionRule<'a>>),
-    #[serde(rename = "app.bsky.feed.threadgate#followerRule")]
-    FollowerRule(Box<crate::generated::app_bsky::feed::threadgate::FollowerRule<'a>>),
-    #[serde(rename = "app.bsky.feed.threadgate#followingRule")]
-    FollowingRule(Box<crate::generated::app_bsky::feed::threadgate::FollowingRule<'a>>),
-    #[serde(rename = "app.bsky.feed.threadgate#listRule")]
-    ListRule(Box<crate::generated::app_bsky::feed::threadgate::ListRule<'a>>),
-}
-
-/// Typed wrapper for GetRecord response with this collection's record type.
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct ThreadgateGetRecordOutput<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cid: std::option::Option<jacquard_common::types::string::Cid<'a>>,
-    #[serde(borrow)]
-    pub uri: jacquard_common::types::string::AtUri<'a>,
-    #[serde(borrow)]
-    pub value: Threadgate<'a>,
-}
-
-impl From<ThreadgateGetRecordOutput<'_>> for Threadgate<'_> {
-    fn from(output: ThreadgateGetRecordOutput<'_>) -> Self {
-        use jacquard_common::IntoStatic;
-        output.value.into_static()
-    }
-}
-
-impl jacquard_common::types::collection::Collection for Threadgate<'_> {
-    const NSID: &'static str = "app.bsky.feed.threadgate";
-    type Record = ThreadgateRecord;
-}
-
-/// Marker type for deserializing records from this collection.
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
-pub struct ThreadgateRecord;
-impl jacquard_common::xrpc::XrpcResp for ThreadgateRecord {
-    const NSID: &'static str = "app.bsky.feed.threadgate";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = ThreadgateGetRecordOutput<'de>;
-    type Err<'de> = jacquard_common::types::collection::RecordError<'de>;
-}
-
-impl jacquard_common::types::collection::Collection for ThreadgateRecord {
-    const NSID: &'static str = "app.bsky.feed.threadgate";
-    type Record = ThreadgateRecord;
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Threadgate<'a> {
-    fn nsid() -> &'static str {
-        "app.bsky.feed.threadgate"
-    }
-    fn def_name() -> &'static str {
-        "main"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_app_bsky_feed_threadgate()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        if let Some(ref value) = self.allow {
-            #[allow(unused_comparisons)]
-            if value.len() > 5usize {
-                return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("allow"),
-                    max: 5usize,
-                    actual: value.len(),
-                });
-            }
-        }
-        if let Some(ref value) = self.hidden_replies {
-            #[allow(unused_comparisons)]
-            if value.len() > 300usize {
-                return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
-                        "hidden_replies",
-                    ),
-                    max: 300usize,
-                    actual: value.len(),
-                });
-            }
-        }
-        Ok(())
-    }
-}
-
-/// Allow replies from actors mentioned in your post.
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic,
-    Default,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct MentionRule<'a> {}
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for MentionRule<'a> {
-    fn nsid() -> &'static str {
-        "app.bsky.feed.threadgate"
-    }
-    fn def_name() -> &'static str {
-        "mentionRule"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_app_bsky_feed_threadgate()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
     }
 }

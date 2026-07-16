@@ -5,25 +5,88 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct UpdateQueue<'a> {
-    /// Optional description of the queue
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub description: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// Enable or disable the queue
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub enabled: std::option::Option<bool>,
-    /// New display name for the queue
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub name: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// ID of the queue to update
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct UpdateQueue<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Optional description of the queue
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub description: core::option::Option<S>,
+    ///Enable or disable the queue
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub enabled: core::option::Option<bool>,
+    ///New display name for the queue
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub name: core::option::Option<S>,
+    ///ID of the queue to update
     pub queue_id: i64,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct UpdateQueueOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub queue: crate::generated::tools_ozone::queue::QueueView<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `tools.ozone.queue.updateQueue` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `UpdateQueueOutput<S>` for this endpoint.*/
+pub struct UpdateQueueResponse;
+impl jacquard_common::xrpc::XrpcResp for UpdateQueueResponse {
+    const NSID: &'static str = "tools.ozone.queue.updateQueue";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = UpdateQueueOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for UpdateQueue<S> {
+    const NSID: &'static str = "tools.ozone.queue.updateQueue";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Response = UpdateQueueResponse;
+}
+
+/** Endpoint marker for the `tools.ozone.queue.updateQueue` procedure.
+
+Path: `/xrpc/tools.ozone.queue.updateQueue`. The request payload type is `UpdateQueue<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct UpdateQueueRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for UpdateQueueRequest {
+    const PATH: &'static str = "/xrpc/tools.ozone.queue.updateQueue";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Request<S: jacquard_common::BosStr> = UpdateQueue<S>;
+    type Response = UpdateQueueResponse;
 }
 
 pub mod update_queue_state {
@@ -45,9 +108,9 @@ pub mod update_queue_state {
         type QueueId = Unset;
     }
     ///State transition - sets the `queue_id` field to Set
-    pub struct SetQueueId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetQueueId<S> {}
-    impl<S: State> State for SetQueueId<S> {
+    pub struct SetQueueId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetQueueId<St> {}
+    impl<St: State> State for SetQueueId<St> {
         type QueueId = Set<members::queue_id>;
     }
     /// Marker types for field names
@@ -58,161 +121,144 @@ pub mod update_queue_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct UpdateQueueBuilder<'a, S: update_queue_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<bool>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<i64>,
+/// Builder for constructing an instance of this type.
+pub struct UpdateQueueBuilder<
+    St: update_queue_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<bool>,
+        core::option::Option<S>,
+        core::option::Option<i64>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> UpdateQueue<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> UpdateQueueBuilder<'a, update_queue_state::Empty> {
+impl UpdateQueue<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> UpdateQueueBuilder<update_queue_state::Empty, jacquard_common::DefaultStr> {
         UpdateQueueBuilder::new()
     }
 }
 
-impl<'a> UpdateQueueBuilder<'a, update_queue_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> UpdateQueue<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> UpdateQueueBuilder<update_queue_state::Empty, S> {
+        UpdateQueueBuilder::builder()
+    }
+}
+
+impl UpdateQueueBuilder<update_queue_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         UpdateQueueBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: update_queue_state::State> UpdateQueueBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> UpdateQueueBuilder<update_queue_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        UpdateQueueBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: update_queue_state::State, S: jacquard_common::BosStr> UpdateQueueBuilder<St, S> {
     /// Set the `description` field (optional)
-    pub fn description(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+    pub fn description(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.0 = value.into();
         self
     }
     /// Set the `description` field to an Option value (optional)
-    pub fn maybe_description(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.0 = value;
+    pub fn maybe_description(mut self, value: Option<S>) -> Self {
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S: update_queue_state::State> UpdateQueueBuilder<'a, S> {
+impl<St: update_queue_state::State, S: jacquard_common::BosStr> UpdateQueueBuilder<St, S> {
     /// Set the `enabled` field (optional)
     pub fn enabled(mut self, value: impl Into<Option<bool>>) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self._fields.1 = value.into();
         self
     }
     /// Set the `enabled` field to an Option value (optional)
     pub fn maybe_enabled(mut self, value: Option<bool>) -> Self {
-        self.__unsafe_private_named.1 = value;
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S: update_queue_state::State> UpdateQueueBuilder<'a, S> {
+impl<St: update_queue_state::State, S: jacquard_common::BosStr> UpdateQueueBuilder<St, S> {
     /// Set the `name` field (optional)
-    pub fn name(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.2 = value.into();
+    pub fn name(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.2 = value.into();
         self
     }
     /// Set the `name` field to an Option value (optional)
-    pub fn maybe_name(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.2 = value;
+    pub fn maybe_name(mut self, value: Option<S>) -> Self {
+        self._fields.2 = value;
         self
     }
 }
 
-impl<'a, S> UpdateQueueBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> UpdateQueueBuilder<St, S>
 where
-    S: update_queue_state::State,
-    S::QueueId: update_queue_state::IsUnset,
+    St: update_queue_state::State,
+    St::QueueId: update_queue_state::IsUnset,
 {
     /// Set the `queueId` field (required)
     pub fn queue_id(
         mut self,
         value: impl Into<i64>,
-    ) -> UpdateQueueBuilder<'a, update_queue_state::SetQueueId<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+    ) -> UpdateQueueBuilder<update_queue_state::SetQueueId<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
         UpdateQueueBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> UpdateQueueBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> UpdateQueueBuilder<St, S>
 where
-    S: update_queue_state::State,
-    S::QueueId: update_queue_state::IsSet,
+    St: update_queue_state::State,
+    St::QueueId: update_queue_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> UpdateQueue<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> UpdateQueue<S> {
         UpdateQueue {
-            description: self.__unsafe_private_named.0,
-            enabled: self.__unsafe_private_named.1,
-            name: self.__unsafe_private_named.2,
-            queue_id: self.__unsafe_private_named.3.unwrap(),
+            description: self._fields.0,
+            enabled: self._fields.1,
+            name: self._fields.2,
+            queue_id: self._fields.3.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> UpdateQueue<'a> {
+    ) -> UpdateQueue<S> {
         UpdateQueue {
-            description: self.__unsafe_private_named.0,
-            enabled: self.__unsafe_private_named.1,
-            name: self.__unsafe_private_named.2,
-            queue_id: self.__unsafe_private_named.3.unwrap(),
+            description: self._fields.0,
+            enabled: self._fields.1,
+            name: self._fields.2,
+            queue_id: self._fields.3.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct UpdateQueueOutput<'a> {
-    #[serde(borrow)]
-    pub queue: crate::generated::tools_ozone::queue::QueueView<'a>,
-}
-
-/// Response type for
-///tools.ozone.queue.updateQueue
-pub struct UpdateQueueResponse;
-impl jacquard_common::xrpc::XrpcResp for UpdateQueueResponse {
-    const NSID: &'static str = "tools.ozone.queue.updateQueue";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = UpdateQueueOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for UpdateQueue<'a> {
-    const NSID: &'static str = "tools.ozone.queue.updateQueue";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Response = UpdateQueueResponse;
-}
-
-/// Endpoint type for
-///tools.ozone.queue.updateQueue
-pub struct UpdateQueueRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for UpdateQueueRequest {
-    const PATH: &'static str = "/xrpc/tools.ozone.queue.updateQueue";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = UpdateQueue<'de>;
-    type Response = UpdateQueueResponse;
 }

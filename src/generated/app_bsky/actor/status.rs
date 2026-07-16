@@ -6,6 +6,7 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 /// Advertises an account as currently offering live content.
+
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -13,34 +14,204 @@
     Clone,
     PartialEq,
     Eq,
-    Hash,
     jacquard_derive::IntoStatic,
+    Hash,
 )]
 pub struct Live;
-impl std::fmt::Display for Live {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for Live {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(f, "live")
     }
 }
 
 /// A declaration of a Bluesky account status.
-#[jacquard_derive::lexicon]
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    rename = "app.bsky.actor.status",
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct Status<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub created_at: jacquard_common::types::string::Datetime,
+    ///The duration of the status in minutes. Applications can choose to impose minimum and maximum limits.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub duration_minutes: core::option::Option<i64>,
+    ///An optional embed associated with the status.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub embed: core::option::Option<crate::generated::app_bsky::embed::external::ExternalRecord<S>>,
+    ///The status for the account.
+    pub status: StatusStatus<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// The status for the account.
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum StatusStatus<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    Live,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> StatusStatus<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Live => "app.bsky.actor.status#live",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "app.bsky.actor.status#live" => Self::Live,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for StatusStatus<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for StatusStatus<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for StatusStatus<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for StatusStatus<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for StatusStatus<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for StatusStatus<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = StatusStatus<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            StatusStatus::Live => StatusStatus::Live,
+            StatusStatus::Other(v) => StatusStatus::Other(v.into_static()),
+        }
+    }
+}
+
+/// Typed wrapper for GetRecord response with this collection's record type.
+
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
-pub struct Status<'a> {
-    pub created_at: jacquard_common::types::string::Datetime,
-    /// The duration of the status in minutes. Applications can choose to impose minimum and maximum limits.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub duration_minutes: std::option::Option<i64>,
-    /// An optional embed associated with the status.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub embed: std::option::Option<crate::generated::app_bsky::embed::external::ExternalRecord<'a>>,
-    /// The status for the account.
-    #[serde(borrow)]
-    pub status: jacquard_common::CowStr<'a>,
+pub struct StatusGetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
+    pub uri: jacquard_common::types::string::AtUri<S>,
+    pub value: Status<S>,
+}
+
+impl<S: jacquard_common::BosStr> Status<S> {
+    pub fn uri(
+        uri: S,
+    ) -> Result<
+        jacquard_common::types::uri::RecordUri<S, StatusRecord>,
+        jacquard_common::types::uri::UriError,
+    > {
+        jacquard_common::types::uri::RecordUri::try_from_uri(
+            jacquard_common::types::string::AtUri::new(uri)?,
+        )
+    }
+}
+
+/// Marker type for deserializing records from this collection.
+
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+pub struct StatusRecord;
+impl jacquard_common::xrpc::XrpcResp for StatusRecord {
+    const NSID: &'static str = "app.bsky.actor.status";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = StatusGetRecordOutput<S>;
+    type Err = jacquard_common::types::collection::RecordError;
+}
+
+impl<S: jacquard_common::BosStr> From<StatusGetRecordOutput<S>> for Status<S> {
+    fn from(output: StatusGetRecordOutput<S>) -> Self {
+        output.value
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection for Status<S> {
+    const NSID: &'static str = "app.bsky.actor.status";
+    type Record = StatusRecord;
+}
+
+impl jacquard_common::types::collection::Collection for StatusRecord {
+    const NSID: &'static str = "app.bsky.actor.status";
+    type Record = StatusRecord;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Status<S> {
+    fn nsid() -> &'static str {
+        "app.bsky.actor.status"
+    }
+    fn def_name() -> &'static str {
+        "main"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_app_bsky_actor_status()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        if let Some(ref value) = self.duration_minutes {
+            if *value < 1i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "duration_minutes",
+                    ),
+                    min: 1i64,
+                    actual: *value,
+                });
+            }
+        }
+        Ok(())
+    }
 }
 
 pub mod status_state {
@@ -53,273 +224,211 @@ pub mod status_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Status;
         type CreatedAt;
+        type Status;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Status = Unset;
         type CreatedAt = Unset;
-    }
-    ///State transition - sets the `status` field to Set
-    pub struct SetStatus<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetStatus<S> {}
-    impl<S: State> State for SetStatus<S> {
-        type Status = Set<members::status>;
-        type CreatedAt = S::CreatedAt;
+        type Status = Unset;
     }
     ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type Status = S::Status;
+    pub struct SetCreatedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCreatedAt<St> {}
+    impl<St: State> State for SetCreatedAt<St> {
         type CreatedAt = Set<members::created_at>;
+        type Status = St::Status;
+    }
+    ///State transition - sets the `status` field to Set
+    pub struct SetStatus<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetStatus<St> {}
+    impl<St: State> State for SetStatus<St> {
+        type CreatedAt = St::CreatedAt;
+        type Status = Set<members::status>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `status` field
-        pub struct status(());
         ///Marker type for the `created_at` field
         pub struct created_at(());
+        ///Marker type for the `status` field
+        pub struct status(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct StatusBuilder<'a, S: status_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<crate::generated::app_bsky::embed::external::ExternalRecord<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct StatusBuilder<
+    St: status_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<i64>,
+        core::option::Option<crate::generated::app_bsky::embed::external::ExternalRecord<S>>,
+        core::option::Option<StatusStatus<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> Status<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> StatusBuilder<'a, status_state::Empty> {
+impl Status<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> StatusBuilder<status_state::Empty, jacquard_common::DefaultStr> {
         StatusBuilder::new()
     }
 }
 
-impl<'a> StatusBuilder<'a, status_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> Status<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> StatusBuilder<status_state::Empty, S> {
+        StatusBuilder::builder()
+    }
+}
+
+impl StatusBuilder<status_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         StatusBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> StatusBuilder<'a, S>
+impl<S: jacquard_common::BosStr> StatusBuilder<status_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        StatusBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> StatusBuilder<St, S>
 where
-    S: status_state::State,
-    S::CreatedAt: status_state::IsUnset,
+    St: status_state::State,
+    St::CreatedAt: status_state::IsUnset,
 {
     /// Set the `createdAt` field (required)
     pub fn created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> StatusBuilder<'a, status_state::SetCreatedAt<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+    ) -> StatusBuilder<status_state::SetCreatedAt<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         StatusBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: status_state::State> StatusBuilder<'a, S> {
+impl<St: status_state::State, S: jacquard_common::BosStr> StatusBuilder<St, S> {
     /// Set the `durationMinutes` field (optional)
     pub fn duration_minutes(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self._fields.1 = value.into();
         self
     }
     /// Set the `durationMinutes` field to an Option value (optional)
     pub fn maybe_duration_minutes(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.1 = value;
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S: status_state::State> StatusBuilder<'a, S> {
+impl<St: status_state::State, S: jacquard_common::BosStr> StatusBuilder<St, S> {
     /// Set the `embed` field (optional)
     pub fn embed(
         mut self,
-        value: impl Into<Option<crate::generated::app_bsky::embed::external::ExternalRecord<'a>>>,
+        value: impl Into<Option<crate::generated::app_bsky::embed::external::ExternalRecord<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.2 = value.into();
+        self._fields.2 = value.into();
         self
     }
     /// Set the `embed` field to an Option value (optional)
     pub fn maybe_embed(
         mut self,
-        value: Option<crate::generated::app_bsky::embed::external::ExternalRecord<'a>>,
+        value: Option<crate::generated::app_bsky::embed::external::ExternalRecord<S>>,
     ) -> Self {
-        self.__unsafe_private_named.2 = value;
+        self._fields.2 = value;
         self
     }
 }
 
-impl<'a, S> StatusBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> StatusBuilder<St, S>
 where
-    S: status_state::State,
-    S::Status: status_state::IsUnset,
+    St: status_state::State,
+    St::Status: status_state::IsUnset,
 {
     /// Set the `status` field (required)
     pub fn status(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> StatusBuilder<'a, status_state::SetStatus<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        value: impl Into<StatusStatus<S>>,
+    ) -> StatusBuilder<status_state::SetStatus<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
         StatusBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> StatusBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> StatusBuilder<St, S>
 where
-    S: status_state::State,
-    S::Status: status_state::IsSet,
-    S::CreatedAt: status_state::IsSet,
+    St: status_state::State,
+    St::CreatedAt: status_state::IsSet,
+    St::Status: status_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> Status<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> Status<S> {
         Status {
-            created_at: self.__unsafe_private_named.0.unwrap(),
-            duration_minutes: self.__unsafe_private_named.1,
-            embed: self.__unsafe_private_named.2,
-            status: self.__unsafe_private_named.3.unwrap(),
+            created_at: self._fields.0.unwrap(),
+            duration_minutes: self._fields.1,
+            embed: self._fields.2,
+            status: self._fields.3.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> Status<'a> {
+    ) -> Status<S> {
         Status {
-            created_at: self.__unsafe_private_named.0.unwrap(),
-            duration_minutes: self.__unsafe_private_named.1,
-            embed: self.__unsafe_private_named.2,
-            status: self.__unsafe_private_named.3.unwrap(),
+            created_at: self._fields.0.unwrap(),
+            duration_minutes: self._fields.1,
+            embed: self._fields.2,
+            status: self._fields.3.unwrap(),
             extra_data: Some(extra_data),
         }
     }
 }
 
-impl<'a> Status<'a> {
-    pub fn uri(
-        uri: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> Result<
-        jacquard_common::types::uri::RecordUri<'a, StatusRecord>,
-        jacquard_common::types::uri::UriError,
-    > {
-        jacquard_common::types::uri::RecordUri::try_from_uri(
-            jacquard_common::types::string::AtUri::new_cow(uri.into())?,
-        )
-    }
-}
-
-/// Typed wrapper for GetRecord response with this collection's record type.
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct StatusGetRecordOutput<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cid: std::option::Option<jacquard_common::types::string::Cid<'a>>,
-    #[serde(borrow)]
-    pub uri: jacquard_common::types::string::AtUri<'a>,
-    #[serde(borrow)]
-    pub value: Status<'a>,
-}
-
-impl From<StatusGetRecordOutput<'_>> for Status<'_> {
-    fn from(output: StatusGetRecordOutput<'_>) -> Self {
-        use jacquard_common::IntoStatic;
-        output.value.into_static()
-    }
-}
-
-impl jacquard_common::types::collection::Collection for Status<'_> {
-    const NSID: &'static str = "app.bsky.actor.status";
-    type Record = StatusRecord;
-}
-
-/// Marker type for deserializing records from this collection.
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
-pub struct StatusRecord;
-impl jacquard_common::xrpc::XrpcResp for StatusRecord {
-    const NSID: &'static str = "app.bsky.actor.status";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = StatusGetRecordOutput<'de>;
-    type Err<'de> = jacquard_common::types::collection::RecordError<'de>;
-}
-
-impl jacquard_common::types::collection::Collection for StatusRecord {
-    const NSID: &'static str = "app.bsky.actor.status";
-    type Record = StatusRecord;
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Status<'a> {
-    fn nsid() -> &'static str {
-        "app.bsky.actor.status"
-    }
-    fn def_name() -> &'static str {
-        "main"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_app_bsky_actor_status()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        if let Some(ref value) = self.duration_minutes {
-            if *value < 1i64 {
-                return Err(::jacquard_lexicon::validation::ConstraintError::Minimum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
-                        "duration_minutes",
-                    ),
-                    min: 1i64,
-                    actual: *value,
-                });
-            }
-        }
-        Ok(())
-    }
-}
-
-fn lexicon_doc_app_bsky_actor_status() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_app_bsky_actor_status() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("app.bsky.actor.status"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("live"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("live"),
                 ::jacquard_lexicon::lexicon::LexUserType::Token(
-                    ::jacquard_lexicon::lexicon::LexToken { description: None },
+                    ::jacquard_lexicon::lexicon::LexToken {
+                        ..Default::default()
+                    },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
                 ::jacquard_lexicon::lexicon::LexUserType::Record(::jacquard_lexicon::lexicon::LexRecord {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
@@ -328,51 +437,39 @@ fn lexicon_doc_app_bsky_actor_status() -> ::jacquard_lexicon::lexicon::LexiconDo
                     ),
                     key: Some(::jacquard_common::CowStr::new_static("literal:self")),
                     record: ::jacquard_lexicon::lexicon::LexRecordRecord::Object(::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(
                             vec![
-                                ::jacquard_common::smol_str::SmolStr::new_static("status"),
-                                ::jacquard_common::smol_str::SmolStr::new_static("createdAt")
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("status"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt")
                             ],
                         ),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "createdAt",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                    description: None,
                                     format: Some(
                                         ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                     ),
-                                    default: None,
-                                    min_length: None,
-                                    max_length: None,
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "durationMinutes",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                    description: None,
-                                    default: None,
                                     minimum: Some(1i64),
-                                    maximum: None,
-                                    r#enum: None,
-                                    r#const: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("embed"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "embed",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Union(::jacquard_lexicon::lexicon::LexRefUnion {
                                     description: Some(
                                         ::jacquard_common::CowStr::new_static(
@@ -382,34 +479,31 @@ fn lexicon_doc_app_bsky_actor_status() -> ::jacquard_lexicon::lexicon::LexiconDo
                                     refs: vec![
                                         ::jacquard_common::CowStr::new_static("app.bsky.embed.external")
                                     ],
-                                    closed: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("status"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "status",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                     description: Some(
                                         ::jacquard_common::CowStr::new_static(
                                             "The status for the account.",
                                         ),
                                     ),
-                                    format: None,
-                                    default: None,
-                                    min_length: None,
-                                    max_length: None,
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
                             );
                             map
                         },
+                        ..Default::default()
                     }),
+                    ..Default::default()
                 }),
             );
             map
         },
+        ..Default::default()
     }
 }

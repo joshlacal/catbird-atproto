@@ -8,10 +8,106 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct ResolveHandle<'a> {
-    #[serde(borrow)]
-    pub handle: jacquard_common::types::string::Handle<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ResolveHandle<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub handle: jacquard_common::types::string::Handle<S>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ResolveHandleOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub did: jacquard_common::types::string::Did<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    thiserror::Error,
+    miette::Diagnostic,
+)]
+#[serde(tag = "error", content = "message")]
+pub enum ResolveHandleError {
+    /// The resolution process confirmed that the handle does not resolve to any DID.
+    #[serde(rename = "HandleNotFound")]
+    HandleNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
+}
+
+impl core::fmt::Display for ResolveHandleError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+            Self::HandleNotFound(msg) => {
+                write!(f, "HandleNotFound")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+        }
+    }
+}
+
+/** Response marker for the `com.atproto.identity.resolveHandle` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `ResolveHandleOutput<S>` for this endpoint.*/
+pub struct ResolveHandleResponse;
+impl jacquard_common::xrpc::XrpcResp for ResolveHandleResponse {
+    const NSID: &'static str = "com.atproto.identity.resolveHandle";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = ResolveHandleOutput<S>;
+    type Err = ResolveHandleError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for ResolveHandle<S> {
+    const NSID: &'static str = "com.atproto.identity.resolveHandle";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = ResolveHandleResponse;
+}
+
+/** Endpoint marker for the `com.atproto.identity.resolveHandle` query.
+
+Path: `/xrpc/com.atproto.identity.resolveHandle`. The request payload type is `ResolveHandle<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct ResolveHandleRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for ResolveHandleRequest {
+    const PATH: &'static str = "/xrpc/com.atproto.identity.resolveHandle";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = ResolveHandle<S>;
+    type Response = ResolveHandleResponse;
 }
 
 pub mod resolve_handle_state {
@@ -33,9 +129,9 @@ pub mod resolve_handle_state {
         type Handle = Unset;
     }
     ///State transition - sets the `handle` field to Set
-    pub struct SetHandle<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetHandle<S> {}
-    impl<S: State> State for SetHandle<S> {
+    pub struct SetHandle<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetHandle<St> {}
+    impl<St: State> State for SetHandle<St> {
         type Handle = Set<members::handle>;
     }
     /// Marker types for field names
@@ -46,130 +142,80 @@ pub mod resolve_handle_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct ResolveHandleBuilder<'a, S: resolve_handle_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<jacquard_common::types::string::Handle<'a>>,),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct ResolveHandleBuilder<
+    St: resolve_handle_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<jacquard_common::types::string::Handle<S>>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> ResolveHandle<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> ResolveHandleBuilder<'a, resolve_handle_state::Empty> {
+impl ResolveHandle<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> ResolveHandleBuilder<resolve_handle_state::Empty, jacquard_common::DefaultStr> {
         ResolveHandleBuilder::new()
     }
 }
 
-impl<'a> ResolveHandleBuilder<'a, resolve_handle_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> ResolveHandle<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> ResolveHandleBuilder<resolve_handle_state::Empty, S> {
+        ResolveHandleBuilder::builder()
+    }
+}
+
+impl ResolveHandleBuilder<resolve_handle_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ResolveHandleBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ResolveHandleBuilder<'a, S>
+impl<S: jacquard_common::BosStr> ResolveHandleBuilder<resolve_handle_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        ResolveHandleBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ResolveHandleBuilder<St, S>
 where
-    S: resolve_handle_state::State,
-    S::Handle: resolve_handle_state::IsUnset,
+    St: resolve_handle_state::State,
+    St::Handle: resolve_handle_state::IsUnset,
 {
     /// Set the `handle` field (required)
     pub fn handle(
         mut self,
-        value: impl Into<jacquard_common::types::string::Handle<'a>>,
-    ) -> ResolveHandleBuilder<'a, resolve_handle_state::SetHandle<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Handle<S>>,
+    ) -> ResolveHandleBuilder<resolve_handle_state::SetHandle<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         ResolveHandleBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ResolveHandleBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ResolveHandleBuilder<St, S>
 where
-    S: resolve_handle_state::State,
-    S::Handle: resolve_handle_state::IsSet,
+    St: resolve_handle_state::State,
+    St::Handle: resolve_handle_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> ResolveHandle<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> ResolveHandle<S> {
         ResolveHandle {
-            handle: self.__unsafe_private_named.0.unwrap(),
+            handle: self._fields.0.unwrap(),
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct ResolveHandleOutput<'a> {
-    #[serde(borrow)]
-    pub did: jacquard_common::types::string::Did<'a>,
-}
-
-#[jacquard_derive::open_union]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    thiserror::Error,
-    miette::Diagnostic,
-    jacquard_derive::IntoStatic,
-)]
-#[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum ResolveHandleError<'a> {
-    /// The resolution process confirmed that the handle does not resolve to any DID.
-    #[serde(rename = "HandleNotFound")]
-    HandleNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
-}
-
-impl std::fmt::Display for ResolveHandleError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::HandleNotFound(msg) => {
-                write!(f, "HandleNotFound")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
-        }
-    }
-}
-
-/// Response type for
-///com.atproto.identity.resolveHandle
-pub struct ResolveHandleResponse;
-impl jacquard_common::xrpc::XrpcResp for ResolveHandleResponse {
-    const NSID: &'static str = "com.atproto.identity.resolveHandle";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = ResolveHandleOutput<'de>;
-    type Err<'de> = ResolveHandleError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for ResolveHandle<'a> {
-    const NSID: &'static str = "com.atproto.identity.resolveHandle";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = ResolveHandleResponse;
-}
-
-/// Endpoint type for
-///com.atproto.identity.resolveHandle
-pub struct ResolveHandleRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for ResolveHandleRequest {
-    const PATH: &'static str = "/xrpc/com.atproto.identity.resolveHandle";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = ResolveHandle<'de>;
-    type Response = ResolveHandleResponse;
 }

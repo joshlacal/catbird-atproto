@@ -8,16 +8,75 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetFollows<'a> {
-    #[serde(borrow)]
-    pub actor: jacquard_common::types::ident::AtIdentifier<'a>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    ///(default: 50, min: 1, max: 100)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub limit: std::option::Option<i64>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetFollows<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub actor: jacquard_common::types::ident::AtIdentifier<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    /// Defaults to `50`. Min: 1. Max: 100.
+    #[serde(default = "_default_limit")]
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub limit: core::option::Option<i64>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetFollowsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    pub follows: Vec<crate::generated::app_bsky::actor::ProfileView<S>>,
+    pub subject: crate::generated::app_bsky::actor::ProfileView<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `app.bsky.graph.getFollows` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetFollowsOutput<S>` for this endpoint.*/
+pub struct GetFollowsResponse;
+impl jacquard_common::xrpc::XrpcResp for GetFollowsResponse {
+    const NSID: &'static str = "app.bsky.graph.getFollows";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = GetFollowsOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetFollows<S> {
+    const NSID: &'static str = "app.bsky.graph.getFollows";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = GetFollowsResponse;
+}
+
+/** Endpoint marker for the `app.bsky.graph.getFollows` query.
+
+Path: `/xrpc/app.bsky.graph.getFollows`. The request payload type is `GetFollows<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct GetFollowsRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for GetFollowsRequest {
+    const PATH: &'static str = "/xrpc/app.bsky.graph.getFollows";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = GetFollows<S>;
+    type Response = GetFollowsResponse;
+}
+
+fn _default_limit() -> core::option::Option<i64> {
+    Some(50i64)
 }
 
 pub mod get_follows_state {
@@ -39,9 +98,9 @@ pub mod get_follows_state {
         type Actor = Unset;
     }
     ///State transition - sets the `actor` field to Set
-    pub struct SetActor<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetActor<S> {}
-    impl<S: State> State for SetActor<S> {
+    pub struct SetActor<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetActor<St> {}
+    impl<St: State> State for SetActor<St> {
         type Actor = Set<members::actor>;
     }
     /// Marker types for field names
@@ -52,132 +111,112 @@ pub mod get_follows_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct GetFollowsBuilder<'a, S: get_follows_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::ident::AtIdentifier<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<i64>,
+/// Builder for constructing an instance of this type.
+pub struct GetFollowsBuilder<
+    St: get_follows_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::ident::AtIdentifier<S>>,
+        core::option::Option<S>,
+        core::option::Option<i64>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> GetFollows<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> GetFollowsBuilder<'a, get_follows_state::Empty> {
+impl GetFollows<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> GetFollowsBuilder<get_follows_state::Empty, jacquard_common::DefaultStr> {
         GetFollowsBuilder::new()
     }
 }
 
-impl<'a> GetFollowsBuilder<'a, get_follows_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> GetFollows<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> GetFollowsBuilder<get_follows_state::Empty, S> {
+        GetFollowsBuilder::builder()
+    }
+}
+
+impl GetFollowsBuilder<get_follows_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetFollowsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GetFollowsBuilder<'a, S>
+impl<S: jacquard_common::BosStr> GetFollowsBuilder<get_follows_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GetFollowsBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> GetFollowsBuilder<St, S>
 where
-    S: get_follows_state::State,
-    S::Actor: get_follows_state::IsUnset,
+    St: get_follows_state::State,
+    St::Actor: get_follows_state::IsUnset,
 {
     /// Set the `actor` field (required)
     pub fn actor(
         mut self,
-        value: impl Into<jacquard_common::types::ident::AtIdentifier<'a>>,
-    ) -> GetFollowsBuilder<'a, get_follows_state::SetActor<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::ident::AtIdentifier<S>>,
+    ) -> GetFollowsBuilder<get_follows_state::SetActor<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         GetFollowsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: get_follows_state::State> GetFollowsBuilder<'a, S> {
+impl<St: get_follows_state::State, S: jacquard_common::BosStr> GetFollowsBuilder<St, S> {
     /// Set the `cursor` field (optional)
-    pub fn cursor(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+    pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.1 = value.into();
         self
     }
     /// Set the `cursor` field to an Option value (optional)
-    pub fn maybe_cursor(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.1 = value;
+    pub fn maybe_cursor(mut self, value: Option<S>) -> Self {
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S: get_follows_state::State> GetFollowsBuilder<'a, S> {
+impl<St: get_follows_state::State, S: jacquard_common::BosStr> GetFollowsBuilder<St, S> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.2 = value.into();
+        self._fields.2 = value.into();
         self
     }
     /// Set the `limit` field to an Option value (optional)
     pub fn maybe_limit(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.2 = value;
+        self._fields.2 = value;
         self
     }
 }
 
-impl<'a, S> GetFollowsBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GetFollowsBuilder<St, S>
 where
-    S: get_follows_state::State,
-    S::Actor: get_follows_state::IsSet,
+    St: get_follows_state::State,
+    St::Actor: get_follows_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> GetFollows<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> GetFollows<S> {
         GetFollows {
-            actor: self.__unsafe_private_named.0.unwrap(),
-            cursor: self.__unsafe_private_named.1,
-            limit: self.__unsafe_private_named.2,
+            actor: self._fields.0.unwrap(),
+            cursor: self._fields.1,
+            limit: self._fields.2,
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GetFollowsOutput<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(borrow)]
-    pub follows: Vec<crate::generated::app_bsky::actor::ProfileView<'a>>,
-    #[serde(borrow)]
-    pub subject: crate::generated::app_bsky::actor::ProfileView<'a>,
-}
-
-/// Response type for
-///app.bsky.graph.getFollows
-pub struct GetFollowsResponse;
-impl jacquard_common::xrpc::XrpcResp for GetFollowsResponse {
-    const NSID: &'static str = "app.bsky.graph.getFollows";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetFollowsOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for GetFollows<'a> {
-    const NSID: &'static str = "app.bsky.graph.getFollows";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = GetFollowsResponse;
-}
-
-/// Endpoint type for
-///app.bsky.graph.getFollows
-pub struct GetFollowsRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for GetFollowsRequest {
-    const PATH: &'static str = "/xrpc/app.bsky.graph.getFollows";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetFollows<'de>;
-    type Response = GetFollowsResponse;
 }

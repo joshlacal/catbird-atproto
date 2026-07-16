@@ -8,16 +8,117 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetFeed<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(borrow)]
-    pub feed: jacquard_common::types::string::AtUri<'a>,
-    ///(default: 50, min: 1, max: 100)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub limit: std::option::Option<i64>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetFeed<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    pub feed: jacquard_common::types::string::AtUri<S>,
+    /// Defaults to `50`. Min: 1. Max: 100.
+    #[serde(default = "_default_limit")]
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub limit: core::option::Option<i64>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetFeedOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    pub feed: Vec<crate::generated::app_bsky::feed::FeedViewPost<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    thiserror::Error,
+    miette::Diagnostic,
+)]
+#[serde(tag = "error", content = "message")]
+pub enum GetFeedError {
+    #[serde(rename = "UnknownFeed")]
+    UnknownFeed(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
+}
+
+impl core::fmt::Display for GetFeedError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+            Self::UnknownFeed(msg) => {
+                write!(f, "UnknownFeed")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+        }
+    }
+}
+
+/** Response marker for the `app.bsky.feed.getFeed` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetFeedOutput<S>` for this endpoint.*/
+pub struct GetFeedResponse;
+impl jacquard_common::xrpc::XrpcResp for GetFeedResponse {
+    const NSID: &'static str = "app.bsky.feed.getFeed";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = GetFeedOutput<S>;
+    type Err = GetFeedError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetFeed<S> {
+    const NSID: &'static str = "app.bsky.feed.getFeed";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = GetFeedResponse;
+}
+
+/** Endpoint marker for the `app.bsky.feed.getFeed` query.
+
+Path: `/xrpc/app.bsky.feed.getFeed`. The request payload type is `GetFeed<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct GetFeedRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for GetFeedRequest {
+    const PATH: &'static str = "/xrpc/app.bsky.feed.getFeed";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = GetFeed<S>;
+    type Response = GetFeedResponse;
+}
+
+fn _default_limit() -> core::option::Option<i64> {
+    Some(50i64)
 }
 
 pub mod get_feed_state {
@@ -39,9 +140,9 @@ pub mod get_feed_state {
         type Feed = Unset;
     }
     ///State transition - sets the `feed` field to Set
-    pub struct SetFeed<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetFeed<S> {}
-    impl<S: State> State for SetFeed<S> {
+    pub struct SetFeed<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetFeed<St> {}
+    impl<St: State> State for SetFeed<St> {
         type Feed = Set<members::feed>;
     }
     /// Marker types for field names
@@ -52,164 +153,112 @@ pub mod get_feed_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct GetFeedBuilder<'a, S: get_feed_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
-        ::core::option::Option<i64>,
+/// Builder for constructing an instance of this type.
+pub struct GetFeedBuilder<
+    St: get_feed_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::AtUri<S>>,
+        core::option::Option<i64>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> GetFeed<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> GetFeedBuilder<'a, get_feed_state::Empty> {
+impl GetFeed<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> GetFeedBuilder<get_feed_state::Empty, jacquard_common::DefaultStr> {
         GetFeedBuilder::new()
     }
 }
 
-impl<'a> GetFeedBuilder<'a, get_feed_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> GetFeed<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> GetFeedBuilder<get_feed_state::Empty, S> {
+        GetFeedBuilder::builder()
+    }
+}
+
+impl GetFeedBuilder<get_feed_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetFeedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: get_feed_state::State> GetFeedBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> GetFeedBuilder<get_feed_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GetFeedBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: get_feed_state::State, S: jacquard_common::BosStr> GetFeedBuilder<St, S> {
     /// Set the `cursor` field (optional)
-    pub fn cursor(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+    pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.0 = value.into();
         self
     }
     /// Set the `cursor` field to an Option value (optional)
-    pub fn maybe_cursor(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.0 = value;
+    pub fn maybe_cursor(mut self, value: Option<S>) -> Self {
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S> GetFeedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GetFeedBuilder<St, S>
 where
-    S: get_feed_state::State,
-    S::Feed: get_feed_state::IsUnset,
+    St: get_feed_state::State,
+    St::Feed: get_feed_state::IsUnset,
 {
     /// Set the `feed` field (required)
     pub fn feed(
         mut self,
-        value: impl Into<jacquard_common::types::string::AtUri<'a>>,
-    ) -> GetFeedBuilder<'a, get_feed_state::SetFeed<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::AtUri<S>>,
+    ) -> GetFeedBuilder<get_feed_state::SetFeed<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         GetFeedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: get_feed_state::State> GetFeedBuilder<'a, S> {
+impl<St: get_feed_state::State, S: jacquard_common::BosStr> GetFeedBuilder<St, S> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.2 = value.into();
+        self._fields.2 = value.into();
         self
     }
     /// Set the `limit` field to an Option value (optional)
     pub fn maybe_limit(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.2 = value;
+        self._fields.2 = value;
         self
     }
 }
 
-impl<'a, S> GetFeedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GetFeedBuilder<St, S>
 where
-    S: get_feed_state::State,
-    S::Feed: get_feed_state::IsSet,
+    St: get_feed_state::State,
+    St::Feed: get_feed_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> GetFeed<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> GetFeed<S> {
         GetFeed {
-            cursor: self.__unsafe_private_named.0,
-            feed: self.__unsafe_private_named.1.unwrap(),
-            limit: self.__unsafe_private_named.2,
+            cursor: self._fields.0,
+            feed: self._fields.1.unwrap(),
+            limit: self._fields.2,
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GetFeedOutput<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(borrow)]
-    pub feed: Vec<crate::generated::app_bsky::feed::FeedViewPost<'a>>,
-}
-
-#[jacquard_derive::open_union]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    thiserror::Error,
-    miette::Diagnostic,
-    jacquard_derive::IntoStatic,
-)]
-#[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum GetFeedError<'a> {
-    #[serde(rename = "UnknownFeed")]
-    UnknownFeed(std::option::Option<jacquard_common::CowStr<'a>>),
-}
-
-impl std::fmt::Display for GetFeedError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::UnknownFeed(msg) => {
-                write!(f, "UnknownFeed")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
-        }
-    }
-}
-
-/// Response type for
-///app.bsky.feed.getFeed
-pub struct GetFeedResponse;
-impl jacquard_common::xrpc::XrpcResp for GetFeedResponse {
-    const NSID: &'static str = "app.bsky.feed.getFeed";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetFeedOutput<'de>;
-    type Err<'de> = GetFeedError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for GetFeed<'a> {
-    const NSID: &'static str = "app.bsky.feed.getFeed";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = GetFeedResponse;
-}
-
-/// Endpoint type for
-///app.bsky.feed.getFeed
-pub struct GetFeedRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for GetFeedRequest {
-    const PATH: &'static str = "/xrpc/app.bsky.feed.getFeed";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetFeed<'de>;
-    type Response = GetFeedResponse;
 }

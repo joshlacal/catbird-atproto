@@ -5,16 +5,87 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct CreateInviteCode<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub for_account: std::option::Option<jacquard_common::types::string::Did<'a>>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct CreateInviteCode<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub for_account: core::option::Option<jacquard_common::types::string::Did<S>>,
     pub use_count: i64,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic,
+    Default,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct CreateInviteCodeOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub code: S,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `com.atproto.server.createInviteCode` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `CreateInviteCodeOutput<S>` for this endpoint.*/
+pub struct CreateInviteCodeResponse;
+impl jacquard_common::xrpc::XrpcResp for CreateInviteCodeResponse {
+    const NSID: &'static str = "com.atproto.server.createInviteCode";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = CreateInviteCodeOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for CreateInviteCode<S> {
+    const NSID: &'static str = "com.atproto.server.createInviteCode";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Response = CreateInviteCodeResponse;
+}
+
+/** Endpoint marker for the `com.atproto.server.createInviteCode` procedure.
+
+Path: `/xrpc/com.atproto.server.createInviteCode`. The request payload type is `CreateInviteCode<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct CreateInviteCodeRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for CreateInviteCodeRequest {
+    const PATH: &'static str = "/xrpc/com.atproto.server.createInviteCode";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Request<S: jacquard_common::BosStr> = CreateInviteCode<S>;
+    type Response = CreateInviteCodeResponse;
 }
 
 pub mod create_invite_code_state {
@@ -36,9 +107,9 @@ pub mod create_invite_code_state {
         type UseCount = Unset;
     }
     ///State transition - sets the `use_count` field to Set
-    pub struct SetUseCount<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUseCount<S> {}
-    impl<S: State> State for SetUseCount<S> {
+    pub struct SetUseCount<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetUseCount<St> {}
+    impl<St: State> State for SetUseCount<St> {
         type UseCount = Set<members::use_count>;
     }
     /// Marker types for field names
@@ -49,142 +120,121 @@ pub mod create_invite_code_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct CreateInviteCodeBuilder<'a, S: create_invite_code_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<i64>,
+/// Builder for constructing an instance of this type.
+pub struct CreateInviteCodeBuilder<
+    St: create_invite_code_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<i64>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> CreateInviteCode<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> CreateInviteCodeBuilder<'a, create_invite_code_state::Empty> {
+impl CreateInviteCode<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> CreateInviteCodeBuilder<create_invite_code_state::Empty, jacquard_common::DefaultStr> {
         CreateInviteCodeBuilder::new()
     }
 }
 
-impl<'a> CreateInviteCodeBuilder<'a, create_invite_code_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> CreateInviteCode<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> CreateInviteCodeBuilder<create_invite_code_state::Empty, S> {
+        CreateInviteCodeBuilder::builder()
+    }
+}
+
+impl CreateInviteCodeBuilder<create_invite_code_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         CreateInviteCodeBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: create_invite_code_state::State> CreateInviteCodeBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> CreateInviteCodeBuilder<create_invite_code_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        CreateInviteCodeBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: create_invite_code_state::State, S: jacquard_common::BosStr>
+    CreateInviteCodeBuilder<St, S>
+{
     /// Set the `forAccount` field (optional)
     pub fn for_account(
         mut self,
-        value: impl Into<Option<jacquard_common::types::string::Did<'a>>>,
+        value: impl Into<Option<jacquard_common::types::string::Did<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+        self._fields.0 = value.into();
         self
     }
     /// Set the `forAccount` field to an Option value (optional)
     pub fn maybe_for_account(
         mut self,
-        value: Option<jacquard_common::types::string::Did<'a>>,
+        value: Option<jacquard_common::types::string::Did<S>>,
     ) -> Self {
-        self.__unsafe_private_named.0 = value;
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S> CreateInviteCodeBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> CreateInviteCodeBuilder<St, S>
 where
-    S: create_invite_code_state::State,
-    S::UseCount: create_invite_code_state::IsUnset,
+    St: create_invite_code_state::State,
+    St::UseCount: create_invite_code_state::IsUnset,
 {
     /// Set the `useCount` field (required)
     pub fn use_count(
         mut self,
         value: impl Into<i64>,
-    ) -> CreateInviteCodeBuilder<'a, create_invite_code_state::SetUseCount<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+    ) -> CreateInviteCodeBuilder<create_invite_code_state::SetUseCount<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         CreateInviteCodeBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> CreateInviteCodeBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> CreateInviteCodeBuilder<St, S>
 where
-    S: create_invite_code_state::State,
-    S::UseCount: create_invite_code_state::IsSet,
+    St: create_invite_code_state::State,
+    St::UseCount: create_invite_code_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> CreateInviteCode<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> CreateInviteCode<S> {
         CreateInviteCode {
-            for_account: self.__unsafe_private_named.0,
-            use_count: self.__unsafe_private_named.1.unwrap(),
+            for_account: self._fields.0,
+            use_count: self._fields.1.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> CreateInviteCode<'a> {
+    ) -> CreateInviteCode<S> {
         CreateInviteCode {
-            for_account: self.__unsafe_private_named.0,
-            use_count: self.__unsafe_private_named.1.unwrap(),
+            for_account: self._fields.0,
+            use_count: self._fields.1.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic,
-    Default,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct CreateInviteCodeOutput<'a> {
-    #[serde(borrow)]
-    pub code: jacquard_common::CowStr<'a>,
-}
-
-/// Response type for
-///com.atproto.server.createInviteCode
-pub struct CreateInviteCodeResponse;
-impl jacquard_common::xrpc::XrpcResp for CreateInviteCodeResponse {
-    const NSID: &'static str = "com.atproto.server.createInviteCode";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = CreateInviteCodeOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for CreateInviteCode<'a> {
-    const NSID: &'static str = "com.atproto.server.createInviteCode";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Response = CreateInviteCodeResponse;
-}
-
-/// Endpoint type for
-///com.atproto.server.createInviteCode
-pub struct CreateInviteCodeRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for CreateInviteCodeRequest {
-    const PATH: &'static str = "/xrpc/com.atproto.server.createInviteCode";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = CreateInviteCode<'de>;
-    type Response = CreateInviteCodeResponse;
 }

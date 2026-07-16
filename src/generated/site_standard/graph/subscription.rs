@@ -6,17 +6,102 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 /// Record declaring a subscription to a publication.
-#[jacquard_derive::lexicon]
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    rename = "site.standard.graph.subscription",
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct Subscription<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub created_at: core::option::Option<jacquard_common::types::string::Datetime>,
+    ///AT-URI reference to the publication record being subscribed to (ex: at://did:plc:abc123/site.standard.publication/xyz789).
+    pub publication: jacquard_common::types::string::AtUri<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// Typed wrapper for GetRecord response with this collection's record type.
+
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
-pub struct Subscription<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub created_at: std::option::Option<jacquard_common::types::string::Datetime>,
-    /// AT-URI reference to the publication record being subscribed to (ex: at://did:plc:abc123/site.standard.publication/xyz789).
-    #[serde(borrow)]
-    pub publication: jacquard_common::types::string::AtUri<'a>,
+pub struct SubscriptionGetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
+    pub uri: jacquard_common::types::string::AtUri<S>,
+    pub value: Subscription<S>,
+}
+
+impl<S: jacquard_common::BosStr> Subscription<S> {
+    pub fn uri(
+        uri: S,
+    ) -> Result<
+        jacquard_common::types::uri::RecordUri<S, SubscriptionRecord>,
+        jacquard_common::types::uri::UriError,
+    > {
+        jacquard_common::types::uri::RecordUri::try_from_uri(
+            jacquard_common::types::string::AtUri::new(uri)?,
+        )
+    }
+}
+
+/// Marker type for deserializing records from this collection.
+
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+pub struct SubscriptionRecord;
+impl jacquard_common::xrpc::XrpcResp for SubscriptionRecord {
+    const NSID: &'static str = "site.standard.graph.subscription";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = SubscriptionGetRecordOutput<S>;
+    type Err = jacquard_common::types::collection::RecordError;
+}
+
+impl<S: jacquard_common::BosStr> From<SubscriptionGetRecordOutput<S>> for Subscription<S> {
+    fn from(output: SubscriptionGetRecordOutput<S>) -> Self {
+        output.value
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection
+    for Subscription<S>
+{
+    const NSID: &'static str = "site.standard.graph.subscription";
+    type Record = SubscriptionRecord;
+}
+
+impl jacquard_common::types::collection::Collection for SubscriptionRecord {
+    const NSID: &'static str = "site.standard.graph.subscription";
+    type Record = SubscriptionRecord;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Subscription<S> {
+    fn nsid() -> &'static str {
+        "site.standard.graph.subscription"
+    }
+    fn def_name() -> &'static str {
+        "main"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_site_standard_graph_subscription()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
 }
 
 pub mod subscription_state {
@@ -38,9 +123,9 @@ pub mod subscription_state {
         type Publication = Unset;
     }
     ///State transition - sets the `publication` field to Set
-    pub struct SetPublication<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetPublication<S> {}
-    impl<S: State> State for SetPublication<S> {
+    pub struct SetPublication<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetPublication<St> {}
+    impl<St: State> State for SetPublication<St> {
         type Publication = Set<members::publication>;
     }
     /// Marker types for field names
@@ -51,41 +136,62 @@ pub mod subscription_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct SubscriptionBuilder<'a, S: subscription_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct SubscriptionBuilder<
+    St: subscription_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<jacquard_common::types::string::AtUri<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> Subscription<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> SubscriptionBuilder<'a, subscription_state::Empty> {
+impl Subscription<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> SubscriptionBuilder<subscription_state::Empty, jacquard_common::DefaultStr> {
         SubscriptionBuilder::new()
     }
 }
 
-impl<'a> SubscriptionBuilder<'a, subscription_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> Subscription<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> SubscriptionBuilder<subscription_state::Empty, S> {
+        SubscriptionBuilder::builder()
+    }
+}
+
+impl SubscriptionBuilder<subscription_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         SubscriptionBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: subscription_state::State> SubscriptionBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> SubscriptionBuilder<subscription_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        SubscriptionBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: subscription_state::State, S: jacquard_common::BosStr> SubscriptionBuilder<St, S> {
     /// Set the `createdAt` field (optional)
     pub fn created_at(
         mut self,
         value: impl Into<Option<jacquard_common::types::string::Datetime>>,
     ) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+        self._fields.0 = value.into();
         self
     }
     /// Set the `createdAt` field to an Option value (optional)
@@ -93,142 +199,68 @@ impl<'a, S: subscription_state::State> SubscriptionBuilder<'a, S> {
         mut self,
         value: Option<jacquard_common::types::string::Datetime>,
     ) -> Self {
-        self.__unsafe_private_named.0 = value;
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S> SubscriptionBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> SubscriptionBuilder<St, S>
 where
-    S: subscription_state::State,
-    S::Publication: subscription_state::IsUnset,
+    St: subscription_state::State,
+    St::Publication: subscription_state::IsUnset,
 {
     /// Set the `publication` field (required)
     pub fn publication(
         mut self,
-        value: impl Into<jacquard_common::types::string::AtUri<'a>>,
-    ) -> SubscriptionBuilder<'a, subscription_state::SetPublication<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::AtUri<S>>,
+    ) -> SubscriptionBuilder<subscription_state::SetPublication<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         SubscriptionBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> SubscriptionBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> SubscriptionBuilder<St, S>
 where
-    S: subscription_state::State,
-    S::Publication: subscription_state::IsSet,
+    St: subscription_state::State,
+    St::Publication: subscription_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> Subscription<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> Subscription<S> {
         Subscription {
-            created_at: self.__unsafe_private_named.0,
-            publication: self.__unsafe_private_named.1.unwrap(),
+            created_at: self._fields.0,
+            publication: self._fields.1.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> Subscription<'a> {
+    ) -> Subscription<S> {
         Subscription {
-            created_at: self.__unsafe_private_named.0,
-            publication: self.__unsafe_private_named.1.unwrap(),
+            created_at: self._fields.0,
+            publication: self._fields.1.unwrap(),
             extra_data: Some(extra_data),
         }
     }
 }
 
-impl<'a> Subscription<'a> {
-    pub fn uri(
-        uri: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> Result<
-        jacquard_common::types::uri::RecordUri<'a, SubscriptionRecord>,
-        jacquard_common::types::uri::UriError,
-    > {
-        jacquard_common::types::uri::RecordUri::try_from_uri(
-            jacquard_common::types::string::AtUri::new_cow(uri.into())?,
-        )
-    }
-}
-
-/// Typed wrapper for GetRecord response with this collection's record type.
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct SubscriptionGetRecordOutput<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cid: std::option::Option<jacquard_common::types::string::Cid<'a>>,
-    #[serde(borrow)]
-    pub uri: jacquard_common::types::string::AtUri<'a>,
-    #[serde(borrow)]
-    pub value: Subscription<'a>,
-}
-
-impl From<SubscriptionGetRecordOutput<'_>> for Subscription<'_> {
-    fn from(output: SubscriptionGetRecordOutput<'_>) -> Self {
-        use jacquard_common::IntoStatic;
-        output.value.into_static()
-    }
-}
-
-impl jacquard_common::types::collection::Collection for Subscription<'_> {
-    const NSID: &'static str = "site.standard.graph.subscription";
-    type Record = SubscriptionRecord;
-}
-
-/// Marker type for deserializing records from this collection.
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
-pub struct SubscriptionRecord;
-impl jacquard_common::xrpc::XrpcResp for SubscriptionRecord {
-    const NSID: &'static str = "site.standard.graph.subscription";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = SubscriptionGetRecordOutput<'de>;
-    type Err<'de> = jacquard_common::types::collection::RecordError<'de>;
-}
-
-impl jacquard_common::types::collection::Collection for SubscriptionRecord {
-    const NSID: &'static str = "site.standard.graph.subscription";
-    type Record = SubscriptionRecord;
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Subscription<'a> {
-    fn nsid() -> &'static str {
-        "site.standard.graph.subscription"
-    }
-    fn def_name() -> &'static str {
-        "main"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_site_standard_graph_subscription()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-fn lexicon_doc_site_standard_graph_subscription() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static>
+fn lexicon_doc_site_standard_graph_subscription() -> jacquard_lexicon::lexicon::LexiconDoc<'static>
 {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("site.standard.graph.subscription"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
                 ::jacquard_lexicon::lexicon::LexUserType::Record(::jacquard_lexicon::lexicon::LexRecord {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
@@ -237,37 +269,27 @@ fn lexicon_doc_site_standard_graph_subscription() -> ::jacquard_lexicon::lexicon
                     ),
                     key: Some(::jacquard_common::CowStr::new_static("tid")),
                     record: ::jacquard_lexicon::lexicon::LexRecordRecord::Object(::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(
                             vec![
-                                ::jacquard_common::smol_str::SmolStr::new_static("publication")
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("publication")
                             ],
                         ),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "createdAt",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                    description: None,
                                     format: Some(
                                         ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                     ),
-                                    default: None,
-                                    min_length: None,
-                                    max_length: None,
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "publication",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -279,22 +301,18 @@ fn lexicon_doc_site_standard_graph_subscription() -> ::jacquard_lexicon::lexicon
                                     format: Some(
                                         ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
                                     ),
-                                    default: None,
-                                    min_length: None,
-                                    max_length: None,
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
                             );
                             map
                         },
+                        ..Default::default()
                     }),
+                    ..Default::default()
                 }),
             );
             map
         },
+        ..Default::default()
     }
 }

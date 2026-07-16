@@ -5,6 +5,7 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
+//! Generated bindings for the `place.stream.moderation` Lexicon namespace/module.
 pub mod create_block;
 pub mod create_gate;
 pub mod create_pin;
@@ -14,24 +15,48 @@ pub mod delete_pin;
 pub mod permission;
 pub mod update_livestream;
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct PermissionView<'a> {
-    /// The streamer who granted these permissions
-    #[serde(borrow)]
-    pub author: crate::generated::app_bsky::actor::ProfileViewBasic<'a>,
-    /// Content identifier of the permission record
-    #[serde(borrow)]
-    pub cid: jacquard_common::types::string::Cid<'a>,
-    /// The permission record itself
-    #[serde(borrow)]
-    pub record: jacquard_common::types::value::Data<'a>,
-    /// AT-URI of the permission record
-    #[serde(borrow)]
-    pub uri: jacquard_common::types::string::AtUri<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct PermissionView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///The streamer who granted these permissions
+    pub author: crate::generated::app_bsky::actor::ProfileViewBasic<S>,
+    ///Content identifier of the permission record
+    pub cid: jacquard_common::types::string::Cid<S>,
+    ///The permission record itself
+    pub record: jacquard_common::types::value::Data<S>,
+    ///AT-URI of the permission record
+    pub uri: jacquard_common::types::string::AtUri<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for PermissionView<S> {
+    fn nsid() -> &'static str {
+        "place.stream.moderation.defs"
+    }
+    fn def_name() -> &'static str {
+        "permissionView"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_place_stream_moderation_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
 }
 
 pub mod permission_view_state {
@@ -44,248 +69,266 @@ pub mod permission_view_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Uri;
-        type Cid;
         type Author;
+        type Cid;
         type Record;
+        type Uri;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Uri = Unset;
-        type Cid = Unset;
         type Author = Unset;
+        type Cid = Unset;
         type Record = Unset;
-    }
-    ///State transition - sets the `uri` field to Set
-    pub struct SetUri<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUri<S> {}
-    impl<S: State> State for SetUri<S> {
-        type Uri = Set<members::uri>;
-        type Cid = S::Cid;
-        type Author = S::Author;
-        type Record = S::Record;
-    }
-    ///State transition - sets the `cid` field to Set
-    pub struct SetCid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCid<S> {}
-    impl<S: State> State for SetCid<S> {
-        type Uri = S::Uri;
-        type Cid = Set<members::cid>;
-        type Author = S::Author;
-        type Record = S::Record;
+        type Uri = Unset;
     }
     ///State transition - sets the `author` field to Set
-    pub struct SetAuthor<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetAuthor<S> {}
-    impl<S: State> State for SetAuthor<S> {
-        type Uri = S::Uri;
-        type Cid = S::Cid;
+    pub struct SetAuthor<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetAuthor<St> {}
+    impl<St: State> State for SetAuthor<St> {
         type Author = Set<members::author>;
-        type Record = S::Record;
+        type Cid = St::Cid;
+        type Record = St::Record;
+        type Uri = St::Uri;
+    }
+    ///State transition - sets the `cid` field to Set
+    pub struct SetCid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCid<St> {}
+    impl<St: State> State for SetCid<St> {
+        type Author = St::Author;
+        type Cid = Set<members::cid>;
+        type Record = St::Record;
+        type Uri = St::Uri;
     }
     ///State transition - sets the `record` field to Set
-    pub struct SetRecord<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRecord<S> {}
-    impl<S: State> State for SetRecord<S> {
-        type Uri = S::Uri;
-        type Cid = S::Cid;
-        type Author = S::Author;
+    pub struct SetRecord<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRecord<St> {}
+    impl<St: State> State for SetRecord<St> {
+        type Author = St::Author;
+        type Cid = St::Cid;
         type Record = Set<members::record>;
+        type Uri = St::Uri;
+    }
+    ///State transition - sets the `uri` field to Set
+    pub struct SetUri<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetUri<St> {}
+    impl<St: State> State for SetUri<St> {
+        type Author = St::Author;
+        type Cid = St::Cid;
+        type Record = St::Record;
+        type Uri = Set<members::uri>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `uri` field
-        pub struct uri(());
-        ///Marker type for the `cid` field
-        pub struct cid(());
         ///Marker type for the `author` field
         pub struct author(());
+        ///Marker type for the `cid` field
+        pub struct cid(());
         ///Marker type for the `record` field
         pub struct record(());
+        ///Marker type for the `uri` field
+        pub struct uri(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct PermissionViewBuilder<'a, S: permission_view_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<crate::generated::app_bsky::actor::ProfileViewBasic<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Cid<'a>>,
-        ::core::option::Option<jacquard_common::types::value::Data<'a>>,
-        ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct PermissionViewBuilder<
+    St: permission_view_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<crate::generated::app_bsky::actor::ProfileViewBasic<S>>,
+        core::option::Option<jacquard_common::types::string::Cid<S>>,
+        core::option::Option<jacquard_common::types::value::Data<S>>,
+        core::option::Option<jacquard_common::types::string::AtUri<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> PermissionView<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> PermissionViewBuilder<'a, permission_view_state::Empty> {
+impl PermissionView<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> PermissionViewBuilder<permission_view_state::Empty, jacquard_common::DefaultStr>
+    {
         PermissionViewBuilder::new()
     }
 }
 
-impl<'a> PermissionViewBuilder<'a, permission_view_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> PermissionView<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> PermissionViewBuilder<permission_view_state::Empty, S> {
+        PermissionViewBuilder::builder()
+    }
+}
+
+impl PermissionViewBuilder<permission_view_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         PermissionViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> PermissionViewBuilder<'a, S>
+impl<S: jacquard_common::BosStr> PermissionViewBuilder<permission_view_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        PermissionViewBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> PermissionViewBuilder<St, S>
 where
-    S: permission_view_state::State,
-    S::Author: permission_view_state::IsUnset,
+    St: permission_view_state::State,
+    St::Author: permission_view_state::IsUnset,
 {
     /// Set the `author` field (required)
     pub fn author(
         mut self,
-        value: impl Into<crate::generated::app_bsky::actor::ProfileViewBasic<'a>>,
-    ) -> PermissionViewBuilder<'a, permission_view_state::SetAuthor<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<crate::generated::app_bsky::actor::ProfileViewBasic<S>>,
+    ) -> PermissionViewBuilder<permission_view_state::SetAuthor<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         PermissionViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> PermissionViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> PermissionViewBuilder<St, S>
 where
-    S: permission_view_state::State,
-    S::Cid: permission_view_state::IsUnset,
+    St: permission_view_state::State,
+    St::Cid: permission_view_state::IsUnset,
 {
     /// Set the `cid` field (required)
     pub fn cid(
         mut self,
-        value: impl Into<jacquard_common::types::string::Cid<'a>>,
-    ) -> PermissionViewBuilder<'a, permission_view_state::SetCid<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Cid<S>>,
+    ) -> PermissionViewBuilder<permission_view_state::SetCid<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         PermissionViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> PermissionViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> PermissionViewBuilder<St, S>
 where
-    S: permission_view_state::State,
-    S::Record: permission_view_state::IsUnset,
+    St: permission_view_state::State,
+    St::Record: permission_view_state::IsUnset,
 {
     /// Set the `record` field (required)
     pub fn record(
         mut self,
-        value: impl Into<jacquard_common::types::value::Data<'a>>,
-    ) -> PermissionViewBuilder<'a, permission_view_state::SetRecord<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::value::Data<S>>,
+    ) -> PermissionViewBuilder<permission_view_state::SetRecord<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         PermissionViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> PermissionViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> PermissionViewBuilder<St, S>
 where
-    S: permission_view_state::State,
-    S::Uri: permission_view_state::IsUnset,
+    St: permission_view_state::State,
+    St::Uri: permission_view_state::IsUnset,
 {
     /// Set the `uri` field (required)
     pub fn uri(
         mut self,
-        value: impl Into<jacquard_common::types::string::AtUri<'a>>,
-    ) -> PermissionViewBuilder<'a, permission_view_state::SetUri<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::AtUri<S>>,
+    ) -> PermissionViewBuilder<permission_view_state::SetUri<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
         PermissionViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> PermissionViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> PermissionViewBuilder<St, S>
 where
-    S: permission_view_state::State,
-    S::Uri: permission_view_state::IsSet,
-    S::Cid: permission_view_state::IsSet,
-    S::Author: permission_view_state::IsSet,
-    S::Record: permission_view_state::IsSet,
+    St: permission_view_state::State,
+    St::Author: permission_view_state::IsSet,
+    St::Cid: permission_view_state::IsSet,
+    St::Record: permission_view_state::IsSet,
+    St::Uri: permission_view_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> PermissionView<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> PermissionView<S> {
         PermissionView {
-            author: self.__unsafe_private_named.0.unwrap(),
-            cid: self.__unsafe_private_named.1.unwrap(),
-            record: self.__unsafe_private_named.2.unwrap(),
-            uri: self.__unsafe_private_named.3.unwrap(),
+            author: self._fields.0.unwrap(),
+            cid: self._fields.1.unwrap(),
+            record: self._fields.2.unwrap(),
+            uri: self._fields.3.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> PermissionView<'a> {
+    ) -> PermissionView<S> {
         PermissionView {
-            author: self.__unsafe_private_named.0.unwrap(),
-            cid: self.__unsafe_private_named.1.unwrap(),
-            record: self.__unsafe_private_named.2.unwrap(),
-            uri: self.__unsafe_private_named.3.unwrap(),
+            author: self._fields.0.unwrap(),
+            cid: self._fields.1.unwrap(),
+            record: self._fields.2.unwrap(),
+            uri: self._fields.3.unwrap(),
             extra_data: Some(extra_data),
         }
     }
 }
 
-fn lexicon_doc_place_stream_moderation_defs() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_place_stream_moderation_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("place.stream.moderation.defs"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("permissionView"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("permissionView"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("uri"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("cid"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("author"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("record"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("uri"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("cid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("author"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("record"),
                         ]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("author"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("author"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
                                     ::jacquard_lexicon::lexicon::LexRef {
-                                        description: None,
                                         r#ref: ::jacquard_common::CowStr::new_static(
                                             "app.bsky.actor.defs#profileViewBasic",
                                         ),
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("cid"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("cid"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
@@ -294,25 +337,20 @@ fn lexicon_doc_place_stream_moderation_defs() -> ::jacquard_lexicon::lexicon::Le
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Cid,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("record"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("record"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Unknown(
-                                    ::jacquard_lexicon::lexicon::LexUnknown { description: None },
+                                    ::jacquard_lexicon::lexicon::LexUnknown {
+                                        ..Default::default()
+                                    },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("uri"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("uri"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
@@ -321,40 +359,18 @@ fn lexicon_doc_place_stream_moderation_defs() -> ::jacquard_lexicon::lexicon::Le
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map
         },
-    }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for PermissionView<'a> {
-    fn nsid() -> &'static str {
-        "place.stream.moderation.defs"
-    }
-    fn def_name() -> &'static str {
-        "permissionView"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_place_stream_moderation_defs()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
+        ..Default::default()
     }
 }

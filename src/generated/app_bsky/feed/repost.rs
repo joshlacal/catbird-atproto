@@ -6,18 +6,100 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 /// Record representing a 'repost' of an existing Bluesky post.
-#[jacquard_derive::lexicon]
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    rename = "app.bsky.feed.repost",
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct Repost<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub created_at: jacquard_common::types::string::Datetime,
+    pub subject: crate::generated::com_atproto::repo::strong_ref::StrongRef<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub via: core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// Typed wrapper for GetRecord response with this collection's record type.
+
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
-pub struct Repost<'a> {
-    pub created_at: jacquard_common::types::string::Datetime,
-    #[serde(borrow)]
-    pub subject: crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub via: std::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,
+pub struct RepostGetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
+    pub uri: jacquard_common::types::string::AtUri<S>,
+    pub value: Repost<S>,
+}
+
+impl<S: jacquard_common::BosStr> Repost<S> {
+    pub fn uri(
+        uri: S,
+    ) -> Result<
+        jacquard_common::types::uri::RecordUri<S, RepostRecord>,
+        jacquard_common::types::uri::UriError,
+    > {
+        jacquard_common::types::uri::RecordUri::try_from_uri(
+            jacquard_common::types::string::AtUri::new(uri)?,
+        )
+    }
+}
+
+/// Marker type for deserializing records from this collection.
+
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+pub struct RepostRecord;
+impl jacquard_common::xrpc::XrpcResp for RepostRecord {
+    const NSID: &'static str = "app.bsky.feed.repost";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = RepostGetRecordOutput<S>;
+    type Err = jacquard_common::types::collection::RecordError;
+}
+
+impl<S: jacquard_common::BosStr> From<RepostGetRecordOutput<S>> for Repost<S> {
+    fn from(output: RepostGetRecordOutput<S>) -> Self {
+        output.value
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection for Repost<S> {
+    const NSID: &'static str = "app.bsky.feed.repost";
+    type Record = RepostRecord;
+}
+
+impl jacquard_common::types::collection::Collection for RepostRecord {
+    const NSID: &'static str = "app.bsky.feed.repost";
+    type Record = RepostRecord;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Repost<S> {
+    fn nsid() -> &'static str {
+        "app.bsky.feed.repost"
+    }
+    fn def_name() -> &'static str {
+        "main"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_app_bsky_feed_repost()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
 }
 
 pub mod repost_state {
@@ -30,240 +112,187 @@ pub mod repost_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Subject;
         type CreatedAt;
+        type Subject;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Subject = Unset;
         type CreatedAt = Unset;
-    }
-    ///State transition - sets the `subject` field to Set
-    pub struct SetSubject<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetSubject<S> {}
-    impl<S: State> State for SetSubject<S> {
-        type Subject = Set<members::subject>;
-        type CreatedAt = S::CreatedAt;
+        type Subject = Unset;
     }
     ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type Subject = S::Subject;
+    pub struct SetCreatedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCreatedAt<St> {}
+    impl<St: State> State for SetCreatedAt<St> {
         type CreatedAt = Set<members::created_at>;
+        type Subject = St::Subject;
+    }
+    ///State transition - sets the `subject` field to Set
+    pub struct SetSubject<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSubject<St> {}
+    impl<St: State> State for SetSubject<St> {
+        type CreatedAt = St::CreatedAt;
+        type Subject = Set<members::subject>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `subject` field
-        pub struct subject(());
         ///Marker type for the `created_at` field
         pub struct created_at(());
+        ///Marker type for the `subject` field
+        pub struct subject(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct RepostBuilder<'a, S: repost_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,
-        ::core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct RepostBuilder<
+    St: repost_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
+        core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> Repost<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> RepostBuilder<'a, repost_state::Empty> {
+impl Repost<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> RepostBuilder<repost_state::Empty, jacquard_common::DefaultStr> {
         RepostBuilder::new()
     }
 }
 
-impl<'a> RepostBuilder<'a, repost_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> Repost<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> RepostBuilder<repost_state::Empty, S> {
+        RepostBuilder::builder()
+    }
+}
+
+impl RepostBuilder<repost_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         RepostBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> RepostBuilder<'a, S>
+impl<S: jacquard_common::BosStr> RepostBuilder<repost_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        RepostBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> RepostBuilder<St, S>
 where
-    S: repost_state::State,
-    S::CreatedAt: repost_state::IsUnset,
+    St: repost_state::State,
+    St::CreatedAt: repost_state::IsUnset,
 {
     /// Set the `createdAt` field (required)
     pub fn created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> RepostBuilder<'a, repost_state::SetCreatedAt<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+    ) -> RepostBuilder<repost_state::SetCreatedAt<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         RepostBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> RepostBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> RepostBuilder<St, S>
 where
-    S: repost_state::State,
-    S::Subject: repost_state::IsUnset,
+    St: repost_state::State,
+    St::Subject: repost_state::IsUnset,
 {
     /// Set the `subject` field (required)
     pub fn subject(
         mut self,
-        value: impl Into<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,
-    ) -> RepostBuilder<'a, repost_state::SetSubject<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
+    ) -> RepostBuilder<repost_state::SetSubject<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         RepostBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: repost_state::State> RepostBuilder<'a, S> {
+impl<St: repost_state::State, S: jacquard_common::BosStr> RepostBuilder<St, S> {
     /// Set the `via` field (optional)
     pub fn via(
         mut self,
-        value: impl Into<Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>>,
+        value: impl Into<Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.2 = value.into();
+        self._fields.2 = value.into();
         self
     }
     /// Set the `via` field to an Option value (optional)
     pub fn maybe_via(
         mut self,
-        value: Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,
+        value: Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
     ) -> Self {
-        self.__unsafe_private_named.2 = value;
+        self._fields.2 = value;
         self
     }
 }
 
-impl<'a, S> RepostBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> RepostBuilder<St, S>
 where
-    S: repost_state::State,
-    S::Subject: repost_state::IsSet,
-    S::CreatedAt: repost_state::IsSet,
+    St: repost_state::State,
+    St::CreatedAt: repost_state::IsSet,
+    St::Subject: repost_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> Repost<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> Repost<S> {
         Repost {
-            created_at: self.__unsafe_private_named.0.unwrap(),
-            subject: self.__unsafe_private_named.1.unwrap(),
-            via: self.__unsafe_private_named.2,
+            created_at: self._fields.0.unwrap(),
+            subject: self._fields.1.unwrap(),
+            via: self._fields.2,
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> Repost<'a> {
+    ) -> Repost<S> {
         Repost {
-            created_at: self.__unsafe_private_named.0.unwrap(),
-            subject: self.__unsafe_private_named.1.unwrap(),
-            via: self.__unsafe_private_named.2,
+            created_at: self._fields.0.unwrap(),
+            subject: self._fields.1.unwrap(),
+            via: self._fields.2,
             extra_data: Some(extra_data),
         }
     }
 }
 
-impl<'a> Repost<'a> {
-    pub fn uri(
-        uri: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> Result<
-        jacquard_common::types::uri::RecordUri<'a, RepostRecord>,
-        jacquard_common::types::uri::UriError,
-    > {
-        jacquard_common::types::uri::RecordUri::try_from_uri(
-            jacquard_common::types::string::AtUri::new_cow(uri.into())?,
-        )
-    }
-}
-
-/// Typed wrapper for GetRecord response with this collection's record type.
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct RepostGetRecordOutput<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cid: std::option::Option<jacquard_common::types::string::Cid<'a>>,
-    #[serde(borrow)]
-    pub uri: jacquard_common::types::string::AtUri<'a>,
-    #[serde(borrow)]
-    pub value: Repost<'a>,
-}
-
-impl From<RepostGetRecordOutput<'_>> for Repost<'_> {
-    fn from(output: RepostGetRecordOutput<'_>) -> Self {
-        use jacquard_common::IntoStatic;
-        output.value.into_static()
-    }
-}
-
-impl jacquard_common::types::collection::Collection for Repost<'_> {
-    const NSID: &'static str = "app.bsky.feed.repost";
-    type Record = RepostRecord;
-}
-
-/// Marker type for deserializing records from this collection.
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
-pub struct RepostRecord;
-impl jacquard_common::xrpc::XrpcResp for RepostRecord {
-    const NSID: &'static str = "app.bsky.feed.repost";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = RepostGetRecordOutput<'de>;
-    type Err<'de> = jacquard_common::types::collection::RecordError<'de>;
-}
-
-impl jacquard_common::types::collection::Collection for RepostRecord {
-    const NSID: &'static str = "app.bsky.feed.repost";
-    type Record = RepostRecord;
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Repost<'a> {
-    fn nsid() -> &'static str {
-        "app.bsky.feed.repost"
-    }
-    fn def_name() -> &'static str {
-        "main"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_app_bsky_feed_repost()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-fn lexicon_doc_app_bsky_feed_repost() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_app_bsky_feed_repost() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("app.bsky.feed.repost"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
                 ::jacquard_lexicon::lexicon::LexUserType::Record(::jacquard_lexicon::lexicon::LexRecord {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
@@ -272,60 +301,57 @@ fn lexicon_doc_app_bsky_feed_repost() -> ::jacquard_lexicon::lexicon::LexiconDoc
                     ),
                     key: Some(::jacquard_common::CowStr::new_static("tid")),
                     record: ::jacquard_lexicon::lexicon::LexRecordRecord::Object(::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(
                             vec![
-                                ::jacquard_common::smol_str::SmolStr::new_static("subject"),
-                                ::jacquard_common::smol_str::SmolStr::new_static("createdAt")
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("subject"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt")
                             ],
                         ),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "createdAt",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                    description: None,
                                     format: Some(
                                         ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                     ),
-                                    default: None,
-                                    min_length: None,
-                                    max_length: None,
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("subject"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "subject",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                    description: None,
                                     r#ref: ::jacquard_common::CowStr::new_static(
                                         "com.atproto.repo.strongRef",
                                     ),
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("via"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "via",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                    description: None,
                                     r#ref: ::jacquard_common::CowStr::new_static(
                                         "com.atproto.repo.strongRef",
                                     ),
+                                    ..Default::default()
                                 }),
                             );
                             map
                         },
+                        ..Default::default()
                     }),
+                    ..Default::default()
                 }),
             );
             map
         },
+        ..Default::default()
     }
 }

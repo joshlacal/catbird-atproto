@@ -8,10 +8,117 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct ResolveDid<'a> {
-    #[serde(borrow)]
-    pub did: jacquard_common::types::string::Did<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ResolveDid<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub did: jacquard_common::types::string::Did<S>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ResolveDidOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///The complete DID document for the identity.
+    pub did_doc: jacquard_common::types::value::Data<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    thiserror::Error,
+    miette::Diagnostic,
+)]
+#[serde(tag = "error", content = "message")]
+pub enum ResolveDidError {
+    /// The DID resolution process confirmed that there is no current DID.
+    #[serde(rename = "DidNotFound")]
+    DidNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// The DID previously existed, but has been deactivated.
+    #[serde(rename = "DidDeactivated")]
+    DidDeactivated(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
+}
+
+impl core::fmt::Display for ResolveDidError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+            Self::DidNotFound(msg) => {
+                write!(f, "DidNotFound")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::DidDeactivated(msg) => {
+                write!(f, "DidDeactivated")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+        }
+    }
+}
+
+/** Response marker for the `com.atproto.identity.resolveDid` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `ResolveDidOutput<S>` for this endpoint.*/
+pub struct ResolveDidResponse;
+impl jacquard_common::xrpc::XrpcResp for ResolveDidResponse {
+    const NSID: &'static str = "com.atproto.identity.resolveDid";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = ResolveDidOutput<S>;
+    type Err = ResolveDidError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for ResolveDid<S> {
+    const NSID: &'static str = "com.atproto.identity.resolveDid";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = ResolveDidResponse;
+}
+
+/** Endpoint marker for the `com.atproto.identity.resolveDid` query.
+
+Path: `/xrpc/com.atproto.identity.resolveDid`. The request payload type is `ResolveDid<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct ResolveDidRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for ResolveDidRequest {
+    const PATH: &'static str = "/xrpc/com.atproto.identity.resolveDid";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = ResolveDid<S>;
+    type Response = ResolveDidResponse;
 }
 
 pub mod resolve_did_state {
@@ -33,9 +140,9 @@ pub mod resolve_did_state {
         type Did = Unset;
     }
     ///State transition - sets the `did` field to Set
-    pub struct SetDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDid<S> {}
-    impl<S: State> State for SetDid<S> {
+    pub struct SetDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetDid<St> {}
+    impl<St: State> State for SetDid<St> {
         type Did = Set<members::did>;
     }
     /// Marker types for field names
@@ -46,141 +153,80 @@ pub mod resolve_did_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct ResolveDidBuilder<'a, S: resolve_did_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<jacquard_common::types::string::Did<'a>>,),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct ResolveDidBuilder<
+    St: resolve_did_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<jacquard_common::types::string::Did<S>>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> ResolveDid<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> ResolveDidBuilder<'a, resolve_did_state::Empty> {
+impl ResolveDid<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> ResolveDidBuilder<resolve_did_state::Empty, jacquard_common::DefaultStr> {
         ResolveDidBuilder::new()
     }
 }
 
-impl<'a> ResolveDidBuilder<'a, resolve_did_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> ResolveDid<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> ResolveDidBuilder<resolve_did_state::Empty, S> {
+        ResolveDidBuilder::builder()
+    }
+}
+
+impl ResolveDidBuilder<resolve_did_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ResolveDidBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ResolveDidBuilder<'a, S>
+impl<S: jacquard_common::BosStr> ResolveDidBuilder<resolve_did_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        ResolveDidBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ResolveDidBuilder<St, S>
 where
-    S: resolve_did_state::State,
-    S::Did: resolve_did_state::IsUnset,
+    St: resolve_did_state::State,
+    St::Did: resolve_did_state::IsUnset,
 {
     /// Set the `did` field (required)
     pub fn did(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> ResolveDidBuilder<'a, resolve_did_state::SetDid<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> ResolveDidBuilder<resolve_did_state::SetDid<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         ResolveDidBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ResolveDidBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ResolveDidBuilder<St, S>
 where
-    S: resolve_did_state::State,
-    S::Did: resolve_did_state::IsSet,
+    St: resolve_did_state::State,
+    St::Did: resolve_did_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> ResolveDid<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> ResolveDid<S> {
         ResolveDid {
-            did: self.__unsafe_private_named.0.unwrap(),
+            did: self._fields.0.unwrap(),
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct ResolveDidOutput<'a> {
-    /// The complete DID document for the identity.
-    #[serde(borrow)]
-    pub did_doc: jacquard_common::types::value::Data<'a>,
-}
-
-#[jacquard_derive::open_union]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    thiserror::Error,
-    miette::Diagnostic,
-    jacquard_derive::IntoStatic,
-)]
-#[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum ResolveDidError<'a> {
-    /// The DID resolution process confirmed that there is no current DID.
-    #[serde(rename = "DidNotFound")]
-    DidNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
-    /// The DID previously existed, but has been deactivated.
-    #[serde(rename = "DidDeactivated")]
-    DidDeactivated(std::option::Option<jacquard_common::CowStr<'a>>),
-}
-
-impl std::fmt::Display for ResolveDidError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::DidNotFound(msg) => {
-                write!(f, "DidNotFound")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
-            Self::DidDeactivated(msg) => {
-                write!(f, "DidDeactivated")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
-        }
-    }
-}
-
-/// Response type for
-///com.atproto.identity.resolveDid
-pub struct ResolveDidResponse;
-impl jacquard_common::xrpc::XrpcResp for ResolveDidResponse {
-    const NSID: &'static str = "com.atproto.identity.resolveDid";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = ResolveDidOutput<'de>;
-    type Err<'de> = ResolveDidError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for ResolveDid<'a> {
-    const NSID: &'static str = "com.atproto.identity.resolveDid";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = ResolveDidResponse;
-}
-
-/// Endpoint type for
-///com.atproto.identity.resolveDid
-pub struct ResolveDidRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for ResolveDidRequest {
-    const PATH: &'static str = "/xrpc/com.atproto.identity.resolveDid";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = ResolveDid<'de>;
-    type Response = ResolveDidResponse;
 }

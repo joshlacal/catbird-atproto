@@ -5,7 +5,6 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -16,180 +15,219 @@
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct Host<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub account_count: std::option::Option<i64>,
-    /// hostname of server; not a URL (no scheme)
-    #[serde(borrow)]
-    pub hostname: jacquard_common::CowStr<'a>,
-    /// Recent repo stream event sequence number. May be delayed from actual stream processing (eg, persisted cursor not in-memory cursor).
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub seq: std::option::Option<i64>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub status: std::option::Option<crate::generated::com_atproto::sync::HostStatus<'a>>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct Host<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub account_count: core::option::Option<i64>,
+    ///hostname of server; not a URL (no scheme)
+    pub hostname: S,
+    ///Recent repo stream event sequence number. May be delayed from actual stream processing (eg, persisted cursor not in-memory cursor).
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub seq: core::option::Option<i64>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub status: core::option::Option<crate::generated::com_atproto::sync::HostStatus<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-fn lexicon_doc_com_atproto_sync_listHosts() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-    ::jacquard_lexicon::lexicon::LexiconDoc {
-        lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
-        id: ::jacquard_common::CowStr::new_static("com.atproto.sync.listHosts"),
-        revision: None,
-        description: None,
-        defs: {
-            let mut map = ::std::collections::BTreeMap::new();
-            map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("host"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
-                        required: Some(vec![::jacquard_common::smol_str::SmolStr::new_static(
-                            "hostname",
-                        )]),
-                        nullable: None,
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("accountCount"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                    ::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
-                                        minimum: None,
-                                        maximum: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("hostname"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: Some(::jacquard_common::CowStr::new_static(
-                                            "hostname of server; not a URL (no scheme)",
-                                        )),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("seq"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                    ::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
-                                        minimum: None,
-                                        maximum: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("status"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        description: None,
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "com.atproto.sync.defs#hostStatus",
-                                        ),
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                    },
-                ),
-            );
-            map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
-                ::jacquard_lexicon::lexicon::LexUserType::XrpcQuery(::jacquard_lexicon::lexicon::LexXrpcQuery {
-                    description: None,
-                    parameters: Some(
-                        ::jacquard_lexicon::lexicon::LexXrpcQueryParameter::Params(::jacquard_lexicon::lexicon::LexXrpcParameters {
-                            description: None,
-                            required: None,
-                            properties: {
-                                #[allow(unused_mut)]
-                                let mut map = ::std::collections::BTreeMap::new();
-                                map.insert(
-                                    ::jacquard_common::smol_str::SmolStr::new_static("cursor"),
-                                    ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
-                                    }),
-                                );
-                                map.insert(
-                                    ::jacquard_common::smol_str::SmolStr::new_static("limit"),
-                                    ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
-                                        minimum: None,
-                                        maximum: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                    }),
-                                );
-                                map
-                            },
-                        }),
-                    ),
-                    output: None,
-                    errors: None,
-                }),
-            );
-            map
-        },
-    }
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ListHosts<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    /// Defaults to `200`. Min: 1. Max: 1000.
+    #[serde(default = "_default_limit")]
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub limit: core::option::Option<i64>,
 }
 
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Host<'a> {
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ListHostsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    ///Sort order is not formally specified. Recommended order is by time host was first seen by the server, with oldest first.
+    pub hosts: Vec<crate::generated::com_atproto::sync::list_hosts::Host<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Host<S> {
     fn nsid() -> &'static str {
         "com.atproto.sync.listHosts"
     }
     fn def_name() -> &'static str {
         "host"
     }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
         lexicon_doc_com_atproto_sync_listHosts()
     }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
         Ok(())
     }
 }
 
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct ListHosts<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    ///(default: 200, min: 1, max: 1000)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub limit: std::option::Option<i64>,
+/** Response marker for the `com.atproto.sync.listHosts` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `ListHostsOutput<S>` for this endpoint.*/
+pub struct ListHostsResponse;
+impl jacquard_common::xrpc::XrpcResp for ListHostsResponse {
+    const NSID: &'static str = "com.atproto.sync.listHosts";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = ListHostsOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for ListHosts<S> {
+    const NSID: &'static str = "com.atproto.sync.listHosts";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = ListHostsResponse;
+}
+
+/** Endpoint marker for the `com.atproto.sync.listHosts` query.
+
+Path: `/xrpc/com.atproto.sync.listHosts`. The request payload type is `ListHosts<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct ListHostsRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for ListHostsRequest {
+    const PATH: &'static str = "/xrpc/com.atproto.sync.listHosts";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = ListHosts<S>;
+    type Response = ListHostsResponse;
+}
+
+fn lexicon_doc_com_atproto_sync_listHosts() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+    ::jacquard_lexicon::lexicon::LexiconDoc {
+        lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
+        id: ::jacquard_common::CowStr::new_static("com.atproto.sync.listHosts"),
+        defs: {
+            let mut map = ::alloc::collections::BTreeMap::new();
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("host"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        required: Some(vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("hostname"),
+                        ]),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "accountCount",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("hostname"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "hostname of server; not a URL (no scheme)",
+                                        )),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("seq"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("status"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
+                                    ::jacquard_lexicon::lexicon::LexRef {
+                                        r#ref: ::jacquard_common::CowStr::new_static(
+                                            "com.atproto.sync.defs#hostStatus",
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map
+                        },
+                        ..Default::default()
+                    },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
+                ::jacquard_lexicon::lexicon::LexUserType::XrpcQuery(::jacquard_lexicon::lexicon::LexXrpcQuery {
+                    parameters: Some(
+                        ::jacquard_lexicon::lexicon::LexXrpcQueryParameter::Params(::jacquard_lexicon::lexicon::LexXrpcParameters {
+                            properties: {
+                                #[allow(unused_mut)]
+                                let mut map = ::alloc::collections::BTreeMap::new();
+                                map.insert(
+                                    ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                        "cursor",
+                                    ),
+                                    ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                        ..Default::default()
+                                    }),
+                                );
+                                map.insert(
+                                    ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                        "limit",
+                                    ),
+                                    ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                        ..Default::default()
+                                    }),
+                                );
+                                map
+                            },
+                            ..Default::default()
+                        }),
+                    ),
+                    ..Default::default()
+                }),
+            );
+            map
+        },
+        ..Default::default()
+    }
+}
+
+fn _default_limit() -> core::option::Option<i64> {
+    Some(200i64)
 }
 
 pub mod list_hosts_state {
@@ -211,109 +249,87 @@ pub mod list_hosts_state {
     pub mod members {}
 }
 
-/// Builder for constructing an instance of this type
-pub struct ListHostsBuilder<'a, S: list_hosts_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<i64>,
-    ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct ListHostsBuilder<
+    St: list_hosts_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<S>, core::option::Option<i64>),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> ListHosts<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> ListHostsBuilder<'a, list_hosts_state::Empty> {
+impl ListHosts<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> ListHostsBuilder<list_hosts_state::Empty, jacquard_common::DefaultStr> {
         ListHostsBuilder::new()
     }
 }
 
-impl<'a> ListHostsBuilder<'a, list_hosts_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> ListHosts<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> ListHostsBuilder<list_hosts_state::Empty, S> {
+        ListHostsBuilder::builder()
+    }
+}
+
+impl ListHostsBuilder<list_hosts_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ListHostsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: list_hosts_state::State> ListHostsBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> ListHostsBuilder<list_hosts_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        ListHostsBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: list_hosts_state::State, S: jacquard_common::BosStr> ListHostsBuilder<St, S> {
     /// Set the `cursor` field (optional)
-    pub fn cursor(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+    pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.0 = value.into();
         self
     }
     /// Set the `cursor` field to an Option value (optional)
-    pub fn maybe_cursor(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.0 = value;
+    pub fn maybe_cursor(mut self, value: Option<S>) -> Self {
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S: list_hosts_state::State> ListHostsBuilder<'a, S> {
+impl<St: list_hosts_state::State, S: jacquard_common::BosStr> ListHostsBuilder<St, S> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self._fields.1 = value.into();
         self
     }
     /// Set the `limit` field to an Option value (optional)
     pub fn maybe_limit(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.1 = value;
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S> ListHostsBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ListHostsBuilder<St, S>
 where
-    S: list_hosts_state::State,
+    St: list_hosts_state::State,
 {
-    /// Build the final struct
-    pub fn build(self) -> ListHosts<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> ListHosts<S> {
         ListHosts {
-            cursor: self.__unsafe_private_named.0,
-            limit: self.__unsafe_private_named.1,
+            cursor: self._fields.0,
+            limit: self._fields.1,
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct ListHostsOutput<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// Sort order is not formally specified. Recommended order is by time host was first seen by the server, with oldest first.
-    #[serde(borrow)]
-    pub hosts: Vec<crate::generated::com_atproto::sync::list_hosts::Host<'a>>,
-}
-
-/// Response type for
-///com.atproto.sync.listHosts
-pub struct ListHostsResponse;
-impl jacquard_common::xrpc::XrpcResp for ListHostsResponse {
-    const NSID: &'static str = "com.atproto.sync.listHosts";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = ListHostsOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for ListHosts<'a> {
-    const NSID: &'static str = "com.atproto.sync.listHosts";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = ListHostsResponse;
-}
-
-/// Endpoint type for
-///com.atproto.sync.listHosts
-pub struct ListHostsRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for ListHostsRequest {
-    const PATH: &'static str = "/xrpc/com.atproto.sync.listHosts";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = ListHosts<'de>;
-    type Response = ListHostsResponse;
 }

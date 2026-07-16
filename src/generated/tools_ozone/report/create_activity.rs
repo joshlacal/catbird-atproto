@@ -5,250 +5,86 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct CreateActivity<'a> {
-    /// The type of activity to record.
-    #[serde(borrow)]
-    pub activity: CreateActivityActivity<'a>,
-    /// Optional moderator-only note. Not visible to reporters.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub internal_note: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// Set true when this activity is triggered by an automated process. Defaults to false.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub is_automated: std::option::Option<bool>,
-    /// Optional public-facing note, potentially visible to the reporter.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub public_note: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// ID of the report to record activity on
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct CreateActivity<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///The type of activity to record.
+    pub activity: CreateActivityActivity<S>,
+    ///Optional moderator-only note. Not visible to reporters.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub internal_note: core::option::Option<S>,
+    ///Set true when this activity is triggered by an automated process. Defaults to false.  Defaults to `false`.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(default = "_default_create_activity_is_automated")]
+    pub is_automated: core::option::Option<bool>,
+    ///Optional public-facing note, potentially visible to the reporter.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub public_note: core::option::Option<S>,
+    ///ID of the report to record activity on
     pub report_id: i64,
-}
-
-pub mod create_activity_state {
-
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
-    #[allow(unused)]
-    use core::marker::PhantomData;
-    mod sealed {
-        pub trait Sealed {}
-    }
-    /// State trait tracking which required fields have been set
-    pub trait State: sealed::Sealed {
-        type ReportId;
-        type Activity;
-    }
-    /// Empty state - all required fields are unset
-    pub struct Empty(());
-    impl sealed::Sealed for Empty {}
-    impl State for Empty {
-        type ReportId = Unset;
-        type Activity = Unset;
-    }
-    ///State transition - sets the `report_id` field to Set
-    pub struct SetReportId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetReportId<S> {}
-    impl<S: State> State for SetReportId<S> {
-        type ReportId = Set<members::report_id>;
-        type Activity = S::Activity;
-    }
-    ///State transition - sets the `activity` field to Set
-    pub struct SetActivity<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetActivity<S> {}
-    impl<S: State> State for SetActivity<S> {
-        type ReportId = S::ReportId;
-        type Activity = Set<members::activity>;
-    }
-    /// Marker types for field names
-    #[allow(non_camel_case_types)]
-    pub mod members {
-        ///Marker type for the `report_id` field
-        pub struct report_id(());
-        ///Marker type for the `activity` field
-        pub struct activity(());
-    }
-}
-
-/// Builder for constructing an instance of this type
-pub struct CreateActivityBuilder<'a, S: create_activity_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<CreateActivityActivity<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<bool>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<i64>,
-    ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
-}
-
-impl<'a> CreateActivity<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> CreateActivityBuilder<'a, create_activity_state::Empty> {
-        CreateActivityBuilder::new()
-    }
-}
-
-impl<'a> CreateActivityBuilder<'a, create_activity_state::Empty> {
-    /// Create a new builder with all fields unset
-    pub fn new() -> Self {
-        CreateActivityBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> CreateActivityBuilder<'a, S>
-where
-    S: create_activity_state::State,
-    S::Activity: create_activity_state::IsUnset,
-{
-    /// Set the `activity` field (required)
-    pub fn activity(
-        mut self,
-        value: impl Into<CreateActivityActivity<'a>>,
-    ) -> CreateActivityBuilder<'a, create_activity_state::SetActivity<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
-        CreateActivityBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S: create_activity_state::State> CreateActivityBuilder<'a, S> {
-    /// Set the `internalNote` field (optional)
-    pub fn internal_note(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.1 = value.into();
-        self
-    }
-    /// Set the `internalNote` field to an Option value (optional)
-    pub fn maybe_internal_note(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.1 = value;
-        self
-    }
-}
-
-impl<'a, S: create_activity_state::State> CreateActivityBuilder<'a, S> {
-    /// Set the `isAutomated` field (optional)
-    pub fn is_automated(mut self, value: impl Into<Option<bool>>) -> Self {
-        self.__unsafe_private_named.2 = value.into();
-        self
-    }
-    /// Set the `isAutomated` field to an Option value (optional)
-    pub fn maybe_is_automated(mut self, value: Option<bool>) -> Self {
-        self.__unsafe_private_named.2 = value;
-        self
-    }
-}
-
-impl<'a, S: create_activity_state::State> CreateActivityBuilder<'a, S> {
-    /// Set the `publicNote` field (optional)
-    pub fn public_note(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.3 = value.into();
-        self
-    }
-    /// Set the `publicNote` field to an Option value (optional)
-    pub fn maybe_public_note(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.3 = value;
-        self
-    }
-}
-
-impl<'a, S> CreateActivityBuilder<'a, S>
-where
-    S: create_activity_state::State,
-    S::ReportId: create_activity_state::IsUnset,
-{
-    /// Set the `reportId` field (required)
-    pub fn report_id(
-        mut self,
-        value: impl Into<i64>,
-    ) -> CreateActivityBuilder<'a, create_activity_state::SetReportId<S>> {
-        self.__unsafe_private_named.4 = ::core::option::Option::Some(value.into());
-        CreateActivityBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> CreateActivityBuilder<'a, S>
-where
-    S: create_activity_state::State,
-    S::ReportId: create_activity_state::IsSet,
-    S::Activity: create_activity_state::IsSet,
-{
-    /// Build the final struct
-    pub fn build(self) -> CreateActivity<'a> {
-        CreateActivity {
-            activity: self.__unsafe_private_named.0.unwrap(),
-            internal_note: self.__unsafe_private_named.1,
-            is_automated: self.__unsafe_private_named.2,
-            public_note: self.__unsafe_private_named.3,
-            report_id: self.__unsafe_private_named.4.unwrap(),
-            extra_data: Default::default(),
-        }
-    }
-    /// Build the final struct with custom extra_data
-    pub fn build_with_data(
-        self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> CreateActivity<'a> {
-        CreateActivity {
-            activity: self.__unsafe_private_named.0.unwrap(),
-            internal_note: self.__unsafe_private_named.1,
-            is_automated: self.__unsafe_private_named.2,
-            public_note: self.__unsafe_private_named.3,
-            report_id: self.__unsafe_private_named.4.unwrap(),
-            extra_data: Some(extra_data),
-        }
-    }
+    >,
 }
 
 #[jacquard_derive::open_union]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(tag = "$type")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum CreateActivityActivity<'a> {
+#[serde(
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub enum CreateActivityActivity<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(rename = "tools.ozone.report.defs#queueActivity")]
-    QueueActivity(Box<crate::generated::tools_ozone::report::QueueActivity<'a>>),
+    QueueActivity(Box<crate::generated::tools_ozone::report::QueueActivity<S>>),
     #[serde(rename = "tools.ozone.report.defs#assignmentActivity")]
-    AssignmentActivity(Box<crate::generated::tools_ozone::report::AssignmentActivity<'a>>),
+    AssignmentActivity(Box<crate::generated::tools_ozone::report::AssignmentActivity<S>>),
     #[serde(rename = "tools.ozone.report.defs#escalationActivity")]
-    EscalationActivity(Box<crate::generated::tools_ozone::report::EscalationActivity<'a>>),
+    EscalationActivity(Box<crate::generated::tools_ozone::report::EscalationActivity<S>>),
     #[serde(rename = "tools.ozone.report.defs#closeActivity")]
-    CloseActivity(Box<crate::generated::tools_ozone::report::CloseActivity<'a>>),
+    CloseActivity(Box<crate::generated::tools_ozone::report::CloseActivity<S>>),
     #[serde(rename = "tools.ozone.report.defs#reopenActivity")]
-    ReopenActivity(Box<crate::generated::tools_ozone::report::ReopenActivity<'a>>),
+    ReopenActivity(Box<crate::generated::tools_ozone::report::ReopenActivity<S>>),
     #[serde(rename = "tools.ozone.report.defs#noteActivity")]
-    NoteActivity(Box<crate::generated::tools_ozone::report::NoteActivity<'a>>),
+    NoteActivity(Box<crate::generated::tools_ozone::report::NoteActivity<S>>),
 }
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct CreateActivityOutput<'a> {
-    #[serde(borrow)]
-    pub activity: crate::generated::tools_ozone::report::ReportActivityView<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct CreateActivityOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub activity: crate::generated::tools_ozone::report::ReportActivityView<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::open_union]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -258,24 +94,28 @@ pub struct CreateActivityOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum CreateActivityError<'a> {
+pub enum CreateActivityError {
     /// No report exists with the given reportId
     #[serde(rename = "ReportNotFound")]
-    ReportNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
+    ReportNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// The requested state transition is not permitted from the report's current status
     #[serde(rename = "InvalidStateTransition")]
-    InvalidStateTransition(std::option::Option<jacquard_common::CowStr<'a>>),
+    InvalidStateTransition(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// The report is already in the status implied by this activity type
     #[serde(rename = "AlreadyInTargetState")]
-    AlreadyInTargetState(std::option::Option<jacquard_common::CowStr<'a>>),
+    AlreadyInTargetState(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
 }
 
-impl std::fmt::Display for CreateActivityError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for CreateActivityError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             Self::ReportNotFound(msg) => {
                 write!(f, "ReportNotFound")?;
@@ -298,35 +138,257 @@ impl std::fmt::Display for CreateActivityError<'_> {
                 }
                 Ok(())
             }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
         }
     }
 }
 
-/// Response type for
-///tools.ozone.report.createActivity
+/** Response marker for the `tools.ozone.report.createActivity` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `CreateActivityOutput<S>` for this endpoint.*/
 pub struct CreateActivityResponse;
 impl jacquard_common::xrpc::XrpcResp for CreateActivityResponse {
     const NSID: &'static str = "tools.ozone.report.createActivity";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = CreateActivityOutput<'de>;
-    type Err<'de> = CreateActivityError<'de>;
+    type Output<S: jacquard_common::BosStr> = CreateActivityOutput<S>;
+    type Err = CreateActivityError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for CreateActivity<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for CreateActivity<S> {
     const NSID: &'static str = "tools.ozone.report.createActivity";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = CreateActivityResponse;
 }
 
-/// Endpoint type for
-///tools.ozone.report.createActivity
+/** Endpoint marker for the `tools.ozone.report.createActivity` procedure.
+
+Path: `/xrpc/tools.ozone.report.createActivity`. The request payload type is `CreateActivity<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct CreateActivityRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for CreateActivityRequest {
     const PATH: &'static str = "/xrpc/tools.ozone.report.createActivity";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = CreateActivity<'de>;
+    type Request<S: jacquard_common::BosStr> = CreateActivity<S>;
     type Response = CreateActivityResponse;
+}
+
+fn _default_create_activity_is_automated() -> core::option::Option<bool> {
+    Some(false)
+}
+
+pub mod create_activity_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type Activity;
+        type ReportId;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type Activity = Unset;
+        type ReportId = Unset;
+    }
+    ///State transition - sets the `activity` field to Set
+    pub struct SetActivity<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetActivity<St> {}
+    impl<St: State> State for SetActivity<St> {
+        type Activity = Set<members::activity>;
+        type ReportId = St::ReportId;
+    }
+    ///State transition - sets the `report_id` field to Set
+    pub struct SetReportId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetReportId<St> {}
+    impl<St: State> State for SetReportId<St> {
+        type Activity = St::Activity;
+        type ReportId = Set<members::report_id>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `activity` field
+        pub struct activity(());
+        ///Marker type for the `report_id` field
+        pub struct report_id(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct CreateActivityBuilder<
+    St: create_activity_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<CreateActivityActivity<S>>,
+        core::option::Option<S>,
+        core::option::Option<bool>,
+        core::option::Option<S>,
+        core::option::Option<i64>,
+    ),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl CreateActivity<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> CreateActivityBuilder<create_activity_state::Empty, jacquard_common::DefaultStr>
+    {
+        CreateActivityBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> CreateActivity<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> CreateActivityBuilder<create_activity_state::Empty, S> {
+        CreateActivityBuilder::builder()
+    }
+}
+
+impl CreateActivityBuilder<create_activity_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        CreateActivityBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> CreateActivityBuilder<create_activity_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        CreateActivityBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> CreateActivityBuilder<St, S>
+where
+    St: create_activity_state::State,
+    St::Activity: create_activity_state::IsUnset,
+{
+    /// Set the `activity` field (required)
+    pub fn activity(
+        mut self,
+        value: impl Into<CreateActivityActivity<S>>,
+    ) -> CreateActivityBuilder<create_activity_state::SetActivity<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        CreateActivityBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: create_activity_state::State, S: jacquard_common::BosStr> CreateActivityBuilder<St, S> {
+    /// Set the `internalNote` field (optional)
+    pub fn internal_note(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.1 = value.into();
+        self
+    }
+    /// Set the `internalNote` field to an Option value (optional)
+    pub fn maybe_internal_note(mut self, value: Option<S>) -> Self {
+        self._fields.1 = value;
+        self
+    }
+}
+
+impl<St: create_activity_state::State, S: jacquard_common::BosStr> CreateActivityBuilder<St, S> {
+    /// Set the `isAutomated` field (optional)
+    pub fn is_automated(mut self, value: impl Into<Option<bool>>) -> Self {
+        self._fields.2 = value.into();
+        self
+    }
+    /// Set the `isAutomated` field to an Option value (optional)
+    pub fn maybe_is_automated(mut self, value: Option<bool>) -> Self {
+        self._fields.2 = value;
+        self
+    }
+}
+
+impl<St: create_activity_state::State, S: jacquard_common::BosStr> CreateActivityBuilder<St, S> {
+    /// Set the `publicNote` field (optional)
+    pub fn public_note(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.3 = value.into();
+        self
+    }
+    /// Set the `publicNote` field to an Option value (optional)
+    pub fn maybe_public_note(mut self, value: Option<S>) -> Self {
+        self._fields.3 = value;
+        self
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> CreateActivityBuilder<St, S>
+where
+    St: create_activity_state::State,
+    St::ReportId: create_activity_state::IsUnset,
+{
+    /// Set the `reportId` field (required)
+    pub fn report_id(
+        mut self,
+        value: impl Into<i64>,
+    ) -> CreateActivityBuilder<create_activity_state::SetReportId<St>, S> {
+        self._fields.4 = ::core::option::Option::Some(value.into());
+        CreateActivityBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> CreateActivityBuilder<St, S>
+where
+    St: create_activity_state::State,
+    St::Activity: create_activity_state::IsSet,
+    St::ReportId: create_activity_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> CreateActivity<S> {
+        CreateActivity {
+            activity: self._fields.0.unwrap(),
+            internal_note: self._fields.1,
+            is_automated: self._fields.2.or_else(|| Some(false)),
+            public_note: self._fields.3,
+            report_id: self._fields.4.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> CreateActivity<S> {
+        CreateActivity {
+            activity: self._fields.0.unwrap(),
+            internal_note: self._fields.1,
+            is_automated: self._fields.2.or_else(|| Some(false)),
+            public_note: self._fields.3,
+            report_id: self._fields.4.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
 }

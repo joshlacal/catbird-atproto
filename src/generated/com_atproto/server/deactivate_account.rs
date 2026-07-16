@@ -5,7 +5,6 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -16,37 +15,53 @@
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct DeactivateAccount<'a> {
-    /// A recommendation to server as to how long they should hold onto the deactivated account before deleting.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub delete_after: std::option::Option<jacquard_common::types::string::Datetime>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct DeactivateAccount<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///A recommendation to server as to how long they should hold onto the deactivated account before deleting.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub delete_after: core::option::Option<jacquard_common::types::string::Datetime>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-/// Response type for
-///com.atproto.server.deactivateAccount
+/** Response marker for the `com.atproto.server.deactivateAccount` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `()` for this endpoint.*/
 pub struct DeactivateAccountResponse;
 impl jacquard_common::xrpc::XrpcResp for DeactivateAccountResponse {
     const NSID: &'static str = "com.atproto.server.deactivateAccount";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = ();
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
+    type Output<S: jacquard_common::BosStr> = ();
+    type Err = jacquard_common::xrpc::GenericError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for DeactivateAccount<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for DeactivateAccount<S> {
     const NSID: &'static str = "com.atproto.server.deactivateAccount";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = DeactivateAccountResponse;
 }
 
-/// Endpoint type for
-///com.atproto.server.deactivateAccount
+/** Endpoint marker for the `com.atproto.server.deactivateAccount` procedure.
+
+Path: `/xrpc/com.atproto.server.deactivateAccount`. The request payload type is `DeactivateAccount<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct DeactivateAccountRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for DeactivateAccountRequest {
     const PATH: &'static str = "/xrpc/com.atproto.server.deactivateAccount";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = DeactivateAccount<'de>;
+    type Request<S: jacquard_common::BosStr> = DeactivateAccount<S>;
     type Response = DeactivateAccountResponse;
 }

@@ -5,14 +5,228 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct FeedItem<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub uri: jacquard_common::types::string::AtUri<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// Record defining a starter pack of actors and feeds for new users.
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    rename = "app.bsky.graph.starterpack",
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct Starterpack<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub created_at: jacquard_common::types::string::Datetime,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub description: core::option::Option<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub description_facets:
+        core::option::Option<Vec<crate::generated::app_bsky::richtext::facet::Facet<S>>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub feeds:
+        core::option::Option<Vec<crate::generated::app_bsky::graph::starterpack::FeedItem<S>>>,
+    ///Reference (AT-URI) to the list record.
+    pub list: jacquard_common::types::string::AtUri<S>,
+    ///Display name for starter pack; can not be empty.
+    pub name: S,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// Typed wrapper for GetRecord response with this collection's record type.
+
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
-pub struct FeedItem<'a> {
-    #[serde(borrow)]
-    pub uri: jacquard_common::types::string::AtUri<'a>,
+pub struct StarterpackGetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
+    pub uri: jacquard_common::types::string::AtUri<S>,
+    pub value: Starterpack<S>,
+}
+
+impl<S: jacquard_common::BosStr> Starterpack<S> {
+    pub fn uri(
+        uri: S,
+    ) -> Result<
+        jacquard_common::types::uri::RecordUri<S, StarterpackRecord>,
+        jacquard_common::types::uri::UriError,
+    > {
+        jacquard_common::types::uri::RecordUri::try_from_uri(
+            jacquard_common::types::string::AtUri::new(uri)?,
+        )
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for FeedItem<S> {
+    fn nsid() -> &'static str {
+        "app.bsky.graph.starterpack"
+    }
+    fn def_name() -> &'static str {
+        "feedItem"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_app_bsky_graph_starterpack()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+/// Marker type for deserializing records from this collection.
+
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+pub struct StarterpackRecord;
+impl jacquard_common::xrpc::XrpcResp for StarterpackRecord {
+    const NSID: &'static str = "app.bsky.graph.starterpack";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = StarterpackGetRecordOutput<S>;
+    type Err = jacquard_common::types::collection::RecordError;
+}
+
+impl<S: jacquard_common::BosStr> From<StarterpackGetRecordOutput<S>> for Starterpack<S> {
+    fn from(output: StarterpackGetRecordOutput<S>) -> Self {
+        output.value
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection for Starterpack<S> {
+    const NSID: &'static str = "app.bsky.graph.starterpack";
+    type Record = StarterpackRecord;
+}
+
+impl jacquard_common::types::collection::Collection for StarterpackRecord {
+    const NSID: &'static str = "app.bsky.graph.starterpack";
+    type Record = StarterpackRecord;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Starterpack<S> {
+    fn nsid() -> &'static str {
+        "app.bsky.graph.starterpack"
+    }
+    fn def_name() -> &'static str {
+        "main"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_app_bsky_graph_starterpack()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        if let Some(ref value) = self.description {
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 3000usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("description"),
+                    max: 3000usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        if let Some(ref value) = self.description {
+            {
+                let count = jacquard_common::deps::codegen::unicode_segmentation::UnicodeSegmentation::graphemes(
+                        value.as_ref(),
+                        true,
+                    )
+                    .count();
+                if count > 300usize {
+                    return Err(
+                        jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field(
+                                "description",
+                            ),
+                            max: 300usize,
+                            actual: count,
+                        },
+                    );
+                }
+            }
+        }
+        if let Some(ref value) = self.feeds {
+            #[allow(unused_comparisons)]
+            if value.len() > 3usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("feeds"),
+                    max: 3usize,
+                    actual: value.len(),
+                });
+            }
+        }
+        {
+            let value = &self.name;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 500usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("name"),
+                    max: 500usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.name;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 1usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("name"),
+                    min: 1usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.name;
+            {
+                let count = jacquard_common::deps::codegen::unicode_segmentation::UnicodeSegmentation::graphemes(
+                        value.as_ref(),
+                        true,
+                    )
+                    .count();
+                if count > 50usize {
+                    return Err(
+                        jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field("name"),
+                            max: 50usize,
+                            actual: count,
+                        },
+                    );
+                }
+            }
+        }
+        Ok(())
+    }
 }
 
 pub mod feed_item_state {
@@ -34,9 +248,9 @@ pub mod feed_item_state {
         type Uri = Unset;
     }
     ///State transition - sets the `uri` field to Set
-    pub struct SetUri<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUri<S> {}
-    impl<S: State> State for SetUri<S> {
+    pub struct SetUri<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetUri<St> {}
+    impl<St: State> State for SetUri<St> {
         type Uri = Set<members::uri>;
     }
     /// Marker types for field names
@@ -47,123 +261,133 @@ pub mod feed_item_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct FeedItemBuilder<'a, S: feed_item_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<jacquard_common::types::string::AtUri<'a>>,),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct FeedItemBuilder<
+    St: feed_item_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<jacquard_common::types::string::AtUri<S>>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> FeedItem<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> FeedItemBuilder<'a, feed_item_state::Empty> {
+impl FeedItem<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> FeedItemBuilder<feed_item_state::Empty, jacquard_common::DefaultStr> {
         FeedItemBuilder::new()
     }
 }
 
-impl<'a> FeedItemBuilder<'a, feed_item_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> FeedItem<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> FeedItemBuilder<feed_item_state::Empty, S> {
+        FeedItemBuilder::builder()
+    }
+}
+
+impl FeedItemBuilder<feed_item_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         FeedItemBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> FeedItemBuilder<'a, S>
+impl<S: jacquard_common::BosStr> FeedItemBuilder<feed_item_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        FeedItemBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> FeedItemBuilder<St, S>
 where
-    S: feed_item_state::State,
-    S::Uri: feed_item_state::IsUnset,
+    St: feed_item_state::State,
+    St::Uri: feed_item_state::IsUnset,
 {
     /// Set the `uri` field (required)
     pub fn uri(
         mut self,
-        value: impl Into<jacquard_common::types::string::AtUri<'a>>,
-    ) -> FeedItemBuilder<'a, feed_item_state::SetUri<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::AtUri<S>>,
+    ) -> FeedItemBuilder<feed_item_state::SetUri<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         FeedItemBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> FeedItemBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> FeedItemBuilder<St, S>
 where
-    S: feed_item_state::State,
-    S::Uri: feed_item_state::IsSet,
+    St: feed_item_state::State,
+    St::Uri: feed_item_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> FeedItem<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> FeedItem<S> {
         FeedItem {
-            uri: self.__unsafe_private_named.0.unwrap(),
+            uri: self._fields.0.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> FeedItem<'a> {
+    ) -> FeedItem<S> {
         FeedItem {
-            uri: self.__unsafe_private_named.0.unwrap(),
+            uri: self._fields.0.unwrap(),
             extra_data: Some(extra_data),
         }
     }
 }
 
-fn lexicon_doc_app_bsky_graph_starterpack() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_app_bsky_graph_starterpack() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("app.bsky.graph.starterpack"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("feedItem"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("feedItem"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
-                        required: Some(vec![::jacquard_common::smol_str::SmolStr::new_static(
-                            "uri",
-                        )]),
-                        nullable: None,
+                        required: Some(vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("uri"),
+                        ]),
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("uri"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("uri"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
                 ::jacquard_lexicon::lexicon::LexUserType::Record(::jacquard_lexicon::lexicon::LexRecord {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
@@ -172,84 +396,68 @@ fn lexicon_doc_app_bsky_graph_starterpack() -> ::jacquard_lexicon::lexicon::Lexi
                     ),
                     key: Some(::jacquard_common::CowStr::new_static("tid")),
                     record: ::jacquard_lexicon::lexicon::LexRecordRecord::Object(::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(
                             vec![
-                                ::jacquard_common::smol_str::SmolStr::new_static("name"),
-                                ::jacquard_common::smol_str::SmolStr::new_static("list"),
-                                ::jacquard_common::smol_str::SmolStr::new_static("createdAt")
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("name"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("list"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt")
                             ],
                         ),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "createdAt",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                    description: None,
                                     format: Some(
                                         ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                     ),
-                                    default: None,
-                                    min_length: None,
-                                    max_length: None,
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "description",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                    description: None,
-                                    format: None,
-                                    default: None,
-                                    min_length: None,
                                     max_length: Some(3000usize),
-                                    min_graphemes: None,
                                     max_graphemes: Some(300usize),
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "descriptionFacets",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
-                                    description: None,
                                     items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                        description: None,
                                         r#ref: ::jacquard_common::CowStr::new_static(
                                             "app.bsky.richtext.facet",
                                         ),
+                                        ..Default::default()
                                     }),
-                                    min_length: None,
-                                    max_length: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("feeds"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "feeds",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
-                                    description: None,
                                     items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                        description: None,
                                         r#ref: ::jacquard_common::CowStr::new_static("#feedItem"),
+                                        ..Default::default()
                                     }),
-                                    min_length: None,
                                     max_length: Some(3usize),
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("list"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "list",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                     description: Some(
                                         ::jacquard_common::CowStr::new_static(
@@ -259,87 +467,36 @@ fn lexicon_doc_app_bsky_graph_starterpack() -> ::jacquard_lexicon::lexicon::Lexi
                                     format: Some(
                                         ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
                                     ),
-                                    default: None,
-                                    min_length: None,
-                                    max_length: None,
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("name"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "name",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                     description: Some(
                                         ::jacquard_common::CowStr::new_static(
                                             "Display name for starter pack; can not be empty.",
                                         ),
                                     ),
-                                    format: None,
-                                    default: None,
                                     min_length: Some(1usize),
                                     max_length: Some(500usize),
-                                    min_graphemes: None,
                                     max_graphemes: Some(50usize),
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
                             );
                             map
                         },
+                        ..Default::default()
                     }),
+                    ..Default::default()
                 }),
             );
             map
         },
+        ..Default::default()
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for FeedItem<'a> {
-    fn nsid() -> &'static str {
-        "app.bsky.graph.starterpack"
-    }
-    fn def_name() -> &'static str {
-        "feedItem"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_app_bsky_graph_starterpack()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-/// Record defining a starter pack of actors and feeds for new users.
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct Starterpack<'a> {
-    pub created_at: jacquard_common::types::string::Datetime,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub description: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub description_facets:
-        std::option::Option<Vec<crate::generated::app_bsky::richtext::facet::Facet<'a>>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub feeds:
-        std::option::Option<Vec<crate::generated::app_bsky::graph::starterpack::FeedItem<'a>>>,
-    /// Reference (AT-URI) to the list record.
-    #[serde(borrow)]
-    pub list: jacquard_common::types::string::AtUri<'a>,
-    /// Display name for starter pack; can not be empty.
-    #[serde(borrow)]
-    pub name: jacquard_common::CowStr<'a>,
 }
 
 pub mod starterpack_state {
@@ -352,380 +509,250 @@ pub mod starterpack_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Name;
-        type List;
         type CreatedAt;
+        type List;
+        type Name;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Name = Unset;
-        type List = Unset;
         type CreatedAt = Unset;
-    }
-    ///State transition - sets the `name` field to Set
-    pub struct SetName<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetName<S> {}
-    impl<S: State> State for SetName<S> {
-        type Name = Set<members::name>;
-        type List = S::List;
-        type CreatedAt = S::CreatedAt;
-    }
-    ///State transition - sets the `list` field to Set
-    pub struct SetList<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetList<S> {}
-    impl<S: State> State for SetList<S> {
-        type Name = S::Name;
-        type List = Set<members::list>;
-        type CreatedAt = S::CreatedAt;
+        type List = Unset;
+        type Name = Unset;
     }
     ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type Name = S::Name;
-        type List = S::List;
+    pub struct SetCreatedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCreatedAt<St> {}
+    impl<St: State> State for SetCreatedAt<St> {
         type CreatedAt = Set<members::created_at>;
+        type List = St::List;
+        type Name = St::Name;
+    }
+    ///State transition - sets the `list` field to Set
+    pub struct SetList<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetList<St> {}
+    impl<St: State> State for SetList<St> {
+        type CreatedAt = St::CreatedAt;
+        type List = Set<members::list>;
+        type Name = St::Name;
+    }
+    ///State transition - sets the `name` field to Set
+    pub struct SetName<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetName<St> {}
+    impl<St: State> State for SetName<St> {
+        type CreatedAt = St::CreatedAt;
+        type List = St::List;
+        type Name = Set<members::name>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `name` field
-        pub struct name(());
-        ///Marker type for the `list` field
-        pub struct list(());
         ///Marker type for the `created_at` field
         pub struct created_at(());
+        ///Marker type for the `list` field
+        pub struct list(());
+        ///Marker type for the `name` field
+        pub struct name(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct StarterpackBuilder<'a, S: starterpack_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<Vec<crate::generated::app_bsky::richtext::facet::Facet<'a>>>,
-        ::core::option::Option<Vec<crate::generated::app_bsky::graph::starterpack::FeedItem<'a>>>,
-        ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct StarterpackBuilder<
+    St: starterpack_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<S>,
+        core::option::Option<Vec<crate::generated::app_bsky::richtext::facet::Facet<S>>>,
+        core::option::Option<Vec<crate::generated::app_bsky::graph::starterpack::FeedItem<S>>>,
+        core::option::Option<jacquard_common::types::string::AtUri<S>>,
+        core::option::Option<S>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> Starterpack<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> StarterpackBuilder<'a, starterpack_state::Empty> {
+impl Starterpack<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> StarterpackBuilder<starterpack_state::Empty, jacquard_common::DefaultStr> {
         StarterpackBuilder::new()
     }
 }
 
-impl<'a> StarterpackBuilder<'a, starterpack_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> Starterpack<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> StarterpackBuilder<starterpack_state::Empty, S> {
+        StarterpackBuilder::builder()
+    }
+}
+
+impl StarterpackBuilder<starterpack_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         StarterpackBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> StarterpackBuilder<'a, S>
+impl<S: jacquard_common::BosStr> StarterpackBuilder<starterpack_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        StarterpackBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> StarterpackBuilder<St, S>
 where
-    S: starterpack_state::State,
-    S::CreatedAt: starterpack_state::IsUnset,
+    St: starterpack_state::State,
+    St::CreatedAt: starterpack_state::IsUnset,
 {
     /// Set the `createdAt` field (required)
     pub fn created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> StarterpackBuilder<'a, starterpack_state::SetCreatedAt<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+    ) -> StarterpackBuilder<starterpack_state::SetCreatedAt<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         StarterpackBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: starterpack_state::State> StarterpackBuilder<'a, S> {
+impl<St: starterpack_state::State, S: jacquard_common::BosStr> StarterpackBuilder<St, S> {
     /// Set the `description` field (optional)
-    pub fn description(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+    pub fn description(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.1 = value.into();
         self
     }
     /// Set the `description` field to an Option value (optional)
-    pub fn maybe_description(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.1 = value;
+    pub fn maybe_description(mut self, value: Option<S>) -> Self {
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S: starterpack_state::State> StarterpackBuilder<'a, S> {
+impl<St: starterpack_state::State, S: jacquard_common::BosStr> StarterpackBuilder<St, S> {
     /// Set the `descriptionFacets` field (optional)
     pub fn description_facets(
         mut self,
-        value: impl Into<Option<Vec<crate::generated::app_bsky::richtext::facet::Facet<'a>>>>,
+        value: impl Into<Option<Vec<crate::generated::app_bsky::richtext::facet::Facet<S>>>>,
     ) -> Self {
-        self.__unsafe_private_named.2 = value.into();
+        self._fields.2 = value.into();
         self
     }
     /// Set the `descriptionFacets` field to an Option value (optional)
     pub fn maybe_description_facets(
         mut self,
-        value: Option<Vec<crate::generated::app_bsky::richtext::facet::Facet<'a>>>,
+        value: Option<Vec<crate::generated::app_bsky::richtext::facet::Facet<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.2 = value;
+        self._fields.2 = value;
         self
     }
 }
 
-impl<'a, S: starterpack_state::State> StarterpackBuilder<'a, S> {
+impl<St: starterpack_state::State, S: jacquard_common::BosStr> StarterpackBuilder<St, S> {
     /// Set the `feeds` field (optional)
     pub fn feeds(
         mut self,
-        value: impl Into<Option<Vec<crate::generated::app_bsky::graph::starterpack::FeedItem<'a>>>>,
+        value: impl Into<Option<Vec<crate::generated::app_bsky::graph::starterpack::FeedItem<S>>>>,
     ) -> Self {
-        self.__unsafe_private_named.3 = value.into();
+        self._fields.3 = value.into();
         self
     }
     /// Set the `feeds` field to an Option value (optional)
     pub fn maybe_feeds(
         mut self,
-        value: Option<Vec<crate::generated::app_bsky::graph::starterpack::FeedItem<'a>>>,
+        value: Option<Vec<crate::generated::app_bsky::graph::starterpack::FeedItem<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.3 = value;
+        self._fields.3 = value;
         self
     }
 }
 
-impl<'a, S> StarterpackBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> StarterpackBuilder<St, S>
 where
-    S: starterpack_state::State,
-    S::List: starterpack_state::IsUnset,
+    St: starterpack_state::State,
+    St::List: starterpack_state::IsUnset,
 {
     /// Set the `list` field (required)
     pub fn list(
         mut self,
-        value: impl Into<jacquard_common::types::string::AtUri<'a>>,
-    ) -> StarterpackBuilder<'a, starterpack_state::SetList<S>> {
-        self.__unsafe_private_named.4 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::AtUri<S>>,
+    ) -> StarterpackBuilder<starterpack_state::SetList<St>, S> {
+        self._fields.4 = ::core::option::Option::Some(value.into());
         StarterpackBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> StarterpackBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> StarterpackBuilder<St, S>
 where
-    S: starterpack_state::State,
-    S::Name: starterpack_state::IsUnset,
+    St: starterpack_state::State,
+    St::Name: starterpack_state::IsUnset,
 {
     /// Set the `name` field (required)
     pub fn name(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> StarterpackBuilder<'a, starterpack_state::SetName<S>> {
-        self.__unsafe_private_named.5 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> StarterpackBuilder<starterpack_state::SetName<St>, S> {
+        self._fields.5 = ::core::option::Option::Some(value.into());
         StarterpackBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> StarterpackBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> StarterpackBuilder<St, S>
 where
-    S: starterpack_state::State,
-    S::Name: starterpack_state::IsSet,
-    S::List: starterpack_state::IsSet,
-    S::CreatedAt: starterpack_state::IsSet,
+    St: starterpack_state::State,
+    St::CreatedAt: starterpack_state::IsSet,
+    St::List: starterpack_state::IsSet,
+    St::Name: starterpack_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> Starterpack<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> Starterpack<S> {
         Starterpack {
-            created_at: self.__unsafe_private_named.0.unwrap(),
-            description: self.__unsafe_private_named.1,
-            description_facets: self.__unsafe_private_named.2,
-            feeds: self.__unsafe_private_named.3,
-            list: self.__unsafe_private_named.4.unwrap(),
-            name: self.__unsafe_private_named.5.unwrap(),
+            created_at: self._fields.0.unwrap(),
+            description: self._fields.1,
+            description_facets: self._fields.2,
+            feeds: self._fields.3,
+            list: self._fields.4.unwrap(),
+            name: self._fields.5.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> Starterpack<'a> {
+    ) -> Starterpack<S> {
         Starterpack {
-            created_at: self.__unsafe_private_named.0.unwrap(),
-            description: self.__unsafe_private_named.1,
-            description_facets: self.__unsafe_private_named.2,
-            feeds: self.__unsafe_private_named.3,
-            list: self.__unsafe_private_named.4.unwrap(),
-            name: self.__unsafe_private_named.5.unwrap(),
+            created_at: self._fields.0.unwrap(),
+            description: self._fields.1,
+            description_facets: self._fields.2,
+            feeds: self._fields.3,
+            list: self._fields.4.unwrap(),
+            name: self._fields.5.unwrap(),
             extra_data: Some(extra_data),
         }
-    }
-}
-
-impl<'a> Starterpack<'a> {
-    pub fn uri(
-        uri: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> Result<
-        jacquard_common::types::uri::RecordUri<'a, StarterpackRecord>,
-        jacquard_common::types::uri::UriError,
-    > {
-        jacquard_common::types::uri::RecordUri::try_from_uri(
-            jacquard_common::types::string::AtUri::new_cow(uri.into())?,
-        )
-    }
-}
-
-/// Typed wrapper for GetRecord response with this collection's record type.
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct StarterpackGetRecordOutput<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cid: std::option::Option<jacquard_common::types::string::Cid<'a>>,
-    #[serde(borrow)]
-    pub uri: jacquard_common::types::string::AtUri<'a>,
-    #[serde(borrow)]
-    pub value: Starterpack<'a>,
-}
-
-impl From<StarterpackGetRecordOutput<'_>> for Starterpack<'_> {
-    fn from(output: StarterpackGetRecordOutput<'_>) -> Self {
-        use jacquard_common::IntoStatic;
-        output.value.into_static()
-    }
-}
-
-impl jacquard_common::types::collection::Collection for Starterpack<'_> {
-    const NSID: &'static str = "app.bsky.graph.starterpack";
-    type Record = StarterpackRecord;
-}
-
-/// Marker type for deserializing records from this collection.
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
-pub struct StarterpackRecord;
-impl jacquard_common::xrpc::XrpcResp for StarterpackRecord {
-    const NSID: &'static str = "app.bsky.graph.starterpack";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = StarterpackGetRecordOutput<'de>;
-    type Err<'de> = jacquard_common::types::collection::RecordError<'de>;
-}
-
-impl jacquard_common::types::collection::Collection for StarterpackRecord {
-    const NSID: &'static str = "app.bsky.graph.starterpack";
-    type Record = StarterpackRecord;
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Starterpack<'a> {
-    fn nsid() -> &'static str {
-        "app.bsky.graph.starterpack"
-    }
-    fn def_name() -> &'static str {
-        "main"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_app_bsky_graph_starterpack()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        if let Some(ref value) = self.description {
-            #[allow(unused_comparisons)]
-            if <str>::len(value.as_ref()) > 3000usize {
-                return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("description"),
-                    max: 3000usize,
-                    actual: <str>::len(value.as_ref()),
-                });
-            }
-        }
-        if let Some(ref value) = self.description {
-            {
-                let count =
-                    ::unicode_segmentation::UnicodeSegmentation::graphemes(value.as_ref(), true)
-                        .count();
-                if count > 300usize {
-                    return Err(
-                        ::jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
-                            path: ::jacquard_lexicon::validation::ValidationPath::from_field(
-                                "description",
-                            ),
-                            max: 300usize,
-                            actual: count,
-                        },
-                    );
-                }
-            }
-        }
-        if let Some(ref value) = self.feeds {
-            #[allow(unused_comparisons)]
-            if value.len() > 3usize {
-                return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("feeds"),
-                    max: 3usize,
-                    actual: value.len(),
-                });
-            }
-        }
-        {
-            let value = &self.name;
-            #[allow(unused_comparisons)]
-            if <str>::len(value.as_ref()) > 500usize {
-                return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("name"),
-                    max: 500usize,
-                    actual: <str>::len(value.as_ref()),
-                });
-            }
-        }
-        {
-            let value = &self.name;
-            #[allow(unused_comparisons)]
-            if <str>::len(value.as_ref()) < 1usize {
-                return Err(::jacquard_lexicon::validation::ConstraintError::MinLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("name"),
-                    min: 1usize,
-                    actual: <str>::len(value.as_ref()),
-                });
-            }
-        }
-        {
-            let value = &self.name;
-            {
-                let count =
-                    ::unicode_segmentation::UnicodeSegmentation::graphemes(value.as_ref(), true)
-                        .count();
-                if count > 50usize {
-                    return Err(
-                        ::jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
-                            path: ::jacquard_lexicon::validation::ValidationPath::from_field(
-                                "name",
-                            ),
-                            max: 50usize,
-                            actual: count,
-                        },
-                    );
-                }
-            }
-        }
-        Ok(())
     }
 }

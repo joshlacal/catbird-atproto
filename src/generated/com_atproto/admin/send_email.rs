@@ -5,25 +5,85 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct SendEmail<'a> {
-    /// Additional comment by the sender that won't be used in the email itself but helpful to provide more context for moderators/reviewers
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub comment: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(borrow)]
-    pub content: jacquard_common::CowStr<'a>,
-    #[serde(borrow)]
-    pub recipient_did: jacquard_common::types::string::Did<'a>,
-    #[serde(borrow)]
-    pub sender_did: jacquard_common::types::string::Did<'a>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub subject: std::option::Option<jacquard_common::CowStr<'a>>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct SendEmail<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Additional comment by the sender that won't be used in the email itself but helpful to provide more context for moderators/reviewers
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub comment: core::option::Option<S>,
+    pub content: S,
+    pub recipient_did: jacquard_common::types::string::Did<S>,
+    pub sender_did: jacquard_common::types::string::Did<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub subject: core::option::Option<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct SendEmailOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub sent: bool,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `com.atproto.admin.sendEmail` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `SendEmailOutput<S>` for this endpoint.*/
+pub struct SendEmailResponse;
+impl jacquard_common::xrpc::XrpcResp for SendEmailResponse {
+    const NSID: &'static str = "com.atproto.admin.sendEmail";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = SendEmailOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for SendEmail<S> {
+    const NSID: &'static str = "com.atproto.admin.sendEmail";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Response = SendEmailResponse;
+}
+
+/** Endpoint marker for the `com.atproto.admin.sendEmail` procedure.
+
+Path: `/xrpc/com.atproto.admin.sendEmail`. The request payload type is `SendEmail<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct SendEmailRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for SendEmailRequest {
+    const PATH: &'static str = "/xrpc/com.atproto.admin.sendEmail";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Request<S: jacquard_common::BosStr> = SendEmail<S>;
+    type Response = SendEmailResponse;
 }
 
 pub mod send_email_state {
@@ -36,238 +96,222 @@ pub mod send_email_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type RecipientDid;
         type Content;
+        type RecipientDid;
         type SenderDid;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type RecipientDid = Unset;
         type Content = Unset;
+        type RecipientDid = Unset;
         type SenderDid = Unset;
     }
-    ///State transition - sets the `recipient_did` field to Set
-    pub struct SetRecipientDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRecipientDid<S> {}
-    impl<S: State> State for SetRecipientDid<S> {
-        type RecipientDid = Set<members::recipient_did>;
-        type Content = S::Content;
-        type SenderDid = S::SenderDid;
-    }
     ///State transition - sets the `content` field to Set
-    pub struct SetContent<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetContent<S> {}
-    impl<S: State> State for SetContent<S> {
-        type RecipientDid = S::RecipientDid;
+    pub struct SetContent<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetContent<St> {}
+    impl<St: State> State for SetContent<St> {
         type Content = Set<members::content>;
-        type SenderDid = S::SenderDid;
+        type RecipientDid = St::RecipientDid;
+        type SenderDid = St::SenderDid;
+    }
+    ///State transition - sets the `recipient_did` field to Set
+    pub struct SetRecipientDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRecipientDid<St> {}
+    impl<St: State> State for SetRecipientDid<St> {
+        type Content = St::Content;
+        type RecipientDid = Set<members::recipient_did>;
+        type SenderDid = St::SenderDid;
     }
     ///State transition - sets the `sender_did` field to Set
-    pub struct SetSenderDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetSenderDid<S> {}
-    impl<S: State> State for SetSenderDid<S> {
-        type RecipientDid = S::RecipientDid;
-        type Content = S::Content;
+    pub struct SetSenderDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSenderDid<St> {}
+    impl<St: State> State for SetSenderDid<St> {
+        type Content = St::Content;
+        type RecipientDid = St::RecipientDid;
         type SenderDid = Set<members::sender_did>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `recipient_did` field
-        pub struct recipient_did(());
         ///Marker type for the `content` field
         pub struct content(());
+        ///Marker type for the `recipient_did` field
+        pub struct recipient_did(());
         ///Marker type for the `sender_did` field
         pub struct sender_did(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct SendEmailBuilder<'a, S: send_email_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct SendEmailBuilder<
+    St: send_email_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<S>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> SendEmail<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> SendEmailBuilder<'a, send_email_state::Empty> {
+impl SendEmail<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> SendEmailBuilder<send_email_state::Empty, jacquard_common::DefaultStr> {
         SendEmailBuilder::new()
     }
 }
 
-impl<'a> SendEmailBuilder<'a, send_email_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> SendEmail<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> SendEmailBuilder<send_email_state::Empty, S> {
+        SendEmailBuilder::builder()
+    }
+}
+
+impl SendEmailBuilder<send_email_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         SendEmailBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: send_email_state::State> SendEmailBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> SendEmailBuilder<send_email_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        SendEmailBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: send_email_state::State, S: jacquard_common::BosStr> SendEmailBuilder<St, S> {
     /// Set the `comment` field (optional)
-    pub fn comment(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+    pub fn comment(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.0 = value.into();
         self
     }
     /// Set the `comment` field to an Option value (optional)
-    pub fn maybe_comment(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.0 = value;
+    pub fn maybe_comment(mut self, value: Option<S>) -> Self {
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S> SendEmailBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> SendEmailBuilder<St, S>
 where
-    S: send_email_state::State,
-    S::Content: send_email_state::IsUnset,
+    St: send_email_state::State,
+    St::Content: send_email_state::IsUnset,
 {
     /// Set the `content` field (required)
     pub fn content(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> SendEmailBuilder<'a, send_email_state::SetContent<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> SendEmailBuilder<send_email_state::SetContent<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         SendEmailBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> SendEmailBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> SendEmailBuilder<St, S>
 where
-    S: send_email_state::State,
-    S::RecipientDid: send_email_state::IsUnset,
+    St: send_email_state::State,
+    St::RecipientDid: send_email_state::IsUnset,
 {
     /// Set the `recipientDid` field (required)
     pub fn recipient_did(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> SendEmailBuilder<'a, send_email_state::SetRecipientDid<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> SendEmailBuilder<send_email_state::SetRecipientDid<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         SendEmailBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> SendEmailBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> SendEmailBuilder<St, S>
 where
-    S: send_email_state::State,
-    S::SenderDid: send_email_state::IsUnset,
+    St: send_email_state::State,
+    St::SenderDid: send_email_state::IsUnset,
 {
     /// Set the `senderDid` field (required)
     pub fn sender_did(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> SendEmailBuilder<'a, send_email_state::SetSenderDid<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> SendEmailBuilder<send_email_state::SetSenderDid<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
         SendEmailBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: send_email_state::State> SendEmailBuilder<'a, S> {
+impl<St: send_email_state::State, S: jacquard_common::BosStr> SendEmailBuilder<St, S> {
     /// Set the `subject` field (optional)
-    pub fn subject(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.4 = value.into();
+    pub fn subject(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.4 = value.into();
         self
     }
     /// Set the `subject` field to an Option value (optional)
-    pub fn maybe_subject(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.4 = value;
+    pub fn maybe_subject(mut self, value: Option<S>) -> Self {
+        self._fields.4 = value;
         self
     }
 }
 
-impl<'a, S> SendEmailBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> SendEmailBuilder<St, S>
 where
-    S: send_email_state::State,
-    S::RecipientDid: send_email_state::IsSet,
-    S::Content: send_email_state::IsSet,
-    S::SenderDid: send_email_state::IsSet,
+    St: send_email_state::State,
+    St::Content: send_email_state::IsSet,
+    St::RecipientDid: send_email_state::IsSet,
+    St::SenderDid: send_email_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> SendEmail<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> SendEmail<S> {
         SendEmail {
-            comment: self.__unsafe_private_named.0,
-            content: self.__unsafe_private_named.1.unwrap(),
-            recipient_did: self.__unsafe_private_named.2.unwrap(),
-            sender_did: self.__unsafe_private_named.3.unwrap(),
-            subject: self.__unsafe_private_named.4,
+            comment: self._fields.0,
+            content: self._fields.1.unwrap(),
+            recipient_did: self._fields.2.unwrap(),
+            sender_did: self._fields.3.unwrap(),
+            subject: self._fields.4,
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> SendEmail<'a> {
+    ) -> SendEmail<S> {
         SendEmail {
-            comment: self.__unsafe_private_named.0,
-            content: self.__unsafe_private_named.1.unwrap(),
-            recipient_did: self.__unsafe_private_named.2.unwrap(),
-            sender_did: self.__unsafe_private_named.3.unwrap(),
-            subject: self.__unsafe_private_named.4,
+            comment: self._fields.0,
+            content: self._fields.1.unwrap(),
+            recipient_did: self._fields.2.unwrap(),
+            sender_did: self._fields.3.unwrap(),
+            subject: self._fields.4,
             extra_data: Some(extra_data),
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct SendEmailOutput<'a> {
-    pub sent: bool,
-}
-
-/// Response type for
-///com.atproto.admin.sendEmail
-pub struct SendEmailResponse;
-impl jacquard_common::xrpc::XrpcResp for SendEmailResponse {
-    const NSID: &'static str = "com.atproto.admin.sendEmail";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = SendEmailOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for SendEmail<'a> {
-    const NSID: &'static str = "com.atproto.admin.sendEmail";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Response = SendEmailResponse;
-}
-
-/// Endpoint type for
-///com.atproto.admin.sendEmail
-pub struct SendEmailRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for SendEmailRequest {
-    const PATH: &'static str = "/xrpc/com.atproto.admin.sendEmail";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = SendEmail<'de>;
-    type Response = SendEmailResponse;
 }

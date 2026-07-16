@@ -8,10 +8,121 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetBlob<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub blob_id: S,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
 #[serde(rename_all = "camelCase")]
-pub struct GetBlob<'a> {
-    #[serde(borrow)]
-    pub blob_id: jacquard_common::CowStr<'a>,
+pub struct GetBlobOutput {
+    pub body: jacquard_common::deps::bytes::Bytes,
+}
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    thiserror::Error,
+    miette::Diagnostic,
+)]
+#[serde(tag = "error", content = "message")]
+pub enum GetBlobError {
+    /// Blob does not exist or has expired/been deleted
+    #[serde(rename = "BlobNotFound")]
+    BlobNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Requester is not an active member of the blob's conversation
+    #[serde(rename = "NotAMember")]
+    NotAMember(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
+}
+
+impl core::fmt::Display for GetBlobError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+            Self::BlobNotFound(msg) => {
+                write!(f, "BlobNotFound")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::NotAMember(msg) => {
+                write!(f, "NotAMember")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+        }
+    }
+}
+
+/** Response marker for the `blue.catbird.mlsChat.getBlob` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetBlobOutput` for this endpoint.*/
+pub struct GetBlobResponse;
+impl jacquard_common::xrpc::XrpcResp for GetBlobResponse {
+    const NSID: &'static str = "blue.catbird.mlsChat.getBlob";
+    const ENCODING: &'static str = "*/*";
+    type Output<S: jacquard_common::BosStr> = GetBlobOutput;
+    type Err = GetBlobError;
+    fn encode_output<S: jacquard_common::BosStr>(
+        output: &Self::Output<S>,
+    ) -> Result<Vec<u8>, jacquard_common::xrpc::EncodeError>
+    where
+        Self::Output<S>: serde::Serialize,
+    {
+        Ok(output.body.to_vec())
+    }
+    fn decode_output<'de, S>(
+        body: &'de [u8],
+    ) -> Result<Self::Output<S>, jacquard_common::error::DecodeError>
+    where
+        S: jacquard_common::BosStr + serde::Deserialize<'de>,
+        Self::Output<S>: serde::Deserialize<'de>,
+    {
+        Ok(GetBlobOutput {
+            body: jacquard_common::deps::bytes::Bytes::copy_from_slice(body),
+        })
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetBlob<S> {
+    const NSID: &'static str = "blue.catbird.mlsChat.getBlob";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = GetBlobResponse;
+}
+
+/** Endpoint marker for the `blue.catbird.mlsChat.getBlob` query.
+
+Path: `/xrpc/blue.catbird.mlsChat.getBlob`. The request payload type is `GetBlob<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct GetBlobRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for GetBlobRequest {
+    const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.getBlob";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = GetBlob<S>;
+    type Response = GetBlobResponse;
 }
 
 pub mod get_blob_state {
@@ -33,9 +144,9 @@ pub mod get_blob_state {
         type BlobId = Unset;
     }
     ///State transition - sets the `blob_id` field to Set
-    pub struct SetBlobId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetBlobId<S> {}
-    impl<S: State> State for SetBlobId<S> {
+    pub struct SetBlobId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetBlobId<St> {}
+    impl<St: State> State for SetBlobId<St> {
         type BlobId = Set<members::blob_id>;
     }
     /// Marker types for field names
@@ -46,153 +157,80 @@ pub mod get_blob_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct GetBlobBuilder<'a, S: get_blob_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<jacquard_common::CowStr<'a>>,),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct GetBlobBuilder<
+    St: get_blob_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<S>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> GetBlob<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> GetBlobBuilder<'a, get_blob_state::Empty> {
+impl GetBlob<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> GetBlobBuilder<get_blob_state::Empty, jacquard_common::DefaultStr> {
         GetBlobBuilder::new()
     }
 }
 
-impl<'a> GetBlobBuilder<'a, get_blob_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> GetBlob<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> GetBlobBuilder<get_blob_state::Empty, S> {
+        GetBlobBuilder::builder()
+    }
+}
+
+impl GetBlobBuilder<get_blob_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetBlobBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GetBlobBuilder<'a, S>
+impl<S: jacquard_common::BosStr> GetBlobBuilder<get_blob_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GetBlobBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> GetBlobBuilder<St, S>
 where
-    S: get_blob_state::State,
-    S::BlobId: get_blob_state::IsUnset,
+    St: get_blob_state::State,
+    St::BlobId: get_blob_state::IsUnset,
 {
     /// Set the `blobId` field (required)
     pub fn blob_id(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> GetBlobBuilder<'a, get_blob_state::SetBlobId<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> GetBlobBuilder<get_blob_state::SetBlobId<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         GetBlobBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GetBlobBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GetBlobBuilder<St, S>
 where
-    S: get_blob_state::State,
-    S::BlobId: get_blob_state::IsSet,
+    St: get_blob_state::State,
+    St::BlobId: get_blob_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> GetBlob<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> GetBlob<S> {
         GetBlob {
-            blob_id: self.__unsafe_private_named.0.unwrap(),
+            blob_id: self._fields.0.unwrap(),
         }
     }
-}
-
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GetBlobOutput {
-    pub body: bytes::Bytes,
-}
-
-#[jacquard_derive::open_union]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    thiserror::Error,
-    miette::Diagnostic,
-    jacquard_derive::IntoStatic,
-)]
-#[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum GetBlobError<'a> {
-    /// Blob does not exist or has expired/been deleted
-    #[serde(rename = "BlobNotFound")]
-    BlobNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
-    /// Requester is not an active member of the blob's conversation
-    #[serde(rename = "NotAMember")]
-    NotAMember(std::option::Option<jacquard_common::CowStr<'a>>),
-}
-
-impl std::fmt::Display for GetBlobError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::BlobNotFound(msg) => {
-                write!(f, "BlobNotFound")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
-            Self::NotAMember(msg) => {
-                write!(f, "NotAMember")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
-        }
-    }
-}
-
-/// Response type for
-///blue.catbird.mlsChat.getBlob
-pub struct GetBlobResponse;
-impl jacquard_common::xrpc::XrpcResp for GetBlobResponse {
-    const NSID: &'static str = "blue.catbird.mlsChat.getBlob";
-    const ENCODING: &'static str = "*/*";
-    type Output<'de> = GetBlobOutput;
-    type Err<'de> = GetBlobError<'de>;
-    fn encode_output(
-        output: &Self::Output<'_>,
-    ) -> Result<Vec<u8>, jacquard_common::xrpc::EncodeError> {
-        Ok(output.body.to_vec())
-    }
-    fn decode_output<'de>(
-        body: &'de [u8],
-    ) -> Result<Self::Output<'de>, jacquard_common::error::DecodeError>
-    where
-        Self::Output<'de>: serde::Deserialize<'de>,
-    {
-        Ok(GetBlobOutput {
-            body: bytes::Bytes::copy_from_slice(body),
-        })
-    }
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for GetBlob<'a> {
-    const NSID: &'static str = "blue.catbird.mlsChat.getBlob";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = GetBlobResponse;
-}
-
-/// Endpoint type for
-///blue.catbird.mlsChat.getBlob
-pub struct GetBlobRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for GetBlobRequest {
-    const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.getBlob";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetBlob<'de>;
-    type Response = GetBlobResponse;
 }

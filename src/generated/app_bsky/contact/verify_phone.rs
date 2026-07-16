@@ -5,7 +5,6 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -16,17 +15,28 @@
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct VerifyPhone<'a> {
-    /// The code received via SMS as a result of the call to `app.bsky.contact.startPhoneVerification`.
-    #[serde(borrow)]
-    pub code: jacquard_common::CowStr<'a>,
-    /// The phone number to verify. Should be the same as the one passed to `app.bsky.contact.startPhoneVerification`.
-    #[serde(borrow)]
-    pub phone: jacquard_common::CowStr<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct VerifyPhone<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///The code received via SMS as a result of the call to `app.bsky.contact.startPhoneVerification`.
+    pub code: S,
+    ///The phone number to verify. Should be the same as the one passed to `app.bsky.contact.startPhoneVerification`.
+    pub phone: S,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -37,14 +47,26 @@ pub struct VerifyPhone<'a> {
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct VerifyPhoneOutput<'a> {
-    /// JWT to be used in a call to `app.bsky.contact.importContacts`. It is only valid for a single call.
-    #[serde(borrow)]
-    pub token: jacquard_common::CowStr<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct VerifyPhoneOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///JWT to be used in a call to `app.bsky.contact.importContacts`. It is only valid for a single call.
+    pub token: S,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::open_union]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -54,25 +76,29 @@ pub struct VerifyPhoneOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum VerifyPhoneError<'a> {
+pub enum VerifyPhoneError {
     #[serde(rename = "RateLimitExceeded")]
-    RateLimitExceeded(std::option::Option<jacquard_common::CowStr<'a>>),
+    RateLimitExceeded(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "InvalidDid")]
-    InvalidDid(std::option::Option<jacquard_common::CowStr<'a>>),
+    InvalidDid(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "InvalidPhone")]
-    InvalidPhone(std::option::Option<jacquard_common::CowStr<'a>>),
+    InvalidPhone(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "InvalidCode")]
-    InvalidCode(std::option::Option<jacquard_common::CowStr<'a>>),
+    InvalidCode(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "InternalError")]
-    InternalError(std::option::Option<jacquard_common::CowStr<'a>>),
+    InternalError(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
 }
 
-impl std::fmt::Display for VerifyPhoneError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for VerifyPhoneError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             Self::RateLimitExceeded(msg) => {
                 write!(f, "RateLimitExceeded")?;
@@ -109,35 +135,43 @@ impl std::fmt::Display for VerifyPhoneError<'_> {
                 }
                 Ok(())
             }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
         }
     }
 }
 
-/// Response type for
-///app.bsky.contact.verifyPhone
+/** Response marker for the `app.bsky.contact.verifyPhone` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `VerifyPhoneOutput<S>` for this endpoint.*/
 pub struct VerifyPhoneResponse;
 impl jacquard_common::xrpc::XrpcResp for VerifyPhoneResponse {
     const NSID: &'static str = "app.bsky.contact.verifyPhone";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = VerifyPhoneOutput<'de>;
-    type Err<'de> = VerifyPhoneError<'de>;
+    type Output<S: jacquard_common::BosStr> = VerifyPhoneOutput<S>;
+    type Err = VerifyPhoneError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for VerifyPhone<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for VerifyPhone<S> {
     const NSID: &'static str = "app.bsky.contact.verifyPhone";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = VerifyPhoneResponse;
 }
 
-/// Endpoint type for
-///app.bsky.contact.verifyPhone
+/** Endpoint marker for the `app.bsky.contact.verifyPhone` procedure.
+
+Path: `/xrpc/app.bsky.contact.verifyPhone`. The request payload type is `VerifyPhone<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct VerifyPhoneRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for VerifyPhoneRequest {
     const PATH: &'static str = "/xrpc/app.bsky.contact.verifyPhone";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = VerifyPhone<'de>;
+    type Request<S: jacquard_common::BosStr> = VerifyPhone<S>;
     type Response = VerifyPhoneResponse;
 }

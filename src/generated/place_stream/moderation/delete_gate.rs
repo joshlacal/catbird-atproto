@@ -5,161 +5,31 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct DeleteGate<'a> {
-    /// The AT-URI of the gate record to delete.
-    #[serde(borrow)]
-    pub gate_uri: jacquard_common::types::string::AtUri<'a>,
-    /// The DID of the streamer.
-    #[serde(borrow)]
-    pub streamer: jacquard_common::types::string::Did<'a>,
-}
-
-pub mod delete_gate_state {
-
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
-    #[allow(unused)]
-    use core::marker::PhantomData;
-    mod sealed {
-        pub trait Sealed {}
-    }
-    /// State trait tracking which required fields have been set
-    pub trait State: sealed::Sealed {
-        type Streamer;
-        type GateUri;
-    }
-    /// Empty state - all required fields are unset
-    pub struct Empty(());
-    impl sealed::Sealed for Empty {}
-    impl State for Empty {
-        type Streamer = Unset;
-        type GateUri = Unset;
-    }
-    ///State transition - sets the `streamer` field to Set
-    pub struct SetStreamer<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetStreamer<S> {}
-    impl<S: State> State for SetStreamer<S> {
-        type Streamer = Set<members::streamer>;
-        type GateUri = S::GateUri;
-    }
-    ///State transition - sets the `gate_uri` field to Set
-    pub struct SetGateUri<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetGateUri<S> {}
-    impl<S: State> State for SetGateUri<S> {
-        type Streamer = S::Streamer;
-        type GateUri = Set<members::gate_uri>;
-    }
-    /// Marker types for field names
-    #[allow(non_camel_case_types)]
-    pub mod members {
-        ///Marker type for the `streamer` field
-        pub struct streamer(());
-        ///Marker type for the `gate_uri` field
-        pub struct gate_uri(());
-    }
-}
-
-/// Builder for constructing an instance of this type
-pub struct DeleteGateBuilder<'a, S: delete_gate_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-    ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
-}
-
-impl<'a> DeleteGate<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> DeleteGateBuilder<'a, delete_gate_state::Empty> {
-        DeleteGateBuilder::new()
-    }
-}
-
-impl<'a> DeleteGateBuilder<'a, delete_gate_state::Empty> {
-    /// Create a new builder with all fields unset
-    pub fn new() -> Self {
-        DeleteGateBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> DeleteGateBuilder<'a, S>
-where
-    S: delete_gate_state::State,
-    S::GateUri: delete_gate_state::IsUnset,
-{
-    /// Set the `gateUri` field (required)
-    pub fn gate_uri(
-        mut self,
-        value: impl Into<jacquard_common::types::string::AtUri<'a>>,
-    ) -> DeleteGateBuilder<'a, delete_gate_state::SetGateUri<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
-        DeleteGateBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> DeleteGateBuilder<'a, S>
-where
-    S: delete_gate_state::State,
-    S::Streamer: delete_gate_state::IsUnset,
-{
-    /// Set the `streamer` field (required)
-    pub fn streamer(
-        mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> DeleteGateBuilder<'a, delete_gate_state::SetStreamer<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
-        DeleteGateBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> DeleteGateBuilder<'a, S>
-where
-    S: delete_gate_state::State,
-    S::Streamer: delete_gate_state::IsSet,
-    S::GateUri: delete_gate_state::IsSet,
-{
-    /// Build the final struct
-    pub fn build(self) -> DeleteGate<'a> {
-        DeleteGate {
-            gate_uri: self.__unsafe_private_named.0.unwrap(),
-            streamer: self.__unsafe_private_named.1.unwrap(),
-            extra_data: Default::default(),
-        }
-    }
-    /// Build the final struct with custom extra_data
-    pub fn build_with_data(
-        self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct DeleteGate<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///The AT-URI of the gate record to delete.
+    pub gate_uri: jacquard_common::types::string::AtUri<S>,
+    ///The DID of the streamer.
+    pub streamer: jacquard_common::types::string::Did<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> DeleteGate<'a> {
-        DeleteGate {
-            gate_uri: self.__unsafe_private_named.0.unwrap(),
-            streamer: self.__unsafe_private_named.1.unwrap(),
-            extra_data: Some(extra_data),
-        }
-    }
+    >,
 }
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -170,9 +40,24 @@ where
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct DeleteGateOutput<'a> {}
-#[jacquard_derive::open_union]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct DeleteGateOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -182,24 +67,28 @@ pub struct DeleteGateOutput<'a> {}
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum DeleteGateError<'a> {
+pub enum DeleteGateError {
     /// The request lacks valid authentication credentials.
     #[serde(rename = "Unauthorized")]
-    Unauthorized(std::option::Option<jacquard_common::CowStr<'a>>),
+    Unauthorized(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// The caller does not have permission to unhide messages for this streamer.
     #[serde(rename = "Forbidden")]
-    Forbidden(std::option::Option<jacquard_common::CowStr<'a>>),
+    Forbidden(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// The streamer's OAuth session could not be found or is invalid.
     #[serde(rename = "SessionNotFound")]
-    SessionNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
+    SessionNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
 }
 
-impl std::fmt::Display for DeleteGateError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for DeleteGateError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             Self::Unauthorized(msg) => {
                 write!(f, "Unauthorized")?;
@@ -222,35 +111,204 @@ impl std::fmt::Display for DeleteGateError<'_> {
                 }
                 Ok(())
             }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
         }
     }
 }
 
-/// Response type for
-///place.stream.moderation.deleteGate
+/** Response marker for the `place.stream.moderation.deleteGate` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `DeleteGateOutput<S>` for this endpoint.*/
 pub struct DeleteGateResponse;
 impl jacquard_common::xrpc::XrpcResp for DeleteGateResponse {
     const NSID: &'static str = "place.stream.moderation.deleteGate";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = DeleteGateOutput<'de>;
-    type Err<'de> = DeleteGateError<'de>;
+    type Output<S: jacquard_common::BosStr> = DeleteGateOutput<S>;
+    type Err = DeleteGateError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for DeleteGate<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for DeleteGate<S> {
     const NSID: &'static str = "place.stream.moderation.deleteGate";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = DeleteGateResponse;
 }
 
-/// Endpoint type for
-///place.stream.moderation.deleteGate
+/** Endpoint marker for the `place.stream.moderation.deleteGate` procedure.
+
+Path: `/xrpc/place.stream.moderation.deleteGate`. The request payload type is `DeleteGate<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct DeleteGateRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for DeleteGateRequest {
     const PATH: &'static str = "/xrpc/place.stream.moderation.deleteGate";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = DeleteGate<'de>;
+    type Request<S: jacquard_common::BosStr> = DeleteGate<S>;
     type Response = DeleteGateResponse;
+}
+
+pub mod delete_gate_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type GateUri;
+        type Streamer;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type GateUri = Unset;
+        type Streamer = Unset;
+    }
+    ///State transition - sets the `gate_uri` field to Set
+    pub struct SetGateUri<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetGateUri<St> {}
+    impl<St: State> State for SetGateUri<St> {
+        type GateUri = Set<members::gate_uri>;
+        type Streamer = St::Streamer;
+    }
+    ///State transition - sets the `streamer` field to Set
+    pub struct SetStreamer<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetStreamer<St> {}
+    impl<St: State> State for SetStreamer<St> {
+        type GateUri = St::GateUri;
+        type Streamer = Set<members::streamer>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `gate_uri` field
+        pub struct gate_uri(());
+        ///Marker type for the `streamer` field
+        pub struct streamer(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct DeleteGateBuilder<
+    St: delete_gate_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::AtUri<S>>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+    ),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl DeleteGate<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> DeleteGateBuilder<delete_gate_state::Empty, jacquard_common::DefaultStr> {
+        DeleteGateBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> DeleteGate<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> DeleteGateBuilder<delete_gate_state::Empty, S> {
+        DeleteGateBuilder::builder()
+    }
+}
+
+impl DeleteGateBuilder<delete_gate_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        DeleteGateBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> DeleteGateBuilder<delete_gate_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        DeleteGateBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeleteGateBuilder<St, S>
+where
+    St: delete_gate_state::State,
+    St::GateUri: delete_gate_state::IsUnset,
+{
+    /// Set the `gateUri` field (required)
+    pub fn gate_uri(
+        mut self,
+        value: impl Into<jacquard_common::types::string::AtUri<S>>,
+    ) -> DeleteGateBuilder<delete_gate_state::SetGateUri<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        DeleteGateBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeleteGateBuilder<St, S>
+where
+    St: delete_gate_state::State,
+    St::Streamer: delete_gate_state::IsUnset,
+{
+    /// Set the `streamer` field (required)
+    pub fn streamer(
+        mut self,
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> DeleteGateBuilder<delete_gate_state::SetStreamer<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
+        DeleteGateBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeleteGateBuilder<St, S>
+where
+    St: delete_gate_state::State,
+    St::GateUri: delete_gate_state::IsSet,
+    St::Streamer: delete_gate_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> DeleteGate<S> {
+        DeleteGate {
+            gate_uri: self._fields.0.unwrap(),
+            streamer: self._fields.1.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> DeleteGate<S> {
+        DeleteGate {
+            gate_uri: self._fields.0.unwrap(),
+            streamer: self._fields.1.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
 }

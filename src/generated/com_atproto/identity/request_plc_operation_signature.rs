@@ -5,26 +5,30 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-/// XRPC request marker type
+/** Request marker for the `com.atproto.identity.requestPlcOperationSignature` procedure.
+
+This endpoint has no request parameters or input body; send this marker with `jacquard::Client`.*/
+
 #[derive(
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
     serde::Serialize,
     serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
     jacquard_derive::IntoStatic,
+    Copy,
 )]
 pub struct RequestPlcOperationSignature;
-/// Response type for
-///com.atproto.identity.requestPlcOperationSignature
+/** Response marker for the `com.atproto.identity.requestPlcOperationSignature` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `()` for this endpoint.*/
 pub struct RequestPlcOperationSignatureResponse;
 impl jacquard_common::xrpc::XrpcResp for RequestPlcOperationSignatureResponse {
     const NSID: &'static str = "com.atproto.identity.requestPlcOperationSignature";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = ();
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
+    type Output<S: jacquard_common::BosStr> = ();
+    type Err = jacquard_common::xrpc::GenericError;
 }
 
 impl jacquard_common::xrpc::XrpcRequest for RequestPlcOperationSignature {
@@ -34,13 +38,14 @@ impl jacquard_common::xrpc::XrpcRequest for RequestPlcOperationSignature {
     type Response = RequestPlcOperationSignatureResponse;
 }
 
-/// Endpoint type for
-///com.atproto.identity.requestPlcOperationSignature
+/** Endpoint marker for the `com.atproto.identity.requestPlcOperationSignature` procedure.
+
+Path: `/xrpc/com.atproto.identity.requestPlcOperationSignature`. The request payload type is `RequestPlcOperationSignature`; use this marker with lower-level `XrpcEndpoint` APIs when you need endpoint metadata.*/
 pub struct RequestPlcOperationSignatureRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for RequestPlcOperationSignatureRequest {
     const PATH: &'static str = "/xrpc/com.atproto.identity.requestPlcOperationSignature";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = RequestPlcOperationSignature;
+    type Request<S: jacquard_common::BosStr> = RequestPlcOperationSignature;
     type Response = RequestPlcOperationSignatureResponse;
 }

@@ -5,40 +5,57 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetStatusOutput<'a> {
-    /// Whether the viewer's account is allowed to create group chats. New accounts are restricted from creating groups.
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetStatusOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Whether the viewer's account is allowed to create group chats. New accounts are restricted from creating groups.
     pub can_create_groups: bool,
-    /// True when the viewer's account is disabled and cannot actively participate in chat.
+    ///True when the viewer's account is disabled and cannot actively participate in chat.
     pub chat_disabled: bool,
-    /// The maximum number of members allowed in a group conversation.
+    ///The maximum number of members allowed in a group conversation.
     pub group_member_limit: i64,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-/// XRPC request marker type
+/** Request marker for the `chat.bsky.actor.getStatus` query.
+
+This endpoint has no request parameters or input body; send this marker with `jacquard::Client`.*/
+
 #[derive(
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
     serde::Serialize,
     serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
     jacquard_derive::IntoStatic,
+    Copy,
 )]
 pub struct GetStatus;
-/// Response type for
-///chat.bsky.actor.getStatus
+/** Response marker for the `chat.bsky.actor.getStatus` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetStatusOutput<S>` for this endpoint.*/
 pub struct GetStatusResponse;
 impl jacquard_common::xrpc::XrpcResp for GetStatusResponse {
     const NSID: &'static str = "chat.bsky.actor.getStatus";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetStatusOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
+    type Output<S: jacquard_common::BosStr> = GetStatusOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
 }
 
 impl jacquard_common::xrpc::XrpcRequest for GetStatus {
@@ -47,12 +64,13 @@ impl jacquard_common::xrpc::XrpcRequest for GetStatus {
     type Response = GetStatusResponse;
 }
 
-/// Endpoint type for
-///chat.bsky.actor.getStatus
+/** Endpoint marker for the `chat.bsky.actor.getStatus` query.
+
+Path: `/xrpc/chat.bsky.actor.getStatus`. The request payload type is `GetStatus`; use this marker with lower-level `XrpcEndpoint` APIs when you need endpoint metadata.*/
 pub struct GetStatusRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for GetStatusRequest {
     const PATH: &'static str = "/xrpc/chat.bsky.actor.getStatus";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetStatus;
+    type Request<S: jacquard_common::BosStr> = GetStatus;
     type Response = GetStatusResponse;
 }

@@ -5,14 +5,56 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct UnmuteThread<'a> {
-    #[serde(borrow)]
-    pub root: jacquard_common::types::string::AtUri<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct UnmuteThread<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub root: jacquard_common::types::string::AtUri<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `app.bsky.graph.unmuteThread` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `()` for this endpoint.*/
+pub struct UnmuteThreadResponse;
+impl jacquard_common::xrpc::XrpcResp for UnmuteThreadResponse {
+    const NSID: &'static str = "app.bsky.graph.unmuteThread";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = ();
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for UnmuteThread<S> {
+    const NSID: &'static str = "app.bsky.graph.unmuteThread";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Response = UnmuteThreadResponse;
+}
+
+/** Endpoint marker for the `app.bsky.graph.unmuteThread` procedure.
+
+Path: `/xrpc/app.bsky.graph.unmuteThread`. The request payload type is `UnmuteThread<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct UnmuteThreadRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for UnmuteThreadRequest {
+    const PATH: &'static str = "/xrpc/app.bsky.graph.unmuteThread";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Request<S: jacquard_common::BosStr> = UnmuteThread<S>;
+    type Response = UnmuteThreadResponse;
 }
 
 pub mod unmute_thread_state {
@@ -34,9 +76,9 @@ pub mod unmute_thread_state {
         type Root = Unset;
     }
     ///State transition - sets the `root` field to Set
-    pub struct SetRoot<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRoot<S> {}
-    impl<S: State> State for SetRoot<S> {
+    pub struct SetRoot<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRoot<St> {}
+    impl<St: State> State for SetRoot<St> {
         type Root = Set<members::root>;
     }
     /// Marker types for field names
@@ -47,101 +89,94 @@ pub mod unmute_thread_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct UnmuteThreadBuilder<'a, S: unmute_thread_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<jacquard_common::types::string::AtUri<'a>>,),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct UnmuteThreadBuilder<
+    St: unmute_thread_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<jacquard_common::types::string::AtUri<S>>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> UnmuteThread<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> UnmuteThreadBuilder<'a, unmute_thread_state::Empty> {
+impl UnmuteThread<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> UnmuteThreadBuilder<unmute_thread_state::Empty, jacquard_common::DefaultStr> {
         UnmuteThreadBuilder::new()
     }
 }
 
-impl<'a> UnmuteThreadBuilder<'a, unmute_thread_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> UnmuteThread<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> UnmuteThreadBuilder<unmute_thread_state::Empty, S> {
+        UnmuteThreadBuilder::builder()
+    }
+}
+
+impl UnmuteThreadBuilder<unmute_thread_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         UnmuteThreadBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> UnmuteThreadBuilder<'a, S>
+impl<S: jacquard_common::BosStr> UnmuteThreadBuilder<unmute_thread_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        UnmuteThreadBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> UnmuteThreadBuilder<St, S>
 where
-    S: unmute_thread_state::State,
-    S::Root: unmute_thread_state::IsUnset,
+    St: unmute_thread_state::State,
+    St::Root: unmute_thread_state::IsUnset,
 {
     /// Set the `root` field (required)
     pub fn root(
         mut self,
-        value: impl Into<jacquard_common::types::string::AtUri<'a>>,
-    ) -> UnmuteThreadBuilder<'a, unmute_thread_state::SetRoot<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::AtUri<S>>,
+    ) -> UnmuteThreadBuilder<unmute_thread_state::SetRoot<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         UnmuteThreadBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> UnmuteThreadBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> UnmuteThreadBuilder<St, S>
 where
-    S: unmute_thread_state::State,
-    S::Root: unmute_thread_state::IsSet,
+    St: unmute_thread_state::State,
+    St::Root: unmute_thread_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> UnmuteThread<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> UnmuteThread<S> {
         UnmuteThread {
-            root: self.__unsafe_private_named.0.unwrap(),
+            root: self._fields.0.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> UnmuteThread<'a> {
+    ) -> UnmuteThread<S> {
         UnmuteThread {
-            root: self.__unsafe_private_named.0.unwrap(),
+            root: self._fields.0.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-/// Response type for
-///app.bsky.graph.unmuteThread
-pub struct UnmuteThreadResponse;
-impl jacquard_common::xrpc::XrpcResp for UnmuteThreadResponse {
-    const NSID: &'static str = "app.bsky.graph.unmuteThread";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = ();
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for UnmuteThread<'a> {
-    const NSID: &'static str = "app.bsky.graph.unmuteThread";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Response = UnmuteThreadResponse;
-}
-
-/// Endpoint type for
-///app.bsky.graph.unmuteThread
-pub struct UnmuteThreadRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for UnmuteThreadRequest {
-    const PATH: &'static str = "/xrpc/app.bsky.graph.unmuteThread";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = UnmuteThread<'de>;
-    type Response = UnmuteThreadResponse;
 }

@@ -8,19 +8,122 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct ListWebhooks<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub active: std::option::Option<bool>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub event: std::option::Option<jacquard_common::CowStr<'a>>,
-    ///(default: 50, min: 1, max: 100)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub limit: std::option::Option<i64>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ListWebhooks<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub active: core::option::Option<bool>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub event: core::option::Option<S>,
+    /// Defaults to `50`. Min: 1. Max: 100.
+    #[serde(default = "_default_limit")]
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub limit: core::option::Option<i64>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ListWebhooksOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///A cursor for pagination, if there are more results.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    pub webhooks: Vec<crate::generated::place_stream::server::Webhook<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    thiserror::Error,
+    miette::Diagnostic,
+)]
+#[serde(tag = "error", content = "message")]
+pub enum ListWebhooksError {
+    /// The provided cursor is invalid or expired.
+    #[serde(rename = "InvalidCursor")]
+    InvalidCursor(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
+}
+
+impl core::fmt::Display for ListWebhooksError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+            Self::InvalidCursor(msg) => {
+                write!(f, "InvalidCursor")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+        }
+    }
+}
+
+/** Response marker for the `place.stream.server.listWebhooks` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `ListWebhooksOutput<S>` for this endpoint.*/
+pub struct ListWebhooksResponse;
+impl jacquard_common::xrpc::XrpcResp for ListWebhooksResponse {
+    const NSID: &'static str = "place.stream.server.listWebhooks";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = ListWebhooksOutput<S>;
+    type Err = ListWebhooksError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for ListWebhooks<S> {
+    const NSID: &'static str = "place.stream.server.listWebhooks";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = ListWebhooksResponse;
+}
+
+/** Endpoint marker for the `place.stream.server.listWebhooks` query.
+
+Path: `/xrpc/place.stream.server.listWebhooks`. The request payload type is `ListWebhooks<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct ListWebhooksRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for ListWebhooksRequest {
+    const PATH: &'static str = "/xrpc/place.stream.server.listWebhooks";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = ListWebhooks<S>;
+    type Response = ListWebhooksResponse;
+}
+
+fn _default_limit() -> core::option::Option<i64> {
+    Some(50i64)
 }
 
 pub mod list_webhooks_state {
@@ -42,174 +145,120 @@ pub mod list_webhooks_state {
     pub mod members {}
 }
 
-/// Builder for constructing an instance of this type
-pub struct ListWebhooksBuilder<'a, S: list_webhooks_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<bool>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<i64>,
+/// Builder for constructing an instance of this type.
+pub struct ListWebhooksBuilder<
+    St: list_webhooks_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<bool>,
+        core::option::Option<S>,
+        core::option::Option<S>,
+        core::option::Option<i64>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> ListWebhooks<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> ListWebhooksBuilder<'a, list_webhooks_state::Empty> {
+impl ListWebhooks<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> ListWebhooksBuilder<list_webhooks_state::Empty, jacquard_common::DefaultStr> {
         ListWebhooksBuilder::new()
     }
 }
 
-impl<'a> ListWebhooksBuilder<'a, list_webhooks_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> ListWebhooks<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> ListWebhooksBuilder<list_webhooks_state::Empty, S> {
+        ListWebhooksBuilder::builder()
+    }
+}
+
+impl ListWebhooksBuilder<list_webhooks_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ListWebhooksBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: list_webhooks_state::State> ListWebhooksBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> ListWebhooksBuilder<list_webhooks_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        ListWebhooksBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: list_webhooks_state::State, S: jacquard_common::BosStr> ListWebhooksBuilder<St, S> {
     /// Set the `active` field (optional)
     pub fn active(mut self, value: impl Into<Option<bool>>) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+        self._fields.0 = value.into();
         self
     }
     /// Set the `active` field to an Option value (optional)
     pub fn maybe_active(mut self, value: Option<bool>) -> Self {
-        self.__unsafe_private_named.0 = value;
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S: list_webhooks_state::State> ListWebhooksBuilder<'a, S> {
+impl<St: list_webhooks_state::State, S: jacquard_common::BosStr> ListWebhooksBuilder<St, S> {
     /// Set the `cursor` field (optional)
-    pub fn cursor(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+    pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.1 = value.into();
         self
     }
     /// Set the `cursor` field to an Option value (optional)
-    pub fn maybe_cursor(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.1 = value;
+    pub fn maybe_cursor(mut self, value: Option<S>) -> Self {
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S: list_webhooks_state::State> ListWebhooksBuilder<'a, S> {
+impl<St: list_webhooks_state::State, S: jacquard_common::BosStr> ListWebhooksBuilder<St, S> {
     /// Set the `event` field (optional)
-    pub fn event(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.2 = value.into();
+    pub fn event(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.2 = value.into();
         self
     }
     /// Set the `event` field to an Option value (optional)
-    pub fn maybe_event(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.2 = value;
+    pub fn maybe_event(mut self, value: Option<S>) -> Self {
+        self._fields.2 = value;
         self
     }
 }
 
-impl<'a, S: list_webhooks_state::State> ListWebhooksBuilder<'a, S> {
+impl<St: list_webhooks_state::State, S: jacquard_common::BosStr> ListWebhooksBuilder<St, S> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.3 = value.into();
+        self._fields.3 = value.into();
         self
     }
     /// Set the `limit` field to an Option value (optional)
     pub fn maybe_limit(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.3 = value;
+        self._fields.3 = value;
         self
     }
 }
 
-impl<'a, S> ListWebhooksBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ListWebhooksBuilder<St, S>
 where
-    S: list_webhooks_state::State,
+    St: list_webhooks_state::State,
 {
-    /// Build the final struct
-    pub fn build(self) -> ListWebhooks<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> ListWebhooks<S> {
         ListWebhooks {
-            active: self.__unsafe_private_named.0,
-            cursor: self.__unsafe_private_named.1,
-            event: self.__unsafe_private_named.2,
-            limit: self.__unsafe_private_named.3,
+            active: self._fields.0,
+            cursor: self._fields.1,
+            event: self._fields.2,
+            limit: self._fields.3,
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct ListWebhooksOutput<'a> {
-    /// A cursor for pagination, if there are more results.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(borrow)]
-    pub webhooks: Vec<crate::generated::place_stream::server::Webhook<'a>>,
-}
-
-#[jacquard_derive::open_union]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    thiserror::Error,
-    miette::Diagnostic,
-    jacquard_derive::IntoStatic,
-)]
-#[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum ListWebhooksError<'a> {
-    /// The provided cursor is invalid or expired.
-    #[serde(rename = "InvalidCursor")]
-    InvalidCursor(std::option::Option<jacquard_common::CowStr<'a>>),
-}
-
-impl std::fmt::Display for ListWebhooksError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::InvalidCursor(msg) => {
-                write!(f, "InvalidCursor")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
-        }
-    }
-}
-
-/// Response type for
-///place.stream.server.listWebhooks
-pub struct ListWebhooksResponse;
-impl jacquard_common::xrpc::XrpcResp for ListWebhooksResponse {
-    const NSID: &'static str = "place.stream.server.listWebhooks";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = ListWebhooksOutput<'de>;
-    type Err<'de> = ListWebhooksError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for ListWebhooks<'a> {
-    const NSID: &'static str = "place.stream.server.listWebhooks";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = ListWebhooksResponse;
-}
-
-/// Endpoint type for
-///place.stream.server.listWebhooks
-pub struct ListWebhooksRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for ListWebhooksRequest {
-    const PATH: &'static str = "/xrpc/place.stream.server.listWebhooks";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = ListWebhooks<'de>;
-    type Response = ListWebhooksResponse;
 }

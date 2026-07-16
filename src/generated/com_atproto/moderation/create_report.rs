@@ -5,25 +5,172 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct CreateReport<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct CreateReport<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub mod_tool:
-        std::option::Option<crate::generated::com_atproto::moderation::create_report::ModTool<'a>>,
-    /// Additional context about the content and violation.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub reason: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// Indicates the broad category of violation the report is for.
-    #[serde(borrow)]
-    pub reason_type: crate::generated::com_atproto::moderation::ReasonType<'a>,
-    #[serde(borrow)]
-    pub subject: CreateReportSubject<'a>,
+        core::option::Option<crate::generated::com_atproto::moderation::create_report::ModTool<S>>,
+    ///Additional context about the content and violation.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub reason: core::option::Option<S>,
+    ///Indicates the broad category of violation the report is for.
+    pub reason_type: crate::generated::com_atproto::moderation::ReasonType<S>,
+    pub subject: CreateReportSubject<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[jacquard_derive::open_union]
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub enum CreateReportSubject<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(rename = "com.atproto.admin.defs#repoRef")]
+    RepoRef(Box<crate::generated::com_atproto::admin::RepoRef<S>>),
+    #[serde(rename = "com.atproto.repo.strongRef")]
+    StrongRef(Box<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>),
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct CreateReportOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub created_at: jacquard_common::types::string::Datetime,
+    pub id: i64,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub reason: core::option::Option<S>,
+    pub reason_type: crate::generated::com_atproto::moderation::ReasonType<S>,
+    pub reported_by: jacquard_common::types::string::Did<S>,
+    pub subject: CreateReportOutputSubject<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[jacquard_derive::open_union]
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub enum CreateReportOutputSubject<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(rename = "com.atproto.admin.defs#repoRef")]
+    RepoRef(Box<crate::generated::com_atproto::admin::RepoRef<S>>),
+    #[serde(rename = "com.atproto.repo.strongRef")]
+    StrongRef(Box<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>),
+}
+
+/// Moderation tool information for tracing the source of the action
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic,
+    Default,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ModTool<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Additional arbitrary metadata about the source
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub meta: core::option::Option<jacquard_common::types::value::Data<S>>,
+    ///Name/identifier of the source (e.g., 'bsky-app/android', 'bsky-web/chrome')
+    pub name: S,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `com.atproto.moderation.createReport` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `CreateReportOutput<S>` for this endpoint.*/
+pub struct CreateReportResponse;
+impl jacquard_common::xrpc::XrpcResp for CreateReportResponse {
+    const NSID: &'static str = "com.atproto.moderation.createReport";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = CreateReportOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for CreateReport<S> {
+    const NSID: &'static str = "com.atproto.moderation.createReport";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Response = CreateReportResponse;
+}
+
+/** Endpoint marker for the `com.atproto.moderation.createReport` procedure.
+
+Path: `/xrpc/com.atproto.moderation.createReport`. The request payload type is `CreateReport<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct CreateReportRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for CreateReportRequest {
+    const PATH: &'static str = "/xrpc/com.atproto.moderation.createReport";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Request<S: jacquard_common::BosStr> = CreateReport<S>;
+    type Response = CreateReportResponse;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ModTool<S> {
+    fn nsid() -> &'static str {
+        "com.atproto.moderation.createReport"
+    }
+    fn def_name() -> &'static str {
+        "modTool"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_com_atproto_moderation_createReport()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
 }
 
 pub mod create_report_state {
@@ -47,17 +194,17 @@ pub mod create_report_state {
         type Subject = Unset;
     }
     ///State transition - sets the `reason_type` field to Set
-    pub struct SetReasonType<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetReasonType<S> {}
-    impl<S: State> State for SetReasonType<S> {
+    pub struct SetReasonType<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetReasonType<St> {}
+    impl<St: State> State for SetReasonType<St> {
         type ReasonType = Set<members::reason_type>;
-        type Subject = S::Subject;
+        type Subject = St::Subject;
     }
     ///State transition - sets the `subject` field to Set
-    pub struct SetSubject<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetSubject<S> {}
-    impl<S: State> State for SetSubject<S> {
-        type ReasonType = S::ReasonType;
+    pub struct SetSubject<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSubject<St> {}
+    impl<St: State> State for SetSubject<St> {
+        type ReasonType = St::ReasonType;
         type Subject = Set<members::subject>;
     }
     /// Marker types for field names
@@ -70,329 +217,245 @@ pub mod create_report_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct CreateReportBuilder<'a, S: create_report_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<
-            crate::generated::com_atproto::moderation::create_report::ModTool<'a>,
-        >,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<crate::generated::com_atproto::moderation::ReasonType<'a>>,
-        ::core::option::Option<CreateReportSubject<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct CreateReportBuilder<
+    St: create_report_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<crate::generated::com_atproto::moderation::create_report::ModTool<S>>,
+        core::option::Option<S>,
+        core::option::Option<crate::generated::com_atproto::moderation::ReasonType<S>>,
+        core::option::Option<CreateReportSubject<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> CreateReport<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> CreateReportBuilder<'a, create_report_state::Empty> {
+impl CreateReport<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> CreateReportBuilder<create_report_state::Empty, jacquard_common::DefaultStr> {
         CreateReportBuilder::new()
     }
 }
 
-impl<'a> CreateReportBuilder<'a, create_report_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> CreateReport<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> CreateReportBuilder<create_report_state::Empty, S> {
+        CreateReportBuilder::builder()
+    }
+}
+
+impl CreateReportBuilder<create_report_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         CreateReportBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: create_report_state::State> CreateReportBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> CreateReportBuilder<create_report_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        CreateReportBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: create_report_state::State, S: jacquard_common::BosStr> CreateReportBuilder<St, S> {
     /// Set the `modTool` field (optional)
     pub fn mod_tool(
         mut self,
-        value: impl Into<Option<crate::generated::com_atproto::moderation::create_report::ModTool<'a>>>,
+        value: impl Into<Option<crate::generated::com_atproto::moderation::create_report::ModTool<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+        self._fields.0 = value.into();
         self
     }
     /// Set the `modTool` field to an Option value (optional)
     pub fn maybe_mod_tool(
         mut self,
-        value: Option<crate::generated::com_atproto::moderation::create_report::ModTool<'a>>,
+        value: Option<crate::generated::com_atproto::moderation::create_report::ModTool<S>>,
     ) -> Self {
-        self.__unsafe_private_named.0 = value;
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S: create_report_state::State> CreateReportBuilder<'a, S> {
+impl<St: create_report_state::State, S: jacquard_common::BosStr> CreateReportBuilder<St, S> {
     /// Set the `reason` field (optional)
-    pub fn reason(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+    pub fn reason(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.1 = value.into();
         self
     }
     /// Set the `reason` field to an Option value (optional)
-    pub fn maybe_reason(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.1 = value;
+    pub fn maybe_reason(mut self, value: Option<S>) -> Self {
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S> CreateReportBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> CreateReportBuilder<St, S>
 where
-    S: create_report_state::State,
-    S::ReasonType: create_report_state::IsUnset,
+    St: create_report_state::State,
+    St::ReasonType: create_report_state::IsUnset,
 {
     /// Set the `reasonType` field (required)
     pub fn reason_type(
         mut self,
-        value: impl Into<crate::generated::com_atproto::moderation::ReasonType<'a>>,
-    ) -> CreateReportBuilder<'a, create_report_state::SetReasonType<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        value: impl Into<crate::generated::com_atproto::moderation::ReasonType<S>>,
+    ) -> CreateReportBuilder<create_report_state::SetReasonType<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         CreateReportBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> CreateReportBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> CreateReportBuilder<St, S>
 where
-    S: create_report_state::State,
-    S::Subject: create_report_state::IsUnset,
+    St: create_report_state::State,
+    St::Subject: create_report_state::IsUnset,
 {
     /// Set the `subject` field (required)
     pub fn subject(
         mut self,
-        value: impl Into<CreateReportSubject<'a>>,
-    ) -> CreateReportBuilder<'a, create_report_state::SetSubject<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        value: impl Into<CreateReportSubject<S>>,
+    ) -> CreateReportBuilder<create_report_state::SetSubject<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
         CreateReportBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> CreateReportBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> CreateReportBuilder<St, S>
 where
-    S: create_report_state::State,
-    S::ReasonType: create_report_state::IsSet,
-    S::Subject: create_report_state::IsSet,
+    St: create_report_state::State,
+    St::ReasonType: create_report_state::IsSet,
+    St::Subject: create_report_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> CreateReport<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> CreateReport<S> {
         CreateReport {
-            mod_tool: self.__unsafe_private_named.0,
-            reason: self.__unsafe_private_named.1,
-            reason_type: self.__unsafe_private_named.2.unwrap(),
-            subject: self.__unsafe_private_named.3.unwrap(),
+            mod_tool: self._fields.0,
+            reason: self._fields.1,
+            reason_type: self._fields.2.unwrap(),
+            subject: self._fields.3.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> CreateReport<'a> {
+    ) -> CreateReport<S> {
         CreateReport {
-            mod_tool: self.__unsafe_private_named.0,
-            reason: self.__unsafe_private_named.1,
-            reason_type: self.__unsafe_private_named.2.unwrap(),
-            subject: self.__unsafe_private_named.3.unwrap(),
+            mod_tool: self._fields.0,
+            reason: self._fields.1,
+            reason_type: self._fields.2.unwrap(),
+            subject: self._fields.3.unwrap(),
             extra_data: Some(extra_data),
         }
     }
 }
 
-#[jacquard_derive::open_union]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(tag = "$type")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum CreateReportSubject<'a> {
-    #[serde(rename = "com.atproto.admin.defs#repoRef")]
-    RepoRef(Box<crate::generated::com_atproto::admin::RepoRef<'a>>),
-    #[serde(rename = "com.atproto.repo.strongRef")]
-    StrongRef(Box<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>),
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct CreateReportOutput<'a> {
-    pub created_at: jacquard_common::types::string::Datetime,
-    pub id: i64,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub reason: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(borrow)]
-    pub reason_type: crate::generated::com_atproto::moderation::ReasonType<'a>,
-    #[serde(borrow)]
-    pub reported_by: jacquard_common::types::string::Did<'a>,
-    #[serde(borrow)]
-    pub subject: CreateReportOutputSubject<'a>,
-}
-
-#[jacquard_derive::open_union]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(tag = "$type")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum CreateReportOutputSubject<'a> {
-    #[serde(rename = "com.atproto.admin.defs#repoRef")]
-    RepoRef(Box<crate::generated::com_atproto::admin::RepoRef<'a>>),
-    #[serde(rename = "com.atproto.repo.strongRef")]
-    StrongRef(Box<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>),
-}
-
-/// Response type for
-///com.atproto.moderation.createReport
-pub struct CreateReportResponse;
-impl jacquard_common::xrpc::XrpcResp for CreateReportResponse {
-    const NSID: &'static str = "com.atproto.moderation.createReport";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = CreateReportOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for CreateReport<'a> {
-    const NSID: &'static str = "com.atproto.moderation.createReport";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Response = CreateReportResponse;
-}
-
-/// Endpoint type for
-///com.atproto.moderation.createReport
-pub struct CreateReportRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for CreateReportRequest {
-    const PATH: &'static str = "/xrpc/com.atproto.moderation.createReport";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = CreateReport<'de>;
-    type Response = CreateReportResponse;
-}
-
-/// Moderation tool information for tracing the source of the action
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic,
-    Default,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct ModTool<'a> {
-    /// Additional arbitrary metadata about the source
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub meta: std::option::Option<jacquard_common::types::value::Data<'a>>,
-    /// Name/identifier of the source (e.g., 'bsky-app/android', 'bsky-web/chrome')
-    #[serde(borrow)]
-    pub name: jacquard_common::CowStr<'a>,
-}
-
 fn lexicon_doc_com_atproto_moderation_createReport(
-) -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+) -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("com.atproto.moderation.createReport"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
                 ::jacquard_lexicon::lexicon::LexUserType::XrpcProcedure(::jacquard_lexicon::lexicon::LexXrpcProcedure {
-                    description: None,
-                    parameters: None,
                     input: Some(::jacquard_lexicon::lexicon::LexXrpcBody {
-                        description: None,
                         encoding: ::jacquard_common::CowStr::new_static(
                             "application/json",
                         ),
                         schema: Some(
                             ::jacquard_lexicon::lexicon::LexXrpcBodySchema::Object(::jacquard_lexicon::lexicon::LexObject {
-                                description: None,
                                 required: Some(
                                     vec![
-                                        ::jacquard_common::smol_str::SmolStr::new_static("reasonType"),
-                                        ::jacquard_common::smol_str::SmolStr::new_static("subject")
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static("reasonType"),
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static("subject")
                                     ],
                                 ),
-                                nullable: None,
                                 properties: {
                                     #[allow(unused_mut)]
-                                    let mut map = ::std::collections::BTreeMap::new();
+                                    let mut map = ::alloc::collections::BTreeMap::new();
                                     map.insert(
-                                        ::jacquard_common::smol_str::SmolStr::new_static("modTool"),
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "modTool",
+                                        ),
                                         ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                            description: None,
                                             r#ref: ::jacquard_common::CowStr::new_static("#modTool"),
+                                            ..Default::default()
                                         }),
                                     );
                                     map.insert(
-                                        ::jacquard_common::smol_str::SmolStr::new_static("reason"),
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "reason",
+                                        ),
                                         ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                             description: Some(
                                                 ::jacquard_common::CowStr::new_static(
                                                     "Additional context about the content and violation.",
                                                 ),
                                             ),
-                                            format: None,
-                                            default: None,
-                                            min_length: None,
                                             max_length: Some(20000usize),
-                                            min_graphemes: None,
                                             max_graphemes: Some(2000usize),
-                                            r#enum: None,
-                                            r#const: None,
-                                            known_values: None,
+                                            ..Default::default()
                                         }),
                                     );
                                     map.insert(
-                                        ::jacquard_common::smol_str::SmolStr::new_static(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                             "reasonType",
                                         ),
                                         ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                            description: None,
                                             r#ref: ::jacquard_common::CowStr::new_static(
                                                 "com.atproto.moderation.defs#reasonType",
                                             ),
+                                            ..Default::default()
                                         }),
                                     );
                                     map.insert(
-                                        ::jacquard_common::smol_str::SmolStr::new_static("subject"),
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "subject",
+                                        ),
                                         ::jacquard_lexicon::lexicon::LexObjectProperty::Union(::jacquard_lexicon::lexicon::LexRefUnion {
-                                            description: None,
                                             refs: vec![
                                                 ::jacquard_common::CowStr::new_static("com.atproto.admin.defs#repoRef"),
                                                 ::jacquard_common::CowStr::new_static("com.atproto.repo.strongRef")
                                             ],
-                                            closed: None,
+                                            ..Default::default()
                                         }),
                                     );
                                     map
                                 },
+                                ..Default::default()
                             }),
                         ),
+                        ..Default::default()
                     }),
-                    output: None,
-                    errors: None,
+                    ..Default::default()
                 }),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("modTool"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("modTool"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
@@ -400,59 +463,41 @@ fn lexicon_doc_com_atproto_moderation_createReport(
                         ),
                     ),
                     required: Some(
-                        vec![::jacquard_common::smol_str::SmolStr::new_static("name")],
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("name")
+                        ],
                     ),
-                    nullable: None,
                     properties: {
                         #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
+                        let mut map = ::alloc::collections::BTreeMap::new();
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("meta"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "meta",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Unknown(::jacquard_lexicon::lexicon::LexUnknown {
-                                description: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("name"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "name",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
                                         "Name/identifier of the source (e.g., 'bsky-app/android', 'bsky-web/chrome')",
                                     ),
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map
                     },
+                    ..Default::default()
                 }),
             );
             map
         },
-    }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ModTool<'a> {
-    fn nsid() -> &'static str {
-        "com.atproto.moderation.createReport"
-    }
-    fn def_name() -> &'static str {
-        "modTool"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_com_atproto_moderation_createReport()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
+        ..Default::default()
     }
 }

@@ -5,22 +5,156 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct ReissueWelcomeRespond<'a> {
-    /// Optional hex-encoded SHA-256 hash of the recipient key package used to generate this Welcome.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub key_package_hash: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// Identifier returned by the server-side reissue request record.
-    #[serde(borrow)]
-    pub request_id: jacquard_common::CowStr<'a>,
-    /// TLS-serialized MLS Welcome generated for the recipient device.
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ReissueWelcomeRespond<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Optional hex-encoded SHA-256 hash of the recipient key package used to generate this Welcome.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub key_package_hash: core::option::Option<S>,
+    ///Identifier returned by the server-side reissue request record.
+    pub request_id: S,
+    ///TLS-serialized MLS Welcome generated for the recipient device.
     #[serde(with = "jacquard_common::serde_bytes_helper")]
-    pub welcome_blob: bytes::Bytes,
+    pub welcome_blob: jacquard_common::deps::bytes::Bytes,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ReissueWelcomeRespondOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Echo of the answered reissue request identifier.
+    pub request_id: S,
+    ///Server timestamp when the Welcome was stored.
+    pub responded_at: jacquard_common::types::string::Datetime,
+    ///True when the Welcome was stored and the request was marked answered.
+    pub stored: bool,
+    ///Server identifier for the stored Welcome blob.
+    pub welcome_blob_id: S,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    thiserror::Error,
+    miette::Diagnostic,
+)]
+#[serde(tag = "error", content = "message")]
+pub enum ReissueWelcomeRespondError {
+    /// No pending unanswered reissue request exists for requestId.
+    #[serde(rename = "RequestNotFound")]
+    RequestNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Caller is not an active admin/inviter for the request conversation.
+    #[serde(rename = "Unauthorized")]
+    Unauthorized(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Welcome bytes are missing or invalid.
+    #[serde(rename = "InvalidWelcome")]
+    InvalidWelcome(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
+}
+
+impl core::fmt::Display for ReissueWelcomeRespondError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+            Self::RequestNotFound(msg) => {
+                write!(f, "RequestNotFound")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::Unauthorized(msg) => {
+                write!(f, "Unauthorized")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::InvalidWelcome(msg) => {
+                write!(f, "InvalidWelcome")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+        }
+    }
+}
+
+/** Response marker for the `blue.catbird.mlsChat.reissueWelcomeRespond` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `ReissueWelcomeRespondOutput<S>` for this endpoint.*/
+pub struct ReissueWelcomeRespondResponse;
+impl jacquard_common::xrpc::XrpcResp for ReissueWelcomeRespondResponse {
+    const NSID: &'static str = "blue.catbird.mlsChat.reissueWelcomeRespond";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = ReissueWelcomeRespondOutput<S>;
+    type Err = ReissueWelcomeRespondError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for ReissueWelcomeRespond<S> {
+    const NSID: &'static str = "blue.catbird.mlsChat.reissueWelcomeRespond";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Response = ReissueWelcomeRespondResponse;
+}
+
+/** Endpoint marker for the `blue.catbird.mlsChat.reissueWelcomeRespond` procedure.
+
+Path: `/xrpc/blue.catbird.mlsChat.reissueWelcomeRespond`. The request payload type is `ReissueWelcomeRespond<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct ReissueWelcomeRespondRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for ReissueWelcomeRespondRequest {
+    const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.reissueWelcomeRespond";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Request<S: jacquard_common::BosStr> = ReissueWelcomeRespond<S>;
+    type Response = ReissueWelcomeRespondResponse;
 }
 
 pub mod reissue_welcome_respond_state {
@@ -44,17 +178,17 @@ pub mod reissue_welcome_respond_state {
         type WelcomeBlob = Unset;
     }
     ///State transition - sets the `request_id` field to Set
-    pub struct SetRequestId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRequestId<S> {}
-    impl<S: State> State for SetRequestId<S> {
+    pub struct SetRequestId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRequestId<St> {}
+    impl<St: State> State for SetRequestId<St> {
         type RequestId = Set<members::request_id>;
-        type WelcomeBlob = S::WelcomeBlob;
+        type WelcomeBlob = St::WelcomeBlob;
     }
     ///State transition - sets the `welcome_blob` field to Set
-    pub struct SetWelcomeBlob<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetWelcomeBlob<S> {}
-    impl<S: State> State for SetWelcomeBlob<S> {
-        type RequestId = S::RequestId;
+    pub struct SetWelcomeBlob<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetWelcomeBlob<St> {}
+    impl<St: State> State for SetWelcomeBlob<St> {
+        type RequestId = St::RequestId;
         type WelcomeBlob = Set<members::welcome_blob>;
     }
     /// Marker types for field names
@@ -67,218 +201,144 @@ pub mod reissue_welcome_respond_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct ReissueWelcomeRespondBuilder<'a, S: reissue_welcome_respond_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<bytes::Bytes>,
+/// Builder for constructing an instance of this type.
+pub struct ReissueWelcomeRespondBuilder<
+    St: reissue_welcome_respond_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> ReissueWelcomeRespond<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> ReissueWelcomeRespondBuilder<'a, reissue_welcome_respond_state::Empty> {
+impl ReissueWelcomeRespond<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> ReissueWelcomeRespondBuilder<
+        reissue_welcome_respond_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         ReissueWelcomeRespondBuilder::new()
     }
 }
 
-impl<'a> ReissueWelcomeRespondBuilder<'a, reissue_welcome_respond_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> ReissueWelcomeRespond<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> ReissueWelcomeRespondBuilder<reissue_welcome_respond_state::Empty, S> {
+        ReissueWelcomeRespondBuilder::builder()
+    }
+}
+
+impl
+    ReissueWelcomeRespondBuilder<reissue_welcome_respond_state::Empty, jacquard_common::DefaultStr>
+{
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ReissueWelcomeRespondBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: reissue_welcome_respond_state::State> ReissueWelcomeRespondBuilder<'a, S> {
+impl<S: jacquard_common::BosStr>
+    ReissueWelcomeRespondBuilder<reissue_welcome_respond_state::Empty, S>
+{
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        ReissueWelcomeRespondBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: reissue_welcome_respond_state::State, S: jacquard_common::BosStr>
+    ReissueWelcomeRespondBuilder<St, S>
+{
     /// Set the `keyPackageHash` field (optional)
-    pub fn key_package_hash(
-        mut self,
-        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
-    ) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+    pub fn key_package_hash(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.0 = value.into();
         self
     }
     /// Set the `keyPackageHash` field to an Option value (optional)
-    pub fn maybe_key_package_hash(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.0 = value;
+    pub fn maybe_key_package_hash(mut self, value: Option<S>) -> Self {
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S> ReissueWelcomeRespondBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ReissueWelcomeRespondBuilder<St, S>
 where
-    S: reissue_welcome_respond_state::State,
-    S::RequestId: reissue_welcome_respond_state::IsUnset,
+    St: reissue_welcome_respond_state::State,
+    St::RequestId: reissue_welcome_respond_state::IsUnset,
 {
     /// Set the `requestId` field (required)
     pub fn request_id(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> ReissueWelcomeRespondBuilder<'a, reissue_welcome_respond_state::SetRequestId<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> ReissueWelcomeRespondBuilder<reissue_welcome_respond_state::SetRequestId<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         ReissueWelcomeRespondBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ReissueWelcomeRespondBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ReissueWelcomeRespondBuilder<St, S>
 where
-    S: reissue_welcome_respond_state::State,
-    S::WelcomeBlob: reissue_welcome_respond_state::IsUnset,
+    St: reissue_welcome_respond_state::State,
+    St::WelcomeBlob: reissue_welcome_respond_state::IsUnset,
 {
     /// Set the `welcomeBlob` field (required)
     pub fn welcome_blob(
         mut self,
-        value: impl Into<bytes::Bytes>,
-    ) -> ReissueWelcomeRespondBuilder<'a, reissue_welcome_respond_state::SetWelcomeBlob<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
+    ) -> ReissueWelcomeRespondBuilder<reissue_welcome_respond_state::SetWelcomeBlob<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         ReissueWelcomeRespondBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ReissueWelcomeRespondBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ReissueWelcomeRespondBuilder<St, S>
 where
-    S: reissue_welcome_respond_state::State,
-    S::RequestId: reissue_welcome_respond_state::IsSet,
-    S::WelcomeBlob: reissue_welcome_respond_state::IsSet,
+    St: reissue_welcome_respond_state::State,
+    St::RequestId: reissue_welcome_respond_state::IsSet,
+    St::WelcomeBlob: reissue_welcome_respond_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> ReissueWelcomeRespond<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> ReissueWelcomeRespond<S> {
         ReissueWelcomeRespond {
-            key_package_hash: self.__unsafe_private_named.0,
-            request_id: self.__unsafe_private_named.1.unwrap(),
-            welcome_blob: self.__unsafe_private_named.2.unwrap(),
+            key_package_hash: self._fields.0,
+            request_id: self._fields.1.unwrap(),
+            welcome_blob: self._fields.2.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> ReissueWelcomeRespond<'a> {
+    ) -> ReissueWelcomeRespond<S> {
         ReissueWelcomeRespond {
-            key_package_hash: self.__unsafe_private_named.0,
-            request_id: self.__unsafe_private_named.1.unwrap(),
-            welcome_blob: self.__unsafe_private_named.2.unwrap(),
+            key_package_hash: self._fields.0,
+            request_id: self._fields.1.unwrap(),
+            welcome_blob: self._fields.2.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct ReissueWelcomeRespondOutput<'a> {
-    /// Echo of the answered reissue request identifier.
-    #[serde(borrow)]
-    pub request_id: jacquard_common::CowStr<'a>,
-    /// Server timestamp when the Welcome was stored.
-    pub responded_at: jacquard_common::types::string::Datetime,
-    /// True when the Welcome was stored and the request was marked answered.
-    pub stored: bool,
-    /// Server identifier for the stored Welcome blob.
-    #[serde(borrow)]
-    pub welcome_blob_id: jacquard_common::CowStr<'a>,
-}
-
-#[jacquard_derive::open_union]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    thiserror::Error,
-    miette::Diagnostic,
-    jacquard_derive::IntoStatic,
-)]
-#[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum ReissueWelcomeRespondError<'a> {
-    /// No pending unanswered reissue request exists for requestId.
-    #[serde(rename = "RequestNotFound")]
-    RequestNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
-    /// Caller is not an active admin/inviter for the request conversation.
-    #[serde(rename = "Unauthorized")]
-    Unauthorized(std::option::Option<jacquard_common::CowStr<'a>>),
-    /// Welcome bytes are missing or invalid.
-    #[serde(rename = "InvalidWelcome")]
-    InvalidWelcome(std::option::Option<jacquard_common::CowStr<'a>>),
-}
-
-impl std::fmt::Display for ReissueWelcomeRespondError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::RequestNotFound(msg) => {
-                write!(f, "RequestNotFound")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
-            Self::Unauthorized(msg) => {
-                write!(f, "Unauthorized")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
-            Self::InvalidWelcome(msg) => {
-                write!(f, "InvalidWelcome")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
-        }
-    }
-}
-
-/// Response type for
-///blue.catbird.mlsChat.reissueWelcomeRespond
-pub struct ReissueWelcomeRespondResponse;
-impl jacquard_common::xrpc::XrpcResp for ReissueWelcomeRespondResponse {
-    const NSID: &'static str = "blue.catbird.mlsChat.reissueWelcomeRespond";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = ReissueWelcomeRespondOutput<'de>;
-    type Err<'de> = ReissueWelcomeRespondError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for ReissueWelcomeRespond<'a> {
-    const NSID: &'static str = "blue.catbird.mlsChat.reissueWelcomeRespond";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Response = ReissueWelcomeRespondResponse;
-}
-
-/// Endpoint type for
-///blue.catbird.mlsChat.reissueWelcomeRespond
-pub struct ReissueWelcomeRespondRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for ReissueWelcomeRespondRequest {
-    const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.reissueWelcomeRespond";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = ReissueWelcomeRespond<'de>;
-    type Response = ReissueWelcomeRespondResponse;
 }

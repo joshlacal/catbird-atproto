@@ -5,7 +5,6 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -16,54 +15,213 @@
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetConfigOutput<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetConfigOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub appview:
-        std::option::Option<crate::generated::tools_ozone::server::get_config::ServiceConfig<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
+        core::option::Option<crate::generated::tools_ozone::server::get_config::ServiceConfig<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub blob_divert:
-        std::option::Option<crate::generated::tools_ozone::server::get_config::ServiceConfig<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
+        core::option::Option<crate::generated::tools_ozone::server::get_config::ServiceConfig<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub chat:
-        std::option::Option<crate::generated::tools_ozone::server::get_config::ServiceConfig<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
+        core::option::Option<crate::generated::tools_ozone::server::get_config::ServiceConfig<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub pds:
-        std::option::Option<crate::generated::tools_ozone::server::get_config::ServiceConfig<'a>>,
-    /// The did of the verifier used for verification.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub verifier_did: std::option::Option<jacquard_common::types::string::Did<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
+        core::option::Option<crate::generated::tools_ozone::server::get_config::ServiceConfig<S>>,
+    ///The did of the verifier used for verification.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub verifier_did: core::option::Option<jacquard_common::types::string::Did<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub viewer:
-        std::option::Option<crate::generated::tools_ozone::server::get_config::ViewerConfig<'a>>,
+        core::option::Option<crate::generated::tools_ozone::server::get_config::ViewerConfig<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-/// XRPC request marker type
 #[derive(
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
     serde::Serialize,
     serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
     jacquard_derive::IntoStatic,
+    Default,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ServiceConfig<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub url: core::option::Option<jacquard_common::types::string::UriValue<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic,
+    Default,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ViewerConfig<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub role: core::option::Option<ViewerConfigRole<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum ViewerConfigRole<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    RoleAdmin,
+    RoleModerator,
+    RoleTriage,
+    RoleVerifier,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> ViewerConfigRole<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::RoleAdmin => "tools.ozone.team.defs#roleAdmin",
+            Self::RoleModerator => "tools.ozone.team.defs#roleModerator",
+            Self::RoleTriage => "tools.ozone.team.defs#roleTriage",
+            Self::RoleVerifier => "tools.ozone.team.defs#roleVerifier",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "tools.ozone.team.defs#roleAdmin" => Self::RoleAdmin,
+            "tools.ozone.team.defs#roleModerator" => Self::RoleModerator,
+            "tools.ozone.team.defs#roleTriage" => Self::RoleTriage,
+            "tools.ozone.team.defs#roleVerifier" => Self::RoleVerifier,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for ViewerConfigRole<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for ViewerConfigRole<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for ViewerConfigRole<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for ViewerConfigRole<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for ViewerConfigRole<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for ViewerConfigRole<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = ViewerConfigRole<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            ViewerConfigRole::RoleAdmin => ViewerConfigRole::RoleAdmin,
+            ViewerConfigRole::RoleModerator => ViewerConfigRole::RoleModerator,
+            ViewerConfigRole::RoleTriage => ViewerConfigRole::RoleTriage,
+            ViewerConfigRole::RoleVerifier => ViewerConfigRole::RoleVerifier,
+            ViewerConfigRole::Other(v) => ViewerConfigRole::Other(v.into_static()),
+        }
+    }
+}
+
+/** Request marker for the `tools.ozone.server.getConfig` query.
+
+This endpoint has no request parameters or input body; send this marker with `jacquard::Client`.*/
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic,
+    Copy,
 )]
 pub struct GetConfig;
-/// Response type for
-///tools.ozone.server.getConfig
+/** Response marker for the `tools.ozone.server.getConfig` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetConfigOutput<S>` for this endpoint.*/
 pub struct GetConfigResponse;
 impl jacquard_common::xrpc::XrpcResp for GetConfigResponse {
     const NSID: &'static str = "tools.ozone.server.getConfig";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetConfigOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
+    type Output<S: jacquard_common::BosStr> = GetConfigOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
 }
 
 impl jacquard_common::xrpc::XrpcRequest for GetConfig {
@@ -72,172 +230,109 @@ impl jacquard_common::xrpc::XrpcRequest for GetConfig {
     type Response = GetConfigResponse;
 }
 
-/// Endpoint type for
-///tools.ozone.server.getConfig
+/** Endpoint marker for the `tools.ozone.server.getConfig` query.
+
+Path: `/xrpc/tools.ozone.server.getConfig`. The request payload type is `GetConfig`; use this marker with lower-level `XrpcEndpoint` APIs when you need endpoint metadata.*/
 pub struct GetConfigRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for GetConfigRequest {
     const PATH: &'static str = "/xrpc/tools.ozone.server.getConfig";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetConfig;
+    type Request<S: jacquard_common::BosStr> = GetConfig;
     type Response = GetConfigResponse;
 }
 
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic,
-    Default,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct ServiceConfig<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub url: std::option::Option<jacquard_common::types::string::Uri<'a>>,
-}
-
-fn lexicon_doc_tools_ozone_server_getConfig() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-    ::jacquard_lexicon::lexicon::LexiconDoc {
-        lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
-        id: ::jacquard_common::CowStr::new_static("tools.ozone.server.getConfig"),
-        revision: None,
-        description: None,
-        defs: {
-            let mut map = ::std::collections::BTreeMap::new();
-            map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
-                ::jacquard_lexicon::lexicon::LexUserType::XrpcQuery(
-                    ::jacquard_lexicon::lexicon::LexXrpcQuery {
-                        description: None,
-                        parameters: None,
-                        output: None,
-                        errors: None,
-                    },
-                ),
-            );
-            map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("serviceConfig"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
-                        required: None,
-                        nullable: None,
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("url"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Uri,
-                                        ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                    },
-                ),
-            );
-            map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("viewerConfig"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
-                        required: None,
-                        nullable: None,
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("role"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                    },
-                ),
-            );
-            map
-        },
-    }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ServiceConfig<'a> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ServiceConfig<S> {
     fn nsid() -> &'static str {
         "tools.ozone.server.getConfig"
     }
     fn def_name() -> &'static str {
         "serviceConfig"
     }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
         lexicon_doc_tools_ozone_server_getConfig()
     }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
         Ok(())
     }
 }
 
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic,
-    Default,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct ViewerConfig<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub role: std::option::Option<jacquard_common::CowStr<'a>>,
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ViewerConfig<'a> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ViewerConfig<S> {
     fn nsid() -> &'static str {
         "tools.ozone.server.getConfig"
     }
     fn def_name() -> &'static str {
         "viewerConfig"
     }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
         lexicon_doc_tools_ozone_server_getConfig()
     }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
         Ok(())
+    }
+}
+
+fn lexicon_doc_tools_ozone_server_getConfig() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+    ::jacquard_lexicon::lexicon::LexiconDoc {
+        lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
+        id: ::jacquard_common::CowStr::new_static("tools.ozone.server.getConfig"),
+        defs: {
+            let mut map = ::alloc::collections::BTreeMap::new();
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
+                ::jacquard_lexicon::lexicon::LexUserType::XrpcQuery(
+                    ::jacquard_lexicon::lexicon::LexXrpcQuery {
+                        parameters: None,
+                        ..Default::default()
+                    },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("serviceConfig"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("url"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        format: Some(
+                                            ::jacquard_lexicon::lexicon::LexStringFormat::Uri,
+                                        ),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map
+                        },
+                        ..Default::default()
+                    },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("viewerConfig"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("role"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map
+                        },
+                        ..Default::default()
+                    },
+                ),
+            );
+            map
+        },
+        ..Default::default()
     }
 }

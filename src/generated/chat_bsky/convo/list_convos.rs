@@ -8,26 +8,81 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct ListConvos<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub kind: std::option::Option<jacquard_common::CowStr<'a>>,
-    ///(default: 50, min: 1, max: 100)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub limit: std::option::Option<i64>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub lock_status: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub read_state: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub status: std::option::Option<jacquard_common::CowStr<'a>>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ListConvos<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub kind: core::option::Option<S>,
+    /// Defaults to `50`. Min: 1. Max: 100.
+    #[serde(default = "_default_limit")]
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub limit: core::option::Option<i64>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub lock_status: core::option::Option<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub read_state: core::option::Option<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub status: core::option::Option<S>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ListConvosOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub convos: Vec<crate::generated::chat_bsky::convo::ConvoView<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `chat.bsky.convo.listConvos` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `ListConvosOutput<S>` for this endpoint.*/
+pub struct ListConvosResponse;
+impl jacquard_common::xrpc::XrpcResp for ListConvosResponse {
+    const NSID: &'static str = "chat.bsky.convo.listConvos";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = ListConvosOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for ListConvos<S> {
+    const NSID: &'static str = "chat.bsky.convo.listConvos";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = ListConvosResponse;
+}
+
+/** Endpoint marker for the `chat.bsky.convo.listConvos` query.
+
+Path: `/xrpc/chat.bsky.convo.listConvos`. The request payload type is `ListConvos<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct ListConvosRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for ListConvosRequest {
+    const PATH: &'static str = "/xrpc/chat.bsky.convo.listConvos";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = ListConvos<S>;
+    type Response = ListConvosResponse;
+}
+
+fn _default_limit() -> core::option::Option<i64> {
+    Some(50i64)
 }
 
 pub mod list_convos_state {
@@ -49,168 +104,150 @@ pub mod list_convos_state {
     pub mod members {}
 }
 
-/// Builder for constructing an instance of this type
-pub struct ListConvosBuilder<'a, S: list_convos_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct ListConvosBuilder<
+    St: list_convos_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<S>,
+        core::option::Option<i64>,
+        core::option::Option<S>,
+        core::option::Option<S>,
+        core::option::Option<S>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> ListConvos<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> ListConvosBuilder<'a, list_convos_state::Empty> {
+impl ListConvos<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> ListConvosBuilder<list_convos_state::Empty, jacquard_common::DefaultStr> {
         ListConvosBuilder::new()
     }
 }
 
-impl<'a> ListConvosBuilder<'a, list_convos_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> ListConvos<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> ListConvosBuilder<list_convos_state::Empty, S> {
+        ListConvosBuilder::builder()
+    }
+}
+
+impl ListConvosBuilder<list_convos_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ListConvosBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: list_convos_state::State> ListConvosBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> ListConvosBuilder<list_convos_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        ListConvosBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: list_convos_state::State, S: jacquard_common::BosStr> ListConvosBuilder<St, S> {
     /// Set the `cursor` field (optional)
-    pub fn cursor(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+    pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.0 = value.into();
         self
     }
     /// Set the `cursor` field to an Option value (optional)
-    pub fn maybe_cursor(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.0 = value;
+    pub fn maybe_cursor(mut self, value: Option<S>) -> Self {
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S: list_convos_state::State> ListConvosBuilder<'a, S> {
+impl<St: list_convos_state::State, S: jacquard_common::BosStr> ListConvosBuilder<St, S> {
     /// Set the `kind` field (optional)
-    pub fn kind(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+    pub fn kind(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.1 = value.into();
         self
     }
     /// Set the `kind` field to an Option value (optional)
-    pub fn maybe_kind(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.1 = value;
+    pub fn maybe_kind(mut self, value: Option<S>) -> Self {
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S: list_convos_state::State> ListConvosBuilder<'a, S> {
+impl<St: list_convos_state::State, S: jacquard_common::BosStr> ListConvosBuilder<St, S> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.2 = value.into();
+        self._fields.2 = value.into();
         self
     }
     /// Set the `limit` field to an Option value (optional)
     pub fn maybe_limit(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.2 = value;
+        self._fields.2 = value;
         self
     }
 }
 
-impl<'a, S: list_convos_state::State> ListConvosBuilder<'a, S> {
+impl<St: list_convos_state::State, S: jacquard_common::BosStr> ListConvosBuilder<St, S> {
     /// Set the `lockStatus` field (optional)
-    pub fn lock_status(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.3 = value.into();
+    pub fn lock_status(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.3 = value.into();
         self
     }
     /// Set the `lockStatus` field to an Option value (optional)
-    pub fn maybe_lock_status(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.3 = value;
+    pub fn maybe_lock_status(mut self, value: Option<S>) -> Self {
+        self._fields.3 = value;
         self
     }
 }
 
-impl<'a, S: list_convos_state::State> ListConvosBuilder<'a, S> {
+impl<St: list_convos_state::State, S: jacquard_common::BosStr> ListConvosBuilder<St, S> {
     /// Set the `readState` field (optional)
-    pub fn read_state(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.4 = value.into();
+    pub fn read_state(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.4 = value.into();
         self
     }
     /// Set the `readState` field to an Option value (optional)
-    pub fn maybe_read_state(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.4 = value;
+    pub fn maybe_read_state(mut self, value: Option<S>) -> Self {
+        self._fields.4 = value;
         self
     }
 }
 
-impl<'a, S: list_convos_state::State> ListConvosBuilder<'a, S> {
+impl<St: list_convos_state::State, S: jacquard_common::BosStr> ListConvosBuilder<St, S> {
     /// Set the `status` field (optional)
-    pub fn status(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.5 = value.into();
+    pub fn status(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.5 = value.into();
         self
     }
     /// Set the `status` field to an Option value (optional)
-    pub fn maybe_status(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.5 = value;
+    pub fn maybe_status(mut self, value: Option<S>) -> Self {
+        self._fields.5 = value;
         self
     }
 }
 
-impl<'a, S> ListConvosBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ListConvosBuilder<St, S>
 where
-    S: list_convos_state::State,
+    St: list_convos_state::State,
 {
-    /// Build the final struct
-    pub fn build(self) -> ListConvos<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> ListConvos<S> {
         ListConvos {
-            cursor: self.__unsafe_private_named.0,
-            kind: self.__unsafe_private_named.1,
-            limit: self.__unsafe_private_named.2,
-            lock_status: self.__unsafe_private_named.3,
-            read_state: self.__unsafe_private_named.4,
-            status: self.__unsafe_private_named.5,
+            cursor: self._fields.0,
+            kind: self._fields.1,
+            limit: self._fields.2,
+            lock_status: self._fields.3,
+            read_state: self._fields.4,
+            status: self._fields.5,
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct ListConvosOutput<'a> {
-    #[serde(borrow)]
-    pub convos: Vec<crate::generated::chat_bsky::convo::ConvoView<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-}
-
-/// Response type for
-///chat.bsky.convo.listConvos
-pub struct ListConvosResponse;
-impl jacquard_common::xrpc::XrpcResp for ListConvosResponse {
-    const NSID: &'static str = "chat.bsky.convo.listConvos";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = ListConvosOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for ListConvos<'a> {
-    const NSID: &'static str = "chat.bsky.convo.listConvos";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = ListConvosResponse;
-}
-
-/// Endpoint type for
-///chat.bsky.convo.listConvos
-pub struct ListConvosRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for ListConvosRequest {
-    const PATH: &'static str = "/xrpc/chat.bsky.convo.listConvos";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = ListConvos<'de>;
-    type Response = ListConvosResponse;
 }

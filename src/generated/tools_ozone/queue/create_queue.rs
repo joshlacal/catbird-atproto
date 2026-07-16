@@ -5,7 +5,6 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -16,40 +15,60 @@
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct CreateQueue<'a> {
-    /// Collection name for record subjects. Required if subjectTypes includes 'record'.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub collection: std::option::Option<jacquard_common::types::string::Nsid<'a>>,
-    /// Optional description of the queue
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub description: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// Display name for the queue (must be unique)
-    #[serde(borrow)]
-    pub name: jacquard_common::CowStr<'a>,
-    /// Report reason types (fully qualified NSIDs)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub report_types: std::option::Option<Vec<jacquard_common::CowStr<'a>>>,
-    /// Subject types this queue accepts
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub subject_types: std::option::Option<Vec<jacquard_common::CowStr<'a>>>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct CreateQueue<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Collection name for record subjects. Required if subjectTypes includes 'record'.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub collection: core::option::Option<jacquard_common::types::string::Nsid<S>>,
+    ///Optional description of the queue
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub description: core::option::Option<S>,
+    ///Display name for the queue (must be unique)
+    pub name: S,
+    ///Report reason types (fully qualified NSIDs)
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub report_types: core::option::Option<Vec<S>>,
+    ///Subject types this queue accepts
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub subject_types: core::option::Option<Vec<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct CreateQueueOutput<'a> {
-    #[serde(borrow)]
-    pub queue: crate::generated::tools_ozone::queue::QueueView<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct CreateQueueOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub queue: crate::generated::tools_ozone::queue::QueueView<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::open_union]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -59,18 +78,22 @@ pub struct CreateQueueOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum CreateQueueError<'a> {
+pub enum CreateQueueError {
     /// The queue configuration conflicts with an existing queue
     #[serde(rename = "ConflictingQueue")]
-    ConflictingQueue(std::option::Option<jacquard_common::CowStr<'a>>),
+    ConflictingQueue(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
 }
 
-impl std::fmt::Display for CreateQueueError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for CreateQueueError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             Self::ConflictingQueue(msg) => {
                 write!(f, "ConflictingQueue")?;
@@ -79,35 +102,43 @@ impl std::fmt::Display for CreateQueueError<'_> {
                 }
                 Ok(())
             }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
         }
     }
 }
 
-/// Response type for
-///tools.ozone.queue.createQueue
+/** Response marker for the `tools.ozone.queue.createQueue` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `CreateQueueOutput<S>` for this endpoint.*/
 pub struct CreateQueueResponse;
 impl jacquard_common::xrpc::XrpcResp for CreateQueueResponse {
     const NSID: &'static str = "tools.ozone.queue.createQueue";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = CreateQueueOutput<'de>;
-    type Err<'de> = CreateQueueError<'de>;
+    type Output<S: jacquard_common::BosStr> = CreateQueueOutput<S>;
+    type Err = CreateQueueError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for CreateQueue<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for CreateQueue<S> {
     const NSID: &'static str = "tools.ozone.queue.createQueue";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = CreateQueueResponse;
 }
 
-/// Endpoint type for
-///tools.ozone.queue.createQueue
+/** Endpoint marker for the `tools.ozone.queue.createQueue` procedure.
+
+Path: `/xrpc/tools.ozone.queue.createQueue`. The request payload type is `CreateQueue<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct CreateQueueRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for CreateQueueRequest {
     const PATH: &'static str = "/xrpc/tools.ozone.queue.createQueue";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = CreateQueue<'de>;
+    type Request<S: jacquard_common::BosStr> = CreateQueue<S>;
     type Response = CreateQueueResponse;
 }

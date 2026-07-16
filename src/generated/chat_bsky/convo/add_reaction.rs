@@ -5,7 +5,6 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -16,27 +15,49 @@
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct AddReaction<'a> {
-    #[serde(borrow)]
-    pub convo_id: jacquard_common::CowStr<'a>,
-    #[serde(borrow)]
-    pub message_id: jacquard_common::CowStr<'a>,
-    #[serde(borrow)]
-    pub value: jacquard_common::CowStr<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct AddReaction<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub convo_id: S,
+    pub message_id: S,
+    pub value: S,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct AddReactionOutput<'a> {
-    #[serde(borrow)]
-    pub message: crate::generated::chat_bsky::convo::MessageView<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct AddReactionOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub message: crate::generated::chat_bsky::convo::MessageView<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::open_union]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -46,29 +67,33 @@ pub struct AddReactionOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum AddReactionError<'a> {
+pub enum AddReactionError {
     #[serde(rename = "InvalidConvo")]
-    InvalidConvo(std::option::Option<jacquard_common::CowStr<'a>>),
+    InvalidConvo(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// Indicates that reactions are not allowed on this message, e.g. because it is a system message.
     #[serde(rename = "ReactionNotAllowed")]
-    ReactionNotAllowed(std::option::Option<jacquard_common::CowStr<'a>>),
+    ReactionNotAllowed(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// Indicates that the message has been deleted and reactions can no longer be added/removed.
     #[serde(rename = "ReactionMessageDeleted")]
-    ReactionMessageDeleted(std::option::Option<jacquard_common::CowStr<'a>>),
+    ReactionMessageDeleted(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// Indicates that the message has the maximum number of reactions allowed for a single user, and the requested reaction wasn't yet present. If it was already present, the request will not fail since it is idempotent.
     #[serde(rename = "ReactionLimitReached")]
-    ReactionLimitReached(std::option::Option<jacquard_common::CowStr<'a>>),
+    ReactionLimitReached(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// Indicates the value for the reaction is not acceptable. In general, this means it is not an emoji.
     #[serde(rename = "ReactionInvalidValue")]
-    ReactionInvalidValue(std::option::Option<jacquard_common::CowStr<'a>>),
+    ReactionInvalidValue(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
 }
 
-impl std::fmt::Display for AddReactionError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for AddReactionError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             Self::InvalidConvo(msg) => {
                 write!(f, "InvalidConvo")?;
@@ -105,35 +130,43 @@ impl std::fmt::Display for AddReactionError<'_> {
                 }
                 Ok(())
             }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
         }
     }
 }
 
-/// Response type for
-///chat.bsky.convo.addReaction
+/** Response marker for the `chat.bsky.convo.addReaction` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `AddReactionOutput<S>` for this endpoint.*/
 pub struct AddReactionResponse;
 impl jacquard_common::xrpc::XrpcResp for AddReactionResponse {
     const NSID: &'static str = "chat.bsky.convo.addReaction";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = AddReactionOutput<'de>;
-    type Err<'de> = AddReactionError<'de>;
+    type Output<S: jacquard_common::BosStr> = AddReactionOutput<S>;
+    type Err = AddReactionError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for AddReaction<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for AddReaction<S> {
     const NSID: &'static str = "chat.bsky.convo.addReaction";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = AddReactionResponse;
 }
 
-/// Endpoint type for
-///chat.bsky.convo.addReaction
+/** Endpoint marker for the `chat.bsky.convo.addReaction` procedure.
+
+Path: `/xrpc/chat.bsky.convo.addReaction`. The request payload type is `AddReaction<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct AddReactionRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for AddReactionRequest {
     const PATH: &'static str = "/xrpc/chat.bsky.convo.addReaction";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = AddReaction<'de>;
+    type Request<S: jacquard_common::BosStr> = AddReaction<S>;
     type Response = AddReactionResponse;
 }

@@ -6,341 +6,90 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 /// Record representing a list of accounts (actors). Scope includes both moderation-oriented lists and curration-oriented lists.
-#[jacquard_derive::lexicon]
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    rename = "app.bsky.graph.list",
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct List<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub avatar: core::option::Option<jacquard_common::types::blob::BlobRef<S>>,
+    pub created_at: jacquard_common::types::string::Datetime,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub description: core::option::Option<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub description_facets:
+        core::option::Option<Vec<crate::generated::app_bsky::richtext::facet::Facet<S>>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub labels: core::option::Option<crate::generated::com_atproto::label::SelfLabels<S>>,
+    ///Display name for list; can not be empty.
+    pub name: S,
+    ///Defines the purpose of the list (aka, moderation-oriented or curration-oriented)
+    pub purpose: crate::generated::app_bsky::graph::ListPurpose<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// Typed wrapper for GetRecord response with this collection's record type.
+
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
-pub struct List<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub avatar: std::option::Option<jacquard_common::types::blob::BlobRef<'a>>,
-    pub created_at: jacquard_common::types::string::Datetime,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub description: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub description_facets:
-        std::option::Option<Vec<crate::generated::app_bsky::richtext::facet::Facet<'a>>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub labels: std::option::Option<crate::generated::com_atproto::label::SelfLabels<'a>>,
-    /// Display name for list; can not be empty.
-    #[serde(borrow)]
-    pub name: jacquard_common::CowStr<'a>,
-    /// Defines the purpose of the list (aka, moderation-oriented or curration-oriented)
-    #[serde(borrow)]
-    pub purpose: crate::generated::app_bsky::graph::ListPurpose<'a>,
+pub struct ListGetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
+    pub uri: jacquard_common::types::string::AtUri<S>,
+    pub value: List<S>,
 }
 
-pub mod list_state {
-
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
-    #[allow(unused)]
-    use core::marker::PhantomData;
-    mod sealed {
-        pub trait Sealed {}
-    }
-    /// State trait tracking which required fields have been set
-    pub trait State: sealed::Sealed {
-        type Name;
-        type Purpose;
-        type CreatedAt;
-    }
-    /// Empty state - all required fields are unset
-    pub struct Empty(());
-    impl sealed::Sealed for Empty {}
-    impl State for Empty {
-        type Name = Unset;
-        type Purpose = Unset;
-        type CreatedAt = Unset;
-    }
-    ///State transition - sets the `name` field to Set
-    pub struct SetName<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetName<S> {}
-    impl<S: State> State for SetName<S> {
-        type Name = Set<members::name>;
-        type Purpose = S::Purpose;
-        type CreatedAt = S::CreatedAt;
-    }
-    ///State transition - sets the `purpose` field to Set
-    pub struct SetPurpose<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetPurpose<S> {}
-    impl<S: State> State for SetPurpose<S> {
-        type Name = S::Name;
-        type Purpose = Set<members::purpose>;
-        type CreatedAt = S::CreatedAt;
-    }
-    ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type Name = S::Name;
-        type Purpose = S::Purpose;
-        type CreatedAt = Set<members::created_at>;
-    }
-    /// Marker types for field names
-    #[allow(non_camel_case_types)]
-    pub mod members {
-        ///Marker type for the `name` field
-        pub struct name(());
-        ///Marker type for the `purpose` field
-        pub struct purpose(());
-        ///Marker type for the `created_at` field
-        pub struct created_at(());
-    }
-}
-
-/// Builder for constructing an instance of this type
-pub struct ListBuilder<'a, S: list_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::blob::BlobRef<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<Vec<crate::generated::app_bsky::richtext::facet::Facet<'a>>>,
-        ::core::option::Option<crate::generated::com_atproto::label::SelfLabels<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<crate::generated::app_bsky::graph::ListPurpose<'a>>,
-    ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
-}
-
-impl<'a> List<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> ListBuilder<'a, list_state::Empty> {
-        ListBuilder::new()
-    }
-}
-
-impl<'a> ListBuilder<'a, list_state::Empty> {
-    /// Create a new builder with all fields unset
-    pub fn new() -> Self {
-        ListBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S: list_state::State> ListBuilder<'a, S> {
-    /// Set the `avatar` field (optional)
-    pub fn avatar(
-        mut self,
-        value: impl Into<Option<jacquard_common::types::blob::BlobRef<'a>>>,
-    ) -> Self {
-        self.__unsafe_private_named.0 = value.into();
-        self
-    }
-    /// Set the `avatar` field to an Option value (optional)
-    pub fn maybe_avatar(
-        mut self,
-        value: Option<jacquard_common::types::blob::BlobRef<'a>>,
-    ) -> Self {
-        self.__unsafe_private_named.0 = value;
-        self
-    }
-}
-
-impl<'a, S> ListBuilder<'a, S>
-where
-    S: list_state::State,
-    S::CreatedAt: list_state::IsUnset,
-{
-    /// Set the `createdAt` field (required)
-    pub fn created_at(
-        mut self,
-        value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> ListBuilder<'a, list_state::SetCreatedAt<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
-        ListBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S: list_state::State> ListBuilder<'a, S> {
-    /// Set the `description` field (optional)
-    pub fn description(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.2 = value.into();
-        self
-    }
-    /// Set the `description` field to an Option value (optional)
-    pub fn maybe_description(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.2 = value;
-        self
-    }
-}
-
-impl<'a, S: list_state::State> ListBuilder<'a, S> {
-    /// Set the `descriptionFacets` field (optional)
-    pub fn description_facets(
-        mut self,
-        value: impl Into<Option<Vec<crate::generated::app_bsky::richtext::facet::Facet<'a>>>>,
-    ) -> Self {
-        self.__unsafe_private_named.3 = value.into();
-        self
-    }
-    /// Set the `descriptionFacets` field to an Option value (optional)
-    pub fn maybe_description_facets(
-        mut self,
-        value: Option<Vec<crate::generated::app_bsky::richtext::facet::Facet<'a>>>,
-    ) -> Self {
-        self.__unsafe_private_named.3 = value;
-        self
-    }
-}
-
-impl<'a, S: list_state::State> ListBuilder<'a, S> {
-    /// Set the `labels` field (optional)
-    pub fn labels(
-        mut self,
-        value: impl Into<Option<crate::generated::com_atproto::label::SelfLabels<'a>>>,
-    ) -> Self {
-        self.__unsafe_private_named.4 = value.into();
-        self
-    }
-    /// Set the `labels` field to an Option value (optional)
-    pub fn maybe_labels(
-        mut self,
-        value: Option<crate::generated::com_atproto::label::SelfLabels<'a>>,
-    ) -> Self {
-        self.__unsafe_private_named.4 = value;
-        self
-    }
-}
-
-impl<'a, S> ListBuilder<'a, S>
-where
-    S: list_state::State,
-    S::Name: list_state::IsUnset,
-{
-    /// Set the `name` field (required)
-    pub fn name(
-        mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> ListBuilder<'a, list_state::SetName<S>> {
-        self.__unsafe_private_named.5 = ::core::option::Option::Some(value.into());
-        ListBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> ListBuilder<'a, S>
-where
-    S: list_state::State,
-    S::Purpose: list_state::IsUnset,
-{
-    /// Set the `purpose` field (required)
-    pub fn purpose(
-        mut self,
-        value: impl Into<crate::generated::app_bsky::graph::ListPurpose<'a>>,
-    ) -> ListBuilder<'a, list_state::SetPurpose<S>> {
-        self.__unsafe_private_named.6 = ::core::option::Option::Some(value.into());
-        ListBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> ListBuilder<'a, S>
-where
-    S: list_state::State,
-    S::Name: list_state::IsSet,
-    S::Purpose: list_state::IsSet,
-    S::CreatedAt: list_state::IsSet,
-{
-    /// Build the final struct
-    pub fn build(self) -> List<'a> {
-        List {
-            avatar: self.__unsafe_private_named.0,
-            created_at: self.__unsafe_private_named.1.unwrap(),
-            description: self.__unsafe_private_named.2,
-            description_facets: self.__unsafe_private_named.3,
-            labels: self.__unsafe_private_named.4,
-            name: self.__unsafe_private_named.5.unwrap(),
-            purpose: self.__unsafe_private_named.6.unwrap(),
-            extra_data: Default::default(),
-        }
-    }
-    /// Build the final struct with custom extra_data
-    pub fn build_with_data(
-        self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
-        >,
-    ) -> List<'a> {
-        List {
-            avatar: self.__unsafe_private_named.0,
-            created_at: self.__unsafe_private_named.1.unwrap(),
-            description: self.__unsafe_private_named.2,
-            description_facets: self.__unsafe_private_named.3,
-            labels: self.__unsafe_private_named.4,
-            name: self.__unsafe_private_named.5.unwrap(),
-            purpose: self.__unsafe_private_named.6.unwrap(),
-            extra_data: Some(extra_data),
-        }
-    }
-}
-
-impl<'a> List<'a> {
+impl<S: jacquard_common::BosStr> List<S> {
     pub fn uri(
-        uri: impl Into<jacquard_common::CowStr<'a>>,
+        uri: S,
     ) -> Result<
-        jacquard_common::types::uri::RecordUri<'a, ListRecord>,
+        jacquard_common::types::uri::RecordUri<S, ListRecord>,
         jacquard_common::types::uri::UriError,
     > {
         jacquard_common::types::uri::RecordUri::try_from_uri(
-            jacquard_common::types::string::AtUri::new_cow(uri.into())?,
+            jacquard_common::types::string::AtUri::new(uri)?,
         )
     }
 }
 
-/// Typed wrapper for GetRecord response with this collection's record type.
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct ListGetRecordOutput<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cid: std::option::Option<jacquard_common::types::string::Cid<'a>>,
-    #[serde(borrow)]
-    pub uri: jacquard_common::types::string::AtUri<'a>,
-    #[serde(borrow)]
-    pub value: List<'a>,
-}
-
-impl From<ListGetRecordOutput<'_>> for List<'_> {
-    fn from(output: ListGetRecordOutput<'_>) -> Self {
-        use jacquard_common::IntoStatic;
-        output.value.into_static()
-    }
-}
-
-impl jacquard_common::types::collection::Collection for List<'_> {
-    const NSID: &'static str = "app.bsky.graph.list";
-    type Record = ListRecord;
-}
-
 /// Marker type for deserializing records from this collection.
+
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
 pub struct ListRecord;
 impl jacquard_common::xrpc::XrpcResp for ListRecord {
     const NSID: &'static str = "app.bsky.graph.list";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = ListGetRecordOutput<'de>;
-    type Err<'de> = jacquard_common::types::collection::RecordError<'de>;
+    type Output<S: jacquard_common::BosStr> = ListGetRecordOutput<S>;
+    type Err = jacquard_common::types::collection::RecordError;
+}
+
+impl<S: jacquard_common::BosStr> From<ListGetRecordOutput<S>> for List<S> {
+    fn from(output: ListGetRecordOutput<S>) -> Self {
+        output.value
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection for List<S> {
+    const NSID: &'static str = "app.bsky.graph.list";
+    type Record = ListRecord;
 }
 
 impl jacquard_common::types::collection::Collection for ListRecord {
@@ -348,24 +97,65 @@ impl jacquard_common::types::collection::Collection for ListRecord {
     type Record = ListRecord;
 }
 
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for List<'a> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for List<S> {
     fn nsid() -> &'static str {
         "app.bsky.graph.list"
     }
     fn def_name() -> &'static str {
         "main"
     }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
         lexicon_doc_app_bsky_graph_list()
     }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        if let Some(ref value) = self.avatar {
+            {
+                let size = value.blob().size;
+                if size > 1000000usize {
+                    return Err(
+                        jacquard_lexicon::validation::ConstraintError::BlobTooLarge {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field(
+                                "avatar",
+                            ),
+                            max: 1000000usize,
+                            actual: size,
+                        },
+                    );
+                }
+            }
+        }
+        if let Some(ref value) = self.avatar {
+            {
+                let mime = value.blob().mime_type.as_str();
+                let accepted: &[&str] = &["image/png", "image/jpeg"];
+                let matched = accepted.iter().any(|pattern| {
+                    if *pattern == "*/*" {
+                        true
+                    } else if pattern.ends_with("/*") {
+                        let prefix = &pattern[..pattern.len() - 2];
+                        mime.starts_with(prefix) && mime.as_bytes().get(prefix.len()) == Some(&b'/')
+                    } else {
+                        mime == *pattern
+                    }
+                });
+                if !matched {
+                    return Err(
+                        jacquard_lexicon::validation::ConstraintError::BlobMimeTypeNotAccepted {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field(
+                                "avatar",
+                            ),
+                            accepted: vec!["image/png".to_string(), "image/jpeg".to_string()],
+                            actual: mime.to_string(),
+                        },
+                    );
+                }
+            }
+        }
         if let Some(ref value) = self.description {
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) > 3000usize {
-                return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("description"),
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("description"),
                     max: 3000usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -373,13 +163,15 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for List<'a> {
         }
         if let Some(ref value) = self.description {
             {
-                let count =
-                    ::unicode_segmentation::UnicodeSegmentation::graphemes(value.as_ref(), true)
-                        .count();
+                let count = jacquard_common::deps::codegen::unicode_segmentation::UnicodeSegmentation::graphemes(
+                        value.as_ref(),
+                        true,
+                    )
+                    .count();
                 if count > 300usize {
                     return Err(
-                        ::jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
-                            path: ::jacquard_lexicon::validation::ValidationPath::from_field(
+                        jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field(
                                 "description",
                             ),
                             max: 300usize,
@@ -393,8 +185,8 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for List<'a> {
             let value = &self.name;
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) > 64usize {
-                return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("name"),
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("name"),
                     max: 64usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -404,8 +196,8 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for List<'a> {
             let value = &self.name;
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) < 1usize {
-                return Err(::jacquard_lexicon::validation::ConstraintError::MinLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("name"),
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("name"),
                     min: 1usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -415,16 +207,288 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for List<'a> {
     }
 }
 
-fn lexicon_doc_app_bsky_graph_list() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+pub mod list_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type CreatedAt;
+        type Name;
+        type Purpose;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type CreatedAt = Unset;
+        type Name = Unset;
+        type Purpose = Unset;
+    }
+    ///State transition - sets the `created_at` field to Set
+    pub struct SetCreatedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCreatedAt<St> {}
+    impl<St: State> State for SetCreatedAt<St> {
+        type CreatedAt = Set<members::created_at>;
+        type Name = St::Name;
+        type Purpose = St::Purpose;
+    }
+    ///State transition - sets the `name` field to Set
+    pub struct SetName<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetName<St> {}
+    impl<St: State> State for SetName<St> {
+        type CreatedAt = St::CreatedAt;
+        type Name = Set<members::name>;
+        type Purpose = St::Purpose;
+    }
+    ///State transition - sets the `purpose` field to Set
+    pub struct SetPurpose<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetPurpose<St> {}
+    impl<St: State> State for SetPurpose<St> {
+        type CreatedAt = St::CreatedAt;
+        type Name = St::Name;
+        type Purpose = Set<members::purpose>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `created_at` field
+        pub struct created_at(());
+        ///Marker type for the `name` field
+        pub struct name(());
+        ///Marker type for the `purpose` field
+        pub struct purpose(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct ListBuilder<
+    St: list_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::blob::BlobRef<S>>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<S>,
+        core::option::Option<Vec<crate::generated::app_bsky::richtext::facet::Facet<S>>>,
+        core::option::Option<crate::generated::com_atproto::label::SelfLabels<S>>,
+        core::option::Option<S>,
+        core::option::Option<crate::generated::app_bsky::graph::ListPurpose<S>>,
+    ),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl List<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> ListBuilder<list_state::Empty, jacquard_common::DefaultStr> {
+        ListBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> List<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> ListBuilder<list_state::Empty, S> {
+        ListBuilder::builder()
+    }
+}
+
+impl ListBuilder<list_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        ListBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> ListBuilder<list_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        ListBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: list_state::State, S: jacquard_common::BosStr> ListBuilder<St, S> {
+    /// Set the `avatar` field (optional)
+    pub fn avatar(
+        mut self,
+        value: impl Into<Option<jacquard_common::types::blob::BlobRef<S>>>,
+    ) -> Self {
+        self._fields.0 = value.into();
+        self
+    }
+    /// Set the `avatar` field to an Option value (optional)
+    pub fn maybe_avatar(mut self, value: Option<jacquard_common::types::blob::BlobRef<S>>) -> Self {
+        self._fields.0 = value;
+        self
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ListBuilder<St, S>
+where
+    St: list_state::State,
+    St::CreatedAt: list_state::IsUnset,
+{
+    /// Set the `createdAt` field (required)
+    pub fn created_at(
+        mut self,
+        value: impl Into<jacquard_common::types::string::Datetime>,
+    ) -> ListBuilder<list_state::SetCreatedAt<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
+        ListBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: list_state::State, S: jacquard_common::BosStr> ListBuilder<St, S> {
+    /// Set the `description` field (optional)
+    pub fn description(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.2 = value.into();
+        self
+    }
+    /// Set the `description` field to an Option value (optional)
+    pub fn maybe_description(mut self, value: Option<S>) -> Self {
+        self._fields.2 = value;
+        self
+    }
+}
+
+impl<St: list_state::State, S: jacquard_common::BosStr> ListBuilder<St, S> {
+    /// Set the `descriptionFacets` field (optional)
+    pub fn description_facets(
+        mut self,
+        value: impl Into<Option<Vec<crate::generated::app_bsky::richtext::facet::Facet<S>>>>,
+    ) -> Self {
+        self._fields.3 = value.into();
+        self
+    }
+    /// Set the `descriptionFacets` field to an Option value (optional)
+    pub fn maybe_description_facets(
+        mut self,
+        value: Option<Vec<crate::generated::app_bsky::richtext::facet::Facet<S>>>,
+    ) -> Self {
+        self._fields.3 = value;
+        self
+    }
+}
+
+impl<St: list_state::State, S: jacquard_common::BosStr> ListBuilder<St, S> {
+    /// Set the `labels` field (optional)
+    pub fn labels(
+        mut self,
+        value: impl Into<Option<crate::generated::com_atproto::label::SelfLabels<S>>>,
+    ) -> Self {
+        self._fields.4 = value.into();
+        self
+    }
+    /// Set the `labels` field to an Option value (optional)
+    pub fn maybe_labels(
+        mut self,
+        value: Option<crate::generated::com_atproto::label::SelfLabels<S>>,
+    ) -> Self {
+        self._fields.4 = value;
+        self
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ListBuilder<St, S>
+where
+    St: list_state::State,
+    St::Name: list_state::IsUnset,
+{
+    /// Set the `name` field (required)
+    pub fn name(mut self, value: impl Into<S>) -> ListBuilder<list_state::SetName<St>, S> {
+        self._fields.5 = ::core::option::Option::Some(value.into());
+        ListBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ListBuilder<St, S>
+where
+    St: list_state::State,
+    St::Purpose: list_state::IsUnset,
+{
+    /// Set the `purpose` field (required)
+    pub fn purpose(
+        mut self,
+        value: impl Into<crate::generated::app_bsky::graph::ListPurpose<S>>,
+    ) -> ListBuilder<list_state::SetPurpose<St>, S> {
+        self._fields.6 = ::core::option::Option::Some(value.into());
+        ListBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ListBuilder<St, S>
+where
+    St: list_state::State,
+    St::CreatedAt: list_state::IsSet,
+    St::Name: list_state::IsSet,
+    St::Purpose: list_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> List<S> {
+        List {
+            avatar: self._fields.0,
+            created_at: self._fields.1.unwrap(),
+            description: self._fields.2,
+            description_facets: self._fields.3,
+            labels: self._fields.4,
+            name: self._fields.5.unwrap(),
+            purpose: self._fields.6.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> List<S> {
+        List {
+            avatar: self._fields.0,
+            created_at: self._fields.1.unwrap(),
+            description: self._fields.2,
+            description_facets: self._fields.3,
+            labels: self._fields.4,
+            name: self._fields.5.unwrap(),
+            purpose: self._fields.6.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
+}
+
+fn lexicon_doc_app_bsky_graph_list() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("app.bsky.graph.list"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
                 ::jacquard_lexicon::lexicon::LexUserType::Record(::jacquard_lexicon::lexicon::LexRecord {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
@@ -433,122 +497,105 @@ fn lexicon_doc_app_bsky_graph_list() -> ::jacquard_lexicon::lexicon::LexiconDoc<
                     ),
                     key: Some(::jacquard_common::CowStr::new_static("tid")),
                     record: ::jacquard_lexicon::lexicon::LexRecordRecord::Object(::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(
                             vec![
-                                ::jacquard_common::smol_str::SmolStr::new_static("name"),
-                                ::jacquard_common::smol_str::SmolStr::new_static("purpose"),
-                                ::jacquard_common::smol_str::SmolStr::new_static("createdAt")
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("name"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("purpose"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt")
                             ],
                         ),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("avatar"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "avatar",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Blob(::jacquard_lexicon::lexicon::LexBlob {
-                                    description: None,
-                                    accept: None,
-                                    max_size: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "createdAt",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                    description: None,
                                     format: Some(
                                         ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                     ),
-                                    default: None,
-                                    min_length: None,
-                                    max_length: None,
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "description",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                    description: None,
-                                    format: None,
-                                    default: None,
-                                    min_length: None,
                                     max_length: Some(3000usize),
-                                    min_graphemes: None,
                                     max_graphemes: Some(300usize),
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "descriptionFacets",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
-                                    description: None,
                                     items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                        description: None,
                                         r#ref: ::jacquard_common::CowStr::new_static(
                                             "app.bsky.richtext.facet",
                                         ),
+                                        ..Default::default()
                                     }),
-                                    min_length: None,
-                                    max_length: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("labels"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "labels",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Union(::jacquard_lexicon::lexicon::LexRefUnion {
-                                    description: None,
                                     refs: vec![
                                         ::jacquard_common::CowStr::new_static("com.atproto.label.defs#selfLabels")
                                     ],
-                                    closed: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("name"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "name",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                     description: Some(
                                         ::jacquard_common::CowStr::new_static(
                                             "Display name for list; can not be empty.",
                                         ),
                                     ),
-                                    format: None,
-                                    default: None,
                                     min_length: Some(1usize),
                                     max_length: Some(64usize),
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("purpose"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "purpose",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                    description: None,
                                     r#ref: ::jacquard_common::CowStr::new_static(
                                         "app.bsky.graph.defs#listPurpose",
                                     ),
+                                    ..Default::default()
                                 }),
                             );
                             map
                         },
+                        ..Default::default()
                     }),
+                    ..Default::default()
                 }),
             );
             map
         },
+        ..Default::default()
     }
 }

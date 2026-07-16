@@ -5,16 +5,128 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct RouteReports<'a> {
-    /// End of report ID range (inclusive). Difference between start and end must be less than 5,000.
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct RouteReports<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///End of report ID range (inclusive). Difference between start and end must be less than 5,000.
     pub end_report_id: i64,
-    /// Start of report ID range (inclusive).
+    ///Start of report ID range (inclusive).
     pub start_report_id: i64,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct RouteReportsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///The number of reports assigned to a queue.
+    pub assigned: i64,
+    ///The number of reports with no matching queue.
+    pub unmatched: i64,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    thiserror::Error,
+    miette::Diagnostic,
+)]
+#[serde(tag = "error", content = "message")]
+pub enum RouteReportsError {
+    /// The request is invalid, such as missing required fields or invalid field values.
+    #[serde(rename = "OutOfRange")]
+    OutOfRange(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
+}
+
+impl core::fmt::Display for RouteReportsError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+            Self::OutOfRange(msg) => {
+                write!(f, "OutOfRange")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+        }
+    }
+}
+
+/** Response marker for the `tools.ozone.queue.routeReports` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `RouteReportsOutput<S>` for this endpoint.*/
+pub struct RouteReportsResponse;
+impl jacquard_common::xrpc::XrpcResp for RouteReportsResponse {
+    const NSID: &'static str = "tools.ozone.queue.routeReports";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = RouteReportsOutput<S>;
+    type Err = RouteReportsError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for RouteReports<S> {
+    const NSID: &'static str = "tools.ozone.queue.routeReports";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Response = RouteReportsResponse;
+}
+
+/** Endpoint marker for the `tools.ozone.queue.routeReports` procedure.
+
+Path: `/xrpc/tools.ozone.queue.routeReports`. The request payload type is `RouteReports<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct RouteReportsRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for RouteReportsRequest {
+    const PATH: &'static str = "/xrpc/tools.ozone.queue.routeReports";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Request<S: jacquard_common::BosStr> = RouteReports<S>;
+    type Response = RouteReportsResponse;
 }
 
 pub mod route_reports_state {
@@ -27,204 +139,150 @@ pub mod route_reports_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type StartReportId;
         type EndReportId;
+        type StartReportId;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type StartReportId = Unset;
         type EndReportId = Unset;
-    }
-    ///State transition - sets the `start_report_id` field to Set
-    pub struct SetStartReportId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetStartReportId<S> {}
-    impl<S: State> State for SetStartReportId<S> {
-        type StartReportId = Set<members::start_report_id>;
-        type EndReportId = S::EndReportId;
+        type StartReportId = Unset;
     }
     ///State transition - sets the `end_report_id` field to Set
-    pub struct SetEndReportId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetEndReportId<S> {}
-    impl<S: State> State for SetEndReportId<S> {
-        type StartReportId = S::StartReportId;
+    pub struct SetEndReportId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetEndReportId<St> {}
+    impl<St: State> State for SetEndReportId<St> {
         type EndReportId = Set<members::end_report_id>;
+        type StartReportId = St::StartReportId;
+    }
+    ///State transition - sets the `start_report_id` field to Set
+    pub struct SetStartReportId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetStartReportId<St> {}
+    impl<St: State> State for SetStartReportId<St> {
+        type EndReportId = St::EndReportId;
+        type StartReportId = Set<members::start_report_id>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `start_report_id` field
-        pub struct start_report_id(());
         ///Marker type for the `end_report_id` field
         pub struct end_report_id(());
+        ///Marker type for the `start_report_id` field
+        pub struct start_report_id(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct RouteReportsBuilder<'a, S: route_reports_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<i64>, ::core::option::Option<i64>),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct RouteReportsBuilder<
+    St: route_reports_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<i64>, core::option::Option<i64>),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> RouteReports<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> RouteReportsBuilder<'a, route_reports_state::Empty> {
+impl RouteReports<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> RouteReportsBuilder<route_reports_state::Empty, jacquard_common::DefaultStr> {
         RouteReportsBuilder::new()
     }
 }
 
-impl<'a> RouteReportsBuilder<'a, route_reports_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> RouteReports<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> RouteReportsBuilder<route_reports_state::Empty, S> {
+        RouteReportsBuilder::builder()
+    }
+}
+
+impl RouteReportsBuilder<route_reports_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         RouteReportsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> RouteReportsBuilder<'a, S>
+impl<S: jacquard_common::BosStr> RouteReportsBuilder<route_reports_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        RouteReportsBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> RouteReportsBuilder<St, S>
 where
-    S: route_reports_state::State,
-    S::EndReportId: route_reports_state::IsUnset,
+    St: route_reports_state::State,
+    St::EndReportId: route_reports_state::IsUnset,
 {
     /// Set the `endReportId` field (required)
     pub fn end_report_id(
         mut self,
         value: impl Into<i64>,
-    ) -> RouteReportsBuilder<'a, route_reports_state::SetEndReportId<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+    ) -> RouteReportsBuilder<route_reports_state::SetEndReportId<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         RouteReportsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> RouteReportsBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> RouteReportsBuilder<St, S>
 where
-    S: route_reports_state::State,
-    S::StartReportId: route_reports_state::IsUnset,
+    St: route_reports_state::State,
+    St::StartReportId: route_reports_state::IsUnset,
 {
     /// Set the `startReportId` field (required)
     pub fn start_report_id(
         mut self,
         value: impl Into<i64>,
-    ) -> RouteReportsBuilder<'a, route_reports_state::SetStartReportId<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+    ) -> RouteReportsBuilder<route_reports_state::SetStartReportId<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         RouteReportsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> RouteReportsBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> RouteReportsBuilder<St, S>
 where
-    S: route_reports_state::State,
-    S::StartReportId: route_reports_state::IsSet,
-    S::EndReportId: route_reports_state::IsSet,
+    St: route_reports_state::State,
+    St::EndReportId: route_reports_state::IsSet,
+    St::StartReportId: route_reports_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> RouteReports<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> RouteReports<S> {
         RouteReports {
-            end_report_id: self.__unsafe_private_named.0.unwrap(),
-            start_report_id: self.__unsafe_private_named.1.unwrap(),
+            end_report_id: self._fields.0.unwrap(),
+            start_report_id: self._fields.1.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> RouteReports<'a> {
+    ) -> RouteReports<S> {
         RouteReports {
-            end_report_id: self.__unsafe_private_named.0.unwrap(),
-            start_report_id: self.__unsafe_private_named.1.unwrap(),
+            end_report_id: self._fields.0.unwrap(),
+            start_report_id: self._fields.1.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct RouteReportsOutput<'a> {
-    /// The number of reports assigned to a queue.
-    pub assigned: i64,
-    /// The number of reports with no matching queue.
-    pub unmatched: i64,
-}
-
-#[jacquard_derive::open_union]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    thiserror::Error,
-    miette::Diagnostic,
-    jacquard_derive::IntoStatic,
-)]
-#[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum RouteReportsError<'a> {
-    /// The request is invalid, such as missing required fields or invalid field values.
-    #[serde(rename = "OutOfRange")]
-    OutOfRange(std::option::Option<jacquard_common::CowStr<'a>>),
-}
-
-impl std::fmt::Display for RouteReportsError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::OutOfRange(msg) => {
-                write!(f, "OutOfRange")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
-        }
-    }
-}
-
-/// Response type for
-///tools.ozone.queue.routeReports
-pub struct RouteReportsResponse;
-impl jacquard_common::xrpc::XrpcResp for RouteReportsResponse {
-    const NSID: &'static str = "tools.ozone.queue.routeReports";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = RouteReportsOutput<'de>;
-    type Err<'de> = RouteReportsError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for RouteReports<'a> {
-    const NSID: &'static str = "tools.ozone.queue.routeReports";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Response = RouteReportsResponse;
-}
-
-/// Endpoint type for
-///tools.ozone.queue.routeReports
-pub struct RouteReportsRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for RouteReportsRequest {
-    const PATH: &'static str = "/xrpc/tools.ozone.queue.routeReports";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = RouteReports<'de>;
-    type Response = RouteReportsResponse;
 }

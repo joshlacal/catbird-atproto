@@ -5,14 +5,100 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct DeleteBookmark<'a> {
-    #[serde(borrow)]
-    pub uri: jacquard_common::types::string::AtUri<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct DeleteBookmark<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub uri: jacquard_common::types::string::AtUri<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    thiserror::Error,
+    miette::Diagnostic,
+)]
+#[serde(tag = "error", content = "message")]
+pub enum DeleteBookmarkError {
+    /// The URI to be bookmarked is for an unsupported collection.
+    #[serde(rename = "UnsupportedCollection")]
+    UnsupportedCollection(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
+}
+
+impl core::fmt::Display for DeleteBookmarkError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+            Self::UnsupportedCollection(msg) => {
+                write!(f, "UnsupportedCollection")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+        }
+    }
+}
+
+/** Response marker for the `app.bsky.bookmark.deleteBookmark` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `()` for this endpoint.*/
+pub struct DeleteBookmarkResponse;
+impl jacquard_common::xrpc::XrpcResp for DeleteBookmarkResponse {
+    const NSID: &'static str = "app.bsky.bookmark.deleteBookmark";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = ();
+    type Err = DeleteBookmarkError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for DeleteBookmark<S> {
+    const NSID: &'static str = "app.bsky.bookmark.deleteBookmark";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Response = DeleteBookmarkResponse;
+}
+
+/** Endpoint marker for the `app.bsky.bookmark.deleteBookmark` procedure.
+
+Path: `/xrpc/app.bsky.bookmark.deleteBookmark`. The request payload type is `DeleteBookmark<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct DeleteBookmarkRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for DeleteBookmarkRequest {
+    const PATH: &'static str = "/xrpc/app.bsky.bookmark.deleteBookmark";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Request<S: jacquard_common::BosStr> = DeleteBookmark<S>;
+    type Response = DeleteBookmarkResponse;
 }
 
 pub mod delete_bookmark_state {
@@ -34,9 +120,9 @@ pub mod delete_bookmark_state {
         type Uri = Unset;
     }
     ///State transition - sets the `uri` field to Set
-    pub struct SetUri<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUri<S> {}
-    impl<S: State> State for SetUri<S> {
+    pub struct SetUri<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetUri<St> {}
+    impl<St: State> State for SetUri<St> {
         type Uri = Set<members::uri>;
     }
     /// Marker types for field names
@@ -47,136 +133,95 @@ pub mod delete_bookmark_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct DeleteBookmarkBuilder<'a, S: delete_bookmark_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<jacquard_common::types::string::AtUri<'a>>,),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct DeleteBookmarkBuilder<
+    St: delete_bookmark_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<jacquard_common::types::string::AtUri<S>>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> DeleteBookmark<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> DeleteBookmarkBuilder<'a, delete_bookmark_state::Empty> {
+impl DeleteBookmark<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> DeleteBookmarkBuilder<delete_bookmark_state::Empty, jacquard_common::DefaultStr>
+    {
         DeleteBookmarkBuilder::new()
     }
 }
 
-impl<'a> DeleteBookmarkBuilder<'a, delete_bookmark_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> DeleteBookmark<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> DeleteBookmarkBuilder<delete_bookmark_state::Empty, S> {
+        DeleteBookmarkBuilder::builder()
+    }
+}
+
+impl DeleteBookmarkBuilder<delete_bookmark_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         DeleteBookmarkBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> DeleteBookmarkBuilder<'a, S>
+impl<S: jacquard_common::BosStr> DeleteBookmarkBuilder<delete_bookmark_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        DeleteBookmarkBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeleteBookmarkBuilder<St, S>
 where
-    S: delete_bookmark_state::State,
-    S::Uri: delete_bookmark_state::IsUnset,
+    St: delete_bookmark_state::State,
+    St::Uri: delete_bookmark_state::IsUnset,
 {
     /// Set the `uri` field (required)
     pub fn uri(
         mut self,
-        value: impl Into<jacquard_common::types::string::AtUri<'a>>,
-    ) -> DeleteBookmarkBuilder<'a, delete_bookmark_state::SetUri<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::AtUri<S>>,
+    ) -> DeleteBookmarkBuilder<delete_bookmark_state::SetUri<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         DeleteBookmarkBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> DeleteBookmarkBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> DeleteBookmarkBuilder<St, S>
 where
-    S: delete_bookmark_state::State,
-    S::Uri: delete_bookmark_state::IsSet,
+    St: delete_bookmark_state::State,
+    St::Uri: delete_bookmark_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> DeleteBookmark<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> DeleteBookmark<S> {
         DeleteBookmark {
-            uri: self.__unsafe_private_named.0.unwrap(),
+            uri: self._fields.0.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> DeleteBookmark<'a> {
+    ) -> DeleteBookmark<S> {
         DeleteBookmark {
-            uri: self.__unsafe_private_named.0.unwrap(),
+            uri: self._fields.0.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-#[jacquard_derive::open_union]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    thiserror::Error,
-    miette::Diagnostic,
-    jacquard_derive::IntoStatic,
-)]
-#[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum DeleteBookmarkError<'a> {
-    /// The URI to be bookmarked is for an unsupported collection.
-    #[serde(rename = "UnsupportedCollection")]
-    UnsupportedCollection(std::option::Option<jacquard_common::CowStr<'a>>),
-}
-
-impl std::fmt::Display for DeleteBookmarkError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::UnsupportedCollection(msg) => {
-                write!(f, "UnsupportedCollection")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
-        }
-    }
-}
-
-/// Response type for
-///app.bsky.bookmark.deleteBookmark
-pub struct DeleteBookmarkResponse;
-impl jacquard_common::xrpc::XrpcResp for DeleteBookmarkResponse {
-    const NSID: &'static str = "app.bsky.bookmark.deleteBookmark";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = ();
-    type Err<'de> = DeleteBookmarkError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for DeleteBookmark<'a> {
-    const NSID: &'static str = "app.bsky.bookmark.deleteBookmark";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Response = DeleteBookmarkResponse;
-}
-
-/// Endpoint type for
-///app.bsky.bookmark.deleteBookmark
-pub struct DeleteBookmarkRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for DeleteBookmarkRequest {
-    const PATH: &'static str = "/xrpc/app.bsky.bookmark.deleteBookmark";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = DeleteBookmark<'de>;
-    type Response = DeleteBookmarkResponse;
 }

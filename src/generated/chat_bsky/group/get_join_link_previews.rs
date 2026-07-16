@@ -8,10 +8,85 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetJoinLinkPreviews<'a> {
-    #[serde(borrow)]
-    pub codes: Vec<jacquard_common::CowStr<'a>>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetJoinLinkPreviews<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub codes: Vec<S>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetJoinLinkPreviewsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub join_link_previews: Vec<GetJoinLinkPreviewsOutputJoinLinkPreviewsItem<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[jacquard_derive::open_union]
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub enum GetJoinLinkPreviewsOutputJoinLinkPreviewsItem<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    #[serde(rename = "chat.bsky.group.defs#joinLinkPreviewView")]
+    JoinLinkPreviewView(Box<crate::generated::chat_bsky::group::JoinLinkPreviewView<S>>),
+    #[serde(rename = "chat.bsky.group.defs#disabledJoinLinkPreviewView")]
+    DisabledJoinLinkPreviewView(
+        Box<crate::generated::chat_bsky::group::DisabledJoinLinkPreviewView<S>>,
+    ),
+    #[serde(rename = "chat.bsky.group.defs#invalidJoinLinkPreviewView")]
+    InvalidJoinLinkPreviewView(
+        Box<crate::generated::chat_bsky::group::InvalidJoinLinkPreviewView<S>>,
+    ),
+}
+
+/** Response marker for the `chat.bsky.group.getJoinLinkPreviews` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetJoinLinkPreviewsOutput<S>` for this endpoint.*/
+pub struct GetJoinLinkPreviewsResponse;
+impl jacquard_common::xrpc::XrpcResp for GetJoinLinkPreviewsResponse {
+    const NSID: &'static str = "chat.bsky.group.getJoinLinkPreviews";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = GetJoinLinkPreviewsOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetJoinLinkPreviews<S> {
+    const NSID: &'static str = "chat.bsky.group.getJoinLinkPreviews";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = GetJoinLinkPreviewsResponse;
+}
+
+/** Endpoint marker for the `chat.bsky.group.getJoinLinkPreviews` query.
+
+Path: `/xrpc/chat.bsky.group.getJoinLinkPreviews`. The request payload type is `GetJoinLinkPreviews<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct GetJoinLinkPreviewsRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for GetJoinLinkPreviewsRequest {
+    const PATH: &'static str = "/xrpc/chat.bsky.group.getJoinLinkPreviews";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = GetJoinLinkPreviews<S>;
+    type Response = GetJoinLinkPreviewsResponse;
 }
 
 pub mod get_join_link_previews_state {
@@ -33,9 +108,9 @@ pub mod get_join_link_previews_state {
         type Codes = Unset;
     }
     ///State transition - sets the `codes` field to Set
-    pub struct SetCodes<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCodes<S> {}
-    impl<S: State> State for SetCodes<S> {
+    pub struct SetCodes<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCodes<St> {}
+    impl<St: State> State for SetCodes<St> {
         type Codes = Set<members::codes>;
     }
     /// Marker types for field names
@@ -46,114 +121,84 @@ pub mod get_join_link_previews_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct GetJoinLinkPreviewsBuilder<'a, S: get_join_link_previews_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<Vec<jacquard_common::CowStr<'a>>>,),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct GetJoinLinkPreviewsBuilder<
+    St: get_join_link_previews_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<Vec<S>>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> GetJoinLinkPreviews<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> GetJoinLinkPreviewsBuilder<'a, get_join_link_previews_state::Empty> {
+impl GetJoinLinkPreviews<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> GetJoinLinkPreviewsBuilder<get_join_link_previews_state::Empty, jacquard_common::DefaultStr>
+    {
         GetJoinLinkPreviewsBuilder::new()
     }
 }
 
-impl<'a> GetJoinLinkPreviewsBuilder<'a, get_join_link_previews_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> GetJoinLinkPreviews<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> GetJoinLinkPreviewsBuilder<get_join_link_previews_state::Empty, S> {
+        GetJoinLinkPreviewsBuilder::builder()
+    }
+}
+
+impl GetJoinLinkPreviewsBuilder<get_join_link_previews_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetJoinLinkPreviewsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GetJoinLinkPreviewsBuilder<'a, S>
+impl<S: jacquard_common::BosStr>
+    GetJoinLinkPreviewsBuilder<get_join_link_previews_state::Empty, S>
+{
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GetJoinLinkPreviewsBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> GetJoinLinkPreviewsBuilder<St, S>
 where
-    S: get_join_link_previews_state::State,
-    S::Codes: get_join_link_previews_state::IsUnset,
+    St: get_join_link_previews_state::State,
+    St::Codes: get_join_link_previews_state::IsUnset,
 {
     /// Set the `codes` field (required)
     pub fn codes(
         mut self,
-        value: impl Into<Vec<jacquard_common::CowStr<'a>>>,
-    ) -> GetJoinLinkPreviewsBuilder<'a, get_join_link_previews_state::SetCodes<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<Vec<S>>,
+    ) -> GetJoinLinkPreviewsBuilder<get_join_link_previews_state::SetCodes<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         GetJoinLinkPreviewsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GetJoinLinkPreviewsBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GetJoinLinkPreviewsBuilder<St, S>
 where
-    S: get_join_link_previews_state::State,
-    S::Codes: get_join_link_previews_state::IsSet,
+    St: get_join_link_previews_state::State,
+    St::Codes: get_join_link_previews_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> GetJoinLinkPreviews<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> GetJoinLinkPreviews<S> {
         GetJoinLinkPreviews {
-            codes: self.__unsafe_private_named.0.unwrap(),
+            codes: self._fields.0.unwrap(),
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GetJoinLinkPreviewsOutput<'a> {
-    #[serde(borrow)]
-    pub join_link_previews: Vec<GetJoinLinkPreviewsOutputJoinLinkPreviewsItem<'a>>,
-}
-
-#[jacquard_derive::open_union]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(tag = "$type")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum GetJoinLinkPreviewsOutputJoinLinkPreviewsItem<'a> {
-    #[serde(rename = "chat.bsky.group.defs#joinLinkPreviewView")]
-    JoinLinkPreviewView(Box<crate::generated::chat_bsky::group::JoinLinkPreviewView<'a>>),
-    #[serde(rename = "chat.bsky.group.defs#disabledJoinLinkPreviewView")]
-    DisabledJoinLinkPreviewView(
-        Box<crate::generated::chat_bsky::group::DisabledJoinLinkPreviewView<'a>>,
-    ),
-    #[serde(rename = "chat.bsky.group.defs#invalidJoinLinkPreviewView")]
-    InvalidJoinLinkPreviewView(
-        Box<crate::generated::chat_bsky::group::InvalidJoinLinkPreviewView<'a>>,
-    ),
-}
-
-/// Response type for
-///chat.bsky.group.getJoinLinkPreviews
-pub struct GetJoinLinkPreviewsResponse;
-impl jacquard_common::xrpc::XrpcResp for GetJoinLinkPreviewsResponse {
-    const NSID: &'static str = "chat.bsky.group.getJoinLinkPreviews";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetJoinLinkPreviewsOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for GetJoinLinkPreviews<'a> {
-    const NSID: &'static str = "chat.bsky.group.getJoinLinkPreviews";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = GetJoinLinkPreviewsResponse;
-}
-
-/// Endpoint type for
-///chat.bsky.group.getJoinLinkPreviews
-pub struct GetJoinLinkPreviewsRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for GetJoinLinkPreviewsRequest {
-    const PATH: &'static str = "/xrpc/chat.bsky.group.getJoinLinkPreviews";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetJoinLinkPreviews<'de>;
-    type Response = GetJoinLinkPreviewsResponse;
 }

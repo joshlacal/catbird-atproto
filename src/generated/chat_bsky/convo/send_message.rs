@@ -5,16 +5,141 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct SendMessage<'a> {
-    #[serde(borrow)]
-    pub convo_id: jacquard_common::CowStr<'a>,
-    #[serde(borrow)]
-    pub message: crate::generated::chat_bsky::convo::MessageInput<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct SendMessage<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub convo_id: S,
+    pub message: crate::generated::chat_bsky::convo::MessageInput<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct SendMessageOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(flatten)]
+    pub value: crate::generated::chat_bsky::convo::MessageView<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    thiserror::Error,
+    miette::Diagnostic,
+)]
+#[serde(tag = "error", content = "message")]
+pub enum SendMessageError {
+    #[serde(rename = "ConvoLocked")]
+    ConvoLocked(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    #[serde(rename = "InvalidConvo")]
+    InvalidConvo(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    #[serde(rename = "ReplyTargetNotFound")]
+    ReplyTargetNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
+}
+
+impl core::fmt::Display for SendMessageError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+            Self::ConvoLocked(msg) => {
+                write!(f, "ConvoLocked")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::InvalidConvo(msg) => {
+                write!(f, "InvalidConvo")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::ReplyTargetNotFound(msg) => {
+                write!(f, "ReplyTargetNotFound")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+        }
+    }
+}
+
+/** Response marker for the `chat.bsky.convo.sendMessage` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `SendMessageOutput<S>` for this endpoint.*/
+pub struct SendMessageResponse;
+impl jacquard_common::xrpc::XrpcResp for SendMessageResponse {
+    const NSID: &'static str = "chat.bsky.convo.sendMessage";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = SendMessageOutput<S>;
+    type Err = SendMessageError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for SendMessage<S> {
+    const NSID: &'static str = "chat.bsky.convo.sendMessage";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Response = SendMessageResponse;
+}
+
+/** Endpoint marker for the `chat.bsky.convo.sendMessage` procedure.
+
+Path: `/xrpc/chat.bsky.convo.sendMessage`. The request payload type is `SendMessage<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct SendMessageRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for SendMessageRequest {
+    const PATH: &'static str = "/xrpc/chat.bsky.convo.sendMessage";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Request<S: jacquard_common::BosStr> = SendMessage<S>;
+    type Response = SendMessageResponse;
 }
 
 pub mod send_message_state {
@@ -38,17 +163,17 @@ pub mod send_message_state {
         type Message = Unset;
     }
     ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
+    pub struct SetConvoId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetConvoId<St> {}
+    impl<St: State> State for SetConvoId<St> {
         type ConvoId = Set<members::convo_id>;
-        type Message = S::Message;
+        type Message = St::Message;
     }
     ///State transition - sets the `message` field to Set
-    pub struct SetMessage<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetMessage<S> {}
-    impl<S: State> State for SetMessage<S> {
-        type ConvoId = S::ConvoId;
+    pub struct SetMessage<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetMessage<St> {}
+    impl<St: State> State for SetMessage<St> {
+        type ConvoId = St::ConvoId;
         type Message = Set<members::message>;
     }
     /// Marker types for field names
@@ -61,189 +186,119 @@ pub mod send_message_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct SendMessageBuilder<'a, S: send_message_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<crate::generated::chat_bsky::convo::MessageInput<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct SendMessageBuilder<
+    St: send_message_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<crate::generated::chat_bsky::convo::MessageInput<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> SendMessage<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> SendMessageBuilder<'a, send_message_state::Empty> {
+impl SendMessage<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> SendMessageBuilder<send_message_state::Empty, jacquard_common::DefaultStr> {
         SendMessageBuilder::new()
     }
 }
 
-impl<'a> SendMessageBuilder<'a, send_message_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> SendMessage<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> SendMessageBuilder<send_message_state::Empty, S> {
+        SendMessageBuilder::builder()
+    }
+}
+
+impl SendMessageBuilder<send_message_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         SendMessageBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> SendMessageBuilder<'a, S>
+impl<S: jacquard_common::BosStr> SendMessageBuilder<send_message_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        SendMessageBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> SendMessageBuilder<St, S>
 where
-    S: send_message_state::State,
-    S::ConvoId: send_message_state::IsUnset,
+    St: send_message_state::State,
+    St::ConvoId: send_message_state::IsUnset,
 {
     /// Set the `convoId` field (required)
     pub fn convo_id(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> SendMessageBuilder<'a, send_message_state::SetConvoId<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> SendMessageBuilder<send_message_state::SetConvoId<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         SendMessageBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> SendMessageBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> SendMessageBuilder<St, S>
 where
-    S: send_message_state::State,
-    S::Message: send_message_state::IsUnset,
+    St: send_message_state::State,
+    St::Message: send_message_state::IsUnset,
 {
     /// Set the `message` field (required)
     pub fn message(
         mut self,
-        value: impl Into<crate::generated::chat_bsky::convo::MessageInput<'a>>,
-    ) -> SendMessageBuilder<'a, send_message_state::SetMessage<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<crate::generated::chat_bsky::convo::MessageInput<S>>,
+    ) -> SendMessageBuilder<send_message_state::SetMessage<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         SendMessageBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> SendMessageBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> SendMessageBuilder<St, S>
 where
-    S: send_message_state::State,
-    S::ConvoId: send_message_state::IsSet,
-    S::Message: send_message_state::IsSet,
+    St: send_message_state::State,
+    St::ConvoId: send_message_state::IsSet,
+    St::Message: send_message_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> SendMessage<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> SendMessage<S> {
         SendMessage {
-            convo_id: self.__unsafe_private_named.0.unwrap(),
-            message: self.__unsafe_private_named.1.unwrap(),
+            convo_id: self._fields.0.unwrap(),
+            message: self._fields.1.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> SendMessage<'a> {
+    ) -> SendMessage<S> {
         SendMessage {
-            convo_id: self.__unsafe_private_named.0.unwrap(),
-            message: self.__unsafe_private_named.1.unwrap(),
+            convo_id: self._fields.0.unwrap(),
+            message: self._fields.1.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct SendMessageOutput<'a> {
-    #[serde(flatten)]
-    #[serde(borrow)]
-    pub value: crate::generated::chat_bsky::convo::MessageView<'a>,
-}
-
-#[jacquard_derive::open_union]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    thiserror::Error,
-    miette::Diagnostic,
-    jacquard_derive::IntoStatic,
-)]
-#[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum SendMessageError<'a> {
-    #[serde(rename = "ConvoLocked")]
-    ConvoLocked(std::option::Option<jacquard_common::CowStr<'a>>),
-    #[serde(rename = "InvalidConvo")]
-    InvalidConvo(std::option::Option<jacquard_common::CowStr<'a>>),
-    #[serde(rename = "ReplyTargetNotFound")]
-    ReplyTargetNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
-}
-
-impl std::fmt::Display for SendMessageError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::ConvoLocked(msg) => {
-                write!(f, "ConvoLocked")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
-            Self::InvalidConvo(msg) => {
-                write!(f, "InvalidConvo")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
-            Self::ReplyTargetNotFound(msg) => {
-                write!(f, "ReplyTargetNotFound")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
-        }
-    }
-}
-
-/// Response type for
-///chat.bsky.convo.sendMessage
-pub struct SendMessageResponse;
-impl jacquard_common::xrpc::XrpcResp for SendMessageResponse {
-    const NSID: &'static str = "chat.bsky.convo.sendMessage";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = SendMessageOutput<'de>;
-    type Err<'de> = SendMessageError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for SendMessage<'a> {
-    const NSID: &'static str = "chat.bsky.convo.sendMessage";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Response = SendMessageResponse;
-}
-
-/// Endpoint type for
-///chat.bsky.convo.sendMessage
-pub struct SendMessageRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for SendMessageRequest {
-    const PATH: &'static str = "/xrpc/chat.bsky.convo.sendMessage";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = SendMessage<'de>;
-    type Response = SendMessageResponse;
 }

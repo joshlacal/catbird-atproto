@@ -5,13 +5,56 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct DeleteDraft<'a> {
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct DeleteDraft<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub id: jacquard_common::types::string::Tid,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `app.bsky.draft.deleteDraft` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `()` for this endpoint.*/
+pub struct DeleteDraftResponse;
+impl jacquard_common::xrpc::XrpcResp for DeleteDraftResponse {
+    const NSID: &'static str = "app.bsky.draft.deleteDraft";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = ();
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for DeleteDraft<S> {
+    const NSID: &'static str = "app.bsky.draft.deleteDraft";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Response = DeleteDraftResponse;
+}
+
+/** Endpoint marker for the `app.bsky.draft.deleteDraft` procedure.
+
+Path: `/xrpc/app.bsky.draft.deleteDraft`. The request payload type is `DeleteDraft<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct DeleteDraftRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for DeleteDraftRequest {
+    const PATH: &'static str = "/xrpc/app.bsky.draft.deleteDraft";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Request<S: jacquard_common::BosStr> = DeleteDraft<S>;
+    type Response = DeleteDraftResponse;
 }
 
 pub mod delete_draft_state {
@@ -33,9 +76,9 @@ pub mod delete_draft_state {
         type Id = Unset;
     }
     ///State transition - sets the `id` field to Set
-    pub struct SetId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetId<S> {}
-    impl<S: State> State for SetId<S> {
+    pub struct SetId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetId<St> {}
+    impl<St: State> State for SetId<St> {
         type Id = Set<members::id>;
     }
     /// Marker types for field names
@@ -46,101 +89,94 @@ pub mod delete_draft_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct DeleteDraftBuilder<'a, S: delete_draft_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<jacquard_common::types::string::Tid>,),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct DeleteDraftBuilder<
+    St: delete_draft_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<jacquard_common::types::string::Tid>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> DeleteDraft<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> DeleteDraftBuilder<'a, delete_draft_state::Empty> {
+impl DeleteDraft<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> DeleteDraftBuilder<delete_draft_state::Empty, jacquard_common::DefaultStr> {
         DeleteDraftBuilder::new()
     }
 }
 
-impl<'a> DeleteDraftBuilder<'a, delete_draft_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> DeleteDraft<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> DeleteDraftBuilder<delete_draft_state::Empty, S> {
+        DeleteDraftBuilder::builder()
+    }
+}
+
+impl DeleteDraftBuilder<delete_draft_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         DeleteDraftBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> DeleteDraftBuilder<'a, S>
+impl<S: jacquard_common::BosStr> DeleteDraftBuilder<delete_draft_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        DeleteDraftBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeleteDraftBuilder<St, S>
 where
-    S: delete_draft_state::State,
-    S::Id: delete_draft_state::IsUnset,
+    St: delete_draft_state::State,
+    St::Id: delete_draft_state::IsUnset,
 {
     /// Set the `id` field (required)
     pub fn id(
         mut self,
         value: impl Into<jacquard_common::types::string::Tid>,
-    ) -> DeleteDraftBuilder<'a, delete_draft_state::SetId<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+    ) -> DeleteDraftBuilder<delete_draft_state::SetId<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         DeleteDraftBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> DeleteDraftBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> DeleteDraftBuilder<St, S>
 where
-    S: delete_draft_state::State,
-    S::Id: delete_draft_state::IsSet,
+    St: delete_draft_state::State,
+    St::Id: delete_draft_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> DeleteDraft<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> DeleteDraft<S> {
         DeleteDraft {
-            id: self.__unsafe_private_named.0.unwrap(),
+            id: self._fields.0.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> DeleteDraft<'a> {
+    ) -> DeleteDraft<S> {
         DeleteDraft {
-            id: self.__unsafe_private_named.0.unwrap(),
+            id: self._fields.0.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-/// Response type for
-///app.bsky.draft.deleteDraft
-pub struct DeleteDraftResponse;
-impl jacquard_common::xrpc::XrpcResp for DeleteDraftResponse {
-    const NSID: &'static str = "app.bsky.draft.deleteDraft";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = ();
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for DeleteDraft<'a> {
-    const NSID: &'static str = "app.bsky.draft.deleteDraft";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Response = DeleteDraftResponse;
-}
-
-/// Endpoint type for
-///app.bsky.draft.deleteDraft
-pub struct DeleteDraftRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for DeleteDraftRequest {
-    const PATH: &'static str = "/xrpc/app.bsky.draft.deleteDraft";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = DeleteDraft<'de>;
-    type Response = DeleteDraftResponse;
 }

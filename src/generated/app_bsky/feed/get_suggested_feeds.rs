@@ -8,14 +8,73 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetSuggestedFeeds<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    ///(default: 50, min: 1, max: 100)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub limit: std::option::Option<i64>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetSuggestedFeeds<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    /// Defaults to `50`. Min: 1. Max: 100.
+    #[serde(default = "_default_limit")]
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub limit: core::option::Option<i64>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetSuggestedFeedsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    pub feeds: Vec<crate::generated::app_bsky::feed::GeneratorView<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `app.bsky.feed.getSuggestedFeeds` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetSuggestedFeedsOutput<S>` for this endpoint.*/
+pub struct GetSuggestedFeedsResponse;
+impl jacquard_common::xrpc::XrpcResp for GetSuggestedFeedsResponse {
+    const NSID: &'static str = "app.bsky.feed.getSuggestedFeeds";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = GetSuggestedFeedsOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetSuggestedFeeds<S> {
+    const NSID: &'static str = "app.bsky.feed.getSuggestedFeeds";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = GetSuggestedFeedsResponse;
+}
+
+/** Endpoint marker for the `app.bsky.feed.getSuggestedFeeds` query.
+
+Path: `/xrpc/app.bsky.feed.getSuggestedFeeds`. The request payload type is `GetSuggestedFeeds<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct GetSuggestedFeedsRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for GetSuggestedFeedsRequest {
+    const PATH: &'static str = "/xrpc/app.bsky.feed.getSuggestedFeeds";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = GetSuggestedFeeds<S>;
+    type Response = GetSuggestedFeedsResponse;
+}
+
+fn _default_limit() -> core::option::Option<i64> {
+    Some(50i64)
 }
 
 pub mod get_suggested_feeds_state {
@@ -37,108 +96,93 @@ pub mod get_suggested_feeds_state {
     pub mod members {}
 }
 
-/// Builder for constructing an instance of this type
-pub struct GetSuggestedFeedsBuilder<'a, S: get_suggested_feeds_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<i64>,
-    ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct GetSuggestedFeedsBuilder<
+    St: get_suggested_feeds_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<S>, core::option::Option<i64>),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> GetSuggestedFeeds<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> GetSuggestedFeedsBuilder<'a, get_suggested_feeds_state::Empty> {
+impl GetSuggestedFeeds<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> GetSuggestedFeedsBuilder<get_suggested_feeds_state::Empty, jacquard_common::DefaultStr>
+    {
         GetSuggestedFeedsBuilder::new()
     }
 }
 
-impl<'a> GetSuggestedFeedsBuilder<'a, get_suggested_feeds_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> GetSuggestedFeeds<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> GetSuggestedFeedsBuilder<get_suggested_feeds_state::Empty, S> {
+        GetSuggestedFeedsBuilder::builder()
+    }
+}
+
+impl GetSuggestedFeedsBuilder<get_suggested_feeds_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetSuggestedFeedsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: get_suggested_feeds_state::State> GetSuggestedFeedsBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> GetSuggestedFeedsBuilder<get_suggested_feeds_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GetSuggestedFeedsBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: get_suggested_feeds_state::State, S: jacquard_common::BosStr>
+    GetSuggestedFeedsBuilder<St, S>
+{
     /// Set the `cursor` field (optional)
-    pub fn cursor(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+    pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.0 = value.into();
         self
     }
     /// Set the `cursor` field to an Option value (optional)
-    pub fn maybe_cursor(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.0 = value;
+    pub fn maybe_cursor(mut self, value: Option<S>) -> Self {
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S: get_suggested_feeds_state::State> GetSuggestedFeedsBuilder<'a, S> {
+impl<St: get_suggested_feeds_state::State, S: jacquard_common::BosStr>
+    GetSuggestedFeedsBuilder<St, S>
+{
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self._fields.1 = value.into();
         self
     }
     /// Set the `limit` field to an Option value (optional)
     pub fn maybe_limit(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.1 = value;
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S> GetSuggestedFeedsBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GetSuggestedFeedsBuilder<St, S>
 where
-    S: get_suggested_feeds_state::State,
+    St: get_suggested_feeds_state::State,
 {
-    /// Build the final struct
-    pub fn build(self) -> GetSuggestedFeeds<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> GetSuggestedFeeds<S> {
         GetSuggestedFeeds {
-            cursor: self.__unsafe_private_named.0,
-            limit: self.__unsafe_private_named.1,
+            cursor: self._fields.0,
+            limit: self._fields.1,
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GetSuggestedFeedsOutput<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(borrow)]
-    pub feeds: Vec<crate::generated::app_bsky::feed::GeneratorView<'a>>,
-}
-
-/// Response type for
-///app.bsky.feed.getSuggestedFeeds
-pub struct GetSuggestedFeedsResponse;
-impl jacquard_common::xrpc::XrpcResp for GetSuggestedFeedsResponse {
-    const NSID: &'static str = "app.bsky.feed.getSuggestedFeeds";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetSuggestedFeedsOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for GetSuggestedFeeds<'a> {
-    const NSID: &'static str = "app.bsky.feed.getSuggestedFeeds";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = GetSuggestedFeedsResponse;
-}
-
-/// Endpoint type for
-///app.bsky.feed.getSuggestedFeeds
-pub struct GetSuggestedFeedsRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for GetSuggestedFeedsRequest {
-    const PATH: &'static str = "/xrpc/app.bsky.feed.getSuggestedFeeds";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetSuggestedFeeds<'de>;
-    type Response = GetSuggestedFeedsResponse;
 }

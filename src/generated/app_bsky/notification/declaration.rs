@@ -6,15 +6,185 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 /// A declaration of the user's choices related to notifications that can be produced by them.
-#[jacquard_derive::lexicon]
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    rename = "app.bsky.notification.declaration",
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct Declaration<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///A declaration of the user's preference for allowing activity subscriptions from other users. Absence of a record implies 'followers'.
+    pub allow_subscriptions: DeclarationAllowSubscriptions<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// A declaration of the user's preference for allowing activity subscriptions from other users. Absence of a record implies 'followers'.
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum DeclarationAllowSubscriptions<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    Followers,
+    Mutuals,
+    None,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> DeclarationAllowSubscriptions<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Followers => "followers",
+            Self::Mutuals => "mutuals",
+            Self::None => "none",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "followers" => Self::Followers,
+            "mutuals" => Self::Mutuals,
+            "none" => Self::None,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for DeclarationAllowSubscriptions<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for DeclarationAllowSubscriptions<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for DeclarationAllowSubscriptions<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for DeclarationAllowSubscriptions<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for DeclarationAllowSubscriptions<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for DeclarationAllowSubscriptions<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = DeclarationAllowSubscriptions<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            DeclarationAllowSubscriptions::Followers => DeclarationAllowSubscriptions::Followers,
+            DeclarationAllowSubscriptions::Mutuals => DeclarationAllowSubscriptions::Mutuals,
+            DeclarationAllowSubscriptions::None => DeclarationAllowSubscriptions::None,
+            DeclarationAllowSubscriptions::Other(v) => {
+                DeclarationAllowSubscriptions::Other(v.into_static())
+            }
+        }
+    }
+}
+
+/// Typed wrapper for GetRecord response with this collection's record type.
+
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
-pub struct Declaration<'a> {
-    /// A declaration of the user's preference for allowing activity subscriptions from other users. Absence of a record implies 'followers'.
-    #[serde(borrow)]
-    pub allow_subscriptions: jacquard_common::CowStr<'a>,
+pub struct DeclarationGetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
+    pub uri: jacquard_common::types::string::AtUri<S>,
+    pub value: Declaration<S>,
+}
+
+impl<S: jacquard_common::BosStr> Declaration<S> {
+    pub fn uri(
+        uri: S,
+    ) -> Result<
+        jacquard_common::types::uri::RecordUri<S, DeclarationRecord>,
+        jacquard_common::types::uri::UriError,
+    > {
+        jacquard_common::types::uri::RecordUri::try_from_uri(
+            jacquard_common::types::string::AtUri::new(uri)?,
+        )
+    }
+}
+
+/// Marker type for deserializing records from this collection.
+
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+pub struct DeclarationRecord;
+impl jacquard_common::xrpc::XrpcResp for DeclarationRecord {
+    const NSID: &'static str = "app.bsky.notification.declaration";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = DeclarationGetRecordOutput<S>;
+    type Err = jacquard_common::types::collection::RecordError;
+}
+
+impl<S: jacquard_common::BosStr> From<DeclarationGetRecordOutput<S>> for Declaration<S> {
+    fn from(output: DeclarationGetRecordOutput<S>) -> Self {
+        output.value
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection for Declaration<S> {
+    const NSID: &'static str = "app.bsky.notification.declaration";
+    type Record = DeclarationRecord;
+}
+
+impl jacquard_common::types::collection::Collection for DeclarationRecord {
+    const NSID: &'static str = "app.bsky.notification.declaration";
+    type Record = DeclarationRecord;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Declaration<S> {
+    fn nsid() -> &'static str {
+        "app.bsky.notification.declaration"
+    }
+    fn def_name() -> &'static str {
+        "main"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_app_bsky_notification_declaration()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
 }
 
 pub mod declaration_state {
@@ -36,9 +206,9 @@ pub mod declaration_state {
         type AllowSubscriptions = Unset;
     }
     ///State transition - sets the `allow_subscriptions` field to Set
-    pub struct SetAllowSubscriptions<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetAllowSubscriptions<S> {}
-    impl<S: State> State for SetAllowSubscriptions<S> {
+    pub struct SetAllowSubscriptions<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetAllowSubscriptions<St> {}
+    impl<St: State> State for SetAllowSubscriptions<St> {
         type AllowSubscriptions = Set<members::allow_subscriptions>;
     }
     /// Marker types for field names
@@ -49,160 +219,107 @@ pub mod declaration_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct DeclarationBuilder<'a, S: declaration_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<jacquard_common::CowStr<'a>>,),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct DeclarationBuilder<
+    St: declaration_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<DeclarationAllowSubscriptions<S>>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> Declaration<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> DeclarationBuilder<'a, declaration_state::Empty> {
+impl Declaration<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> DeclarationBuilder<declaration_state::Empty, jacquard_common::DefaultStr> {
         DeclarationBuilder::new()
     }
 }
 
-impl<'a> DeclarationBuilder<'a, declaration_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> Declaration<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> DeclarationBuilder<declaration_state::Empty, S> {
+        DeclarationBuilder::builder()
+    }
+}
+
+impl DeclarationBuilder<declaration_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         DeclarationBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> DeclarationBuilder<'a, S>
+impl<S: jacquard_common::BosStr> DeclarationBuilder<declaration_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        DeclarationBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeclarationBuilder<St, S>
 where
-    S: declaration_state::State,
-    S::AllowSubscriptions: declaration_state::IsUnset,
+    St: declaration_state::State,
+    St::AllowSubscriptions: declaration_state::IsUnset,
 {
     /// Set the `allowSubscriptions` field (required)
     pub fn allow_subscriptions(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> DeclarationBuilder<'a, declaration_state::SetAllowSubscriptions<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<DeclarationAllowSubscriptions<S>>,
+    ) -> DeclarationBuilder<declaration_state::SetAllowSubscriptions<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         DeclarationBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> DeclarationBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> DeclarationBuilder<St, S>
 where
-    S: declaration_state::State,
-    S::AllowSubscriptions: declaration_state::IsSet,
+    St: declaration_state::State,
+    St::AllowSubscriptions: declaration_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> Declaration<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> Declaration<S> {
         Declaration {
-            allow_subscriptions: self.__unsafe_private_named.0.unwrap(),
+            allow_subscriptions: self._fields.0.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> Declaration<'a> {
+    ) -> Declaration<S> {
         Declaration {
-            allow_subscriptions: self.__unsafe_private_named.0.unwrap(),
+            allow_subscriptions: self._fields.0.unwrap(),
             extra_data: Some(extra_data),
         }
     }
 }
 
-impl<'a> Declaration<'a> {
-    pub fn uri(
-        uri: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> Result<
-        jacquard_common::types::uri::RecordUri<'a, DeclarationRecord>,
-        jacquard_common::types::uri::UriError,
-    > {
-        jacquard_common::types::uri::RecordUri::try_from_uri(
-            jacquard_common::types::string::AtUri::new_cow(uri.into())?,
-        )
-    }
-}
-
-/// Typed wrapper for GetRecord response with this collection's record type.
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct DeclarationGetRecordOutput<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cid: std::option::Option<jacquard_common::types::string::Cid<'a>>,
-    #[serde(borrow)]
-    pub uri: jacquard_common::types::string::AtUri<'a>,
-    #[serde(borrow)]
-    pub value: Declaration<'a>,
-}
-
-impl From<DeclarationGetRecordOutput<'_>> for Declaration<'_> {
-    fn from(output: DeclarationGetRecordOutput<'_>) -> Self {
-        use jacquard_common::IntoStatic;
-        output.value.into_static()
-    }
-}
-
-impl jacquard_common::types::collection::Collection for Declaration<'_> {
-    const NSID: &'static str = "app.bsky.notification.declaration";
-    type Record = DeclarationRecord;
-}
-
-/// Marker type for deserializing records from this collection.
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
-pub struct DeclarationRecord;
-impl jacquard_common::xrpc::XrpcResp for DeclarationRecord {
-    const NSID: &'static str = "app.bsky.notification.declaration";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = DeclarationGetRecordOutput<'de>;
-    type Err<'de> = jacquard_common::types::collection::RecordError<'de>;
-}
-
-impl jacquard_common::types::collection::Collection for DeclarationRecord {
-    const NSID: &'static str = "app.bsky.notification.declaration";
-    type Record = DeclarationRecord;
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Declaration<'a> {
-    fn nsid() -> &'static str {
-        "app.bsky.notification.declaration"
-    }
-    fn def_name() -> &'static str {
-        "main"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_app_bsky_notification_declaration()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-fn lexicon_doc_app_bsky_notification_declaration(
-) -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_app_bsky_notification_declaration() -> jacquard_lexicon::lexicon::LexiconDoc<'static>
+{
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("app.bsky.notification.declaration"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
                 ::jacquard_lexicon::lexicon::LexUserType::Record(::jacquard_lexicon::lexicon::LexRecord {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
@@ -211,18 +328,16 @@ fn lexicon_doc_app_bsky_notification_declaration(
                     ),
                     key: Some(::jacquard_common::CowStr::new_static("literal:self")),
                     record: ::jacquard_lexicon::lexicon::LexRecordRecord::Object(::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(
                             vec![
-                                ::jacquard_common::smol_str::SmolStr::new_static("allowSubscriptions")
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("allowSubscriptions")
                             ],
                         ),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "allowSubscriptions",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -231,23 +346,18 @@ fn lexicon_doc_app_bsky_notification_declaration(
                                             "A declaration of the user's preference for allowing activity subscriptions from other users. Absence of a record implies 'followers'.",
                                         ),
                                     ),
-                                    format: None,
-                                    default: None,
-                                    min_length: None,
-                                    max_length: None,
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
                             );
                             map
                         },
+                        ..Default::default()
                     }),
+                    ..Default::default()
                 }),
             );
             map
         },
+        ..Default::default()
     }
 }

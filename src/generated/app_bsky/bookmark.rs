@@ -5,20 +5,107 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
+//! Generated bindings for the `app.bsky.bookmark` Lexicon namespace/module.
 pub mod create_bookmark;
 pub mod delete_bookmark;
 pub mod get_bookmarks;
 
 /// Object used to store bookmark data in stash.
-#[jacquard_derive::lexicon]
+
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct Bookmark<'a> {
-    /// A strong ref to the record to be bookmarked. Currently, only `app.bsky.feed.post` records are supported.
-    #[serde(borrow)]
-    pub subject: crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct Bookmark<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///A strong ref to the record to be bookmarked. Currently, only `app.bsky.feed.post` records are supported.
+    pub subject: crate::generated::com_atproto::repo::strong_ref::StrongRef<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct BookmarkView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub created_at: core::option::Option<jacquard_common::types::string::Datetime>,
+    pub item: BookmarkViewItem<S>,
+    ///A strong ref to the bookmarked record.
+    pub subject: crate::generated::com_atproto::repo::strong_ref::StrongRef<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[jacquard_derive::open_union]
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub enum BookmarkViewItem<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(rename = "app.bsky.feed.defs#blockedPost")]
+    BlockedPost(Box<crate::generated::app_bsky::feed::BlockedPost<S>>),
+    #[serde(rename = "app.bsky.feed.defs#notFoundPost")]
+    NotFoundPost(Box<crate::generated::app_bsky::feed::NotFoundPost<S>>),
+    #[serde(rename = "app.bsky.feed.defs#postView")]
+    PostView(Box<crate::generated::app_bsky::feed::PostView<S>>),
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Bookmark<S> {
+    fn nsid() -> &'static str {
+        "app.bsky.bookmark.defs"
+    }
+    fn def_name() -> &'static str {
+        "bookmark"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_app_bsky_bookmark_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for BookmarkView<S> {
+    fn nsid() -> &'static str {
+        "app.bsky.bookmark.defs"
+    }
+    fn def_name() -> &'static str {
+        "bookmarkView"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_app_bsky_bookmark_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
 }
 
 pub mod bookmark_state {
@@ -40,9 +127,9 @@ pub mod bookmark_state {
         type Subject = Unset;
     }
     ///State transition - sets the `subject` field to Set
-    pub struct SetSubject<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetSubject<S> {}
-    impl<S: State> State for SetSubject<S> {
+    pub struct SetSubject<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSubject<St> {}
+    impl<St: State> State for SetSubject<St> {
         type Subject = Set<members::subject>;
     }
     /// Marker types for field names
@@ -53,153 +140,160 @@ pub mod bookmark_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct BookmarkBuilder<'a, S: bookmark_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named:
-        (::core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct BookmarkBuilder<
+    St: bookmark_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> Bookmark<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> BookmarkBuilder<'a, bookmark_state::Empty> {
+impl Bookmark<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> BookmarkBuilder<bookmark_state::Empty, jacquard_common::DefaultStr> {
         BookmarkBuilder::new()
     }
 }
 
-impl<'a> BookmarkBuilder<'a, bookmark_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> Bookmark<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> BookmarkBuilder<bookmark_state::Empty, S> {
+        BookmarkBuilder::builder()
+    }
+}
+
+impl BookmarkBuilder<bookmark_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         BookmarkBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> BookmarkBuilder<'a, S>
+impl<S: jacquard_common::BosStr> BookmarkBuilder<bookmark_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        BookmarkBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> BookmarkBuilder<St, S>
 where
-    S: bookmark_state::State,
-    S::Subject: bookmark_state::IsUnset,
+    St: bookmark_state::State,
+    St::Subject: bookmark_state::IsUnset,
 {
     /// Set the `subject` field (required)
     pub fn subject(
         mut self,
-        value: impl Into<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,
-    ) -> BookmarkBuilder<'a, bookmark_state::SetSubject<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
+    ) -> BookmarkBuilder<bookmark_state::SetSubject<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         BookmarkBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> BookmarkBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> BookmarkBuilder<St, S>
 where
-    S: bookmark_state::State,
-    S::Subject: bookmark_state::IsSet,
+    St: bookmark_state::State,
+    St::Subject: bookmark_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> Bookmark<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> Bookmark<S> {
         Bookmark {
-            subject: self.__unsafe_private_named.0.unwrap(),
+            subject: self._fields.0.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> Bookmark<'a> {
+    ) -> Bookmark<S> {
         Bookmark {
-            subject: self.__unsafe_private_named.0.unwrap(),
+            subject: self._fields.0.unwrap(),
             extra_data: Some(extra_data),
         }
     }
 }
 
-fn lexicon_doc_app_bsky_bookmark_defs() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_app_bsky_bookmark_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("app.bsky.bookmark.defs"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("bookmark"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("bookmark"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
                         description: Some(::jacquard_common::CowStr::new_static(
                             "Object used to store bookmark data in stash.",
                         )),
-                        required: Some(vec![::jacquard_common::smol_str::SmolStr::new_static(
-                            "subject",
-                        )]),
-                        nullable: None,
+                        required: Some(vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("subject"),
+                        ]),
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("subject"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("subject"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
                                     ::jacquard_lexicon::lexicon::LexRef {
-                                        description: None,
                                         r#ref: ::jacquard_common::CowStr::new_static(
                                             "com.atproto.repo.strongRef",
                                         ),
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("bookmarkView"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("bookmarkView"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("subject"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("item"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("subject"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("item"),
                         ]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("createdAt"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("item"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("item"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Union(
                                     ::jacquard_lexicon::lexicon::LexRefUnion {
-                                        description: None,
                                         refs: vec![
                                             ::jacquard_common::CowStr::new_static(
                                                 "app.bsky.feed.defs#blockedPost",
@@ -211,61 +305,31 @@ fn lexicon_doc_app_bsky_bookmark_defs() -> ::jacquard_lexicon::lexicon::LexiconD
                                                 "app.bsky.feed.defs#postView",
                                             ),
                                         ],
-                                        closed: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("subject"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("subject"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
                                     ::jacquard_lexicon::lexicon::LexRef {
-                                        description: None,
                                         r#ref: ::jacquard_common::CowStr::new_static(
                                             "com.atproto.repo.strongRef",
                                         ),
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map
         },
+        ..Default::default()
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Bookmark<'a> {
-    fn nsid() -> &'static str {
-        "app.bsky.bookmark.defs"
-    }
-    fn def_name() -> &'static str {
-        "bookmark"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_app_bsky_bookmark_defs()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct BookmarkView<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub created_at: std::option::Option<jacquard_common::types::string::Datetime>,
-    #[serde(borrow)]
-    pub item: BookmarkViewItem<'a>,
-    /// A strong ref to the bookmarked record.
-    #[serde(borrow)]
-    pub subject: crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>,
 }
 
 pub mod bookmark_view_state {
@@ -278,76 +342,97 @@ pub mod bookmark_view_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Subject;
         type Item;
+        type Subject;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Subject = Unset;
         type Item = Unset;
-    }
-    ///State transition - sets the `subject` field to Set
-    pub struct SetSubject<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetSubject<S> {}
-    impl<S: State> State for SetSubject<S> {
-        type Subject = Set<members::subject>;
-        type Item = S::Item;
+        type Subject = Unset;
     }
     ///State transition - sets the `item` field to Set
-    pub struct SetItem<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetItem<S> {}
-    impl<S: State> State for SetItem<S> {
-        type Subject = S::Subject;
+    pub struct SetItem<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetItem<St> {}
+    impl<St: State> State for SetItem<St> {
         type Item = Set<members::item>;
+        type Subject = St::Subject;
+    }
+    ///State transition - sets the `subject` field to Set
+    pub struct SetSubject<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSubject<St> {}
+    impl<St: State> State for SetSubject<St> {
+        type Item = St::Item;
+        type Subject = Set<members::subject>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `subject` field
-        pub struct subject(());
         ///Marker type for the `item` field
         pub struct item(());
+        ///Marker type for the `subject` field
+        pub struct subject(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct BookmarkViewBuilder<'a, S: bookmark_view_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<BookmarkViewItem<'a>>,
-        ::core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct BookmarkViewBuilder<
+    St: bookmark_view_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<BookmarkViewItem<S>>,
+        core::option::Option<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> BookmarkView<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> BookmarkViewBuilder<'a, bookmark_view_state::Empty> {
+impl BookmarkView<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> BookmarkViewBuilder<bookmark_view_state::Empty, jacquard_common::DefaultStr> {
         BookmarkViewBuilder::new()
     }
 }
 
-impl<'a> BookmarkViewBuilder<'a, bookmark_view_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> BookmarkView<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> BookmarkViewBuilder<bookmark_view_state::Empty, S> {
+        BookmarkViewBuilder::builder()
+    }
+}
+
+impl BookmarkViewBuilder<bookmark_view_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         BookmarkViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: bookmark_view_state::State> BookmarkViewBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> BookmarkViewBuilder<bookmark_view_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        BookmarkViewBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: bookmark_view_state::State, S: jacquard_common::BosStr> BookmarkViewBuilder<St, S> {
     /// Set the `createdAt` field (optional)
     pub fn created_at(
         mut self,
         value: impl Into<Option<jacquard_common::types::string::Datetime>>,
     ) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+        self._fields.0 = value.into();
         self
     }
     /// Set the `createdAt` field to an Option value (optional)
@@ -355,109 +440,77 @@ impl<'a, S: bookmark_view_state::State> BookmarkViewBuilder<'a, S> {
         mut self,
         value: Option<jacquard_common::types::string::Datetime>,
     ) -> Self {
-        self.__unsafe_private_named.0 = value;
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S> BookmarkViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> BookmarkViewBuilder<St, S>
 where
-    S: bookmark_view_state::State,
-    S::Item: bookmark_view_state::IsUnset,
+    St: bookmark_view_state::State,
+    St::Item: bookmark_view_state::IsUnset,
 {
     /// Set the `item` field (required)
     pub fn item(
         mut self,
-        value: impl Into<BookmarkViewItem<'a>>,
-    ) -> BookmarkViewBuilder<'a, bookmark_view_state::SetItem<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<BookmarkViewItem<S>>,
+    ) -> BookmarkViewBuilder<bookmark_view_state::SetItem<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         BookmarkViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> BookmarkViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> BookmarkViewBuilder<St, S>
 where
-    S: bookmark_view_state::State,
-    S::Subject: bookmark_view_state::IsUnset,
+    St: bookmark_view_state::State,
+    St::Subject: bookmark_view_state::IsUnset,
 {
     /// Set the `subject` field (required)
     pub fn subject(
         mut self,
-        value: impl Into<crate::generated::com_atproto::repo::strong_ref::StrongRef<'a>>,
-    ) -> BookmarkViewBuilder<'a, bookmark_view_state::SetSubject<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        value: impl Into<crate::generated::com_atproto::repo::strong_ref::StrongRef<S>>,
+    ) -> BookmarkViewBuilder<bookmark_view_state::SetSubject<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         BookmarkViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> BookmarkViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> BookmarkViewBuilder<St, S>
 where
-    S: bookmark_view_state::State,
-    S::Subject: bookmark_view_state::IsSet,
-    S::Item: bookmark_view_state::IsSet,
+    St: bookmark_view_state::State,
+    St::Item: bookmark_view_state::IsSet,
+    St::Subject: bookmark_view_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> BookmarkView<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> BookmarkView<S> {
         BookmarkView {
-            created_at: self.__unsafe_private_named.0,
-            item: self.__unsafe_private_named.1.unwrap(),
-            subject: self.__unsafe_private_named.2.unwrap(),
+            created_at: self._fields.0,
+            item: self._fields.1.unwrap(),
+            subject: self._fields.2.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> BookmarkView<'a> {
+    ) -> BookmarkView<S> {
         BookmarkView {
-            created_at: self.__unsafe_private_named.0,
-            item: self.__unsafe_private_named.1.unwrap(),
-            subject: self.__unsafe_private_named.2.unwrap(),
+            created_at: self._fields.0,
+            item: self._fields.1.unwrap(),
+            subject: self._fields.2.unwrap(),
             extra_data: Some(extra_data),
         }
-    }
-}
-
-#[jacquard_derive::open_union]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(tag = "$type")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum BookmarkViewItem<'a> {
-    #[serde(rename = "app.bsky.feed.defs#blockedPost")]
-    BlockedPost(Box<crate::generated::app_bsky::feed::BlockedPost<'a>>),
-    #[serde(rename = "app.bsky.feed.defs#notFoundPost")]
-    NotFoundPost(Box<crate::generated::app_bsky::feed::NotFoundPost<'a>>),
-    #[serde(rename = "app.bsky.feed.defs#postView")]
-    PostView(Box<crate::generated::app_bsky::feed::PostView<'a>>),
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for BookmarkView<'a> {
-    fn nsid() -> &'static str {
-        "app.bsky.bookmark.defs"
-    }
-    fn def_name() -> &'static str {
-        "bookmarkView"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_app_bsky_bookmark_defs()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
     }
 }

@@ -5,7 +5,6 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -16,14 +15,26 @@
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct StartPhoneVerification<'a> {
-    /// The phone number to receive the code via SMS.
-    #[serde(borrow)]
-    pub phone: jacquard_common::CowStr<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct StartPhoneVerification<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///The phone number to receive the code via SMS.
+    pub phone: S,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -34,9 +45,24 @@ pub struct StartPhoneVerification<'a> {
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct StartPhoneVerificationOutput<'a> {}
-#[jacquard_derive::open_union]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct StartPhoneVerificationOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -46,23 +72,27 @@ pub struct StartPhoneVerificationOutput<'a> {}
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum StartPhoneVerificationError<'a> {
+pub enum StartPhoneVerificationError {
     #[serde(rename = "RateLimitExceeded")]
-    RateLimitExceeded(std::option::Option<jacquard_common::CowStr<'a>>),
+    RateLimitExceeded(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "InvalidDid")]
-    InvalidDid(std::option::Option<jacquard_common::CowStr<'a>>),
+    InvalidDid(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "InvalidPhone")]
-    InvalidPhone(std::option::Option<jacquard_common::CowStr<'a>>),
+    InvalidPhone(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "InternalError")]
-    InternalError(std::option::Option<jacquard_common::CowStr<'a>>),
+    InternalError(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
 }
 
-impl std::fmt::Display for StartPhoneVerificationError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for StartPhoneVerificationError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             Self::RateLimitExceeded(msg) => {
                 write!(f, "RateLimitExceeded")?;
@@ -92,35 +122,43 @@ impl std::fmt::Display for StartPhoneVerificationError<'_> {
                 }
                 Ok(())
             }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
         }
     }
 }
 
-/// Response type for
-///app.bsky.contact.startPhoneVerification
+/** Response marker for the `app.bsky.contact.startPhoneVerification` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `StartPhoneVerificationOutput<S>` for this endpoint.*/
 pub struct StartPhoneVerificationResponse;
 impl jacquard_common::xrpc::XrpcResp for StartPhoneVerificationResponse {
     const NSID: &'static str = "app.bsky.contact.startPhoneVerification";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = StartPhoneVerificationOutput<'de>;
-    type Err<'de> = StartPhoneVerificationError<'de>;
+    type Output<S: jacquard_common::BosStr> = StartPhoneVerificationOutput<S>;
+    type Err = StartPhoneVerificationError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for StartPhoneVerification<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for StartPhoneVerification<S> {
     const NSID: &'static str = "app.bsky.contact.startPhoneVerification";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = StartPhoneVerificationResponse;
 }
 
-/// Endpoint type for
-///app.bsky.contact.startPhoneVerification
+/** Endpoint marker for the `app.bsky.contact.startPhoneVerification` procedure.
+
+Path: `/xrpc/app.bsky.contact.startPhoneVerification`. The request payload type is `StartPhoneVerification<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct StartPhoneVerificationRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for StartPhoneVerificationRequest {
     const PATH: &'static str = "/xrpc/app.bsky.contact.startPhoneVerification";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = StartPhoneVerification<'de>;
+    type Request<S: jacquard_common::BosStr> = StartPhoneVerification<S>;
     type Response = StartPhoneVerificationResponse;
 }

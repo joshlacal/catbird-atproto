@@ -8,10 +8,110 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetProfileCard<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub id: S,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
 #[serde(rename_all = "camelCase")]
-pub struct GetProfileCard<'a> {
-    #[serde(borrow)]
-    pub id: jacquard_common::CowStr<'a>,
+pub struct GetProfileCardOutput {
+    pub body: jacquard_common::deps::bytes::Bytes,
+}
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    thiserror::Error,
+    miette::Diagnostic,
+)]
+#[serde(tag = "error", content = "message")]
+pub enum GetProfileCardError {
+    #[serde(rename = "RepoNotFound")]
+    RepoNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
+}
+
+impl core::fmt::Display for GetProfileCardError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+            Self::RepoNotFound(msg) => {
+                write!(f, "RepoNotFound")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+        }
+    }
+}
+
+/** Response marker for the `place.stream.live.getProfileCard` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetProfileCardOutput` for this endpoint.*/
+pub struct GetProfileCardResponse;
+impl jacquard_common::xrpc::XrpcResp for GetProfileCardResponse {
+    const NSID: &'static str = "place.stream.live.getProfileCard";
+    const ENCODING: &'static str = "*/*";
+    type Output<S: jacquard_common::BosStr> = GetProfileCardOutput;
+    type Err = GetProfileCardError;
+    fn encode_output<S: jacquard_common::BosStr>(
+        output: &Self::Output<S>,
+    ) -> Result<Vec<u8>, jacquard_common::xrpc::EncodeError>
+    where
+        Self::Output<S>: serde::Serialize,
+    {
+        Ok(output.body.to_vec())
+    }
+    fn decode_output<'de, S>(
+        body: &'de [u8],
+    ) -> Result<Self::Output<S>, jacquard_common::error::DecodeError>
+    where
+        S: jacquard_common::BosStr + serde::Deserialize<'de>,
+        Self::Output<S>: serde::Deserialize<'de>,
+    {
+        Ok(GetProfileCardOutput {
+            body: jacquard_common::deps::bytes::Bytes::copy_from_slice(body),
+        })
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetProfileCard<S> {
+    const NSID: &'static str = "place.stream.live.getProfileCard";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = GetProfileCardResponse;
+}
+
+/** Endpoint marker for the `place.stream.live.getProfileCard` query.
+
+Path: `/xrpc/place.stream.live.getProfileCard`. The request payload type is `GetProfileCard<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct GetProfileCardRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for GetProfileCardRequest {
+    const PATH: &'static str = "/xrpc/place.stream.live.getProfileCard";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = GetProfileCard<S>;
+    type Response = GetProfileCardResponse;
 }
 
 pub mod get_profile_card_state {
@@ -33,9 +133,9 @@ pub mod get_profile_card_state {
         type Id = Unset;
     }
     ///State transition - sets the `id` field to Set
-    pub struct SetId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetId<S> {}
-    impl<S: State> State for SetId<S> {
+    pub struct SetId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetId<St> {}
+    impl<St: State> State for SetId<St> {
         type Id = Set<members::id>;
     }
     /// Marker types for field names
@@ -46,142 +146,81 @@ pub mod get_profile_card_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct GetProfileCardBuilder<'a, S: get_profile_card_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<jacquard_common::CowStr<'a>>,),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct GetProfileCardBuilder<
+    St: get_profile_card_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<S>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> GetProfileCard<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> GetProfileCardBuilder<'a, get_profile_card_state::Empty> {
+impl GetProfileCard<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> GetProfileCardBuilder<get_profile_card_state::Empty, jacquard_common::DefaultStr>
+    {
         GetProfileCardBuilder::new()
     }
 }
 
-impl<'a> GetProfileCardBuilder<'a, get_profile_card_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> GetProfileCard<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> GetProfileCardBuilder<get_profile_card_state::Empty, S> {
+        GetProfileCardBuilder::builder()
+    }
+}
+
+impl GetProfileCardBuilder<get_profile_card_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetProfileCardBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GetProfileCardBuilder<'a, S>
+impl<S: jacquard_common::BosStr> GetProfileCardBuilder<get_profile_card_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GetProfileCardBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> GetProfileCardBuilder<St, S>
 where
-    S: get_profile_card_state::State,
-    S::Id: get_profile_card_state::IsUnset,
+    St: get_profile_card_state::State,
+    St::Id: get_profile_card_state::IsUnset,
 {
     /// Set the `id` field (required)
     pub fn id(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> GetProfileCardBuilder<'a, get_profile_card_state::SetId<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> GetProfileCardBuilder<get_profile_card_state::SetId<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         GetProfileCardBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GetProfileCardBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GetProfileCardBuilder<St, S>
 where
-    S: get_profile_card_state::State,
-    S::Id: get_profile_card_state::IsSet,
+    St: get_profile_card_state::State,
+    St::Id: get_profile_card_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> GetProfileCard<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> GetProfileCard<S> {
         GetProfileCard {
-            id: self.__unsafe_private_named.0.unwrap(),
+            id: self._fields.0.unwrap(),
         }
     }
-}
-
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GetProfileCardOutput {
-    pub body: bytes::Bytes,
-}
-
-#[jacquard_derive::open_union]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    thiserror::Error,
-    miette::Diagnostic,
-    jacquard_derive::IntoStatic,
-)]
-#[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum GetProfileCardError<'a> {
-    #[serde(rename = "RepoNotFound")]
-    RepoNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
-}
-
-impl std::fmt::Display for GetProfileCardError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::RepoNotFound(msg) => {
-                write!(f, "RepoNotFound")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
-        }
-    }
-}
-
-/// Response type for
-///place.stream.live.getProfileCard
-pub struct GetProfileCardResponse;
-impl jacquard_common::xrpc::XrpcResp for GetProfileCardResponse {
-    const NSID: &'static str = "place.stream.live.getProfileCard";
-    const ENCODING: &'static str = "*/*";
-    type Output<'de> = GetProfileCardOutput;
-    type Err<'de> = GetProfileCardError<'de>;
-    fn encode_output(
-        output: &Self::Output<'_>,
-    ) -> Result<Vec<u8>, jacquard_common::xrpc::EncodeError> {
-        Ok(output.body.to_vec())
-    }
-    fn decode_output<'de>(
-        body: &'de [u8],
-    ) -> Result<Self::Output<'de>, jacquard_common::error::DecodeError>
-    where
-        Self::Output<'de>: serde::Deserialize<'de>,
-    {
-        Ok(GetProfileCardOutput {
-            body: bytes::Bytes::copy_from_slice(body),
-        })
-    }
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for GetProfileCard<'a> {
-    const NSID: &'static str = "place.stream.live.getProfileCard";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = GetProfileCardResponse;
-}
-
-/// Endpoint type for
-///place.stream.live.getProfileCard
-pub struct GetProfileCardRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for GetProfileCardRequest {
-    const PATH: &'static str = "/xrpc/place.stream.live.getProfileCard";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetProfileCard<'de>;
-    type Response = GetProfileCardResponse;
 }

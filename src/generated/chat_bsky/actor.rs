@@ -5,12 +5,12 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
+//! Generated bindings for the `chat.bsky.actor` Lexicon namespace/module.
 pub mod declaration;
 pub mod delete_account;
 pub mod export_account_data;
 pub mod get_status;
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -21,228 +21,481 @@ pub mod get_status;
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct DirectConvoMember<'a> {}
-fn lexicon_doc_chat_bsky_actor_defs() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct DirectConvoMember<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// A current group convo member.
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GroupConvoMember<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Who added this member. Only present if the member was added (instead of joining via link).
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub added_by: core::option::Option<crate::generated::chat_bsky::actor::ProfileViewBasic<S>>,
+    ///The member's role within this conversation. Only present in group conversation member lists.
+    pub role: crate::generated::chat_bsky::actor::MemberRole<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum MemberRole<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    Owner,
+    Standard,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> MemberRole<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Owner => "owner",
+            Self::Standard => "standard",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "owner" => Self::Owner,
+            "standard" => Self::Standard,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for MemberRole<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for MemberRole<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for MemberRole<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for MemberRole<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for MemberRole<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = MemberRole<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            MemberRole::Owner => MemberRole::Owner,
+            MemberRole::Standard => MemberRole::Standard,
+            MemberRole::Other(v) => MemberRole::Other(v.into_static()),
+        }
+    }
+}
+
+/// A past group convo member.
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic,
+    Default,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct PastGroupConvoMember<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ProfileViewBasic<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub associated: core::option::Option<crate::generated::app_bsky::actor::ProfileAssociated<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub avatar: core::option::Option<jacquard_common::types::string::UriValue<S>>,
+    ///Set to true when the actor cannot actively participate in conversations
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub chat_disabled: core::option::Option<bool>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub created_at: core::option::Option<jacquard_common::types::string::Datetime>,
+    pub did: jacquard_common::types::string::Did<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub display_name: core::option::Option<S>,
+    pub handle: jacquard_common::types::string::Handle<S>,
+    ///Union field that has data specific to different kinds of convos.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub kind: core::option::Option<ProfileViewBasicKind<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub labels: core::option::Option<Vec<crate::generated::com_atproto::label::Label<S>>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub verification: core::option::Option<crate::generated::app_bsky::actor::VerificationState<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub viewer: core::option::Option<crate::generated::app_bsky::actor::ViewerState<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[jacquard_derive::open_union]
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub enum ProfileViewBasicKind<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(rename = "chat.bsky.actor.defs#directConvoMember")]
+    DirectConvoMember(Box<crate::generated::chat_bsky::actor::DirectConvoMember<S>>),
+    #[serde(rename = "chat.bsky.actor.defs#groupConvoMember")]
+    GroupConvoMember(Box<crate::generated::chat_bsky::actor::GroupConvoMember<S>>),
+    #[serde(rename = "chat.bsky.actor.defs#pastGroupConvoMember")]
+    PastGroupConvoMember(Box<crate::generated::chat_bsky::actor::PastGroupConvoMember<S>>),
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for DirectConvoMember<S> {
+    fn nsid() -> &'static str {
+        "chat.bsky.actor.defs"
+    }
+    fn def_name() -> &'static str {
+        "directConvoMember"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_chat_bsky_actor_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for GroupConvoMember<S> {
+    fn nsid() -> &'static str {
+        "chat.bsky.actor.defs"
+    }
+    fn def_name() -> &'static str {
+        "groupConvoMember"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_chat_bsky_actor_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+    for PastGroupConvoMember<S>
+{
+    fn nsid() -> &'static str {
+        "chat.bsky.actor.defs"
+    }
+    fn def_name() -> &'static str {
+        "pastGroupConvoMember"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_chat_bsky_actor_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ProfileViewBasic<S> {
+    fn nsid() -> &'static str {
+        "chat.bsky.actor.defs"
+    }
+    fn def_name() -> &'static str {
+        "profileViewBasic"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_chat_bsky_actor_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        if let Some(ref value) = self.display_name {
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 640usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("display_name"),
+                    max: 640usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        if let Some(ref value) = self.display_name {
+            {
+                let count = jacquard_common::deps::codegen::unicode_segmentation::UnicodeSegmentation::graphemes(
+                        value.as_ref(),
+                        true,
+                    )
+                    .count();
+                if count > 64usize {
+                    return Err(
+                        jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field(
+                                "display_name",
+                            ),
+                            max: 64usize,
+                            actual: count,
+                        },
+                    );
+                }
+            }
+        }
+        Ok(())
+    }
+}
+
+fn lexicon_doc_chat_bsky_actor_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("chat.bsky.actor.defs"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("directConvoMember"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("directConvoMember"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
-                        required: None,
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("groupConvoMember"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("groupConvoMember"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
                         description: Some(::jacquard_common::CowStr::new_static(
                             "A current group convo member.",
                         )),
-                        required: Some(vec![::jacquard_common::smol_str::SmolStr::new_static(
-                            "role",
-                        )]),
-                        nullable: None,
+                        required: Some(vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("role"),
+                        ]),
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("addedBy"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("addedBy"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
                                     ::jacquard_lexicon::lexicon::LexRef {
-                                        description: None,
                                         r#ref: ::jacquard_common::CowStr::new_static(
                                             "#profileViewBasic",
                                         ),
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("role"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("role"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
                                     ::jacquard_lexicon::lexicon::LexRef {
-                                        description: None,
                                         r#ref: ::jacquard_common::CowStr::new_static("#memberRole"),
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("memberRole"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("memberRole"),
                 ::jacquard_lexicon::lexicon::LexUserType::String(
                     ::jacquard_lexicon::lexicon::LexString {
-                        description: None,
-                        format: None,
-                        default: None,
-                        min_length: None,
-                        max_length: None,
-                        min_graphemes: None,
-                        max_graphemes: None,
-                        r#enum: None,
-                        r#const: None,
-                        known_values: None,
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("pastGroupConvoMember"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("pastGroupConvoMember"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
                         description: Some(::jacquard_common::CowStr::new_static(
                             "A past group convo member.",
                         )),
                         required: Some(vec![]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("profileViewBasic"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "profileViewBasic",
+                ),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: None,
                     required: Some(
                         vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("did"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("handle")
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("handle")
                         ],
                     ),
-                    nullable: None,
                     properties: {
                         #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
+                        let mut map = ::alloc::collections::BTreeMap::new();
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "associated",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                description: None,
                                 r#ref: ::jacquard_common::CowStr::new_static(
                                     "app.bsky.actor.defs#profileAssociated",
                                 ),
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("avatar"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "avatar",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Uri,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "chatDisabled",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
-                                description: None,
-                                default: None,
-                                r#const: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "createdAt",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("did"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "did",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "displayName",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: None,
-                                default: None,
-                                min_length: None,
                                 max_length: Some(640usize),
-                                min_graphemes: None,
                                 max_graphemes: Some(64usize),
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("handle"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "handle",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Handle,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("kind"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "kind",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Union(::jacquard_lexicon::lexicon::LexRefUnion {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
@@ -254,83 +507,54 @@ fn lexicon_doc_chat_bsky_actor_defs() -> ::jacquard_lexicon::lexicon::LexiconDoc
                                     ::jacquard_common::CowStr::new_static("#groupConvoMember"),
                                     ::jacquard_common::CowStr::new_static("#pastGroupConvoMember")
                                 ],
-                                closed: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("labels"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "labels",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
-                                description: None,
                                 items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                    description: None,
                                     r#ref: ::jacquard_common::CowStr::new_static(
                                         "com.atproto.label.defs#label",
                                     ),
+                                    ..Default::default()
                                 }),
-                                min_length: None,
-                                max_length: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "verification",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                description: None,
                                 r#ref: ::jacquard_common::CowStr::new_static(
                                     "app.bsky.actor.defs#verificationState",
                                 ),
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("viewer"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "viewer",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                description: None,
                                 r#ref: ::jacquard_common::CowStr::new_static(
                                     "app.bsky.actor.defs#viewerState",
                                 ),
+                                ..Default::default()
                             }),
                         );
                         map
                     },
+                    ..Default::default()
                 }),
             );
             map
         },
+        ..Default::default()
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for DirectConvoMember<'a> {
-    fn nsid() -> &'static str {
-        "chat.bsky.actor.defs"
-    }
-    fn def_name() -> &'static str {
-        "directConvoMember"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_chat_bsky_actor_defs()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-/// A current group convo member.
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GroupConvoMember<'a> {
-    /// Who added this member. Only present if the member was added (instead of joining via link).
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub added_by: std::option::Option<crate::generated::chat_bsky::actor::ProfileViewBasic<'a>>,
-    /// The member's role within this conversation. Only present in group conversation member lists.
-    #[serde(borrow)]
-    pub role: crate::generated::chat_bsky::actor::MemberRole<'a>,
 }
 
 pub mod group_convo_member_state {
@@ -352,9 +576,9 @@ pub mod group_convo_member_state {
         type Role = Unset;
     }
     ///State transition - sets the `role` field to Set
-    pub struct SetRole<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRole<S> {}
-    impl<S: State> State for SetRole<S> {
+    pub struct SetRole<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRole<St> {}
+    impl<St: State> State for SetRole<St> {
         type Role = Set<members::role>;
     }
     /// Marker types for field names
@@ -365,262 +589,123 @@ pub mod group_convo_member_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct GroupConvoMemberBuilder<'a, S: group_convo_member_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<crate::generated::chat_bsky::actor::ProfileViewBasic<'a>>,
-        ::core::option::Option<crate::generated::chat_bsky::actor::MemberRole<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct GroupConvoMemberBuilder<
+    St: group_convo_member_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<crate::generated::chat_bsky::actor::ProfileViewBasic<S>>,
+        core::option::Option<crate::generated::chat_bsky::actor::MemberRole<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> GroupConvoMember<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> GroupConvoMemberBuilder<'a, group_convo_member_state::Empty> {
+impl GroupConvoMember<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> GroupConvoMemberBuilder<group_convo_member_state::Empty, jacquard_common::DefaultStr> {
         GroupConvoMemberBuilder::new()
     }
 }
 
-impl<'a> GroupConvoMemberBuilder<'a, group_convo_member_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> GroupConvoMember<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> GroupConvoMemberBuilder<group_convo_member_state::Empty, S> {
+        GroupConvoMemberBuilder::builder()
+    }
+}
+
+impl GroupConvoMemberBuilder<group_convo_member_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GroupConvoMemberBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: group_convo_member_state::State> GroupConvoMemberBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> GroupConvoMemberBuilder<group_convo_member_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GroupConvoMemberBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: group_convo_member_state::State, S: jacquard_common::BosStr>
+    GroupConvoMemberBuilder<St, S>
+{
     /// Set the `addedBy` field (optional)
     pub fn added_by(
         mut self,
-        value: impl Into<Option<crate::generated::chat_bsky::actor::ProfileViewBasic<'a>>>,
+        value: impl Into<Option<crate::generated::chat_bsky::actor::ProfileViewBasic<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+        self._fields.0 = value.into();
         self
     }
     /// Set the `addedBy` field to an Option value (optional)
     pub fn maybe_added_by(
         mut self,
-        value: Option<crate::generated::chat_bsky::actor::ProfileViewBasic<'a>>,
+        value: Option<crate::generated::chat_bsky::actor::ProfileViewBasic<S>>,
     ) -> Self {
-        self.__unsafe_private_named.0 = value;
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S> GroupConvoMemberBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GroupConvoMemberBuilder<St, S>
 where
-    S: group_convo_member_state::State,
-    S::Role: group_convo_member_state::IsUnset,
+    St: group_convo_member_state::State,
+    St::Role: group_convo_member_state::IsUnset,
 {
     /// Set the `role` field (required)
     pub fn role(
         mut self,
-        value: impl Into<crate::generated::chat_bsky::actor::MemberRole<'a>>,
-    ) -> GroupConvoMemberBuilder<'a, group_convo_member_state::SetRole<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<crate::generated::chat_bsky::actor::MemberRole<S>>,
+    ) -> GroupConvoMemberBuilder<group_convo_member_state::SetRole<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         GroupConvoMemberBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GroupConvoMemberBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GroupConvoMemberBuilder<St, S>
 where
-    S: group_convo_member_state::State,
-    S::Role: group_convo_member_state::IsSet,
+    St: group_convo_member_state::State,
+    St::Role: group_convo_member_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> GroupConvoMember<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> GroupConvoMember<S> {
         GroupConvoMember {
-            added_by: self.__unsafe_private_named.0,
-            role: self.__unsafe_private_named.1.unwrap(),
+            added_by: self._fields.0,
+            role: self._fields.1.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> GroupConvoMember<'a> {
+    ) -> GroupConvoMember<S> {
         GroupConvoMember {
-            added_by: self.__unsafe_private_named.0,
-            role: self.__unsafe_private_named.1.unwrap(),
+            added_by: self._fields.0,
+            role: self._fields.1.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for GroupConvoMember<'a> {
-    fn nsid() -> &'static str {
-        "chat.bsky.actor.defs"
-    }
-    fn def_name() -> &'static str {
-        "groupConvoMember"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_chat_bsky_actor_defs()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum MemberRole<'a> {
-    Owner,
-    Standard,
-    Other(jacquard_common::CowStr<'a>),
-}
-
-impl<'a> MemberRole<'a> {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::Owner => "owner",
-            Self::Standard => "standard",
-            Self::Other(s) => s.as_ref(),
-        }
-    }
-}
-
-impl<'a> From<&'a str> for MemberRole<'a> {
-    fn from(s: &'a str) -> Self {
-        match s {
-            "owner" => Self::Owner,
-            "standard" => Self::Standard,
-            _ => Self::Other(jacquard_common::CowStr::from(s)),
-        }
-    }
-}
-
-impl<'a> From<String> for MemberRole<'a> {
-    fn from(s: String) -> Self {
-        match s.as_str() {
-            "owner" => Self::Owner,
-            "standard" => Self::Standard,
-            _ => Self::Other(jacquard_common::CowStr::from(s)),
-        }
-    }
-}
-
-impl<'a> AsRef<str> for MemberRole<'a> {
-    fn as_ref(&self) -> &str {
-        self.as_str()
-    }
-}
-
-impl<'a> serde::Serialize for MemberRole<'a> {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        serializer.serialize_str(self.as_str())
-    }
-}
-
-impl<'de, 'a> serde::Deserialize<'de> for MemberRole<'a>
-where
-    'de: 'a,
-{
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        let s = <&'de str>::deserialize(deserializer)?;
-        Ok(Self::from(s))
-    }
-}
-
-impl jacquard_common::IntoStatic for MemberRole<'_> {
-    type Output = MemberRole<'static>;
-    fn into_static(self) -> Self::Output {
-        match self {
-            MemberRole::Owner => MemberRole::Owner,
-            MemberRole::Standard => MemberRole::Standard,
-            MemberRole::Other(v) => MemberRole::Other(v.into_static()),
-        }
-    }
-}
-
-/// A past group convo member.
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic,
-    Default,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct PastGroupConvoMember<'a> {}
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for PastGroupConvoMember<'a> {
-    fn nsid() -> &'static str {
-        "chat.bsky.actor.defs"
-    }
-    fn def_name() -> &'static str {
-        "pastGroupConvoMember"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_chat_bsky_actor_defs()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct ProfileViewBasic<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub associated: std::option::Option<crate::generated::app_bsky::actor::ProfileAssociated<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub avatar: std::option::Option<jacquard_common::types::string::Uri<'a>>,
-    /// Set to true when the actor cannot actively participate in conversations
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub chat_disabled: std::option::Option<bool>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub created_at: std::option::Option<jacquard_common::types::string::Datetime>,
-    #[serde(borrow)]
-    pub did: jacquard_common::types::string::Did<'a>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub display_name: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(borrow)]
-    pub handle: jacquard_common::types::string::Handle<'a>,
-    /// Union field that has data specific to different kinds of convos.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub kind: std::option::Option<ProfileViewBasicKind<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub labels: std::option::Option<Vec<crate::generated::com_atproto::label::Label<'a>>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub verification: std::option::Option<crate::generated::app_bsky::actor::VerificationState<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub viewer: std::option::Option<crate::generated::app_bsky::actor::ViewerState<'a>>,
 }
 
 pub mod profile_view_basic_state {
@@ -644,17 +729,17 @@ pub mod profile_view_basic_state {
         type Handle = Unset;
     }
     ///State transition - sets the `did` field to Set
-    pub struct SetDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDid<S> {}
-    impl<S: State> State for SetDid<S> {
+    pub struct SetDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetDid<St> {}
+    impl<St: State> State for SetDid<St> {
         type Did = Set<members::did>;
-        type Handle = S::Handle;
+        type Handle = St::Handle;
     }
     ///State transition - sets the `handle` field to Set
-    pub struct SetHandle<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetHandle<S> {}
-    impl<S: State> State for SetHandle<S> {
-        type Did = S::Did;
+    pub struct SetHandle<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetHandle<St> {}
+    impl<St: State> State for SetHandle<St> {
+        type Did = St::Did;
         type Handle = Set<members::handle>;
     }
     /// Marker types for field names
@@ -667,100 +752,135 @@ pub mod profile_view_basic_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct ProfileViewBasicBuilder<'a, S: profile_view_basic_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<crate::generated::app_bsky::actor::ProfileAssociated<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Uri<'a>>,
-        ::core::option::Option<bool>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Handle<'a>>,
-        ::core::option::Option<ProfileViewBasicKind<'a>>,
-        ::core::option::Option<Vec<crate::generated::com_atproto::label::Label<'a>>>,
-        ::core::option::Option<crate::generated::app_bsky::actor::VerificationState<'a>>,
-        ::core::option::Option<crate::generated::app_bsky::actor::ViewerState<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct ProfileViewBasicBuilder<
+    St: profile_view_basic_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<crate::generated::app_bsky::actor::ProfileAssociated<S>>,
+        core::option::Option<jacquard_common::types::string::UriValue<S>>,
+        core::option::Option<bool>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Handle<S>>,
+        core::option::Option<ProfileViewBasicKind<S>>,
+        core::option::Option<Vec<crate::generated::com_atproto::label::Label<S>>>,
+        core::option::Option<crate::generated::app_bsky::actor::VerificationState<S>>,
+        core::option::Option<crate::generated::app_bsky::actor::ViewerState<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> ProfileViewBasic<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> ProfileViewBasicBuilder<'a, profile_view_basic_state::Empty> {
+impl ProfileViewBasic<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> ProfileViewBasicBuilder<profile_view_basic_state::Empty, jacquard_common::DefaultStr> {
         ProfileViewBasicBuilder::new()
     }
 }
 
-impl<'a> ProfileViewBasicBuilder<'a, profile_view_basic_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> ProfileViewBasic<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> ProfileViewBasicBuilder<profile_view_basic_state::Empty, S> {
+        ProfileViewBasicBuilder::builder()
+    }
+}
+
+impl ProfileViewBasicBuilder<profile_view_basic_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ProfileViewBasicBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (
+            _state: ::core::marker::PhantomData,
+            _fields: (
                 None, None, None, None, None, None, None, None, None, None, None,
             ),
-            _phantom: ::core::marker::PhantomData,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: profile_view_basic_state::State> ProfileViewBasicBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> ProfileViewBasicBuilder<profile_view_basic_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        ProfileViewBasicBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (
+                None, None, None, None, None, None, None, None, None, None, None,
+            ),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: profile_view_basic_state::State, S: jacquard_common::BosStr>
+    ProfileViewBasicBuilder<St, S>
+{
     /// Set the `associated` field (optional)
     pub fn associated(
         mut self,
-        value: impl Into<Option<crate::generated::app_bsky::actor::ProfileAssociated<'a>>>,
+        value: impl Into<Option<crate::generated::app_bsky::actor::ProfileAssociated<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+        self._fields.0 = value.into();
         self
     }
     /// Set the `associated` field to an Option value (optional)
     pub fn maybe_associated(
         mut self,
-        value: Option<crate::generated::app_bsky::actor::ProfileAssociated<'a>>,
+        value: Option<crate::generated::app_bsky::actor::ProfileAssociated<S>>,
     ) -> Self {
-        self.__unsafe_private_named.0 = value;
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S: profile_view_basic_state::State> ProfileViewBasicBuilder<'a, S> {
+impl<St: profile_view_basic_state::State, S: jacquard_common::BosStr>
+    ProfileViewBasicBuilder<St, S>
+{
     /// Set the `avatar` field (optional)
     pub fn avatar(
         mut self,
-        value: impl Into<Option<jacquard_common::types::string::Uri<'a>>>,
+        value: impl Into<Option<jacquard_common::types::string::UriValue<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self._fields.1 = value.into();
         self
     }
     /// Set the `avatar` field to an Option value (optional)
-    pub fn maybe_avatar(mut self, value: Option<jacquard_common::types::string::Uri<'a>>) -> Self {
-        self.__unsafe_private_named.1 = value;
+    pub fn maybe_avatar(
+        mut self,
+        value: Option<jacquard_common::types::string::UriValue<S>>,
+    ) -> Self {
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S: profile_view_basic_state::State> ProfileViewBasicBuilder<'a, S> {
+impl<St: profile_view_basic_state::State, S: jacquard_common::BosStr>
+    ProfileViewBasicBuilder<St, S>
+{
     /// Set the `chatDisabled` field (optional)
     pub fn chat_disabled(mut self, value: impl Into<Option<bool>>) -> Self {
-        self.__unsafe_private_named.2 = value.into();
+        self._fields.2 = value.into();
         self
     }
     /// Set the `chatDisabled` field to an Option value (optional)
     pub fn maybe_chat_disabled(mut self, value: Option<bool>) -> Self {
-        self.__unsafe_private_named.2 = value;
+        self._fields.2 = value;
         self
     }
 }
 
-impl<'a, S: profile_view_basic_state::State> ProfileViewBasicBuilder<'a, S> {
+impl<St: profile_view_basic_state::State, S: jacquard_common::BosStr>
+    ProfileViewBasicBuilder<St, S>
+{
     /// Set the `createdAt` field (optional)
     pub fn created_at(
         mut self,
         value: impl Into<Option<jacquard_common::types::string::Datetime>>,
     ) -> Self {
-        self.__unsafe_private_named.3 = value.into();
+        self._fields.3 = value.into();
         self
     }
     /// Set the `createdAt` field to an Option value (optional)
@@ -768,238 +888,186 @@ impl<'a, S: profile_view_basic_state::State> ProfileViewBasicBuilder<'a, S> {
         mut self,
         value: Option<jacquard_common::types::string::Datetime>,
     ) -> Self {
-        self.__unsafe_private_named.3 = value;
+        self._fields.3 = value;
         self
     }
 }
 
-impl<'a, S> ProfileViewBasicBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ProfileViewBasicBuilder<St, S>
 where
-    S: profile_view_basic_state::State,
-    S::Did: profile_view_basic_state::IsUnset,
+    St: profile_view_basic_state::State,
+    St::Did: profile_view_basic_state::IsUnset,
 {
     /// Set the `did` field (required)
     pub fn did(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> ProfileViewBasicBuilder<'a, profile_view_basic_state::SetDid<S>> {
-        self.__unsafe_private_named.4 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> ProfileViewBasicBuilder<profile_view_basic_state::SetDid<St>, S> {
+        self._fields.4 = ::core::option::Option::Some(value.into());
         ProfileViewBasicBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: profile_view_basic_state::State> ProfileViewBasicBuilder<'a, S> {
+impl<St: profile_view_basic_state::State, S: jacquard_common::BosStr>
+    ProfileViewBasicBuilder<St, S>
+{
     /// Set the `displayName` field (optional)
-    pub fn display_name(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.5 = value.into();
+    pub fn display_name(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.5 = value.into();
         self
     }
     /// Set the `displayName` field to an Option value (optional)
-    pub fn maybe_display_name(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.5 = value;
+    pub fn maybe_display_name(mut self, value: Option<S>) -> Self {
+        self._fields.5 = value;
         self
     }
 }
 
-impl<'a, S> ProfileViewBasicBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ProfileViewBasicBuilder<St, S>
 where
-    S: profile_view_basic_state::State,
-    S::Handle: profile_view_basic_state::IsUnset,
+    St: profile_view_basic_state::State,
+    St::Handle: profile_view_basic_state::IsUnset,
 {
     /// Set the `handle` field (required)
     pub fn handle(
         mut self,
-        value: impl Into<jacquard_common::types::string::Handle<'a>>,
-    ) -> ProfileViewBasicBuilder<'a, profile_view_basic_state::SetHandle<S>> {
-        self.__unsafe_private_named.6 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Handle<S>>,
+    ) -> ProfileViewBasicBuilder<profile_view_basic_state::SetHandle<St>, S> {
+        self._fields.6 = ::core::option::Option::Some(value.into());
         ProfileViewBasicBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: profile_view_basic_state::State> ProfileViewBasicBuilder<'a, S> {
+impl<St: profile_view_basic_state::State, S: jacquard_common::BosStr>
+    ProfileViewBasicBuilder<St, S>
+{
     /// Set the `kind` field (optional)
-    pub fn kind(mut self, value: impl Into<Option<ProfileViewBasicKind<'a>>>) -> Self {
-        self.__unsafe_private_named.7 = value.into();
+    pub fn kind(mut self, value: impl Into<Option<ProfileViewBasicKind<S>>>) -> Self {
+        self._fields.7 = value.into();
         self
     }
     /// Set the `kind` field to an Option value (optional)
-    pub fn maybe_kind(mut self, value: Option<ProfileViewBasicKind<'a>>) -> Self {
-        self.__unsafe_private_named.7 = value;
+    pub fn maybe_kind(mut self, value: Option<ProfileViewBasicKind<S>>) -> Self {
+        self._fields.7 = value;
         self
     }
 }
 
-impl<'a, S: profile_view_basic_state::State> ProfileViewBasicBuilder<'a, S> {
+impl<St: profile_view_basic_state::State, S: jacquard_common::BosStr>
+    ProfileViewBasicBuilder<St, S>
+{
     /// Set the `labels` field (optional)
     pub fn labels(
         mut self,
-        value: impl Into<Option<Vec<crate::generated::com_atproto::label::Label<'a>>>>,
+        value: impl Into<Option<Vec<crate::generated::com_atproto::label::Label<S>>>>,
     ) -> Self {
-        self.__unsafe_private_named.8 = value.into();
+        self._fields.8 = value.into();
         self
     }
     /// Set the `labels` field to an Option value (optional)
     pub fn maybe_labels(
         mut self,
-        value: Option<Vec<crate::generated::com_atproto::label::Label<'a>>>,
+        value: Option<Vec<crate::generated::com_atproto::label::Label<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.8 = value;
+        self._fields.8 = value;
         self
     }
 }
 
-impl<'a, S: profile_view_basic_state::State> ProfileViewBasicBuilder<'a, S> {
+impl<St: profile_view_basic_state::State, S: jacquard_common::BosStr>
+    ProfileViewBasicBuilder<St, S>
+{
     /// Set the `verification` field (optional)
     pub fn verification(
         mut self,
-        value: impl Into<Option<crate::generated::app_bsky::actor::VerificationState<'a>>>,
+        value: impl Into<Option<crate::generated::app_bsky::actor::VerificationState<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.9 = value.into();
+        self._fields.9 = value.into();
         self
     }
     /// Set the `verification` field to an Option value (optional)
     pub fn maybe_verification(
         mut self,
-        value: Option<crate::generated::app_bsky::actor::VerificationState<'a>>,
+        value: Option<crate::generated::app_bsky::actor::VerificationState<S>>,
     ) -> Self {
-        self.__unsafe_private_named.9 = value;
+        self._fields.9 = value;
         self
     }
 }
 
-impl<'a, S: profile_view_basic_state::State> ProfileViewBasicBuilder<'a, S> {
+impl<St: profile_view_basic_state::State, S: jacquard_common::BosStr>
+    ProfileViewBasicBuilder<St, S>
+{
     /// Set the `viewer` field (optional)
     pub fn viewer(
         mut self,
-        value: impl Into<Option<crate::generated::app_bsky::actor::ViewerState<'a>>>,
+        value: impl Into<Option<crate::generated::app_bsky::actor::ViewerState<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.10 = value.into();
+        self._fields.10 = value.into();
         self
     }
     /// Set the `viewer` field to an Option value (optional)
     pub fn maybe_viewer(
         mut self,
-        value: Option<crate::generated::app_bsky::actor::ViewerState<'a>>,
+        value: Option<crate::generated::app_bsky::actor::ViewerState<S>>,
     ) -> Self {
-        self.__unsafe_private_named.10 = value;
+        self._fields.10 = value;
         self
     }
 }
 
-impl<'a, S> ProfileViewBasicBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ProfileViewBasicBuilder<St, S>
 where
-    S: profile_view_basic_state::State,
-    S::Did: profile_view_basic_state::IsSet,
-    S::Handle: profile_view_basic_state::IsSet,
+    St: profile_view_basic_state::State,
+    St::Did: profile_view_basic_state::IsSet,
+    St::Handle: profile_view_basic_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> ProfileViewBasic<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> ProfileViewBasic<S> {
         ProfileViewBasic {
-            associated: self.__unsafe_private_named.0,
-            avatar: self.__unsafe_private_named.1,
-            chat_disabled: self.__unsafe_private_named.2,
-            created_at: self.__unsafe_private_named.3,
-            did: self.__unsafe_private_named.4.unwrap(),
-            display_name: self.__unsafe_private_named.5,
-            handle: self.__unsafe_private_named.6.unwrap(),
-            kind: self.__unsafe_private_named.7,
-            labels: self.__unsafe_private_named.8,
-            verification: self.__unsafe_private_named.9,
-            viewer: self.__unsafe_private_named.10,
+            associated: self._fields.0,
+            avatar: self._fields.1,
+            chat_disabled: self._fields.2,
+            created_at: self._fields.3,
+            did: self._fields.4.unwrap(),
+            display_name: self._fields.5,
+            handle: self._fields.6.unwrap(),
+            kind: self._fields.7,
+            labels: self._fields.8,
+            verification: self._fields.9,
+            viewer: self._fields.10,
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> ProfileViewBasic<'a> {
+    ) -> ProfileViewBasic<S> {
         ProfileViewBasic {
-            associated: self.__unsafe_private_named.0,
-            avatar: self.__unsafe_private_named.1,
-            chat_disabled: self.__unsafe_private_named.2,
-            created_at: self.__unsafe_private_named.3,
-            did: self.__unsafe_private_named.4.unwrap(),
-            display_name: self.__unsafe_private_named.5,
-            handle: self.__unsafe_private_named.6.unwrap(),
-            kind: self.__unsafe_private_named.7,
-            labels: self.__unsafe_private_named.8,
-            verification: self.__unsafe_private_named.9,
-            viewer: self.__unsafe_private_named.10,
+            associated: self._fields.0,
+            avatar: self._fields.1,
+            chat_disabled: self._fields.2,
+            created_at: self._fields.3,
+            did: self._fields.4.unwrap(),
+            display_name: self._fields.5,
+            handle: self._fields.6.unwrap(),
+            kind: self._fields.7,
+            labels: self._fields.8,
+            verification: self._fields.9,
+            viewer: self._fields.10,
             extra_data: Some(extra_data),
         }
-    }
-}
-
-#[jacquard_derive::open_union]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(tag = "$type")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum ProfileViewBasicKind<'a> {
-    #[serde(rename = "chat.bsky.actor.defs#directConvoMember")]
-    DirectConvoMember(Box<crate::generated::chat_bsky::actor::DirectConvoMember<'a>>),
-    #[serde(rename = "chat.bsky.actor.defs#groupConvoMember")]
-    GroupConvoMember(Box<crate::generated::chat_bsky::actor::GroupConvoMember<'a>>),
-    #[serde(rename = "chat.bsky.actor.defs#pastGroupConvoMember")]
-    PastGroupConvoMember(Box<crate::generated::chat_bsky::actor::PastGroupConvoMember<'a>>),
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ProfileViewBasic<'a> {
-    fn nsid() -> &'static str {
-        "chat.bsky.actor.defs"
-    }
-    fn def_name() -> &'static str {
-        "profileViewBasic"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_chat_bsky_actor_defs()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        if let Some(ref value) = self.display_name {
-            #[allow(unused_comparisons)]
-            if <str>::len(value.as_ref()) > 640usize {
-                return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field(
-                        "display_name",
-                    ),
-                    max: 640usize,
-                    actual: <str>::len(value.as_ref()),
-                });
-            }
-        }
-        if let Some(ref value) = self.display_name {
-            {
-                let count =
-                    ::unicode_segmentation::UnicodeSegmentation::graphemes(value.as_ref(), true)
-                        .count();
-                if count > 64usize {
-                    return Err(
-                        ::jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
-                            path: ::jacquard_lexicon::validation::ValidationPath::from_field(
-                                "display_name",
-                            ),
-                            max: 64usize,
-                            actual: count,
-                        },
-                    );
-                }
-            }
-        }
-        Ok(())
     }
 }

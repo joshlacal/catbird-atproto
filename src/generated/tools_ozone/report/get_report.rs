@@ -13,6 +13,101 @@ pub struct GetReport {
     pub id: i64,
 }
 
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetReportOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(flatten)]
+    pub value: crate::generated::tools_ozone::report::ReportView<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    thiserror::Error,
+    miette::Diagnostic,
+)]
+#[serde(tag = "error", content = "message")]
+pub enum GetReportError {
+    /// No report found.
+    #[serde(rename = "NotFound")]
+    NotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
+}
+
+impl core::fmt::Display for GetReportError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+            Self::NotFound(msg) => {
+                write!(f, "NotFound")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+        }
+    }
+}
+
+/** Response marker for the `tools.ozone.report.getReport` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetReportOutput<S>` for this endpoint.*/
+pub struct GetReportResponse;
+impl jacquard_common::xrpc::XrpcResp for GetReportResponse {
+    const NSID: &'static str = "tools.ozone.report.getReport";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = GetReportOutput<S>;
+    type Err = GetReportError;
+}
+
+impl jacquard_common::xrpc::XrpcRequest for GetReport {
+    const NSID: &'static str = "tools.ozone.report.getReport";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = GetReportResponse;
+}
+
+/** Endpoint marker for the `tools.ozone.report.getReport` query.
+
+Path: `/xrpc/tools.ozone.report.getReport`. The request payload type is `GetReport`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct GetReportRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for GetReportRequest {
+    const PATH: &'static str = "/xrpc/tools.ozone.report.getReport";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = GetReport;
+    type Response = GetReportResponse;
+}
+
 pub mod get_report_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
@@ -32,9 +127,9 @@ pub mod get_report_state {
         type Id = Unset;
     }
     ///State transition - sets the `id` field to Set
-    pub struct SetId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetId<S> {}
-    impl<S: State> State for SetId<S> {
+    pub struct SetId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetId<St> {}
+    impl<St: State> State for SetId<St> {
         type Id = Set<members::id>;
     }
     /// Marker types for field names
@@ -45,125 +140,63 @@ pub mod get_report_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct GetReportBuilder<S: get_report_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<i64>,),
+/// Builder for constructing an instance of this type.
+pub struct GetReportBuilder<St: get_report_state::State> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<i64>,),
 }
 
 impl GetReport {
-    /// Create a new builder for this type
+    /// Create a new builder for this type.
     pub fn new() -> GetReportBuilder<get_report_state::Empty> {
         GetReportBuilder::new()
     }
 }
 
 impl GetReportBuilder<get_report_state::Empty> {
-    /// Create a new builder with all fields unset
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetReportBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
         }
     }
 }
 
-impl<S> GetReportBuilder<S>
+impl GetReportBuilder<get_report_state::Empty> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GetReportBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+        }
+    }
+}
+
+impl<St> GetReportBuilder<St>
 where
-    S: get_report_state::State,
-    S::Id: get_report_state::IsUnset,
+    St: get_report_state::State,
+    St::Id: get_report_state::IsUnset,
 {
     /// Set the `id` field (required)
-    pub fn id(mut self, value: impl Into<i64>) -> GetReportBuilder<get_report_state::SetId<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+    pub fn id(mut self, value: impl Into<i64>) -> GetReportBuilder<get_report_state::SetId<St>> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         GetReportBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
         }
     }
 }
 
-impl<S> GetReportBuilder<S>
+impl<St> GetReportBuilder<St>
 where
-    S: get_report_state::State,
-    S::Id: get_report_state::IsSet,
+    St: get_report_state::State,
+    St::Id: get_report_state::IsSet,
 {
-    /// Build the final struct
+    /// Build the final struct.
     pub fn build(self) -> GetReport {
         GetReport {
-            id: self.__unsafe_private_named.0.unwrap(),
+            id: self._fields.0.unwrap(),
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GetReportOutput<'a> {
-    #[serde(flatten)]
-    #[serde(borrow)]
-    pub value: crate::generated::tools_ozone::report::ReportView<'a>,
-}
-
-#[jacquard_derive::open_union]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    thiserror::Error,
-    miette::Diagnostic,
-    jacquard_derive::IntoStatic,
-)]
-#[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum GetReportError<'a> {
-    /// No report found.
-    #[serde(rename = "NotFound")]
-    NotFound(std::option::Option<jacquard_common::CowStr<'a>>),
-}
-
-impl std::fmt::Display for GetReportError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::NotFound(msg) => {
-                write!(f, "NotFound")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
-        }
-    }
-}
-
-/// Response type for
-///tools.ozone.report.getReport
-pub struct GetReportResponse;
-impl jacquard_common::xrpc::XrpcResp for GetReportResponse {
-    const NSID: &'static str = "tools.ozone.report.getReport";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetReportOutput<'de>;
-    type Err<'de> = GetReportError<'de>;
-}
-
-impl jacquard_common::xrpc::XrpcRequest for GetReport {
-    const NSID: &'static str = "tools.ozone.report.getReport";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = GetReportResponse;
-}
-
-/// Endpoint type for
-///tools.ozone.report.getReport
-pub struct GetReportRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for GetReportRequest {
-    const PATH: &'static str = "/xrpc/tools.ozone.report.getReport";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetReport;
-    type Response = GetReportResponse;
 }

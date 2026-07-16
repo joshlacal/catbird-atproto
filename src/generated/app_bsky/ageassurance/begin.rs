@@ -5,7 +5,6 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -16,35 +15,56 @@
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct Begin<'a> {
-    /// An ISO 3166-1 alpha-2 code of the user's location.
-    #[serde(borrow)]
-    pub country_code: jacquard_common::CowStr<'a>,
-    /// The user's email address to receive Age Assurance instructions.
-    #[serde(borrow)]
-    pub email: jacquard_common::CowStr<'a>,
-    /// The user's preferred language for communication during the Age Assurance process.
-    #[serde(borrow)]
-    pub language: jacquard_common::CowStr<'a>,
-    /// An optional ISO 3166-2 code of the user's region or state within the country.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub region_code: std::option::Option<jacquard_common::CowStr<'a>>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct Begin<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///An ISO 3166-1 alpha-2 code of the user's location.
+    pub country_code: S,
+    ///The user's email address to receive Age Assurance instructions.
+    pub email: S,
+    ///The user's preferred language for communication during the Age Assurance process.
+    pub language: S,
+    ///An optional ISO 3166-2 code of the user's region or state within the country.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub region_code: core::option::Option<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct BeginOutput<'a> {
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct BeginOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(flatten)]
-    #[serde(borrow)]
-    pub value: crate::generated::app_bsky::ageassurance::State<'a>,
+    pub value: crate::generated::app_bsky::ageassurance::State<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::open_union]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -54,23 +74,27 @@ pub struct BeginOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum BeginError<'a> {
+pub enum BeginError {
     #[serde(rename = "InvalidEmail")]
-    InvalidEmail(std::option::Option<jacquard_common::CowStr<'a>>),
+    InvalidEmail(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "DidTooLong")]
-    DidTooLong(std::option::Option<jacquard_common::CowStr<'a>>),
+    DidTooLong(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "InvalidInitiation")]
-    InvalidInitiation(std::option::Option<jacquard_common::CowStr<'a>>),
+    InvalidInitiation(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "RegionNotSupported")]
-    RegionNotSupported(std::option::Option<jacquard_common::CowStr<'a>>),
+    RegionNotSupported(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
 }
 
-impl std::fmt::Display for BeginError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for BeginError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             Self::InvalidEmail(msg) => {
                 write!(f, "InvalidEmail")?;
@@ -100,35 +124,43 @@ impl std::fmt::Display for BeginError<'_> {
                 }
                 Ok(())
             }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
         }
     }
 }
 
-/// Response type for
-///app.bsky.ageassurance.begin
+/** Response marker for the `app.bsky.ageassurance.begin` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `BeginOutput<S>` for this endpoint.*/
 pub struct BeginResponse;
 impl jacquard_common::xrpc::XrpcResp for BeginResponse {
     const NSID: &'static str = "app.bsky.ageassurance.begin";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = BeginOutput<'de>;
-    type Err<'de> = BeginError<'de>;
+    type Output<S: jacquard_common::BosStr> = BeginOutput<S>;
+    type Err = BeginError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for Begin<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for Begin<S> {
     const NSID: &'static str = "app.bsky.ageassurance.begin";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = BeginResponse;
 }
 
-/// Endpoint type for
-///app.bsky.ageassurance.begin
+/** Endpoint marker for the `app.bsky.ageassurance.begin` procedure.
+
+Path: `/xrpc/app.bsky.ageassurance.begin`. The request payload type is `Begin<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct BeginRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for BeginRequest {
     const PATH: &'static str = "/xrpc/app.bsky.ageassurance.begin";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = Begin<'de>;
+    type Request<S: jacquard_common::BosStr> = Begin<S>;
     type Response = BeginResponse;
 }

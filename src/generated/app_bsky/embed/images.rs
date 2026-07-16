@@ -5,21 +5,227 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct Image<'a> {
-    /// Alt text description of the image, for accessibility.
-    #[serde(borrow)]
-    pub alt: jacquard_common::CowStr<'a>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub aspect_ratio: std::option::Option<crate::generated::app_bsky::embed::AspectRatio<'a>>,
-    /// The raw image file. May be up to 2 MB, formerly limited to 1 MB.
-    #[serde(borrow)]
-    pub image: jacquard_common::types::blob::BlobRef<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct Image<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Alt text description of the image, for accessibility.
+    pub alt: S,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub aspect_ratio: core::option::Option<crate::generated::app_bsky::embed::AspectRatio<S>>,
+    ///The raw image file. May be up to 2 MB, formerly limited to 1 MB.
+    pub image: jacquard_common::types::blob::BlobRef<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct Images<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub images: Vec<crate::generated::app_bsky::embed::images::Image<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct View<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub images: Vec<crate::generated::app_bsky::embed::images::ViewImage<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ViewImage<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Alt text description of the image, for accessibility.
+    pub alt: S,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub aspect_ratio: core::option::Option<crate::generated::app_bsky::embed::AspectRatio<S>>,
+    ///Fully-qualified URL where a large version of the image can be fetched. May or may not be the exact original blob. For example, CDN location provided by the App View.
+    pub fullsize: jacquard_common::types::string::UriValue<S>,
+    ///Fully-qualified URL where a thumbnail of the image can be fetched. For example, CDN location provided by the App View.
+    pub thumb: jacquard_common::types::string::UriValue<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Image<S> {
+    fn nsid() -> &'static str {
+        "app.bsky.embed.images"
+    }
+    fn def_name() -> &'static str {
+        "image"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_app_bsky_embed_images()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.image;
+            {
+                let size = value.blob().size;
+                if size > 2000000usize {
+                    return Err(
+                        jacquard_lexicon::validation::ConstraintError::BlobTooLarge {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field("image"),
+                            max: 2000000usize,
+                            actual: size,
+                        },
+                    );
+                }
+            }
+        }
+        {
+            let value = &self.image;
+            {
+                let mime = value.blob().mime_type.as_str();
+                let accepted: &[&str] = &["image/*"];
+                let matched = accepted.iter().any(|pattern| {
+                    if *pattern == "*/*" {
+                        true
+                    } else if pattern.ends_with("/*") {
+                        let prefix = &pattern[..pattern.len() - 2];
+                        mime.starts_with(prefix) && mime.as_bytes().get(prefix.len()) == Some(&b'/')
+                    } else {
+                        mime == *pattern
+                    }
+                });
+                if !matched {
+                    return Err(
+                        jacquard_lexicon::validation::ConstraintError::BlobMimeTypeNotAccepted {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field("image"),
+                            accepted: vec!["image/*".to_string()],
+                            actual: mime.to_string(),
+                        },
+                    );
+                }
+            }
+        }
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Images<S> {
+    fn nsid() -> &'static str {
+        "app.bsky.embed.images"
+    }
+    fn def_name() -> &'static str {
+        "main"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_app_bsky_embed_images()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.images;
+            #[allow(unused_comparisons)]
+            if value.len() > 4usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("images"),
+                    max: 4usize,
+                    actual: value.len(),
+                });
+            }
+        }
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for View<S> {
+    fn nsid() -> &'static str {
+        "app.bsky.embed.images"
+    }
+    fn def_name() -> &'static str {
+        "view"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_app_bsky_embed_images()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.images;
+            #[allow(unused_comparisons)]
+            if value.len() > 4usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("images"),
+                    max: 4usize,
+                    actual: value.len(),
+                });
+            }
+        }
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ViewImage<S> {
+    fn nsid() -> &'static str {
+        "app.bsky.embed.images"
+    }
+    fn def_name() -> &'static str {
+        "viewImage"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_app_bsky_embed_images()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
 }
 
 pub mod image_state {
@@ -32,341 +238,338 @@ pub mod image_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Image;
         type Alt;
+        type Image;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Image = Unset;
         type Alt = Unset;
-    }
-    ///State transition - sets the `image` field to Set
-    pub struct SetImage<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetImage<S> {}
-    impl<S: State> State for SetImage<S> {
-        type Image = Set<members::image>;
-        type Alt = S::Alt;
+        type Image = Unset;
     }
     ///State transition - sets the `alt` field to Set
-    pub struct SetAlt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetAlt<S> {}
-    impl<S: State> State for SetAlt<S> {
-        type Image = S::Image;
+    pub struct SetAlt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetAlt<St> {}
+    impl<St: State> State for SetAlt<St> {
         type Alt = Set<members::alt>;
+        type Image = St::Image;
+    }
+    ///State transition - sets the `image` field to Set
+    pub struct SetImage<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetImage<St> {}
+    impl<St: State> State for SetImage<St> {
+        type Alt = St::Alt;
+        type Image = Set<members::image>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `image` field
-        pub struct image(());
         ///Marker type for the `alt` field
         pub struct alt(());
+        ///Marker type for the `image` field
+        pub struct image(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct ImageBuilder<'a, S: image_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<crate::generated::app_bsky::embed::AspectRatio<'a>>,
-        ::core::option::Option<jacquard_common::types::blob::BlobRef<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct ImageBuilder<
+    St: image_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<crate::generated::app_bsky::embed::AspectRatio<S>>,
+        core::option::Option<jacquard_common::types::blob::BlobRef<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> Image<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> ImageBuilder<'a, image_state::Empty> {
+impl Image<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> ImageBuilder<image_state::Empty, jacquard_common::DefaultStr> {
         ImageBuilder::new()
     }
 }
 
-impl<'a> ImageBuilder<'a, image_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> Image<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> ImageBuilder<image_state::Empty, S> {
+        ImageBuilder::builder()
+    }
+}
+
+impl ImageBuilder<image_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ImageBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ImageBuilder<'a, S>
+impl<S: jacquard_common::BosStr> ImageBuilder<image_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        ImageBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ImageBuilder<St, S>
 where
-    S: image_state::State,
-    S::Alt: image_state::IsUnset,
+    St: image_state::State,
+    St::Alt: image_state::IsUnset,
 {
     /// Set the `alt` field (required)
-    pub fn alt(
-        mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> ImageBuilder<'a, image_state::SetAlt<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+    pub fn alt(mut self, value: impl Into<S>) -> ImageBuilder<image_state::SetAlt<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         ImageBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: image_state::State> ImageBuilder<'a, S> {
+impl<St: image_state::State, S: jacquard_common::BosStr> ImageBuilder<St, S> {
     /// Set the `aspectRatio` field (optional)
     pub fn aspect_ratio(
         mut self,
-        value: impl Into<Option<crate::generated::app_bsky::embed::AspectRatio<'a>>>,
+        value: impl Into<Option<crate::generated::app_bsky::embed::AspectRatio<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self._fields.1 = value.into();
         self
     }
     /// Set the `aspectRatio` field to an Option value (optional)
     pub fn maybe_aspect_ratio(
         mut self,
-        value: Option<crate::generated::app_bsky::embed::AspectRatio<'a>>,
+        value: Option<crate::generated::app_bsky::embed::AspectRatio<S>>,
     ) -> Self {
-        self.__unsafe_private_named.1 = value;
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S> ImageBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ImageBuilder<St, S>
 where
-    S: image_state::State,
-    S::Image: image_state::IsUnset,
+    St: image_state::State,
+    St::Image: image_state::IsUnset,
 {
     /// Set the `image` field (required)
     pub fn image(
         mut self,
-        value: impl Into<jacquard_common::types::blob::BlobRef<'a>>,
-    ) -> ImageBuilder<'a, image_state::SetImage<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::blob::BlobRef<S>>,
+    ) -> ImageBuilder<image_state::SetImage<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         ImageBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ImageBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ImageBuilder<St, S>
 where
-    S: image_state::State,
-    S::Image: image_state::IsSet,
-    S::Alt: image_state::IsSet,
+    St: image_state::State,
+    St::Alt: image_state::IsSet,
+    St::Image: image_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> Image<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> Image<S> {
         Image {
-            alt: self.__unsafe_private_named.0.unwrap(),
-            aspect_ratio: self.__unsafe_private_named.1,
-            image: self.__unsafe_private_named.2.unwrap(),
+            alt: self._fields.0.unwrap(),
+            aspect_ratio: self._fields.1,
+            image: self._fields.2.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> Image<'a> {
+    ) -> Image<S> {
         Image {
-            alt: self.__unsafe_private_named.0.unwrap(),
-            aspect_ratio: self.__unsafe_private_named.1,
-            image: self.__unsafe_private_named.2.unwrap(),
+            alt: self._fields.0.unwrap(),
+            aspect_ratio: self._fields.1,
+            image: self._fields.2.unwrap(),
             extra_data: Some(extra_data),
         }
     }
 }
 
-fn lexicon_doc_app_bsky_embed_images() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_app_bsky_embed_images() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("app.bsky.embed.images"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("image"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("image"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("image"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("alt"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("image"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("alt"),
                         ]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("alt"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("alt"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
                                             "Alt text description of the image, for accessibility.",
                                         )),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("aspectRatio"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "aspectRatio",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
                                     ::jacquard_lexicon::lexicon::LexRef {
-                                        description: None,
                                         r#ref: ::jacquard_common::CowStr::new_static(
                                             "app.bsky.embed.defs#aspectRatio",
                                         ),
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("image"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("image"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Blob(
                                     ::jacquard_lexicon::lexicon::LexBlob {
-                                        description: None,
-                                        accept: None,
-                                        max_size: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
-                        required: Some(vec![::jacquard_common::smol_str::SmolStr::new_static(
-                            "images",
-                        )]),
-                        nullable: None,
+                        required: Some(vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("images"),
+                        ]),
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("images"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("images"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Array(
                                     ::jacquard_lexicon::lexicon::LexArray {
-                                        description: None,
                                         items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(
                                             ::jacquard_lexicon::lexicon::LexRef {
-                                                description: None,
                                                 r#ref: ::jacquard_common::CowStr::new_static(
                                                     "#image",
                                                 ),
+                                                ..Default::default()
                                             },
                                         ),
-                                        min_length: None,
                                         max_length: Some(4usize),
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("view"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("view"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
-                        required: Some(vec![::jacquard_common::smol_str::SmolStr::new_static(
-                            "images",
-                        )]),
-                        nullable: None,
+                        required: Some(vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("images"),
+                        ]),
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("images"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("images"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Array(
                                     ::jacquard_lexicon::lexicon::LexArray {
-                                        description: None,
                                         items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(
                                             ::jacquard_lexicon::lexicon::LexRef {
-                                                description: None,
                                                 r#ref: ::jacquard_common::CowStr::new_static(
                                                     "#viewImage",
                                                 ),
+                                                ..Default::default()
                                             },
                                         ),
-                                        min_length: None,
                                         max_length: Some(4usize),
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("viewImage"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("viewImage"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: None,
                     required: Some(
                         vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("thumb"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("fullsize"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("alt")
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("thumb"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("fullsize"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("alt")
                         ],
                     ),
-                    nullable: None,
                     properties: {
                         #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
+                        let mut map = ::alloc::collections::BTreeMap::new();
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("alt"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "alt",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
                                         "Alt text description of the image, for accessibility.",
                                     ),
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "aspectRatio",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                description: None,
                                 r#ref: ::jacquard_common::CowStr::new_static(
                                     "app.bsky.embed.defs#aspectRatio",
                                 ),
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("fullsize"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "fullsize",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
@@ -376,18 +579,13 @@ fn lexicon_doc_app_bsky_embed_images() -> ::jacquard_lexicon::lexicon::LexiconDo
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Uri,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("thumb"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "thumb",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
@@ -397,50 +595,18 @@ fn lexicon_doc_app_bsky_embed_images() -> ::jacquard_lexicon::lexicon::LexiconDo
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Uri,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map
                     },
+                    ..Default::default()
                 }),
             );
             map
         },
+        ..Default::default()
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Image<'a> {
-    fn nsid() -> &'static str {
-        "app.bsky.embed.images"
-    }
-    fn def_name() -> &'static str {
-        "image"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_app_bsky_embed_images()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct Images<'a> {
-    #[serde(borrow)]
-    pub images: Vec<crate::generated::app_bsky::embed::images::Image<'a>>,
 }
 
 pub mod images_state {
@@ -462,9 +628,9 @@ pub mod images_state {
         type Images = Unset;
     }
     ///State transition - sets the `images` field to Set
-    pub struct SetImages<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetImages<S> {}
-    impl<S: State> State for SetImages<S> {
+    pub struct SetImages<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetImages<St> {}
+    impl<St: State> State for SetImages<St> {
         type Images = Set<members::images>;
     }
     /// Marker types for field names
@@ -475,114 +641,96 @@ pub mod images_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct ImagesBuilder<'a, S: images_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named:
-        (::core::option::Option<Vec<crate::generated::app_bsky::embed::images::Image<'a>>>,),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct ImagesBuilder<
+    St: images_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<Vec<crate::generated::app_bsky::embed::images::Image<S>>>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> Images<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> ImagesBuilder<'a, images_state::Empty> {
+impl Images<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> ImagesBuilder<images_state::Empty, jacquard_common::DefaultStr> {
         ImagesBuilder::new()
     }
 }
 
-impl<'a> ImagesBuilder<'a, images_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> Images<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> ImagesBuilder<images_state::Empty, S> {
+        ImagesBuilder::builder()
+    }
+}
+
+impl ImagesBuilder<images_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ImagesBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ImagesBuilder<'a, S>
+impl<S: jacquard_common::BosStr> ImagesBuilder<images_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        ImagesBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ImagesBuilder<St, S>
 where
-    S: images_state::State,
-    S::Images: images_state::IsUnset,
+    St: images_state::State,
+    St::Images: images_state::IsUnset,
 {
     /// Set the `images` field (required)
     pub fn images(
         mut self,
-        value: impl Into<Vec<crate::generated::app_bsky::embed::images::Image<'a>>>,
-    ) -> ImagesBuilder<'a, images_state::SetImages<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<Vec<crate::generated::app_bsky::embed::images::Image<S>>>,
+    ) -> ImagesBuilder<images_state::SetImages<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         ImagesBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ImagesBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ImagesBuilder<St, S>
 where
-    S: images_state::State,
-    S::Images: images_state::IsSet,
+    St: images_state::State,
+    St::Images: images_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> Images<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> Images<S> {
         Images {
-            images: self.__unsafe_private_named.0.unwrap(),
+            images: self._fields.0.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> Images<'a> {
+    ) -> Images<S> {
         Images {
-            images: self.__unsafe_private_named.0.unwrap(),
+            images: self._fields.0.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Images<'a> {
-    fn nsid() -> &'static str {
-        "app.bsky.embed.images"
-    }
-    fn def_name() -> &'static str {
-        "main"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_app_bsky_embed_images()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        {
-            let value = &self.images;
-            #[allow(unused_comparisons)]
-            if value.len() > 4usize {
-                return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("images"),
-                    max: 4usize,
-                    actual: value.len(),
-                });
-            }
-        }
-        Ok(())
-    }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct View<'a> {
-    #[serde(borrow)]
-    pub images: Vec<crate::generated::app_bsky::embed::images::ViewImage<'a>>,
 }
 
 pub mod view_state {
@@ -604,9 +752,9 @@ pub mod view_state {
         type Images = Unset;
     }
     ///State transition - sets the `images` field to Set
-    pub struct SetImages<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetImages<S> {}
-    impl<S: State> State for SetImages<S> {
+    pub struct SetImages<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetImages<St> {}
+    impl<St: State> State for SetImages<St> {
         type Images = Set<members::images>;
     }
     /// Marker types for field names
@@ -617,124 +765,96 @@ pub mod view_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct ViewBuilder<'a, S: view_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named:
-        (::core::option::Option<Vec<crate::generated::app_bsky::embed::images::ViewImage<'a>>>,),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct ViewBuilder<
+    St: view_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<Vec<crate::generated::app_bsky::embed::images::ViewImage<S>>>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> View<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> ViewBuilder<'a, view_state::Empty> {
+impl View<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> ViewBuilder<view_state::Empty, jacquard_common::DefaultStr> {
         ViewBuilder::new()
     }
 }
 
-impl<'a> ViewBuilder<'a, view_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> View<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> ViewBuilder<view_state::Empty, S> {
+        ViewBuilder::builder()
+    }
+}
+
+impl ViewBuilder<view_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ViewBuilder<'a, S>
+impl<S: jacquard_common::BosStr> ViewBuilder<view_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        ViewBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ViewBuilder<St, S>
 where
-    S: view_state::State,
-    S::Images: view_state::IsUnset,
+    St: view_state::State,
+    St::Images: view_state::IsUnset,
 {
     /// Set the `images` field (required)
     pub fn images(
         mut self,
-        value: impl Into<Vec<crate::generated::app_bsky::embed::images::ViewImage<'a>>>,
-    ) -> ViewBuilder<'a, view_state::SetImages<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<Vec<crate::generated::app_bsky::embed::images::ViewImage<S>>>,
+    ) -> ViewBuilder<view_state::SetImages<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         ViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ViewBuilder<St, S>
 where
-    S: view_state::State,
-    S::Images: view_state::IsSet,
+    St: view_state::State,
+    St::Images: view_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> View<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> View<S> {
         View {
-            images: self.__unsafe_private_named.0.unwrap(),
+            images: self._fields.0.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> View<'a> {
+    ) -> View<S> {
         View {
-            images: self.__unsafe_private_named.0.unwrap(),
+            images: self._fields.0.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for View<'a> {
-    fn nsid() -> &'static str {
-        "app.bsky.embed.images"
-    }
-    fn def_name() -> &'static str {
-        "view"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_app_bsky_embed_images()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        {
-            let value = &self.images;
-            #[allow(unused_comparisons)]
-            if value.len() > 4usize {
-                return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("images"),
-                    max: 4usize,
-                    actual: value.len(),
-                });
-            }
-        }
-        Ok(())
-    }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct ViewImage<'a> {
-    /// Alt text description of the image, for accessibility.
-    #[serde(borrow)]
-    pub alt: jacquard_common::CowStr<'a>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub aspect_ratio: std::option::Option<crate::generated::app_bsky::embed::AspectRatio<'a>>,
-    /// Fully-qualified URL where a large version of the image can be fetched. May or may not be the exact original blob. For example, CDN location provided by the App View.
-    #[serde(borrow)]
-    pub fullsize: jacquard_common::types::string::Uri<'a>,
-    /// Fully-qualified URL where a thumbnail of the image can be fetched. For example, CDN location provided by the App View.
-    #[serde(borrow)]
-    pub thumb: jacquard_common::types::string::Uri<'a>,
 }
 
 pub mod view_image_state {
@@ -747,208 +867,209 @@ pub mod view_image_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Thumb;
-        type Fullsize;
         type Alt;
+        type Fullsize;
+        type Thumb;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Thumb = Unset;
-        type Fullsize = Unset;
         type Alt = Unset;
-    }
-    ///State transition - sets the `thumb` field to Set
-    pub struct SetThumb<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetThumb<S> {}
-    impl<S: State> State for SetThumb<S> {
-        type Thumb = Set<members::thumb>;
-        type Fullsize = S::Fullsize;
-        type Alt = S::Alt;
-    }
-    ///State transition - sets the `fullsize` field to Set
-    pub struct SetFullsize<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetFullsize<S> {}
-    impl<S: State> State for SetFullsize<S> {
-        type Thumb = S::Thumb;
-        type Fullsize = Set<members::fullsize>;
-        type Alt = S::Alt;
+        type Fullsize = Unset;
+        type Thumb = Unset;
     }
     ///State transition - sets the `alt` field to Set
-    pub struct SetAlt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetAlt<S> {}
-    impl<S: State> State for SetAlt<S> {
-        type Thumb = S::Thumb;
-        type Fullsize = S::Fullsize;
+    pub struct SetAlt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetAlt<St> {}
+    impl<St: State> State for SetAlt<St> {
         type Alt = Set<members::alt>;
+        type Fullsize = St::Fullsize;
+        type Thumb = St::Thumb;
+    }
+    ///State transition - sets the `fullsize` field to Set
+    pub struct SetFullsize<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetFullsize<St> {}
+    impl<St: State> State for SetFullsize<St> {
+        type Alt = St::Alt;
+        type Fullsize = Set<members::fullsize>;
+        type Thumb = St::Thumb;
+    }
+    ///State transition - sets the `thumb` field to Set
+    pub struct SetThumb<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetThumb<St> {}
+    impl<St: State> State for SetThumb<St> {
+        type Alt = St::Alt;
+        type Fullsize = St::Fullsize;
+        type Thumb = Set<members::thumb>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `thumb` field
-        pub struct thumb(());
-        ///Marker type for the `fullsize` field
-        pub struct fullsize(());
         ///Marker type for the `alt` field
         pub struct alt(());
+        ///Marker type for the `fullsize` field
+        pub struct fullsize(());
+        ///Marker type for the `thumb` field
+        pub struct thumb(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct ViewImageBuilder<'a, S: view_image_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<crate::generated::app_bsky::embed::AspectRatio<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Uri<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Uri<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct ViewImageBuilder<
+    St: view_image_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<crate::generated::app_bsky::embed::AspectRatio<S>>,
+        core::option::Option<jacquard_common::types::string::UriValue<S>>,
+        core::option::Option<jacquard_common::types::string::UriValue<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> ViewImage<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> ViewImageBuilder<'a, view_image_state::Empty> {
+impl ViewImage<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> ViewImageBuilder<view_image_state::Empty, jacquard_common::DefaultStr> {
         ViewImageBuilder::new()
     }
 }
 
-impl<'a> ViewImageBuilder<'a, view_image_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> ViewImage<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> ViewImageBuilder<view_image_state::Empty, S> {
+        ViewImageBuilder::builder()
+    }
+}
+
+impl ViewImageBuilder<view_image_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ViewImageBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ViewImageBuilder<'a, S>
+impl<S: jacquard_common::BosStr> ViewImageBuilder<view_image_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        ViewImageBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ViewImageBuilder<St, S>
 where
-    S: view_image_state::State,
-    S::Alt: view_image_state::IsUnset,
+    St: view_image_state::State,
+    St::Alt: view_image_state::IsUnset,
 {
     /// Set the `alt` field (required)
-    pub fn alt(
-        mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> ViewImageBuilder<'a, view_image_state::SetAlt<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+    pub fn alt(mut self, value: impl Into<S>) -> ViewImageBuilder<view_image_state::SetAlt<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         ViewImageBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: view_image_state::State> ViewImageBuilder<'a, S> {
+impl<St: view_image_state::State, S: jacquard_common::BosStr> ViewImageBuilder<St, S> {
     /// Set the `aspectRatio` field (optional)
     pub fn aspect_ratio(
         mut self,
-        value: impl Into<Option<crate::generated::app_bsky::embed::AspectRatio<'a>>>,
+        value: impl Into<Option<crate::generated::app_bsky::embed::AspectRatio<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self._fields.1 = value.into();
         self
     }
     /// Set the `aspectRatio` field to an Option value (optional)
     pub fn maybe_aspect_ratio(
         mut self,
-        value: Option<crate::generated::app_bsky::embed::AspectRatio<'a>>,
+        value: Option<crate::generated::app_bsky::embed::AspectRatio<S>>,
     ) -> Self {
-        self.__unsafe_private_named.1 = value;
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S> ViewImageBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ViewImageBuilder<St, S>
 where
-    S: view_image_state::State,
-    S::Fullsize: view_image_state::IsUnset,
+    St: view_image_state::State,
+    St::Fullsize: view_image_state::IsUnset,
 {
     /// Set the `fullsize` field (required)
     pub fn fullsize(
         mut self,
-        value: impl Into<jacquard_common::types::string::Uri<'a>>,
-    ) -> ViewImageBuilder<'a, view_image_state::SetFullsize<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::UriValue<S>>,
+    ) -> ViewImageBuilder<view_image_state::SetFullsize<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         ViewImageBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ViewImageBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ViewImageBuilder<St, S>
 where
-    S: view_image_state::State,
-    S::Thumb: view_image_state::IsUnset,
+    St: view_image_state::State,
+    St::Thumb: view_image_state::IsUnset,
 {
     /// Set the `thumb` field (required)
     pub fn thumb(
         mut self,
-        value: impl Into<jacquard_common::types::string::Uri<'a>>,
-    ) -> ViewImageBuilder<'a, view_image_state::SetThumb<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::UriValue<S>>,
+    ) -> ViewImageBuilder<view_image_state::SetThumb<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
         ViewImageBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ViewImageBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ViewImageBuilder<St, S>
 where
-    S: view_image_state::State,
-    S::Thumb: view_image_state::IsSet,
-    S::Fullsize: view_image_state::IsSet,
-    S::Alt: view_image_state::IsSet,
+    St: view_image_state::State,
+    St::Alt: view_image_state::IsSet,
+    St::Fullsize: view_image_state::IsSet,
+    St::Thumb: view_image_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> ViewImage<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> ViewImage<S> {
         ViewImage {
-            alt: self.__unsafe_private_named.0.unwrap(),
-            aspect_ratio: self.__unsafe_private_named.1,
-            fullsize: self.__unsafe_private_named.2.unwrap(),
-            thumb: self.__unsafe_private_named.3.unwrap(),
+            alt: self._fields.0.unwrap(),
+            aspect_ratio: self._fields.1,
+            fullsize: self._fields.2.unwrap(),
+            thumb: self._fields.3.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> ViewImage<'a> {
+    ) -> ViewImage<S> {
         ViewImage {
-            alt: self.__unsafe_private_named.0.unwrap(),
-            aspect_ratio: self.__unsafe_private_named.1,
-            fullsize: self.__unsafe_private_named.2.unwrap(),
-            thumb: self.__unsafe_private_named.3.unwrap(),
+            alt: self._fields.0.unwrap(),
+            aspect_ratio: self._fields.1,
+            fullsize: self._fields.2.unwrap(),
+            thumb: self._fields.3.unwrap(),
             extra_data: Some(extra_data),
         }
-    }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ViewImage<'a> {
-    fn nsid() -> &'static str {
-        "app.bsky.embed.images"
-    }
-    fn def_name() -> &'static str {
-        "viewImage"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_app_bsky_embed_images()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
     }
 }

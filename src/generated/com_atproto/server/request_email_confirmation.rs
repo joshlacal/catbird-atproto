@@ -5,26 +5,30 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-/// XRPC request marker type
+/** Request marker for the `com.atproto.server.requestEmailConfirmation` procedure.
+
+This endpoint has no request parameters or input body; send this marker with `jacquard::Client`.*/
+
 #[derive(
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
     serde::Serialize,
     serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
     jacquard_derive::IntoStatic,
+    Copy,
 )]
 pub struct RequestEmailConfirmation;
-/// Response type for
-///com.atproto.server.requestEmailConfirmation
+/** Response marker for the `com.atproto.server.requestEmailConfirmation` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `()` for this endpoint.*/
 pub struct RequestEmailConfirmationResponse;
 impl jacquard_common::xrpc::XrpcResp for RequestEmailConfirmationResponse {
     const NSID: &'static str = "com.atproto.server.requestEmailConfirmation";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = ();
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
+    type Output<S: jacquard_common::BosStr> = ();
+    type Err = jacquard_common::xrpc::GenericError;
 }
 
 impl jacquard_common::xrpc::XrpcRequest for RequestEmailConfirmation {
@@ -34,13 +38,14 @@ impl jacquard_common::xrpc::XrpcRequest for RequestEmailConfirmation {
     type Response = RequestEmailConfirmationResponse;
 }
 
-/// Endpoint type for
-///com.atproto.server.requestEmailConfirmation
+/** Endpoint marker for the `com.atproto.server.requestEmailConfirmation` procedure.
+
+Path: `/xrpc/com.atproto.server.requestEmailConfirmation`. The request payload type is `RequestEmailConfirmation`; use this marker with lower-level `XrpcEndpoint` APIs when you need endpoint metadata.*/
 pub struct RequestEmailConfirmationRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for RequestEmailConfirmationRequest {
     const PATH: &'static str = "/xrpc/com.atproto.server.requestEmailConfirmation";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = RequestEmailConfirmation;
+    type Request<S: jacquard_common::BosStr> = RequestEmailConfirmation;
     type Response = RequestEmailConfirmationResponse;
 }

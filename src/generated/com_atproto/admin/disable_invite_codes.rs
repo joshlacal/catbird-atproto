@@ -5,7 +5,6 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -16,40 +15,54 @@
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct DisableInviteCodes<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub accounts: std::option::Option<Vec<jacquard_common::CowStr<'a>>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub codes: std::option::Option<Vec<jacquard_common::CowStr<'a>>>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct DisableInviteCodes<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub accounts: core::option::Option<Vec<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub codes: core::option::Option<Vec<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-/// Response type for
-///com.atproto.admin.disableInviteCodes
+/** Response marker for the `com.atproto.admin.disableInviteCodes` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `()` for this endpoint.*/
 pub struct DisableInviteCodesResponse;
 impl jacquard_common::xrpc::XrpcResp for DisableInviteCodesResponse {
     const NSID: &'static str = "com.atproto.admin.disableInviteCodes";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = ();
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
+    type Output<S: jacquard_common::BosStr> = ();
+    type Err = jacquard_common::xrpc::GenericError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for DisableInviteCodes<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for DisableInviteCodes<S> {
     const NSID: &'static str = "com.atproto.admin.disableInviteCodes";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = DisableInviteCodesResponse;
 }
 
-/// Endpoint type for
-///com.atproto.admin.disableInviteCodes
+/** Endpoint marker for the `com.atproto.admin.disableInviteCodes` procedure.
+
+Path: `/xrpc/com.atproto.admin.disableInviteCodes`. The request payload type is `DisableInviteCodes<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct DisableInviteCodesRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for DisableInviteCodesRequest {
     const PATH: &'static str = "/xrpc/com.atproto.admin.disableInviteCodes";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = DisableInviteCodes<'de>;
+    type Request<S: jacquard_common::BosStr> = DisableInviteCodes<S>;
     type Response = DisableInviteCodesResponse;
 }

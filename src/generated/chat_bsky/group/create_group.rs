@@ -5,169 +5,51 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct CreateGroup<'a> {
-    #[serde(borrow)]
-    pub members: Vec<jacquard_common::types::string::Did<'a>>,
-    #[serde(borrow)]
-    pub name: jacquard_common::CowStr<'a>,
-}
-
-pub mod create_group_state {
-
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
-    #[allow(unused)]
-    use core::marker::PhantomData;
-    mod sealed {
-        pub trait Sealed {}
-    }
-    /// State trait tracking which required fields have been set
-    pub trait State: sealed::Sealed {
-        type Members;
-        type Name;
-    }
-    /// Empty state - all required fields are unset
-    pub struct Empty(());
-    impl sealed::Sealed for Empty {}
-    impl State for Empty {
-        type Members = Unset;
-        type Name = Unset;
-    }
-    ///State transition - sets the `members` field to Set
-    pub struct SetMembers<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetMembers<S> {}
-    impl<S: State> State for SetMembers<S> {
-        type Members = Set<members::members>;
-        type Name = S::Name;
-    }
-    ///State transition - sets the `name` field to Set
-    pub struct SetName<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetName<S> {}
-    impl<S: State> State for SetName<S> {
-        type Members = S::Members;
-        type Name = Set<members::name>;
-    }
-    /// Marker types for field names
-    #[allow(non_camel_case_types)]
-    pub mod members {
-        ///Marker type for the `members` field
-        pub struct members(());
-        ///Marker type for the `name` field
-        pub struct name(());
-    }
-}
-
-/// Builder for constructing an instance of this type
-pub struct CreateGroupBuilder<'a, S: create_group_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<Vec<jacquard_common::types::string::Did<'a>>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-    ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
-}
-
-impl<'a> CreateGroup<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> CreateGroupBuilder<'a, create_group_state::Empty> {
-        CreateGroupBuilder::new()
-    }
-}
-
-impl<'a> CreateGroupBuilder<'a, create_group_state::Empty> {
-    /// Create a new builder with all fields unset
-    pub fn new() -> Self {
-        CreateGroupBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> CreateGroupBuilder<'a, S>
-where
-    S: create_group_state::State,
-    S::Members: create_group_state::IsUnset,
-{
-    /// Set the `members` field (required)
-    pub fn members(
-        mut self,
-        value: impl Into<Vec<jacquard_common::types::string::Did<'a>>>,
-    ) -> CreateGroupBuilder<'a, create_group_state::SetMembers<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
-        CreateGroupBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> CreateGroupBuilder<'a, S>
-where
-    S: create_group_state::State,
-    S::Name: create_group_state::IsUnset,
-{
-    /// Set the `name` field (required)
-    pub fn name(
-        mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> CreateGroupBuilder<'a, create_group_state::SetName<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
-        CreateGroupBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> CreateGroupBuilder<'a, S>
-where
-    S: create_group_state::State,
-    S::Members: create_group_state::IsSet,
-    S::Name: create_group_state::IsSet,
-{
-    /// Build the final struct
-    pub fn build(self) -> CreateGroup<'a> {
-        CreateGroup {
-            members: self.__unsafe_private_named.0.unwrap(),
-            name: self.__unsafe_private_named.1.unwrap(),
-            extra_data: Default::default(),
-        }
-    }
-    /// Build the final struct with custom extra_data
-    pub fn build_with_data(
-        self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct CreateGroup<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub members: Vec<jacquard_common::types::string::Did<S>>,
+    pub name: S,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> CreateGroup<'a> {
-        CreateGroup {
-            members: self.__unsafe_private_named.0.unwrap(),
-            name: self.__unsafe_private_named.1.unwrap(),
-            extra_data: Some(extra_data),
-        }
-    }
+    >,
 }
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct CreateGroupOutput<'a> {
-    #[serde(borrow)]
-    pub convo: crate::generated::chat_bsky::convo::ConvoView<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct CreateGroupOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub convo: crate::generated::chat_bsky::convo::ConvoView<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::open_union]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -177,29 +59,33 @@ pub struct CreateGroupOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum CreateGroupError<'a> {
+pub enum CreateGroupError {
     #[serde(rename = "AccountSuspended")]
-    AccountSuspended(std::option::Option<jacquard_common::CowStr<'a>>),
+    AccountSuspended(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "BlockedActor")]
-    BlockedActor(std::option::Option<jacquard_common::CowStr<'a>>),
+    BlockedActor(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "BlockedSubject")]
-    BlockedSubject(std::option::Option<jacquard_common::CowStr<'a>>),
+    BlockedSubject(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "NewAccountCannotCreateGroup")]
-    NewAccountCannotCreateGroup(std::option::Option<jacquard_common::CowStr<'a>>),
+    NewAccountCannotCreateGroup(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "NotFollowedBySender")]
-    NotFollowedBySender(std::option::Option<jacquard_common::CowStr<'a>>),
+    NotFollowedBySender(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "RecipientNotFound")]
-    RecipientNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
+    RecipientNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "UserForbidsGroups")]
-    UserForbidsGroups(std::option::Option<jacquard_common::CowStr<'a>>),
+    UserForbidsGroups(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
 }
 
-impl std::fmt::Display for CreateGroupError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for CreateGroupError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             Self::AccountSuspended(msg) => {
                 write!(f, "AccountSuspended")?;
@@ -250,35 +136,204 @@ impl std::fmt::Display for CreateGroupError<'_> {
                 }
                 Ok(())
             }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
         }
     }
 }
 
-/// Response type for
-///chat.bsky.group.createGroup
+/** Response marker for the `chat.bsky.group.createGroup` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `CreateGroupOutput<S>` for this endpoint.*/
 pub struct CreateGroupResponse;
 impl jacquard_common::xrpc::XrpcResp for CreateGroupResponse {
     const NSID: &'static str = "chat.bsky.group.createGroup";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = CreateGroupOutput<'de>;
-    type Err<'de> = CreateGroupError<'de>;
+    type Output<S: jacquard_common::BosStr> = CreateGroupOutput<S>;
+    type Err = CreateGroupError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for CreateGroup<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for CreateGroup<S> {
     const NSID: &'static str = "chat.bsky.group.createGroup";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = CreateGroupResponse;
 }
 
-/// Endpoint type for
-///chat.bsky.group.createGroup
+/** Endpoint marker for the `chat.bsky.group.createGroup` procedure.
+
+Path: `/xrpc/chat.bsky.group.createGroup`. The request payload type is `CreateGroup<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct CreateGroupRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for CreateGroupRequest {
     const PATH: &'static str = "/xrpc/chat.bsky.group.createGroup";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = CreateGroup<'de>;
+    type Request<S: jacquard_common::BosStr> = CreateGroup<S>;
     type Response = CreateGroupResponse;
+}
+
+pub mod create_group_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type Members;
+        type Name;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type Members = Unset;
+        type Name = Unset;
+    }
+    ///State transition - sets the `members` field to Set
+    pub struct SetMembers<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetMembers<St> {}
+    impl<St: State> State for SetMembers<St> {
+        type Members = Set<members::members>;
+        type Name = St::Name;
+    }
+    ///State transition - sets the `name` field to Set
+    pub struct SetName<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetName<St> {}
+    impl<St: State> State for SetName<St> {
+        type Members = St::Members;
+        type Name = Set<members::name>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `members` field
+        pub struct members(());
+        ///Marker type for the `name` field
+        pub struct name(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct CreateGroupBuilder<
+    St: create_group_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<Vec<jacquard_common::types::string::Did<S>>>,
+        core::option::Option<S>,
+    ),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl CreateGroup<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> CreateGroupBuilder<create_group_state::Empty, jacquard_common::DefaultStr> {
+        CreateGroupBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> CreateGroup<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> CreateGroupBuilder<create_group_state::Empty, S> {
+        CreateGroupBuilder::builder()
+    }
+}
+
+impl CreateGroupBuilder<create_group_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        CreateGroupBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> CreateGroupBuilder<create_group_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        CreateGroupBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> CreateGroupBuilder<St, S>
+where
+    St: create_group_state::State,
+    St::Members: create_group_state::IsUnset,
+{
+    /// Set the `members` field (required)
+    pub fn members(
+        mut self,
+        value: impl Into<Vec<jacquard_common::types::string::Did<S>>>,
+    ) -> CreateGroupBuilder<create_group_state::SetMembers<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        CreateGroupBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> CreateGroupBuilder<St, S>
+where
+    St: create_group_state::State,
+    St::Name: create_group_state::IsUnset,
+{
+    /// Set the `name` field (required)
+    pub fn name(
+        mut self,
+        value: impl Into<S>,
+    ) -> CreateGroupBuilder<create_group_state::SetName<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
+        CreateGroupBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> CreateGroupBuilder<St, S>
+where
+    St: create_group_state::State,
+    St::Members: create_group_state::IsSet,
+    St::Name: create_group_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> CreateGroup<S> {
+        CreateGroup {
+            members: self._fields.0.unwrap(),
+            name: self._fields.1.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> CreateGroup<S> {
+        CreateGroup {
+            members: self._fields.0.unwrap(),
+            name: self._fields.1.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
 }

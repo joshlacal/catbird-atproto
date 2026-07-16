@@ -8,14 +8,73 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetMutes<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    ///(default: 50, min: 1, max: 100)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub limit: std::option::Option<i64>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetMutes<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    /// Defaults to `50`. Min: 1. Max: 100.
+    #[serde(default = "_default_limit")]
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub limit: core::option::Option<i64>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetMutesOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    pub mutes: Vec<crate::generated::app_bsky::actor::ProfileView<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `app.bsky.graph.getMutes` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetMutesOutput<S>` for this endpoint.*/
+pub struct GetMutesResponse;
+impl jacquard_common::xrpc::XrpcResp for GetMutesResponse {
+    const NSID: &'static str = "app.bsky.graph.getMutes";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = GetMutesOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetMutes<S> {
+    const NSID: &'static str = "app.bsky.graph.getMutes";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = GetMutesResponse;
+}
+
+/** Endpoint marker for the `app.bsky.graph.getMutes` query.
+
+Path: `/xrpc/app.bsky.graph.getMutes`. The request payload type is `GetMutes<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct GetMutesRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for GetMutesRequest {
+    const PATH: &'static str = "/xrpc/app.bsky.graph.getMutes";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = GetMutes<S>;
+    type Response = GetMutesResponse;
+}
+
+fn _default_limit() -> core::option::Option<i64> {
+    Some(50i64)
 }
 
 pub mod get_mutes_state {
@@ -37,108 +96,87 @@ pub mod get_mutes_state {
     pub mod members {}
 }
 
-/// Builder for constructing an instance of this type
-pub struct GetMutesBuilder<'a, S: get_mutes_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<i64>,
-    ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct GetMutesBuilder<
+    St: get_mutes_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<S>, core::option::Option<i64>),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> GetMutes<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> GetMutesBuilder<'a, get_mutes_state::Empty> {
+impl GetMutes<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> GetMutesBuilder<get_mutes_state::Empty, jacquard_common::DefaultStr> {
         GetMutesBuilder::new()
     }
 }
 
-impl<'a> GetMutesBuilder<'a, get_mutes_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> GetMutes<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> GetMutesBuilder<get_mutes_state::Empty, S> {
+        GetMutesBuilder::builder()
+    }
+}
+
+impl GetMutesBuilder<get_mutes_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetMutesBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: get_mutes_state::State> GetMutesBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> GetMutesBuilder<get_mutes_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GetMutesBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: get_mutes_state::State, S: jacquard_common::BosStr> GetMutesBuilder<St, S> {
     /// Set the `cursor` field (optional)
-    pub fn cursor(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+    pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.0 = value.into();
         self
     }
     /// Set the `cursor` field to an Option value (optional)
-    pub fn maybe_cursor(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.0 = value;
+    pub fn maybe_cursor(mut self, value: Option<S>) -> Self {
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S: get_mutes_state::State> GetMutesBuilder<'a, S> {
+impl<St: get_mutes_state::State, S: jacquard_common::BosStr> GetMutesBuilder<St, S> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self._fields.1 = value.into();
         self
     }
     /// Set the `limit` field to an Option value (optional)
     pub fn maybe_limit(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.1 = value;
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S> GetMutesBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GetMutesBuilder<St, S>
 where
-    S: get_mutes_state::State,
+    St: get_mutes_state::State,
 {
-    /// Build the final struct
-    pub fn build(self) -> GetMutes<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> GetMutes<S> {
         GetMutes {
-            cursor: self.__unsafe_private_named.0,
-            limit: self.__unsafe_private_named.1,
+            cursor: self._fields.0,
+            limit: self._fields.1,
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GetMutesOutput<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(borrow)]
-    pub mutes: Vec<crate::generated::app_bsky::actor::ProfileView<'a>>,
-}
-
-/// Response type for
-///app.bsky.graph.getMutes
-pub struct GetMutesResponse;
-impl jacquard_common::xrpc::XrpcResp for GetMutesResponse {
-    const NSID: &'static str = "app.bsky.graph.getMutes";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetMutesOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for GetMutes<'a> {
-    const NSID: &'static str = "app.bsky.graph.getMutes";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = GetMutesResponse;
-}
-
-/// Endpoint type for
-///app.bsky.graph.getMutes
-pub struct GetMutesRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for GetMutesRequest {
-    const PATH: &'static str = "/xrpc/app.bsky.graph.getMutes";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetMutes<'de>;
-    type Response = GetMutesResponse;
 }

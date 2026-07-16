@@ -8,12 +8,69 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetVideoPlaylist<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub track: core::option::Option<i64>,
+    pub uri: jacquard_common::types::string::AtUri<S>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
 #[serde(rename_all = "camelCase")]
-pub struct GetVideoPlaylist<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub track: std::option::Option<i64>,
-    #[serde(borrow)]
-    pub uri: jacquard_common::types::string::AtUri<'a>,
+pub struct GetVideoPlaylistOutput {
+    pub body: jacquard_common::deps::bytes::Bytes,
+}
+
+/** Response marker for the `place.stream.playback.getVideoPlaylist` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetVideoPlaylistOutput` for this endpoint.*/
+pub struct GetVideoPlaylistResponse;
+impl jacquard_common::xrpc::XrpcResp for GetVideoPlaylistResponse {
+    const NSID: &'static str = "place.stream.playback.getVideoPlaylist";
+    const ENCODING: &'static str = "application/vnd.apple.mpegurl";
+    type Output<S: jacquard_common::BosStr> = GetVideoPlaylistOutput;
+    type Err = jacquard_common::xrpc::GenericError;
+    fn encode_output<S: jacquard_common::BosStr>(
+        output: &Self::Output<S>,
+    ) -> Result<Vec<u8>, jacquard_common::xrpc::EncodeError>
+    where
+        Self::Output<S>: serde::Serialize,
+    {
+        Ok(output.body.to_vec())
+    }
+    fn decode_output<'de, S>(
+        body: &'de [u8],
+    ) -> Result<Self::Output<S>, jacquard_common::error::DecodeError>
+    where
+        S: jacquard_common::BosStr + serde::Deserialize<'de>,
+        Self::Output<S>: serde::Deserialize<'de>,
+    {
+        Ok(GetVideoPlaylistOutput {
+            body: jacquard_common::deps::bytes::Bytes::copy_from_slice(body),
+        })
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetVideoPlaylist<S> {
+    const NSID: &'static str = "place.stream.playback.getVideoPlaylist";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = GetVideoPlaylistResponse;
+}
+
+/** Endpoint marker for the `place.stream.playback.getVideoPlaylist` query.
+
+Path: `/xrpc/place.stream.playback.getVideoPlaylist`. The request payload type is `GetVideoPlaylist<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct GetVideoPlaylistRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for GetVideoPlaylistRequest {
+    const PATH: &'static str = "/xrpc/place.stream.playback.getVideoPlaylist";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = GetVideoPlaylist<S>;
+    type Response = GetVideoPlaylistResponse;
 }
 
 pub mod get_video_playlist_state {
@@ -35,9 +92,9 @@ pub mod get_video_playlist_state {
         type Uri = Unset;
     }
     ///State transition - sets the `uri` field to Set
-    pub struct SetUri<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUri<S> {}
-    impl<S: State> State for SetUri<S> {
+    pub struct SetUri<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetUri<St> {}
+    impl<St: State> State for SetUri<St> {
         type Uri = Set<members::uri>;
     }
     /// Marker types for field names
@@ -48,125 +105,100 @@ pub mod get_video_playlist_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct GetVideoPlaylistBuilder<'a, S: get_video_playlist_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<i64>,
-        ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct GetVideoPlaylistBuilder<
+    St: get_video_playlist_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<i64>,
+        core::option::Option<jacquard_common::types::string::AtUri<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> GetVideoPlaylist<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> GetVideoPlaylistBuilder<'a, get_video_playlist_state::Empty> {
+impl GetVideoPlaylist<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> GetVideoPlaylistBuilder<get_video_playlist_state::Empty, jacquard_common::DefaultStr> {
         GetVideoPlaylistBuilder::new()
     }
 }
 
-impl<'a> GetVideoPlaylistBuilder<'a, get_video_playlist_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> GetVideoPlaylist<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> GetVideoPlaylistBuilder<get_video_playlist_state::Empty, S> {
+        GetVideoPlaylistBuilder::builder()
+    }
+}
+
+impl GetVideoPlaylistBuilder<get_video_playlist_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetVideoPlaylistBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: get_video_playlist_state::State> GetVideoPlaylistBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> GetVideoPlaylistBuilder<get_video_playlist_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GetVideoPlaylistBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: get_video_playlist_state::State, S: jacquard_common::BosStr>
+    GetVideoPlaylistBuilder<St, S>
+{
     /// Set the `track` field (optional)
     pub fn track(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+        self._fields.0 = value.into();
         self
     }
     /// Set the `track` field to an Option value (optional)
     pub fn maybe_track(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.0 = value;
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S> GetVideoPlaylistBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GetVideoPlaylistBuilder<St, S>
 where
-    S: get_video_playlist_state::State,
-    S::Uri: get_video_playlist_state::IsUnset,
+    St: get_video_playlist_state::State,
+    St::Uri: get_video_playlist_state::IsUnset,
 {
     /// Set the `uri` field (required)
     pub fn uri(
         mut self,
-        value: impl Into<jacquard_common::types::string::AtUri<'a>>,
-    ) -> GetVideoPlaylistBuilder<'a, get_video_playlist_state::SetUri<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::AtUri<S>>,
+    ) -> GetVideoPlaylistBuilder<get_video_playlist_state::SetUri<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         GetVideoPlaylistBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GetVideoPlaylistBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GetVideoPlaylistBuilder<St, S>
 where
-    S: get_video_playlist_state::State,
-    S::Uri: get_video_playlist_state::IsSet,
+    St: get_video_playlist_state::State,
+    St::Uri: get_video_playlist_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> GetVideoPlaylist<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> GetVideoPlaylist<S> {
         GetVideoPlaylist {
-            track: self.__unsafe_private_named.0,
-            uri: self.__unsafe_private_named.1.unwrap(),
+            track: self._fields.0,
+            uri: self._fields.1.unwrap(),
         }
     }
-}
-
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GetVideoPlaylistOutput {
-    pub body: bytes::Bytes,
-}
-
-/// Response type for
-///place.stream.playback.getVideoPlaylist
-pub struct GetVideoPlaylistResponse;
-impl jacquard_common::xrpc::XrpcResp for GetVideoPlaylistResponse {
-    const NSID: &'static str = "place.stream.playback.getVideoPlaylist";
-    const ENCODING: &'static str = "application/vnd.apple.mpegurl";
-    type Output<'de> = GetVideoPlaylistOutput;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-    fn encode_output(
-        output: &Self::Output<'_>,
-    ) -> Result<Vec<u8>, jacquard_common::xrpc::EncodeError> {
-        Ok(output.body.to_vec())
-    }
-    fn decode_output<'de>(
-        body: &'de [u8],
-    ) -> Result<Self::Output<'de>, jacquard_common::error::DecodeError>
-    where
-        Self::Output<'de>: serde::Deserialize<'de>,
-    {
-        Ok(GetVideoPlaylistOutput {
-            body: bytes::Bytes::copy_from_slice(body),
-        })
-    }
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for GetVideoPlaylist<'a> {
-    const NSID: &'static str = "place.stream.playback.getVideoPlaylist";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = GetVideoPlaylistResponse;
-}
-
-/// Endpoint type for
-///place.stream.playback.getVideoPlaylist
-pub struct GetVideoPlaylistRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for GetVideoPlaylistRequest {
-    const PATH: &'static str = "/xrpc/place.stream.playback.getVideoPlaylist";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetVideoPlaylist<'de>;
-    type Response = GetVideoPlaylistResponse;
 }

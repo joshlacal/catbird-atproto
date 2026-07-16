@@ -8,16 +8,74 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetActorFeeds<'a> {
-    #[serde(borrow)]
-    pub actor: jacquard_common::types::ident::AtIdentifier<'a>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    ///(default: 50, min: 1, max: 100)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub limit: std::option::Option<i64>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetActorFeeds<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub actor: jacquard_common::types::ident::AtIdentifier<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    /// Defaults to `50`. Min: 1. Max: 100.
+    #[serde(default = "_default_limit")]
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub limit: core::option::Option<i64>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetActorFeedsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    pub feeds: Vec<crate::generated::app_bsky::feed::GeneratorView<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `app.bsky.feed.getActorFeeds` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetActorFeedsOutput<S>` for this endpoint.*/
+pub struct GetActorFeedsResponse;
+impl jacquard_common::xrpc::XrpcResp for GetActorFeedsResponse {
+    const NSID: &'static str = "app.bsky.feed.getActorFeeds";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = GetActorFeedsOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetActorFeeds<S> {
+    const NSID: &'static str = "app.bsky.feed.getActorFeeds";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = GetActorFeedsResponse;
+}
+
+/** Endpoint marker for the `app.bsky.feed.getActorFeeds` query.
+
+Path: `/xrpc/app.bsky.feed.getActorFeeds`. The request payload type is `GetActorFeeds<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct GetActorFeedsRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for GetActorFeedsRequest {
+    const PATH: &'static str = "/xrpc/app.bsky.feed.getActorFeeds";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = GetActorFeeds<S>;
+    type Response = GetActorFeedsResponse;
+}
+
+fn _default_limit() -> core::option::Option<i64> {
+    Some(50i64)
 }
 
 pub mod get_actor_feeds_state {
@@ -39,9 +97,9 @@ pub mod get_actor_feeds_state {
         type Actor = Unset;
     }
     ///State transition - sets the `actor` field to Set
-    pub struct SetActor<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetActor<S> {}
-    impl<S: State> State for SetActor<S> {
+    pub struct SetActor<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetActor<St> {}
+    impl<St: State> State for SetActor<St> {
         type Actor = Set<members::actor>;
     }
     /// Marker types for field names
@@ -52,130 +110,113 @@ pub mod get_actor_feeds_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct GetActorFeedsBuilder<'a, S: get_actor_feeds_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::ident::AtIdentifier<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<i64>,
+/// Builder for constructing an instance of this type.
+pub struct GetActorFeedsBuilder<
+    St: get_actor_feeds_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::ident::AtIdentifier<S>>,
+        core::option::Option<S>,
+        core::option::Option<i64>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> GetActorFeeds<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> GetActorFeedsBuilder<'a, get_actor_feeds_state::Empty> {
+impl GetActorFeeds<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> GetActorFeedsBuilder<get_actor_feeds_state::Empty, jacquard_common::DefaultStr>
+    {
         GetActorFeedsBuilder::new()
     }
 }
 
-impl<'a> GetActorFeedsBuilder<'a, get_actor_feeds_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> GetActorFeeds<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> GetActorFeedsBuilder<get_actor_feeds_state::Empty, S> {
+        GetActorFeedsBuilder::builder()
+    }
+}
+
+impl GetActorFeedsBuilder<get_actor_feeds_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetActorFeedsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GetActorFeedsBuilder<'a, S>
+impl<S: jacquard_common::BosStr> GetActorFeedsBuilder<get_actor_feeds_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GetActorFeedsBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> GetActorFeedsBuilder<St, S>
 where
-    S: get_actor_feeds_state::State,
-    S::Actor: get_actor_feeds_state::IsUnset,
+    St: get_actor_feeds_state::State,
+    St::Actor: get_actor_feeds_state::IsUnset,
 {
     /// Set the `actor` field (required)
     pub fn actor(
         mut self,
-        value: impl Into<jacquard_common::types::ident::AtIdentifier<'a>>,
-    ) -> GetActorFeedsBuilder<'a, get_actor_feeds_state::SetActor<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::ident::AtIdentifier<S>>,
+    ) -> GetActorFeedsBuilder<get_actor_feeds_state::SetActor<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         GetActorFeedsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: get_actor_feeds_state::State> GetActorFeedsBuilder<'a, S> {
+impl<St: get_actor_feeds_state::State, S: jacquard_common::BosStr> GetActorFeedsBuilder<St, S> {
     /// Set the `cursor` field (optional)
-    pub fn cursor(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+    pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.1 = value.into();
         self
     }
     /// Set the `cursor` field to an Option value (optional)
-    pub fn maybe_cursor(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.1 = value;
+    pub fn maybe_cursor(mut self, value: Option<S>) -> Self {
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S: get_actor_feeds_state::State> GetActorFeedsBuilder<'a, S> {
+impl<St: get_actor_feeds_state::State, S: jacquard_common::BosStr> GetActorFeedsBuilder<St, S> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.2 = value.into();
+        self._fields.2 = value.into();
         self
     }
     /// Set the `limit` field to an Option value (optional)
     pub fn maybe_limit(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.2 = value;
+        self._fields.2 = value;
         self
     }
 }
 
-impl<'a, S> GetActorFeedsBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GetActorFeedsBuilder<St, S>
 where
-    S: get_actor_feeds_state::State,
-    S::Actor: get_actor_feeds_state::IsSet,
+    St: get_actor_feeds_state::State,
+    St::Actor: get_actor_feeds_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> GetActorFeeds<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> GetActorFeeds<S> {
         GetActorFeeds {
-            actor: self.__unsafe_private_named.0.unwrap(),
-            cursor: self.__unsafe_private_named.1,
-            limit: self.__unsafe_private_named.2,
+            actor: self._fields.0.unwrap(),
+            cursor: self._fields.1,
+            limit: self._fields.2,
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GetActorFeedsOutput<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(borrow)]
-    pub feeds: Vec<crate::generated::app_bsky::feed::GeneratorView<'a>>,
-}
-
-/// Response type for
-///app.bsky.feed.getActorFeeds
-pub struct GetActorFeedsResponse;
-impl jacquard_common::xrpc::XrpcResp for GetActorFeedsResponse {
-    const NSID: &'static str = "app.bsky.feed.getActorFeeds";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetActorFeedsOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for GetActorFeeds<'a> {
-    const NSID: &'static str = "app.bsky.feed.getActorFeeds";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = GetActorFeedsResponse;
-}
-
-/// Endpoint type for
-///app.bsky.feed.getActorFeeds
-pub struct GetActorFeedsRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for GetActorFeedsRequest {
-    const PATH: &'static str = "/xrpc/app.bsky.feed.getActorFeeds";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetActorFeeds<'de>;
-    type Response = GetActorFeedsResponse;
 }

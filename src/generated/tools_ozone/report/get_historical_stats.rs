@@ -8,26 +8,83 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetHistoricalStats<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub end_date: std::option::Option<jacquard_common::types::string::Datetime>,
-    ///(default: 30, min: 1, max: 100)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub limit: std::option::Option<i64>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub moderator_did: std::option::Option<jacquard_common::types::string::Did<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub queue_id: std::option::Option<i64>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub report_types: std::option::Option<Vec<jacquard_common::CowStr<'a>>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub start_date: std::option::Option<jacquard_common::types::string::Datetime>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetHistoricalStats<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub end_date: core::option::Option<jacquard_common::types::string::Datetime>,
+    /// Defaults to `30`. Min: 1. Max: 100.
+    #[serde(default = "_default_limit")]
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub limit: core::option::Option<i64>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub moderator_did: core::option::Option<jacquard_common::types::string::Did<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub queue_id: core::option::Option<i64>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub report_types: core::option::Option<Vec<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub start_date: core::option::Option<jacquard_common::types::string::Datetime>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetHistoricalStatsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    pub stats: Vec<crate::generated::tools_ozone::report::HistoricalStats<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `tools.ozone.report.getHistoricalStats` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetHistoricalStatsOutput<S>` for this endpoint.*/
+pub struct GetHistoricalStatsResponse;
+impl jacquard_common::xrpc::XrpcResp for GetHistoricalStatsResponse {
+    const NSID: &'static str = "tools.ozone.report.getHistoricalStats";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = GetHistoricalStatsOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetHistoricalStats<S> {
+    const NSID: &'static str = "tools.ozone.report.getHistoricalStats";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = GetHistoricalStatsResponse;
+}
+
+/** Endpoint marker for the `tools.ozone.report.getHistoricalStats` query.
+
+Path: `/xrpc/tools.ozone.report.getHistoricalStats`. The request payload type is `GetHistoricalStats<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct GetHistoricalStatsRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for GetHistoricalStatsRequest {
+    const PATH: &'static str = "/xrpc/tools.ozone.report.getHistoricalStats";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = GetHistoricalStats<S>;
+    type Response = GetHistoricalStatsResponse;
+}
+
+fn _default_limit() -> core::option::Option<i64> {
+    Some(30i64)
 }
 
 pub mod get_historical_stats_state {
@@ -49,59 +106,86 @@ pub mod get_historical_stats_state {
     pub mod members {}
 }
 
-/// Builder for constructing an instance of this type
-pub struct GetHistoricalStatsBuilder<'a, S: get_historical_stats_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<Vec<jacquard_common::CowStr<'a>>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
+/// Builder for constructing an instance of this type.
+pub struct GetHistoricalStatsBuilder<
+    St: get_historical_stats_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<i64>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<i64>,
+        core::option::Option<Vec<S>>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> GetHistoricalStats<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> GetHistoricalStatsBuilder<'a, get_historical_stats_state::Empty> {
+impl GetHistoricalStats<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> GetHistoricalStatsBuilder<get_historical_stats_state::Empty, jacquard_common::DefaultStr>
+    {
         GetHistoricalStatsBuilder::new()
     }
 }
 
-impl<'a> GetHistoricalStatsBuilder<'a, get_historical_stats_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> GetHistoricalStats<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> GetHistoricalStatsBuilder<get_historical_stats_state::Empty, S> {
+        GetHistoricalStatsBuilder::builder()
+    }
+}
+
+impl GetHistoricalStatsBuilder<get_historical_stats_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetHistoricalStatsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: get_historical_stats_state::State> GetHistoricalStatsBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> GetHistoricalStatsBuilder<get_historical_stats_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GetHistoricalStatsBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: get_historical_stats_state::State, S: jacquard_common::BosStr>
+    GetHistoricalStatsBuilder<St, S>
+{
     /// Set the `cursor` field (optional)
-    pub fn cursor(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+    pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.0 = value.into();
         self
     }
     /// Set the `cursor` field to an Option value (optional)
-    pub fn maybe_cursor(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.0 = value;
+    pub fn maybe_cursor(mut self, value: Option<S>) -> Self {
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S: get_historical_stats_state::State> GetHistoricalStatsBuilder<'a, S> {
+impl<St: get_historical_stats_state::State, S: jacquard_common::BosStr>
+    GetHistoricalStatsBuilder<St, S>
+{
     /// Set the `endDate` field (optional)
     pub fn end_date(
         mut self,
         value: impl Into<Option<jacquard_common::types::string::Datetime>>,
     ) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self._fields.1 = value.into();
         self
     }
     /// Set the `endDate` field to an Option value (optional)
@@ -109,79 +193,86 @@ impl<'a, S: get_historical_stats_state::State> GetHistoricalStatsBuilder<'a, S> 
         mut self,
         value: Option<jacquard_common::types::string::Datetime>,
     ) -> Self {
-        self.__unsafe_private_named.1 = value;
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S: get_historical_stats_state::State> GetHistoricalStatsBuilder<'a, S> {
+impl<St: get_historical_stats_state::State, S: jacquard_common::BosStr>
+    GetHistoricalStatsBuilder<St, S>
+{
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.2 = value.into();
+        self._fields.2 = value.into();
         self
     }
     /// Set the `limit` field to an Option value (optional)
     pub fn maybe_limit(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.2 = value;
+        self._fields.2 = value;
         self
     }
 }
 
-impl<'a, S: get_historical_stats_state::State> GetHistoricalStatsBuilder<'a, S> {
+impl<St: get_historical_stats_state::State, S: jacquard_common::BosStr>
+    GetHistoricalStatsBuilder<St, S>
+{
     /// Set the `moderatorDid` field (optional)
     pub fn moderator_did(
         mut self,
-        value: impl Into<Option<jacquard_common::types::string::Did<'a>>>,
+        value: impl Into<Option<jacquard_common::types::string::Did<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.3 = value.into();
+        self._fields.3 = value.into();
         self
     }
     /// Set the `moderatorDid` field to an Option value (optional)
     pub fn maybe_moderator_did(
         mut self,
-        value: Option<jacquard_common::types::string::Did<'a>>,
+        value: Option<jacquard_common::types::string::Did<S>>,
     ) -> Self {
-        self.__unsafe_private_named.3 = value;
+        self._fields.3 = value;
         self
     }
 }
 
-impl<'a, S: get_historical_stats_state::State> GetHistoricalStatsBuilder<'a, S> {
+impl<St: get_historical_stats_state::State, S: jacquard_common::BosStr>
+    GetHistoricalStatsBuilder<St, S>
+{
     /// Set the `queueId` field (optional)
     pub fn queue_id(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.4 = value.into();
+        self._fields.4 = value.into();
         self
     }
     /// Set the `queueId` field to an Option value (optional)
     pub fn maybe_queue_id(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.4 = value;
+        self._fields.4 = value;
         self
     }
 }
 
-impl<'a, S: get_historical_stats_state::State> GetHistoricalStatsBuilder<'a, S> {
+impl<St: get_historical_stats_state::State, S: jacquard_common::BosStr>
+    GetHistoricalStatsBuilder<St, S>
+{
     /// Set the `reportTypes` field (optional)
-    pub fn report_types(
-        mut self,
-        value: impl Into<Option<Vec<jacquard_common::CowStr<'a>>>>,
-    ) -> Self {
-        self.__unsafe_private_named.5 = value.into();
+    pub fn report_types(mut self, value: impl Into<Option<Vec<S>>>) -> Self {
+        self._fields.5 = value.into();
         self
     }
     /// Set the `reportTypes` field to an Option value (optional)
-    pub fn maybe_report_types(mut self, value: Option<Vec<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.5 = value;
+    pub fn maybe_report_types(mut self, value: Option<Vec<S>>) -> Self {
+        self._fields.5 = value;
         self
     }
 }
 
-impl<'a, S: get_historical_stats_state::State> GetHistoricalStatsBuilder<'a, S> {
+impl<St: get_historical_stats_state::State, S: jacquard_common::BosStr>
+    GetHistoricalStatsBuilder<St, S>
+{
     /// Set the `startDate` field (optional)
     pub fn start_date(
         mut self,
         value: impl Into<Option<jacquard_common::types::string::Datetime>>,
     ) -> Self {
-        self.__unsafe_private_named.6 = value.into();
+        self._fields.6 = value.into();
         self
     }
     /// Set the `startDate` field to an Option value (optional)
@@ -189,64 +280,25 @@ impl<'a, S: get_historical_stats_state::State> GetHistoricalStatsBuilder<'a, S> 
         mut self,
         value: Option<jacquard_common::types::string::Datetime>,
     ) -> Self {
-        self.__unsafe_private_named.6 = value;
+        self._fields.6 = value;
         self
     }
 }
 
-impl<'a, S> GetHistoricalStatsBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GetHistoricalStatsBuilder<St, S>
 where
-    S: get_historical_stats_state::State,
+    St: get_historical_stats_state::State,
 {
-    /// Build the final struct
-    pub fn build(self) -> GetHistoricalStats<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> GetHistoricalStats<S> {
         GetHistoricalStats {
-            cursor: self.__unsafe_private_named.0,
-            end_date: self.__unsafe_private_named.1,
-            limit: self.__unsafe_private_named.2,
-            moderator_did: self.__unsafe_private_named.3,
-            queue_id: self.__unsafe_private_named.4,
-            report_types: self.__unsafe_private_named.5,
-            start_date: self.__unsafe_private_named.6,
+            cursor: self._fields.0,
+            end_date: self._fields.1,
+            limit: self._fields.2,
+            moderator_did: self._fields.3,
+            queue_id: self._fields.4,
+            report_types: self._fields.5,
+            start_date: self._fields.6,
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GetHistoricalStatsOutput<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(borrow)]
-    pub stats: Vec<crate::generated::tools_ozone::report::HistoricalStats<'a>>,
-}
-
-/// Response type for
-///tools.ozone.report.getHistoricalStats
-pub struct GetHistoricalStatsResponse;
-impl jacquard_common::xrpc::XrpcResp for GetHistoricalStatsResponse {
-    const NSID: &'static str = "tools.ozone.report.getHistoricalStats";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetHistoricalStatsOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for GetHistoricalStats<'a> {
-    const NSID: &'static str = "tools.ozone.report.getHistoricalStats";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = GetHistoricalStatsResponse;
-}
-
-/// Endpoint type for
-///tools.ozone.report.getHistoricalStats
-pub struct GetHistoricalStatsRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for GetHistoricalStatsRequest {
-    const PATH: &'static str = "/xrpc/tools.ozone.report.getHistoricalStats";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetHistoricalStats<'de>;
-    type Response = GetHistoricalStatsResponse;
 }

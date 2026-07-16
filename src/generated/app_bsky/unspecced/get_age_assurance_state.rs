@@ -5,37 +5,53 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetAgeAssuranceStateOutput<'a> {
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetAgeAssuranceStateOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(flatten)]
-    #[serde(borrow)]
-    pub value: crate::generated::app_bsky::unspecced::AgeAssuranceState<'a>,
+    pub value: crate::generated::app_bsky::unspecced::AgeAssuranceState<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-/// XRPC request marker type
+/** Request marker for the `app.bsky.unspecced.getAgeAssuranceState` query.
+
+This endpoint has no request parameters or input body; send this marker with `jacquard::Client`.*/
+
 #[derive(
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
     serde::Serialize,
     serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
     jacquard_derive::IntoStatic,
+    Copy,
 )]
 pub struct GetAgeAssuranceState;
-/// Response type for
-///app.bsky.unspecced.getAgeAssuranceState
+/** Response marker for the `app.bsky.unspecced.getAgeAssuranceState` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetAgeAssuranceStateOutput<S>` for this endpoint.*/
 pub struct GetAgeAssuranceStateResponse;
 impl jacquard_common::xrpc::XrpcResp for GetAgeAssuranceStateResponse {
     const NSID: &'static str = "app.bsky.unspecced.getAgeAssuranceState";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetAgeAssuranceStateOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
+    type Output<S: jacquard_common::BosStr> = GetAgeAssuranceStateOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
 }
 
 impl jacquard_common::xrpc::XrpcRequest for GetAgeAssuranceState {
@@ -44,12 +60,13 @@ impl jacquard_common::xrpc::XrpcRequest for GetAgeAssuranceState {
     type Response = GetAgeAssuranceStateResponse;
 }
 
-/// Endpoint type for
-///app.bsky.unspecced.getAgeAssuranceState
+/** Endpoint marker for the `app.bsky.unspecced.getAgeAssuranceState` query.
+
+Path: `/xrpc/app.bsky.unspecced.getAgeAssuranceState`. The request payload type is `GetAgeAssuranceState`; use this marker with lower-level `XrpcEndpoint` APIs when you need endpoint metadata.*/
 pub struct GetAgeAssuranceStateRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for GetAgeAssuranceStateRequest {
     const PATH: &'static str = "/xrpc/app.bsky.unspecced.getAgeAssuranceState";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetAgeAssuranceState;
+    type Request<S: jacquard_common::BosStr> = GetAgeAssuranceState;
     type Response = GetAgeAssuranceStateResponse;
 }

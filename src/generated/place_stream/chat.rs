@@ -5,40 +5,131 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
+//! Generated bindings for the `place.stream.chat` Lexicon namespace/module.
 pub mod gate;
 pub mod message;
 pub mod pinned_record;
 pub mod profile;
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct MessageView<'a> {
-    #[serde(borrow)]
-    pub author: crate::generated::app_bsky::actor::ProfileViewBasic<'a>,
-    /// Up to 3 badge tokens to display with the message. First badge is server-controlled, remaining badges are user-settable. Tokens are looked up in badges.json for display info.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub badges: std::option::Option<Vec<crate::generated::place_stream::badge::BadgeView<'a>>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct MessageView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub author: crate::generated::app_bsky::actor::ProfileViewBasic<S>,
+    ///Up to 3 badge tokens to display with the message. First badge is server-controlled, remaining badges are user-settable. Tokens are looked up in badges.json for display info.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub badges: core::option::Option<Vec<crate::generated::place_stream::badge::BadgeView<S>>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub chat_profile:
-        std::option::Option<crate::generated::place_stream::chat::profile::Profile<'a>>,
-    #[serde(borrow)]
-    pub cid: jacquard_common::types::string::Cid<'a>,
-    /// If true, this message has been deleted or labeled and should be cleared from the cache
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub deleted: std::option::Option<bool>,
+        core::option::Option<crate::generated::place_stream::chat::profile::Profile<S>>,
+    pub cid: jacquard_common::types::string::Cid<S>,
+    ///If true, this message has been deleted or labeled and should be cleared from the cache
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub deleted: core::option::Option<bool>,
     pub indexed_at: jacquard_common::types::string::Datetime,
-    #[serde(borrow)]
-    pub record: jacquard_common::types::value::Data<'a>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub reply_to: std::option::Option<MessageViewReplyTo<'a>>,
-    #[serde(borrow)]
-    pub uri: jacquard_common::types::string::AtUri<'a>,
+    pub record: jacquard_common::types::value::Data<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub reply_to: core::option::Option<MessageViewReplyTo<S>>,
+    pub uri: jacquard_common::types::string::AtUri<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[jacquard_derive::open_union]
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub enum MessageViewReplyTo<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(rename = "place.stream.chat.defs#messageView")]
+    MessageView(Box<crate::generated::place_stream::chat::MessageView<S>>),
+}
+
+/// View of a pinned chat record with hydrated message data.
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct PinnedRecordView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub cid: jacquard_common::types::string::Cid<S>,
+    pub indexed_at: jacquard_common::types::string::Datetime,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub message: core::option::Option<crate::generated::place_stream::chat::MessageView<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub pinned_by: core::option::Option<crate::generated::place_stream::chat::profile::Profile<S>>,
+    pub record: crate::generated::place_stream::chat::pinned_record::PinnedRecord<S>,
+    pub uri: jacquard_common::types::string::AtUri<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for MessageView<S> {
+    fn nsid() -> &'static str {
+        "place.stream.chat.defs"
+    }
+    fn def_name() -> &'static str {
+        "messageView"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_place_stream_chat_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        if let Some(ref value) = self.badges {
+            #[allow(unused_comparisons)]
+            if value.len() > 3usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("badges"),
+                    max: 3usize,
+                    actual: value.len(),
+                });
+            }
+        }
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for PinnedRecordView<S> {
+    fn nsid() -> &'static str {
+        "place.stream.chat.defs"
+    }
+    fn def_name() -> &'static str {
+        "pinnedRecordView"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_place_stream_chat_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
 }
 
 pub mod message_view_state {
@@ -51,376 +142,386 @@ pub mod message_view_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Uri;
-        type Cid;
         type Author;
-        type Record;
+        type Cid;
         type IndexedAt;
+        type Record;
+        type Uri;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Uri = Unset;
-        type Cid = Unset;
         type Author = Unset;
-        type Record = Unset;
+        type Cid = Unset;
         type IndexedAt = Unset;
-    }
-    ///State transition - sets the `uri` field to Set
-    pub struct SetUri<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUri<S> {}
-    impl<S: State> State for SetUri<S> {
-        type Uri = Set<members::uri>;
-        type Cid = S::Cid;
-        type Author = S::Author;
-        type Record = S::Record;
-        type IndexedAt = S::IndexedAt;
-    }
-    ///State transition - sets the `cid` field to Set
-    pub struct SetCid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCid<S> {}
-    impl<S: State> State for SetCid<S> {
-        type Uri = S::Uri;
-        type Cid = Set<members::cid>;
-        type Author = S::Author;
-        type Record = S::Record;
-        type IndexedAt = S::IndexedAt;
+        type Record = Unset;
+        type Uri = Unset;
     }
     ///State transition - sets the `author` field to Set
-    pub struct SetAuthor<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetAuthor<S> {}
-    impl<S: State> State for SetAuthor<S> {
-        type Uri = S::Uri;
-        type Cid = S::Cid;
+    pub struct SetAuthor<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetAuthor<St> {}
+    impl<St: State> State for SetAuthor<St> {
         type Author = Set<members::author>;
-        type Record = S::Record;
-        type IndexedAt = S::IndexedAt;
+        type Cid = St::Cid;
+        type IndexedAt = St::IndexedAt;
+        type Record = St::Record;
+        type Uri = St::Uri;
     }
-    ///State transition - sets the `record` field to Set
-    pub struct SetRecord<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRecord<S> {}
-    impl<S: State> State for SetRecord<S> {
-        type Uri = S::Uri;
-        type Cid = S::Cid;
-        type Author = S::Author;
-        type Record = Set<members::record>;
-        type IndexedAt = S::IndexedAt;
+    ///State transition - sets the `cid` field to Set
+    pub struct SetCid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCid<St> {}
+    impl<St: State> State for SetCid<St> {
+        type Author = St::Author;
+        type Cid = Set<members::cid>;
+        type IndexedAt = St::IndexedAt;
+        type Record = St::Record;
+        type Uri = St::Uri;
     }
     ///State transition - sets the `indexed_at` field to Set
-    pub struct SetIndexedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetIndexedAt<S> {}
-    impl<S: State> State for SetIndexedAt<S> {
-        type Uri = S::Uri;
-        type Cid = S::Cid;
-        type Author = S::Author;
-        type Record = S::Record;
+    pub struct SetIndexedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetIndexedAt<St> {}
+    impl<St: State> State for SetIndexedAt<St> {
+        type Author = St::Author;
+        type Cid = St::Cid;
         type IndexedAt = Set<members::indexed_at>;
+        type Record = St::Record;
+        type Uri = St::Uri;
+    }
+    ///State transition - sets the `record` field to Set
+    pub struct SetRecord<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRecord<St> {}
+    impl<St: State> State for SetRecord<St> {
+        type Author = St::Author;
+        type Cid = St::Cid;
+        type IndexedAt = St::IndexedAt;
+        type Record = Set<members::record>;
+        type Uri = St::Uri;
+    }
+    ///State transition - sets the `uri` field to Set
+    pub struct SetUri<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetUri<St> {}
+    impl<St: State> State for SetUri<St> {
+        type Author = St::Author;
+        type Cid = St::Cid;
+        type IndexedAt = St::IndexedAt;
+        type Record = St::Record;
+        type Uri = Set<members::uri>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `uri` field
-        pub struct uri(());
-        ///Marker type for the `cid` field
-        pub struct cid(());
         ///Marker type for the `author` field
         pub struct author(());
-        ///Marker type for the `record` field
-        pub struct record(());
+        ///Marker type for the `cid` field
+        pub struct cid(());
         ///Marker type for the `indexed_at` field
         pub struct indexed_at(());
+        ///Marker type for the `record` field
+        pub struct record(());
+        ///Marker type for the `uri` field
+        pub struct uri(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct MessageViewBuilder<'a, S: message_view_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<crate::generated::app_bsky::actor::ProfileViewBasic<'a>>,
-        ::core::option::Option<Vec<crate::generated::place_stream::badge::BadgeView<'a>>>,
-        ::core::option::Option<crate::generated::place_stream::chat::profile::Profile<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Cid<'a>>,
-        ::core::option::Option<bool>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<jacquard_common::types::value::Data<'a>>,
-        ::core::option::Option<MessageViewReplyTo<'a>>,
-        ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct MessageViewBuilder<
+    St: message_view_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<crate::generated::app_bsky::actor::ProfileViewBasic<S>>,
+        core::option::Option<Vec<crate::generated::place_stream::badge::BadgeView<S>>>,
+        core::option::Option<crate::generated::place_stream::chat::profile::Profile<S>>,
+        core::option::Option<jacquard_common::types::string::Cid<S>>,
+        core::option::Option<bool>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<jacquard_common::types::value::Data<S>>,
+        core::option::Option<MessageViewReplyTo<S>>,
+        core::option::Option<jacquard_common::types::string::AtUri<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> MessageView<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> MessageViewBuilder<'a, message_view_state::Empty> {
+impl MessageView<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> MessageViewBuilder<message_view_state::Empty, jacquard_common::DefaultStr> {
         MessageViewBuilder::new()
     }
 }
 
-impl<'a> MessageViewBuilder<'a, message_view_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> MessageView<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> MessageViewBuilder<message_view_state::Empty, S> {
+        MessageViewBuilder::builder()
+    }
+}
+
+impl MessageViewBuilder<message_view_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         MessageViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> MessageViewBuilder<'a, S>
+impl<S: jacquard_common::BosStr> MessageViewBuilder<message_view_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        MessageViewBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> MessageViewBuilder<St, S>
 where
-    S: message_view_state::State,
-    S::Author: message_view_state::IsUnset,
+    St: message_view_state::State,
+    St::Author: message_view_state::IsUnset,
 {
     /// Set the `author` field (required)
     pub fn author(
         mut self,
-        value: impl Into<crate::generated::app_bsky::actor::ProfileViewBasic<'a>>,
-    ) -> MessageViewBuilder<'a, message_view_state::SetAuthor<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<crate::generated::app_bsky::actor::ProfileViewBasic<S>>,
+    ) -> MessageViewBuilder<message_view_state::SetAuthor<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         MessageViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: message_view_state::State> MessageViewBuilder<'a, S> {
+impl<St: message_view_state::State, S: jacquard_common::BosStr> MessageViewBuilder<St, S> {
     /// Set the `badges` field (optional)
     pub fn badges(
         mut self,
-        value: impl Into<Option<Vec<crate::generated::place_stream::badge::BadgeView<'a>>>>,
+        value: impl Into<Option<Vec<crate::generated::place_stream::badge::BadgeView<S>>>>,
     ) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self._fields.1 = value.into();
         self
     }
     /// Set the `badges` field to an Option value (optional)
     pub fn maybe_badges(
         mut self,
-        value: Option<Vec<crate::generated::place_stream::badge::BadgeView<'a>>>,
+        value: Option<Vec<crate::generated::place_stream::badge::BadgeView<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.1 = value;
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S: message_view_state::State> MessageViewBuilder<'a, S> {
+impl<St: message_view_state::State, S: jacquard_common::BosStr> MessageViewBuilder<St, S> {
     /// Set the `chatProfile` field (optional)
     pub fn chat_profile(
         mut self,
-        value: impl Into<Option<crate::generated::place_stream::chat::profile::Profile<'a>>>,
+        value: impl Into<Option<crate::generated::place_stream::chat::profile::Profile<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.2 = value.into();
+        self._fields.2 = value.into();
         self
     }
     /// Set the `chatProfile` field to an Option value (optional)
     pub fn maybe_chat_profile(
         mut self,
-        value: Option<crate::generated::place_stream::chat::profile::Profile<'a>>,
+        value: Option<crate::generated::place_stream::chat::profile::Profile<S>>,
     ) -> Self {
-        self.__unsafe_private_named.2 = value;
+        self._fields.2 = value;
         self
     }
 }
 
-impl<'a, S> MessageViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> MessageViewBuilder<St, S>
 where
-    S: message_view_state::State,
-    S::Cid: message_view_state::IsUnset,
+    St: message_view_state::State,
+    St::Cid: message_view_state::IsUnset,
 {
     /// Set the `cid` field (required)
     pub fn cid(
         mut self,
-        value: impl Into<jacquard_common::types::string::Cid<'a>>,
-    ) -> MessageViewBuilder<'a, message_view_state::SetCid<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Cid<S>>,
+    ) -> MessageViewBuilder<message_view_state::SetCid<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
         MessageViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: message_view_state::State> MessageViewBuilder<'a, S> {
+impl<St: message_view_state::State, S: jacquard_common::BosStr> MessageViewBuilder<St, S> {
     /// Set the `deleted` field (optional)
     pub fn deleted(mut self, value: impl Into<Option<bool>>) -> Self {
-        self.__unsafe_private_named.4 = value.into();
+        self._fields.4 = value.into();
         self
     }
     /// Set the `deleted` field to an Option value (optional)
     pub fn maybe_deleted(mut self, value: Option<bool>) -> Self {
-        self.__unsafe_private_named.4 = value;
+        self._fields.4 = value;
         self
     }
 }
 
-impl<'a, S> MessageViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> MessageViewBuilder<St, S>
 where
-    S: message_view_state::State,
-    S::IndexedAt: message_view_state::IsUnset,
+    St: message_view_state::State,
+    St::IndexedAt: message_view_state::IsUnset,
 {
     /// Set the `indexedAt` field (required)
     pub fn indexed_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> MessageViewBuilder<'a, message_view_state::SetIndexedAt<S>> {
-        self.__unsafe_private_named.5 = ::core::option::Option::Some(value.into());
+    ) -> MessageViewBuilder<message_view_state::SetIndexedAt<St>, S> {
+        self._fields.5 = ::core::option::Option::Some(value.into());
         MessageViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> MessageViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> MessageViewBuilder<St, S>
 where
-    S: message_view_state::State,
-    S::Record: message_view_state::IsUnset,
+    St: message_view_state::State,
+    St::Record: message_view_state::IsUnset,
 {
     /// Set the `record` field (required)
     pub fn record(
         mut self,
-        value: impl Into<jacquard_common::types::value::Data<'a>>,
-    ) -> MessageViewBuilder<'a, message_view_state::SetRecord<S>> {
-        self.__unsafe_private_named.6 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::value::Data<S>>,
+    ) -> MessageViewBuilder<message_view_state::SetRecord<St>, S> {
+        self._fields.6 = ::core::option::Option::Some(value.into());
         MessageViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: message_view_state::State> MessageViewBuilder<'a, S> {
+impl<St: message_view_state::State, S: jacquard_common::BosStr> MessageViewBuilder<St, S> {
     /// Set the `replyTo` field (optional)
-    pub fn reply_to(mut self, value: impl Into<Option<MessageViewReplyTo<'a>>>) -> Self {
-        self.__unsafe_private_named.7 = value.into();
+    pub fn reply_to(mut self, value: impl Into<Option<MessageViewReplyTo<S>>>) -> Self {
+        self._fields.7 = value.into();
         self
     }
     /// Set the `replyTo` field to an Option value (optional)
-    pub fn maybe_reply_to(mut self, value: Option<MessageViewReplyTo<'a>>) -> Self {
-        self.__unsafe_private_named.7 = value;
+    pub fn maybe_reply_to(mut self, value: Option<MessageViewReplyTo<S>>) -> Self {
+        self._fields.7 = value;
         self
     }
 }
 
-impl<'a, S> MessageViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> MessageViewBuilder<St, S>
 where
-    S: message_view_state::State,
-    S::Uri: message_view_state::IsUnset,
+    St: message_view_state::State,
+    St::Uri: message_view_state::IsUnset,
 {
     /// Set the `uri` field (required)
     pub fn uri(
         mut self,
-        value: impl Into<jacquard_common::types::string::AtUri<'a>>,
-    ) -> MessageViewBuilder<'a, message_view_state::SetUri<S>> {
-        self.__unsafe_private_named.8 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::AtUri<S>>,
+    ) -> MessageViewBuilder<message_view_state::SetUri<St>, S> {
+        self._fields.8 = ::core::option::Option::Some(value.into());
         MessageViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> MessageViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> MessageViewBuilder<St, S>
 where
-    S: message_view_state::State,
-    S::Uri: message_view_state::IsSet,
-    S::Cid: message_view_state::IsSet,
-    S::Author: message_view_state::IsSet,
-    S::Record: message_view_state::IsSet,
-    S::IndexedAt: message_view_state::IsSet,
+    St: message_view_state::State,
+    St::Author: message_view_state::IsSet,
+    St::Cid: message_view_state::IsSet,
+    St::IndexedAt: message_view_state::IsSet,
+    St::Record: message_view_state::IsSet,
+    St::Uri: message_view_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> MessageView<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> MessageView<S> {
         MessageView {
-            author: self.__unsafe_private_named.0.unwrap(),
-            badges: self.__unsafe_private_named.1,
-            chat_profile: self.__unsafe_private_named.2,
-            cid: self.__unsafe_private_named.3.unwrap(),
-            deleted: self.__unsafe_private_named.4,
-            indexed_at: self.__unsafe_private_named.5.unwrap(),
-            record: self.__unsafe_private_named.6.unwrap(),
-            reply_to: self.__unsafe_private_named.7,
-            uri: self.__unsafe_private_named.8.unwrap(),
+            author: self._fields.0.unwrap(),
+            badges: self._fields.1,
+            chat_profile: self._fields.2,
+            cid: self._fields.3.unwrap(),
+            deleted: self._fields.4,
+            indexed_at: self._fields.5.unwrap(),
+            record: self._fields.6.unwrap(),
+            reply_to: self._fields.7,
+            uri: self._fields.8.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> MessageView<'a> {
+    ) -> MessageView<S> {
         MessageView {
-            author: self.__unsafe_private_named.0.unwrap(),
-            badges: self.__unsafe_private_named.1,
-            chat_profile: self.__unsafe_private_named.2,
-            cid: self.__unsafe_private_named.3.unwrap(),
-            deleted: self.__unsafe_private_named.4,
-            indexed_at: self.__unsafe_private_named.5.unwrap(),
-            record: self.__unsafe_private_named.6.unwrap(),
-            reply_to: self.__unsafe_private_named.7,
-            uri: self.__unsafe_private_named.8.unwrap(),
+            author: self._fields.0.unwrap(),
+            badges: self._fields.1,
+            chat_profile: self._fields.2,
+            cid: self._fields.3.unwrap(),
+            deleted: self._fields.4,
+            indexed_at: self._fields.5.unwrap(),
+            record: self._fields.6.unwrap(),
+            reply_to: self._fields.7,
+            uri: self._fields.8.unwrap(),
             extra_data: Some(extra_data),
         }
     }
 }
 
-#[jacquard_derive::open_union]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(tag = "$type")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum MessageViewReplyTo<'a> {
-    #[serde(rename = "place.stream.chat.defs#messageView")]
-    MessageView(Box<crate::generated::place_stream::chat::MessageView<'a>>),
-}
-
-fn lexicon_doc_place_stream_chat_defs() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_place_stream_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("place.stream.chat.defs"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("messageView"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("messageView"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: None,
                     required: Some(
                         vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("uri"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("cid"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("author"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("record"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("indexedAt")
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("uri"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("cid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("author"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("record"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("indexedAt")
                         ],
                     ),
-                    nullable: None,
                     properties: {
                         #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
+                        let mut map = ::alloc::collections::BTreeMap::new();
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("author"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "author",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                description: None,
                                 r#ref: ::jacquard_common::CowStr::new_static(
                                     "app.bsky.actor.defs#profileViewBasic",
                                 ),
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("badges"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "badges",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
@@ -428,271 +529,183 @@ fn lexicon_doc_place_stream_chat_defs() -> ::jacquard_lexicon::lexicon::LexiconD
                                     ),
                                 ),
                                 items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                    description: None,
                                     r#ref: ::jacquard_common::CowStr::new_static(
                                         "place.stream.badge.defs#badgeView",
                                     ),
+                                    ..Default::default()
                                 }),
-                                min_length: None,
                                 max_length: Some(3usize),
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "chatProfile",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                description: None,
                                 r#ref: ::jacquard_common::CowStr::new_static(
                                     "place.stream.chat.profile",
                                 ),
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("cid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "cid",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Cid,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("deleted"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "deleted",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
-                                description: None,
-                                default: None,
-                                r#const: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "indexedAt",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("record"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "record",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Unknown(::jacquard_lexicon::lexicon::LexUnknown {
-                                description: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("replyTo"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "replyTo",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Union(::jacquard_lexicon::lexicon::LexRefUnion {
-                                description: None,
                                 refs: vec![
                                     ::jacquard_common::CowStr::new_static("#messageView")
                                 ],
-                                closed: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("uri"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "uri",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map
                     },
+                    ..Default::default()
                 }),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("pinnedRecordView"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("pinnedRecordView"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
                         description: Some(::jacquard_common::CowStr::new_static(
                             "View of a pinned chat record with hydrated message data.",
                         )),
                         required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("uri"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("cid"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("record"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("indexedAt"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("uri"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("cid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("record"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("indexedAt"),
                         ]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("cid"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("cid"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Cid,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("indexedAt"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("indexedAt"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("message"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("message"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
                                     ::jacquard_lexicon::lexicon::LexRef {
-                                        description: None,
                                         r#ref: ::jacquard_common::CowStr::new_static(
                                             "#messageView",
                                         ),
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("pinnedBy"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("pinnedBy"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
                                     ::jacquard_lexicon::lexicon::LexRef {
-                                        description: None,
                                         r#ref: ::jacquard_common::CowStr::new_static(
                                             "place.stream.chat.profile",
                                         ),
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("record"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("record"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
                                     ::jacquard_lexicon::lexicon::LexRef {
-                                        description: None,
                                         r#ref: ::jacquard_common::CowStr::new_static(
                                             "place.stream.chat.pinnedRecord",
                                         ),
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("uri"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("uri"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map
         },
+        ..Default::default()
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for MessageView<'a> {
-    fn nsid() -> &'static str {
-        "place.stream.chat.defs"
-    }
-    fn def_name() -> &'static str {
-        "messageView"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_place_stream_chat_defs()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        if let Some(ref value) = self.badges {
-            #[allow(unused_comparisons)]
-            if value.len() > 3usize {
-                return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("badges"),
-                    max: 3usize,
-                    actual: value.len(),
-                });
-            }
-        }
-        Ok(())
-    }
-}
-
-/// View of a pinned chat record with hydrated message data.
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct PinnedRecordView<'a> {
-    #[serde(borrow)]
-    pub cid: jacquard_common::types::string::Cid<'a>,
-    pub indexed_at: jacquard_common::types::string::Datetime,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub message: std::option::Option<crate::generated::place_stream::chat::MessageView<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub pinned_by: std::option::Option<crate::generated::place_stream::chat::profile::Profile<'a>>,
-    #[serde(borrow)]
-    pub record: crate::generated::place_stream::chat::pinned_record::PinnedRecord<'a>,
-    #[serde(borrow)]
-    pub uri: jacquard_common::types::string::AtUri<'a>,
 }
 
 pub mod pinned_record_view_state {
@@ -705,271 +718,278 @@ pub mod pinned_record_view_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Uri;
         type Cid;
-        type Record;
         type IndexedAt;
+        type Record;
+        type Uri;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Uri = Unset;
         type Cid = Unset;
-        type Record = Unset;
         type IndexedAt = Unset;
-    }
-    ///State transition - sets the `uri` field to Set
-    pub struct SetUri<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUri<S> {}
-    impl<S: State> State for SetUri<S> {
-        type Uri = Set<members::uri>;
-        type Cid = S::Cid;
-        type Record = S::Record;
-        type IndexedAt = S::IndexedAt;
+        type Record = Unset;
+        type Uri = Unset;
     }
     ///State transition - sets the `cid` field to Set
-    pub struct SetCid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCid<S> {}
-    impl<S: State> State for SetCid<S> {
-        type Uri = S::Uri;
+    pub struct SetCid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCid<St> {}
+    impl<St: State> State for SetCid<St> {
         type Cid = Set<members::cid>;
-        type Record = S::Record;
-        type IndexedAt = S::IndexedAt;
-    }
-    ///State transition - sets the `record` field to Set
-    pub struct SetRecord<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRecord<S> {}
-    impl<S: State> State for SetRecord<S> {
-        type Uri = S::Uri;
-        type Cid = S::Cid;
-        type Record = Set<members::record>;
-        type IndexedAt = S::IndexedAt;
+        type IndexedAt = St::IndexedAt;
+        type Record = St::Record;
+        type Uri = St::Uri;
     }
     ///State transition - sets the `indexed_at` field to Set
-    pub struct SetIndexedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetIndexedAt<S> {}
-    impl<S: State> State for SetIndexedAt<S> {
-        type Uri = S::Uri;
-        type Cid = S::Cid;
-        type Record = S::Record;
+    pub struct SetIndexedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetIndexedAt<St> {}
+    impl<St: State> State for SetIndexedAt<St> {
+        type Cid = St::Cid;
         type IndexedAt = Set<members::indexed_at>;
+        type Record = St::Record;
+        type Uri = St::Uri;
+    }
+    ///State transition - sets the `record` field to Set
+    pub struct SetRecord<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRecord<St> {}
+    impl<St: State> State for SetRecord<St> {
+        type Cid = St::Cid;
+        type IndexedAt = St::IndexedAt;
+        type Record = Set<members::record>;
+        type Uri = St::Uri;
+    }
+    ///State transition - sets the `uri` field to Set
+    pub struct SetUri<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetUri<St> {}
+    impl<St: State> State for SetUri<St> {
+        type Cid = St::Cid;
+        type IndexedAt = St::IndexedAt;
+        type Record = St::Record;
+        type Uri = Set<members::uri>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `uri` field
-        pub struct uri(());
         ///Marker type for the `cid` field
         pub struct cid(());
-        ///Marker type for the `record` field
-        pub struct record(());
         ///Marker type for the `indexed_at` field
         pub struct indexed_at(());
+        ///Marker type for the `record` field
+        pub struct record(());
+        ///Marker type for the `uri` field
+        pub struct uri(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct PinnedRecordViewBuilder<'a, S: pinned_record_view_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Cid<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<crate::generated::place_stream::chat::MessageView<'a>>,
-        ::core::option::Option<crate::generated::place_stream::chat::profile::Profile<'a>>,
-        ::core::option::Option<
-            crate::generated::place_stream::chat::pinned_record::PinnedRecord<'a>,
-        >,
-        ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct PinnedRecordViewBuilder<
+    St: pinned_record_view_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Cid<S>>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<crate::generated::place_stream::chat::MessageView<S>>,
+        core::option::Option<crate::generated::place_stream::chat::profile::Profile<S>>,
+        core::option::Option<crate::generated::place_stream::chat::pinned_record::PinnedRecord<S>>,
+        core::option::Option<jacquard_common::types::string::AtUri<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> PinnedRecordView<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> PinnedRecordViewBuilder<'a, pinned_record_view_state::Empty> {
+impl PinnedRecordView<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> PinnedRecordViewBuilder<pinned_record_view_state::Empty, jacquard_common::DefaultStr> {
         PinnedRecordViewBuilder::new()
     }
 }
 
-impl<'a> PinnedRecordViewBuilder<'a, pinned_record_view_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> PinnedRecordView<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> PinnedRecordViewBuilder<pinned_record_view_state::Empty, S> {
+        PinnedRecordViewBuilder::builder()
+    }
+}
+
+impl PinnedRecordViewBuilder<pinned_record_view_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         PinnedRecordViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> PinnedRecordViewBuilder<'a, S>
+impl<S: jacquard_common::BosStr> PinnedRecordViewBuilder<pinned_record_view_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        PinnedRecordViewBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> PinnedRecordViewBuilder<St, S>
 where
-    S: pinned_record_view_state::State,
-    S::Cid: pinned_record_view_state::IsUnset,
+    St: pinned_record_view_state::State,
+    St::Cid: pinned_record_view_state::IsUnset,
 {
     /// Set the `cid` field (required)
     pub fn cid(
         mut self,
-        value: impl Into<jacquard_common::types::string::Cid<'a>>,
-    ) -> PinnedRecordViewBuilder<'a, pinned_record_view_state::SetCid<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Cid<S>>,
+    ) -> PinnedRecordViewBuilder<pinned_record_view_state::SetCid<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         PinnedRecordViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> PinnedRecordViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> PinnedRecordViewBuilder<St, S>
 where
-    S: pinned_record_view_state::State,
-    S::IndexedAt: pinned_record_view_state::IsUnset,
+    St: pinned_record_view_state::State,
+    St::IndexedAt: pinned_record_view_state::IsUnset,
 {
     /// Set the `indexedAt` field (required)
     pub fn indexed_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> PinnedRecordViewBuilder<'a, pinned_record_view_state::SetIndexedAt<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+    ) -> PinnedRecordViewBuilder<pinned_record_view_state::SetIndexedAt<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         PinnedRecordViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: pinned_record_view_state::State> PinnedRecordViewBuilder<'a, S> {
+impl<St: pinned_record_view_state::State, S: jacquard_common::BosStr>
+    PinnedRecordViewBuilder<St, S>
+{
     /// Set the `message` field (optional)
     pub fn message(
         mut self,
-        value: impl Into<Option<crate::generated::place_stream::chat::MessageView<'a>>>,
+        value: impl Into<Option<crate::generated::place_stream::chat::MessageView<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.2 = value.into();
+        self._fields.2 = value.into();
         self
     }
     /// Set the `message` field to an Option value (optional)
     pub fn maybe_message(
         mut self,
-        value: Option<crate::generated::place_stream::chat::MessageView<'a>>,
+        value: Option<crate::generated::place_stream::chat::MessageView<S>>,
     ) -> Self {
-        self.__unsafe_private_named.2 = value;
+        self._fields.2 = value;
         self
     }
 }
 
-impl<'a, S: pinned_record_view_state::State> PinnedRecordViewBuilder<'a, S> {
+impl<St: pinned_record_view_state::State, S: jacquard_common::BosStr>
+    PinnedRecordViewBuilder<St, S>
+{
     /// Set the `pinnedBy` field (optional)
     pub fn pinned_by(
         mut self,
-        value: impl Into<Option<crate::generated::place_stream::chat::profile::Profile<'a>>>,
+        value: impl Into<Option<crate::generated::place_stream::chat::profile::Profile<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.3 = value.into();
+        self._fields.3 = value.into();
         self
     }
     /// Set the `pinnedBy` field to an Option value (optional)
     pub fn maybe_pinned_by(
         mut self,
-        value: Option<crate::generated::place_stream::chat::profile::Profile<'a>>,
+        value: Option<crate::generated::place_stream::chat::profile::Profile<S>>,
     ) -> Self {
-        self.__unsafe_private_named.3 = value;
+        self._fields.3 = value;
         self
     }
 }
 
-impl<'a, S> PinnedRecordViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> PinnedRecordViewBuilder<St, S>
 where
-    S: pinned_record_view_state::State,
-    S::Record: pinned_record_view_state::IsUnset,
+    St: pinned_record_view_state::State,
+    St::Record: pinned_record_view_state::IsUnset,
 {
     /// Set the `record` field (required)
     pub fn record(
         mut self,
-        value: impl Into<crate::generated::place_stream::chat::pinned_record::PinnedRecord<'a>>,
-    ) -> PinnedRecordViewBuilder<'a, pinned_record_view_state::SetRecord<S>> {
-        self.__unsafe_private_named.4 = ::core::option::Option::Some(value.into());
+        value: impl Into<crate::generated::place_stream::chat::pinned_record::PinnedRecord<S>>,
+    ) -> PinnedRecordViewBuilder<pinned_record_view_state::SetRecord<St>, S> {
+        self._fields.4 = ::core::option::Option::Some(value.into());
         PinnedRecordViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> PinnedRecordViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> PinnedRecordViewBuilder<St, S>
 where
-    S: pinned_record_view_state::State,
-    S::Uri: pinned_record_view_state::IsUnset,
+    St: pinned_record_view_state::State,
+    St::Uri: pinned_record_view_state::IsUnset,
 {
     /// Set the `uri` field (required)
     pub fn uri(
         mut self,
-        value: impl Into<jacquard_common::types::string::AtUri<'a>>,
-    ) -> PinnedRecordViewBuilder<'a, pinned_record_view_state::SetUri<S>> {
-        self.__unsafe_private_named.5 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::AtUri<S>>,
+    ) -> PinnedRecordViewBuilder<pinned_record_view_state::SetUri<St>, S> {
+        self._fields.5 = ::core::option::Option::Some(value.into());
         PinnedRecordViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> PinnedRecordViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> PinnedRecordViewBuilder<St, S>
 where
-    S: pinned_record_view_state::State,
-    S::Uri: pinned_record_view_state::IsSet,
-    S::Cid: pinned_record_view_state::IsSet,
-    S::Record: pinned_record_view_state::IsSet,
-    S::IndexedAt: pinned_record_view_state::IsSet,
+    St: pinned_record_view_state::State,
+    St::Cid: pinned_record_view_state::IsSet,
+    St::IndexedAt: pinned_record_view_state::IsSet,
+    St::Record: pinned_record_view_state::IsSet,
+    St::Uri: pinned_record_view_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> PinnedRecordView<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> PinnedRecordView<S> {
         PinnedRecordView {
-            cid: self.__unsafe_private_named.0.unwrap(),
-            indexed_at: self.__unsafe_private_named.1.unwrap(),
-            message: self.__unsafe_private_named.2,
-            pinned_by: self.__unsafe_private_named.3,
-            record: self.__unsafe_private_named.4.unwrap(),
-            uri: self.__unsafe_private_named.5.unwrap(),
+            cid: self._fields.0.unwrap(),
+            indexed_at: self._fields.1.unwrap(),
+            message: self._fields.2,
+            pinned_by: self._fields.3,
+            record: self._fields.4.unwrap(),
+            uri: self._fields.5.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> PinnedRecordView<'a> {
+    ) -> PinnedRecordView<S> {
         PinnedRecordView {
-            cid: self.__unsafe_private_named.0.unwrap(),
-            indexed_at: self.__unsafe_private_named.1.unwrap(),
-            message: self.__unsafe_private_named.2,
-            pinned_by: self.__unsafe_private_named.3,
-            record: self.__unsafe_private_named.4.unwrap(),
-            uri: self.__unsafe_private_named.5.unwrap(),
+            cid: self._fields.0.unwrap(),
+            indexed_at: self._fields.1.unwrap(),
+            message: self._fields.2,
+            pinned_by: self._fields.3,
+            record: self._fields.4.unwrap(),
+            uri: self._fields.5.unwrap(),
             extra_data: Some(extra_data),
         }
-    }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for PinnedRecordView<'a> {
-    fn nsid() -> &'static str {
-        "place.stream.chat.defs"
-    }
-    fn def_name() -> &'static str {
-        "pinnedRecordView"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_place_stream_chat_defs()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
     }
 }

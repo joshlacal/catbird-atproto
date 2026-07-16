@@ -5,347 +5,67 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct DeliverWelcome<'a> {
-    /// Conversation ID
-    #[serde(borrow)]
-    pub convo_id: jacquard_common::CowStr<'a>,
-    /// Initial epoch of the group for the new member
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct DeliverWelcome<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Conversation ID
+    pub convo_id: S,
+    ///Initial epoch of the group for the new member
     pub initial_epoch: i64,
-    /// Hash of the consumed key package
-    #[serde(borrow)]
-    pub key_package_hash: jacquard_common::CowStr<'a>,
-    /// DID of the recipient user
-    #[serde(borrow)]
-    pub recipient_did: jacquard_common::CowStr<'a>,
-    /// DID of the sending delivery service
-    #[serde(borrow)]
-    pub sender_ds_did: jacquard_common::CowStr<'a>,
-    /// Serialized MLS Welcome message
+    ///Hash of the consumed key package
+    pub key_package_hash: S,
+    ///DID of the recipient user
+    pub recipient_did: S,
+    ///DID of the sending delivery service
+    pub sender_ds_did: S,
+    ///Serialized MLS Welcome message
     #[serde(with = "jacquard_common::serde_bytes_helper")]
-    pub welcome_data: bytes::Bytes,
-}
-
-pub mod deliver_welcome_state {
-
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
-    #[allow(unused)]
-    use core::marker::PhantomData;
-    mod sealed {
-        pub trait Sealed {}
-    }
-    /// State trait tracking which required fields have been set
-    pub trait State: sealed::Sealed {
-        type ConvoId;
-        type RecipientDid;
-        type SenderDsDid;
-        type KeyPackageHash;
-        type WelcomeData;
-        type InitialEpoch;
-    }
-    /// Empty state - all required fields are unset
-    pub struct Empty(());
-    impl sealed::Sealed for Empty {}
-    impl State for Empty {
-        type ConvoId = Unset;
-        type RecipientDid = Unset;
-        type SenderDsDid = Unset;
-        type KeyPackageHash = Unset;
-        type WelcomeData = Unset;
-        type InitialEpoch = Unset;
-    }
-    ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type ConvoId = Set<members::convo_id>;
-        type RecipientDid = S::RecipientDid;
-        type SenderDsDid = S::SenderDsDid;
-        type KeyPackageHash = S::KeyPackageHash;
-        type WelcomeData = S::WelcomeData;
-        type InitialEpoch = S::InitialEpoch;
-    }
-    ///State transition - sets the `recipient_did` field to Set
-    pub struct SetRecipientDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRecipientDid<S> {}
-    impl<S: State> State for SetRecipientDid<S> {
-        type ConvoId = S::ConvoId;
-        type RecipientDid = Set<members::recipient_did>;
-        type SenderDsDid = S::SenderDsDid;
-        type KeyPackageHash = S::KeyPackageHash;
-        type WelcomeData = S::WelcomeData;
-        type InitialEpoch = S::InitialEpoch;
-    }
-    ///State transition - sets the `sender_ds_did` field to Set
-    pub struct SetSenderDsDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetSenderDsDid<S> {}
-    impl<S: State> State for SetSenderDsDid<S> {
-        type ConvoId = S::ConvoId;
-        type RecipientDid = S::RecipientDid;
-        type SenderDsDid = Set<members::sender_ds_did>;
-        type KeyPackageHash = S::KeyPackageHash;
-        type WelcomeData = S::WelcomeData;
-        type InitialEpoch = S::InitialEpoch;
-    }
-    ///State transition - sets the `key_package_hash` field to Set
-    pub struct SetKeyPackageHash<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetKeyPackageHash<S> {}
-    impl<S: State> State for SetKeyPackageHash<S> {
-        type ConvoId = S::ConvoId;
-        type RecipientDid = S::RecipientDid;
-        type SenderDsDid = S::SenderDsDid;
-        type KeyPackageHash = Set<members::key_package_hash>;
-        type WelcomeData = S::WelcomeData;
-        type InitialEpoch = S::InitialEpoch;
-    }
-    ///State transition - sets the `welcome_data` field to Set
-    pub struct SetWelcomeData<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetWelcomeData<S> {}
-    impl<S: State> State for SetWelcomeData<S> {
-        type ConvoId = S::ConvoId;
-        type RecipientDid = S::RecipientDid;
-        type SenderDsDid = S::SenderDsDid;
-        type KeyPackageHash = S::KeyPackageHash;
-        type WelcomeData = Set<members::welcome_data>;
-        type InitialEpoch = S::InitialEpoch;
-    }
-    ///State transition - sets the `initial_epoch` field to Set
-    pub struct SetInitialEpoch<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetInitialEpoch<S> {}
-    impl<S: State> State for SetInitialEpoch<S> {
-        type ConvoId = S::ConvoId;
-        type RecipientDid = S::RecipientDid;
-        type SenderDsDid = S::SenderDsDid;
-        type KeyPackageHash = S::KeyPackageHash;
-        type WelcomeData = S::WelcomeData;
-        type InitialEpoch = Set<members::initial_epoch>;
-    }
-    /// Marker types for field names
-    #[allow(non_camel_case_types)]
-    pub mod members {
-        ///Marker type for the `convo_id` field
-        pub struct convo_id(());
-        ///Marker type for the `recipient_did` field
-        pub struct recipient_did(());
-        ///Marker type for the `sender_ds_did` field
-        pub struct sender_ds_did(());
-        ///Marker type for the `key_package_hash` field
-        pub struct key_package_hash(());
-        ///Marker type for the `welcome_data` field
-        pub struct welcome_data(());
-        ///Marker type for the `initial_epoch` field
-        pub struct initial_epoch(());
-    }
-}
-
-/// Builder for constructing an instance of this type
-pub struct DeliverWelcomeBuilder<'a, S: deliver_welcome_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<bytes::Bytes>,
-    ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
-}
-
-impl<'a> DeliverWelcome<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> DeliverWelcomeBuilder<'a, deliver_welcome_state::Empty> {
-        DeliverWelcomeBuilder::new()
-    }
-}
-
-impl<'a> DeliverWelcomeBuilder<'a, deliver_welcome_state::Empty> {
-    /// Create a new builder with all fields unset
-    pub fn new() -> Self {
-        DeliverWelcomeBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> DeliverWelcomeBuilder<'a, S>
-where
-    S: deliver_welcome_state::State,
-    S::ConvoId: deliver_welcome_state::IsUnset,
-{
-    /// Set the `convoId` field (required)
-    pub fn convo_id(
-        mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> DeliverWelcomeBuilder<'a, deliver_welcome_state::SetConvoId<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
-        DeliverWelcomeBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> DeliverWelcomeBuilder<'a, S>
-where
-    S: deliver_welcome_state::State,
-    S::InitialEpoch: deliver_welcome_state::IsUnset,
-{
-    /// Set the `initialEpoch` field (required)
-    pub fn initial_epoch(
-        mut self,
-        value: impl Into<i64>,
-    ) -> DeliverWelcomeBuilder<'a, deliver_welcome_state::SetInitialEpoch<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
-        DeliverWelcomeBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> DeliverWelcomeBuilder<'a, S>
-where
-    S: deliver_welcome_state::State,
-    S::KeyPackageHash: deliver_welcome_state::IsUnset,
-{
-    /// Set the `keyPackageHash` field (required)
-    pub fn key_package_hash(
-        mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> DeliverWelcomeBuilder<'a, deliver_welcome_state::SetKeyPackageHash<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
-        DeliverWelcomeBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> DeliverWelcomeBuilder<'a, S>
-where
-    S: deliver_welcome_state::State,
-    S::RecipientDid: deliver_welcome_state::IsUnset,
-{
-    /// Set the `recipientDid` field (required)
-    pub fn recipient_did(
-        mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> DeliverWelcomeBuilder<'a, deliver_welcome_state::SetRecipientDid<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
-        DeliverWelcomeBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> DeliverWelcomeBuilder<'a, S>
-where
-    S: deliver_welcome_state::State,
-    S::SenderDsDid: deliver_welcome_state::IsUnset,
-{
-    /// Set the `senderDsDid` field (required)
-    pub fn sender_ds_did(
-        mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> DeliverWelcomeBuilder<'a, deliver_welcome_state::SetSenderDsDid<S>> {
-        self.__unsafe_private_named.4 = ::core::option::Option::Some(value.into());
-        DeliverWelcomeBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> DeliverWelcomeBuilder<'a, S>
-where
-    S: deliver_welcome_state::State,
-    S::WelcomeData: deliver_welcome_state::IsUnset,
-{
-    /// Set the `welcomeData` field (required)
-    pub fn welcome_data(
-        mut self,
-        value: impl Into<bytes::Bytes>,
-    ) -> DeliverWelcomeBuilder<'a, deliver_welcome_state::SetWelcomeData<S>> {
-        self.__unsafe_private_named.5 = ::core::option::Option::Some(value.into());
-        DeliverWelcomeBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> DeliverWelcomeBuilder<'a, S>
-where
-    S: deliver_welcome_state::State,
-    S::ConvoId: deliver_welcome_state::IsSet,
-    S::RecipientDid: deliver_welcome_state::IsSet,
-    S::SenderDsDid: deliver_welcome_state::IsSet,
-    S::KeyPackageHash: deliver_welcome_state::IsSet,
-    S::WelcomeData: deliver_welcome_state::IsSet,
-    S::InitialEpoch: deliver_welcome_state::IsSet,
-{
-    /// Build the final struct
-    pub fn build(self) -> DeliverWelcome<'a> {
-        DeliverWelcome {
-            convo_id: self.__unsafe_private_named.0.unwrap(),
-            initial_epoch: self.__unsafe_private_named.1.unwrap(),
-            key_package_hash: self.__unsafe_private_named.2.unwrap(),
-            recipient_did: self.__unsafe_private_named.3.unwrap(),
-            sender_ds_did: self.__unsafe_private_named.4.unwrap(),
-            welcome_data: self.__unsafe_private_named.5.unwrap(),
-            extra_data: Default::default(),
-        }
-    }
-    /// Build the final struct with custom extra_data
-    pub fn build_with_data(
-        self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+    pub welcome_data: jacquard_common::deps::bytes::Bytes,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> DeliverWelcome<'a> {
-        DeliverWelcome {
-            convo_id: self.__unsafe_private_named.0.unwrap(),
-            initial_epoch: self.__unsafe_private_named.1.unwrap(),
-            key_package_hash: self.__unsafe_private_named.2.unwrap(),
-            recipient_did: self.__unsafe_private_named.3.unwrap(),
-            sender_ds_did: self.__unsafe_private_named.4.unwrap(),
-            welcome_data: self.__unsafe_private_named.5.unwrap(),
-            extra_data: Some(extra_data),
-        }
-    }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct DeliverWelcomeOutput<'a> {
-    /// Whether the welcome was accepted
-    pub accepted: bool,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub ack: std::option::Option<
-        crate::generated::blue_catbird::mlsDS::deliver_message::DeliveryAck<'a>,
     >,
 }
 
-#[jacquard_derive::open_union]
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct DeliverWelcomeOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Whether the welcome was accepted
+    pub accepted: bool,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub ack: core::option::Option<
+        crate::generated::blue_catbird::mlsDS::deliver_message::DeliveryAck<S>,
+    >,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -355,19 +75,23 @@ pub struct DeliverWelcomeOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum DeliverWelcomeError<'a> {
+pub enum DeliverWelcomeError {
     #[serde(rename = "RecipientNotFound")]
-    RecipientNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
+    RecipientNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "NotSequencer")]
-    NotSequencer(std::option::Option<jacquard_common::CowStr<'a>>),
+    NotSequencer(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
 }
 
-impl std::fmt::Display for DeliverWelcomeError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for DeliverWelcomeError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             Self::RecipientNotFound(msg) => {
                 write!(f, "RecipientNotFound")?;
@@ -383,35 +107,365 @@ impl std::fmt::Display for DeliverWelcomeError<'_> {
                 }
                 Ok(())
             }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
         }
     }
 }
 
-/// Response type for
-///blue.catbird.mlsDS.deliverWelcome
+/** Response marker for the `blue.catbird.mlsDS.deliverWelcome` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `DeliverWelcomeOutput<S>` for this endpoint.*/
 pub struct DeliverWelcomeResponse;
 impl jacquard_common::xrpc::XrpcResp for DeliverWelcomeResponse {
     const NSID: &'static str = "blue.catbird.mlsDS.deliverWelcome";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = DeliverWelcomeOutput<'de>;
-    type Err<'de> = DeliverWelcomeError<'de>;
+    type Output<S: jacquard_common::BosStr> = DeliverWelcomeOutput<S>;
+    type Err = DeliverWelcomeError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for DeliverWelcome<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for DeliverWelcome<S> {
     const NSID: &'static str = "blue.catbird.mlsDS.deliverWelcome";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = DeliverWelcomeResponse;
 }
 
-/// Endpoint type for
-///blue.catbird.mlsDS.deliverWelcome
+/** Endpoint marker for the `blue.catbird.mlsDS.deliverWelcome` procedure.
+
+Path: `/xrpc/blue.catbird.mlsDS.deliverWelcome`. The request payload type is `DeliverWelcome<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct DeliverWelcomeRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for DeliverWelcomeRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.mlsDS.deliverWelcome";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = DeliverWelcome<'de>;
+    type Request<S: jacquard_common::BosStr> = DeliverWelcome<S>;
     type Response = DeliverWelcomeResponse;
+}
+
+pub mod deliver_welcome_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type ConvoId;
+        type InitialEpoch;
+        type KeyPackageHash;
+        type RecipientDid;
+        type SenderDsDid;
+        type WelcomeData;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type ConvoId = Unset;
+        type InitialEpoch = Unset;
+        type KeyPackageHash = Unset;
+        type RecipientDid = Unset;
+        type SenderDsDid = Unset;
+        type WelcomeData = Unset;
+    }
+    ///State transition - sets the `convo_id` field to Set
+    pub struct SetConvoId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetConvoId<St> {}
+    impl<St: State> State for SetConvoId<St> {
+        type ConvoId = Set<members::convo_id>;
+        type InitialEpoch = St::InitialEpoch;
+        type KeyPackageHash = St::KeyPackageHash;
+        type RecipientDid = St::RecipientDid;
+        type SenderDsDid = St::SenderDsDid;
+        type WelcomeData = St::WelcomeData;
+    }
+    ///State transition - sets the `initial_epoch` field to Set
+    pub struct SetInitialEpoch<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetInitialEpoch<St> {}
+    impl<St: State> State for SetInitialEpoch<St> {
+        type ConvoId = St::ConvoId;
+        type InitialEpoch = Set<members::initial_epoch>;
+        type KeyPackageHash = St::KeyPackageHash;
+        type RecipientDid = St::RecipientDid;
+        type SenderDsDid = St::SenderDsDid;
+        type WelcomeData = St::WelcomeData;
+    }
+    ///State transition - sets the `key_package_hash` field to Set
+    pub struct SetKeyPackageHash<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetKeyPackageHash<St> {}
+    impl<St: State> State for SetKeyPackageHash<St> {
+        type ConvoId = St::ConvoId;
+        type InitialEpoch = St::InitialEpoch;
+        type KeyPackageHash = Set<members::key_package_hash>;
+        type RecipientDid = St::RecipientDid;
+        type SenderDsDid = St::SenderDsDid;
+        type WelcomeData = St::WelcomeData;
+    }
+    ///State transition - sets the `recipient_did` field to Set
+    pub struct SetRecipientDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRecipientDid<St> {}
+    impl<St: State> State for SetRecipientDid<St> {
+        type ConvoId = St::ConvoId;
+        type InitialEpoch = St::InitialEpoch;
+        type KeyPackageHash = St::KeyPackageHash;
+        type RecipientDid = Set<members::recipient_did>;
+        type SenderDsDid = St::SenderDsDid;
+        type WelcomeData = St::WelcomeData;
+    }
+    ///State transition - sets the `sender_ds_did` field to Set
+    pub struct SetSenderDsDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSenderDsDid<St> {}
+    impl<St: State> State for SetSenderDsDid<St> {
+        type ConvoId = St::ConvoId;
+        type InitialEpoch = St::InitialEpoch;
+        type KeyPackageHash = St::KeyPackageHash;
+        type RecipientDid = St::RecipientDid;
+        type SenderDsDid = Set<members::sender_ds_did>;
+        type WelcomeData = St::WelcomeData;
+    }
+    ///State transition - sets the `welcome_data` field to Set
+    pub struct SetWelcomeData<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetWelcomeData<St> {}
+    impl<St: State> State for SetWelcomeData<St> {
+        type ConvoId = St::ConvoId;
+        type InitialEpoch = St::InitialEpoch;
+        type KeyPackageHash = St::KeyPackageHash;
+        type RecipientDid = St::RecipientDid;
+        type SenderDsDid = St::SenderDsDid;
+        type WelcomeData = Set<members::welcome_data>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `convo_id` field
+        pub struct convo_id(());
+        ///Marker type for the `initial_epoch` field
+        pub struct initial_epoch(());
+        ///Marker type for the `key_package_hash` field
+        pub struct key_package_hash(());
+        ///Marker type for the `recipient_did` field
+        pub struct recipient_did(());
+        ///Marker type for the `sender_ds_did` field
+        pub struct sender_ds_did(());
+        ///Marker type for the `welcome_data` field
+        pub struct welcome_data(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct DeliverWelcomeBuilder<
+    St: deliver_welcome_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<i64>,
+        core::option::Option<S>,
+        core::option::Option<S>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
+    ),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl DeliverWelcome<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> DeliverWelcomeBuilder<deliver_welcome_state::Empty, jacquard_common::DefaultStr>
+    {
+        DeliverWelcomeBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> DeliverWelcome<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> DeliverWelcomeBuilder<deliver_welcome_state::Empty, S> {
+        DeliverWelcomeBuilder::builder()
+    }
+}
+
+impl DeliverWelcomeBuilder<deliver_welcome_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        DeliverWelcomeBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> DeliverWelcomeBuilder<deliver_welcome_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        DeliverWelcomeBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeliverWelcomeBuilder<St, S>
+where
+    St: deliver_welcome_state::State,
+    St::ConvoId: deliver_welcome_state::IsUnset,
+{
+    /// Set the `convoId` field (required)
+    pub fn convo_id(
+        mut self,
+        value: impl Into<S>,
+    ) -> DeliverWelcomeBuilder<deliver_welcome_state::SetConvoId<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        DeliverWelcomeBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeliverWelcomeBuilder<St, S>
+where
+    St: deliver_welcome_state::State,
+    St::InitialEpoch: deliver_welcome_state::IsUnset,
+{
+    /// Set the `initialEpoch` field (required)
+    pub fn initial_epoch(
+        mut self,
+        value: impl Into<i64>,
+    ) -> DeliverWelcomeBuilder<deliver_welcome_state::SetInitialEpoch<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
+        DeliverWelcomeBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeliverWelcomeBuilder<St, S>
+where
+    St: deliver_welcome_state::State,
+    St::KeyPackageHash: deliver_welcome_state::IsUnset,
+{
+    /// Set the `keyPackageHash` field (required)
+    pub fn key_package_hash(
+        mut self,
+        value: impl Into<S>,
+    ) -> DeliverWelcomeBuilder<deliver_welcome_state::SetKeyPackageHash<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
+        DeliverWelcomeBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeliverWelcomeBuilder<St, S>
+where
+    St: deliver_welcome_state::State,
+    St::RecipientDid: deliver_welcome_state::IsUnset,
+{
+    /// Set the `recipientDid` field (required)
+    pub fn recipient_did(
+        mut self,
+        value: impl Into<S>,
+    ) -> DeliverWelcomeBuilder<deliver_welcome_state::SetRecipientDid<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
+        DeliverWelcomeBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeliverWelcomeBuilder<St, S>
+where
+    St: deliver_welcome_state::State,
+    St::SenderDsDid: deliver_welcome_state::IsUnset,
+{
+    /// Set the `senderDsDid` field (required)
+    pub fn sender_ds_did(
+        mut self,
+        value: impl Into<S>,
+    ) -> DeliverWelcomeBuilder<deliver_welcome_state::SetSenderDsDid<St>, S> {
+        self._fields.4 = ::core::option::Option::Some(value.into());
+        DeliverWelcomeBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeliverWelcomeBuilder<St, S>
+where
+    St: deliver_welcome_state::State,
+    St::WelcomeData: deliver_welcome_state::IsUnset,
+{
+    /// Set the `welcomeData` field (required)
+    pub fn welcome_data(
+        mut self,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
+    ) -> DeliverWelcomeBuilder<deliver_welcome_state::SetWelcomeData<St>, S> {
+        self._fields.5 = ::core::option::Option::Some(value.into());
+        DeliverWelcomeBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeliverWelcomeBuilder<St, S>
+where
+    St: deliver_welcome_state::State,
+    St::ConvoId: deliver_welcome_state::IsSet,
+    St::InitialEpoch: deliver_welcome_state::IsSet,
+    St::KeyPackageHash: deliver_welcome_state::IsSet,
+    St::RecipientDid: deliver_welcome_state::IsSet,
+    St::SenderDsDid: deliver_welcome_state::IsSet,
+    St::WelcomeData: deliver_welcome_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> DeliverWelcome<S> {
+        DeliverWelcome {
+            convo_id: self._fields.0.unwrap(),
+            initial_epoch: self._fields.1.unwrap(),
+            key_package_hash: self._fields.2.unwrap(),
+            recipient_did: self._fields.3.unwrap(),
+            sender_ds_did: self._fields.4.unwrap(),
+            welcome_data: self._fields.5.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> DeliverWelcome<S> {
+        DeliverWelcome {
+            convo_id: self._fields.0.unwrap(),
+            initial_epoch: self._fields.1.unwrap(),
+            key_package_hash: self._fields.2.unwrap(),
+            recipient_did: self._fields.3.unwrap(),
+            sender_ds_did: self._fields.4.unwrap(),
+            welcome_data: self._fields.5.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
 }

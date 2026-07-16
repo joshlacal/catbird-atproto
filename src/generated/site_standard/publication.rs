@@ -6,39 +6,255 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 /// A publication record representing a blog, website, or content platform. Publications serve as containers for documents and define the overall branding and settings.
-#[jacquard_derive::lexicon]
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    rename = "site.standard.publication",
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct Publication<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Simplified publication theme for tools and apps to utilize when displaying content.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub basic_theme: core::option::Option<crate::generated::site_standard::theme::basic::Basic<S>>,
+    ///Brief description of the publication.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub description: core::option::Option<S>,
+    ///Square image to identify the publication. Should be at least 256x256.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub icon: core::option::Option<jacquard_common::types::blob::BlobRef<S>>,
+    ///Self-label values for this publication. Effectively content warnings.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub labels: core::option::Option<crate::generated::com_atproto::label::SelfLabels<S>>,
+    ///Name of the publication.
+    pub name: S,
+    ///Object containing platform specific preferences (with a few shared properties).
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub preferences:
+        core::option::Option<crate::generated::site_standard::publication::Preferences<S>>,
+    ///Base publication url (ex: https://standard.site). The canonical document URL is formed by combining this value with the document path.
+    pub url: jacquard_common::types::string::UriValue<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// Typed wrapper for GetRecord response with this collection's record type.
+
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
-pub struct Publication<'a> {
-    /// Simplified publication theme for tools and apps to utilize when displaying content.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub basic_theme: std::option::Option<crate::generated::site_standard::theme::basic::Basic<'a>>,
-    /// Brief description of the publication.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub description: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// Square image to identify the publication. Should be at least 256x256.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub icon: std::option::Option<jacquard_common::types::blob::BlobRef<'a>>,
-    /// Self-label values for this publication. Effectively content warnings.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub labels: std::option::Option<crate::generated::com_atproto::label::SelfLabels<'a>>,
-    /// Name of the publication.
-    #[serde(borrow)]
-    pub name: jacquard_common::CowStr<'a>,
-    /// Object containing platform specific preferences (with a few shared properties).
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub preferences:
-        std::option::Option<crate::generated::site_standard::publication::Preferences<'a>>,
-    /// Base publication url (ex: https://standard.site). The canonical document URL is formed by combining this value with the document path.
-    #[serde(borrow)]
-    pub url: jacquard_common::types::string::Uri<'a>,
+pub struct PublicationGetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
+    pub uri: jacquard_common::types::string::AtUri<S>,
+    pub value: Publication<S>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct Preferences<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Boolean which decides whether the publication should appear in discovery feeds.  Defaults to `true`.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(default = "_default_preferences_show_in_discover")]
+    pub show_in_discover: core::option::Option<bool>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+impl<S: jacquard_common::BosStr> Publication<S> {
+    pub fn uri(
+        uri: S,
+    ) -> Result<
+        jacquard_common::types::uri::RecordUri<S, PublicationRecord>,
+        jacquard_common::types::uri::UriError,
+    > {
+        jacquard_common::types::uri::RecordUri::try_from_uri(
+            jacquard_common::types::string::AtUri::new(uri)?,
+        )
+    }
+}
+
+/// Marker type for deserializing records from this collection.
+
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+pub struct PublicationRecord;
+impl jacquard_common::xrpc::XrpcResp for PublicationRecord {
+    const NSID: &'static str = "site.standard.publication";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = PublicationGetRecordOutput<S>;
+    type Err = jacquard_common::types::collection::RecordError;
+}
+
+impl<S: jacquard_common::BosStr> From<PublicationGetRecordOutput<S>> for Publication<S> {
+    fn from(output: PublicationGetRecordOutput<S>) -> Self {
+        output.value
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection for Publication<S> {
+    const NSID: &'static str = "site.standard.publication";
+    type Record = PublicationRecord;
+}
+
+impl jacquard_common::types::collection::Collection for PublicationRecord {
+    const NSID: &'static str = "site.standard.publication";
+    type Record = PublicationRecord;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Publication<S> {
+    fn nsid() -> &'static str {
+        "site.standard.publication"
+    }
+    fn def_name() -> &'static str {
+        "main"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_site_standard_publication()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        if let Some(ref value) = self.description {
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 30000usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("description"),
+                    max: 30000usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        if let Some(ref value) = self.description {
+            {
+                let count = jacquard_common::deps::codegen::unicode_segmentation::UnicodeSegmentation::graphemes(
+                        value.as_ref(),
+                        true,
+                    )
+                    .count();
+                if count > 3000usize {
+                    return Err(
+                        jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field(
+                                "description",
+                            ),
+                            max: 3000usize,
+                            actual: count,
+                        },
+                    );
+                }
+            }
+        }
+        if let Some(ref value) = self.icon {
+            {
+                let size = value.blob().size;
+                if size > 1000000usize {
+                    return Err(
+                        jacquard_lexicon::validation::ConstraintError::BlobTooLarge {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field("icon"),
+                            max: 1000000usize,
+                            actual: size,
+                        },
+                    );
+                }
+            }
+        }
+        if let Some(ref value) = self.icon {
+            {
+                let mime = value.blob().mime_type.as_str();
+                let accepted: &[&str] = &["image/*"];
+                let matched = accepted.iter().any(|pattern| {
+                    if *pattern == "*/*" {
+                        true
+                    } else if pattern.ends_with("/*") {
+                        let prefix = &pattern[..pattern.len() - 2];
+                        mime.starts_with(prefix) && mime.as_bytes().get(prefix.len()) == Some(&b'/')
+                    } else {
+                        mime == *pattern
+                    }
+                });
+                if !matched {
+                    return Err(
+                        jacquard_lexicon::validation::ConstraintError::BlobMimeTypeNotAccepted {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field("icon"),
+                            accepted: vec!["image/*".to_string()],
+                            actual: mime.to_string(),
+                        },
+                    );
+                }
+            }
+        }
+        {
+            let value = &self.name;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 5000usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("name"),
+                    max: 5000usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.name;
+            {
+                let count = jacquard_common::deps::codegen::unicode_segmentation::UnicodeSegmentation::graphemes(
+                        value.as_ref(),
+                        true,
+                    )
+                    .count();
+                if count > 500usize {
+                    return Err(
+                        jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field("name"),
+                            max: 500usize,
+                            actual: count,
+                        },
+                    );
+                }
+            }
+        }
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Preferences<S> {
+    fn nsid() -> &'static str {
+        "site.standard.publication"
+    }
+    fn def_name() -> &'static str {
+        "preferences"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_site_standard_publication()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
 }
 
 pub mod publication_state {
@@ -51,377 +267,266 @@ pub mod publication_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Url;
         type Name;
+        type Url;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Url = Unset;
         type Name = Unset;
-    }
-    ///State transition - sets the `url` field to Set
-    pub struct SetUrl<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUrl<S> {}
-    impl<S: State> State for SetUrl<S> {
-        type Url = Set<members::url>;
-        type Name = S::Name;
+        type Url = Unset;
     }
     ///State transition - sets the `name` field to Set
-    pub struct SetName<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetName<S> {}
-    impl<S: State> State for SetName<S> {
-        type Url = S::Url;
+    pub struct SetName<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetName<St> {}
+    impl<St: State> State for SetName<St> {
         type Name = Set<members::name>;
+        type Url = St::Url;
+    }
+    ///State transition - sets the `url` field to Set
+    pub struct SetUrl<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetUrl<St> {}
+    impl<St: State> State for SetUrl<St> {
+        type Name = St::Name;
+        type Url = Set<members::url>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `url` field
-        pub struct url(());
         ///Marker type for the `name` field
         pub struct name(());
+        ///Marker type for the `url` field
+        pub struct url(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct PublicationBuilder<'a, S: publication_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<crate::generated::site_standard::theme::basic::Basic<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::blob::BlobRef<'a>>,
-        ::core::option::Option<crate::generated::com_atproto::label::SelfLabels<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<crate::generated::site_standard::publication::Preferences<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Uri<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct PublicationBuilder<
+    St: publication_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<crate::generated::site_standard::theme::basic::Basic<S>>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::blob::BlobRef<S>>,
+        core::option::Option<crate::generated::com_atproto::label::SelfLabels<S>>,
+        core::option::Option<S>,
+        core::option::Option<crate::generated::site_standard::publication::Preferences<S>>,
+        core::option::Option<jacquard_common::types::string::UriValue<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> Publication<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> PublicationBuilder<'a, publication_state::Empty> {
+impl Publication<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> PublicationBuilder<publication_state::Empty, jacquard_common::DefaultStr> {
         PublicationBuilder::new()
     }
 }
 
-impl<'a> PublicationBuilder<'a, publication_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> Publication<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> PublicationBuilder<publication_state::Empty, S> {
+        PublicationBuilder::builder()
+    }
+}
+
+impl PublicationBuilder<publication_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         PublicationBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: publication_state::State> PublicationBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> PublicationBuilder<publication_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        PublicationBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: publication_state::State, S: jacquard_common::BosStr> PublicationBuilder<St, S> {
     /// Set the `basicTheme` field (optional)
     pub fn basic_theme(
         mut self,
-        value: impl Into<Option<crate::generated::site_standard::theme::basic::Basic<'a>>>,
+        value: impl Into<Option<crate::generated::site_standard::theme::basic::Basic<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+        self._fields.0 = value.into();
         self
     }
     /// Set the `basicTheme` field to an Option value (optional)
     pub fn maybe_basic_theme(
         mut self,
-        value: Option<crate::generated::site_standard::theme::basic::Basic<'a>>,
+        value: Option<crate::generated::site_standard::theme::basic::Basic<S>>,
     ) -> Self {
-        self.__unsafe_private_named.0 = value;
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S: publication_state::State> PublicationBuilder<'a, S> {
+impl<St: publication_state::State, S: jacquard_common::BosStr> PublicationBuilder<St, S> {
     /// Set the `description` field (optional)
-    pub fn description(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+    pub fn description(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.1 = value.into();
         self
     }
     /// Set the `description` field to an Option value (optional)
-    pub fn maybe_description(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.1 = value;
+    pub fn maybe_description(mut self, value: Option<S>) -> Self {
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S: publication_state::State> PublicationBuilder<'a, S> {
+impl<St: publication_state::State, S: jacquard_common::BosStr> PublicationBuilder<St, S> {
     /// Set the `icon` field (optional)
     pub fn icon(
         mut self,
-        value: impl Into<Option<jacquard_common::types::blob::BlobRef<'a>>>,
+        value: impl Into<Option<jacquard_common::types::blob::BlobRef<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.2 = value.into();
+        self._fields.2 = value.into();
         self
     }
     /// Set the `icon` field to an Option value (optional)
-    pub fn maybe_icon(mut self, value: Option<jacquard_common::types::blob::BlobRef<'a>>) -> Self {
-        self.__unsafe_private_named.2 = value;
+    pub fn maybe_icon(mut self, value: Option<jacquard_common::types::blob::BlobRef<S>>) -> Self {
+        self._fields.2 = value;
         self
     }
 }
 
-impl<'a, S: publication_state::State> PublicationBuilder<'a, S> {
+impl<St: publication_state::State, S: jacquard_common::BosStr> PublicationBuilder<St, S> {
     /// Set the `labels` field (optional)
     pub fn labels(
         mut self,
-        value: impl Into<Option<crate::generated::com_atproto::label::SelfLabels<'a>>>,
+        value: impl Into<Option<crate::generated::com_atproto::label::SelfLabels<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.3 = value.into();
+        self._fields.3 = value.into();
         self
     }
     /// Set the `labels` field to an Option value (optional)
     pub fn maybe_labels(
         mut self,
-        value: Option<crate::generated::com_atproto::label::SelfLabels<'a>>,
+        value: Option<crate::generated::com_atproto::label::SelfLabels<S>>,
     ) -> Self {
-        self.__unsafe_private_named.3 = value;
+        self._fields.3 = value;
         self
     }
 }
 
-impl<'a, S> PublicationBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> PublicationBuilder<St, S>
 where
-    S: publication_state::State,
-    S::Name: publication_state::IsUnset,
+    St: publication_state::State,
+    St::Name: publication_state::IsUnset,
 {
     /// Set the `name` field (required)
     pub fn name(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> PublicationBuilder<'a, publication_state::SetName<S>> {
-        self.__unsafe_private_named.4 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> PublicationBuilder<publication_state::SetName<St>, S> {
+        self._fields.4 = ::core::option::Option::Some(value.into());
         PublicationBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: publication_state::State> PublicationBuilder<'a, S> {
+impl<St: publication_state::State, S: jacquard_common::BosStr> PublicationBuilder<St, S> {
     /// Set the `preferences` field (optional)
     pub fn preferences(
         mut self,
-        value: impl Into<Option<crate::generated::site_standard::publication::Preferences<'a>>>,
+        value: impl Into<Option<crate::generated::site_standard::publication::Preferences<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.5 = value.into();
+        self._fields.5 = value.into();
         self
     }
     /// Set the `preferences` field to an Option value (optional)
     pub fn maybe_preferences(
         mut self,
-        value: Option<crate::generated::site_standard::publication::Preferences<'a>>,
+        value: Option<crate::generated::site_standard::publication::Preferences<S>>,
     ) -> Self {
-        self.__unsafe_private_named.5 = value;
+        self._fields.5 = value;
         self
     }
 }
 
-impl<'a, S> PublicationBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> PublicationBuilder<St, S>
 where
-    S: publication_state::State,
-    S::Url: publication_state::IsUnset,
+    St: publication_state::State,
+    St::Url: publication_state::IsUnset,
 {
     /// Set the `url` field (required)
     pub fn url(
         mut self,
-        value: impl Into<jacquard_common::types::string::Uri<'a>>,
-    ) -> PublicationBuilder<'a, publication_state::SetUrl<S>> {
-        self.__unsafe_private_named.6 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::UriValue<S>>,
+    ) -> PublicationBuilder<publication_state::SetUrl<St>, S> {
+        self._fields.6 = ::core::option::Option::Some(value.into());
         PublicationBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> PublicationBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> PublicationBuilder<St, S>
 where
-    S: publication_state::State,
-    S::Url: publication_state::IsSet,
-    S::Name: publication_state::IsSet,
+    St: publication_state::State,
+    St::Name: publication_state::IsSet,
+    St::Url: publication_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> Publication<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> Publication<S> {
         Publication {
-            basic_theme: self.__unsafe_private_named.0,
-            description: self.__unsafe_private_named.1,
-            icon: self.__unsafe_private_named.2,
-            labels: self.__unsafe_private_named.3,
-            name: self.__unsafe_private_named.4.unwrap(),
-            preferences: self.__unsafe_private_named.5,
-            url: self.__unsafe_private_named.6.unwrap(),
+            basic_theme: self._fields.0,
+            description: self._fields.1,
+            icon: self._fields.2,
+            labels: self._fields.3,
+            name: self._fields.4.unwrap(),
+            preferences: self._fields.5,
+            url: self._fields.6.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> Publication<'a> {
+    ) -> Publication<S> {
         Publication {
-            basic_theme: self.__unsafe_private_named.0,
-            description: self.__unsafe_private_named.1,
-            icon: self.__unsafe_private_named.2,
-            labels: self.__unsafe_private_named.3,
-            name: self.__unsafe_private_named.4.unwrap(),
-            preferences: self.__unsafe_private_named.5,
-            url: self.__unsafe_private_named.6.unwrap(),
+            basic_theme: self._fields.0,
+            description: self._fields.1,
+            icon: self._fields.2,
+            labels: self._fields.3,
+            name: self._fields.4.unwrap(),
+            preferences: self._fields.5,
+            url: self._fields.6.unwrap(),
             extra_data: Some(extra_data),
         }
     }
 }
 
-impl<'a> Publication<'a> {
-    pub fn uri(
-        uri: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> Result<
-        jacquard_common::types::uri::RecordUri<'a, PublicationRecord>,
-        jacquard_common::types::uri::UriError,
-    > {
-        jacquard_common::types::uri::RecordUri::try_from_uri(
-            jacquard_common::types::string::AtUri::new_cow(uri.into())?,
-        )
-    }
-}
-
-/// Typed wrapper for GetRecord response with this collection's record type.
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct PublicationGetRecordOutput<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cid: std::option::Option<jacquard_common::types::string::Cid<'a>>,
-    #[serde(borrow)]
-    pub uri: jacquard_common::types::string::AtUri<'a>,
-    #[serde(borrow)]
-    pub value: Publication<'a>,
-}
-
-impl From<PublicationGetRecordOutput<'_>> for Publication<'_> {
-    fn from(output: PublicationGetRecordOutput<'_>) -> Self {
-        use jacquard_common::IntoStatic;
-        output.value.into_static()
-    }
-}
-
-impl jacquard_common::types::collection::Collection for Publication<'_> {
-    const NSID: &'static str = "site.standard.publication";
-    type Record = PublicationRecord;
-}
-
-/// Marker type for deserializing records from this collection.
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
-pub struct PublicationRecord;
-impl jacquard_common::xrpc::XrpcResp for PublicationRecord {
-    const NSID: &'static str = "site.standard.publication";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = PublicationGetRecordOutput<'de>;
-    type Err<'de> = jacquard_common::types::collection::RecordError<'de>;
-}
-
-impl jacquard_common::types::collection::Collection for PublicationRecord {
-    const NSID: &'static str = "site.standard.publication";
-    type Record = PublicationRecord;
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Publication<'a> {
-    fn nsid() -> &'static str {
-        "site.standard.publication"
-    }
-    fn def_name() -> &'static str {
-        "main"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_site_standard_publication()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        if let Some(ref value) = self.description {
-            #[allow(unused_comparisons)]
-            if <str>::len(value.as_ref()) > 30000usize {
-                return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("description"),
-                    max: 30000usize,
-                    actual: <str>::len(value.as_ref()),
-                });
-            }
-        }
-        if let Some(ref value) = self.description {
-            {
-                let count =
-                    ::unicode_segmentation::UnicodeSegmentation::graphemes(value.as_ref(), true)
-                        .count();
-                if count > 3000usize {
-                    return Err(
-                        ::jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
-                            path: ::jacquard_lexicon::validation::ValidationPath::from_field(
-                                "description",
-                            ),
-                            max: 3000usize,
-                            actual: count,
-                        },
-                    );
-                }
-            }
-        }
-        {
-            let value = &self.name;
-            #[allow(unused_comparisons)]
-            if <str>::len(value.as_ref()) > 5000usize {
-                return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("name"),
-                    max: 5000usize,
-                    actual: <str>::len(value.as_ref()),
-                });
-            }
-        }
-        {
-            let value = &self.name;
-            {
-                let count =
-                    ::unicode_segmentation::UnicodeSegmentation::graphemes(value.as_ref(), true)
-                        .count();
-                if count > 500usize {
-                    return Err(
-                        ::jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
-                            path: ::jacquard_lexicon::validation::ValidationPath::from_field(
-                                "name",
-                            ),
-                            max: 500usize,
-                            actual: count,
-                        },
-                    );
-                }
-            }
-        }
-        Ok(())
-    }
-}
-
-fn lexicon_doc_site_standard_publication() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_site_standard_publication() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("site.standard.publication"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
                 ::jacquard_lexicon::lexicon::LexUserType::Record(::jacquard_lexicon::lexicon::LexRecord {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
@@ -430,30 +535,28 @@ fn lexicon_doc_site_standard_publication() -> ::jacquard_lexicon::lexicon::Lexic
                     ),
                     key: Some(::jacquard_common::CowStr::new_static("tid")),
                     record: ::jacquard_lexicon::lexicon::LexRecordRecord::Object(::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(
                             vec![
-                                ::jacquard_common::smol_str::SmolStr::new_static("url"),
-                                ::jacquard_common::smol_str::SmolStr::new_static("name")
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("url"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("name")
                             ],
                         ),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "basicTheme",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                    description: None,
                                     r#ref: ::jacquard_common::CowStr::new_static(
                                         "site.standard.theme.basic",
                                     ),
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "description",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -462,27 +565,23 @@ fn lexicon_doc_site_standard_publication() -> ::jacquard_lexicon::lexicon::Lexic
                                             "Brief description of the publication.",
                                         ),
                                     ),
-                                    format: None,
-                                    default: None,
-                                    min_length: None,
                                     max_length: Some(30000usize),
-                                    min_graphemes: None,
                                     max_graphemes: Some(3000usize),
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("icon"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "icon",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Blob(::jacquard_lexicon::lexicon::LexBlob {
-                                    description: None,
-                                    accept: None,
-                                    max_size: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("labels"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "labels",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Union(::jacquard_lexicon::lexicon::LexRefUnion {
                                     description: Some(
                                         ::jacquard_common::CowStr::new_static(
@@ -492,39 +591,39 @@ fn lexicon_doc_site_standard_publication() -> ::jacquard_lexicon::lexicon::Lexic
                                     refs: vec![
                                         ::jacquard_common::CowStr::new_static("com.atproto.label.defs#selfLabels")
                                     ],
-                                    closed: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("name"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "name",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                     description: Some(
                                         ::jacquard_common::CowStr::new_static(
                                             "Name of the publication.",
                                         ),
                                     ),
-                                    format: None,
-                                    default: None,
-                                    min_length: None,
                                     max_length: Some(5000usize),
-                                    min_graphemes: None,
                                     max_graphemes: Some(500usize),
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "preferences",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                    description: None,
-                                    r#ref: ::jacquard_common::CowStr::new_static("#preferences"),
+                                    r#ref: ::jacquard_common::CowStr::new_static(
+                                        "#preferences",
+                                    ),
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("url"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "url",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                     description: Some(
                                         ::jacquard_common::CowStr::new_static(
@@ -534,82 +633,54 @@ fn lexicon_doc_site_standard_publication() -> ::jacquard_lexicon::lexicon::Lexic
                                     format: Some(
                                         ::jacquard_lexicon::lexicon::LexStringFormat::Uri,
                                     ),
-                                    default: None,
-                                    min_length: None,
-                                    max_length: None,
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
                             );
                             map
                         },
+                        ..Default::default()
                     }),
+                    ..Default::default()
                 }),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("preferences"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("preferences"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
-                        required: None,
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("showInDiscover"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "showInDiscover",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(
                                     ::jacquard_lexicon::lexicon::LexBoolean {
-                                        description: None,
-                                        default: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map
         },
+        ..Default::default()
     }
 }
 
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic,
-    Default,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct Preferences<'a> {
-    /// Boolean which decides whether the publication should appear in discovery feeds.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub show_in_discover: std::option::Option<bool>,
+fn _default_preferences_show_in_discover() -> core::option::Option<bool> {
+    Some(true)
 }
 
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Preferences<'a> {
-    fn nsid() -> &'static str {
-        "site.standard.publication"
-    }
-    fn def_name() -> &'static str {
-        "preferences"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_site_standard_publication()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
+impl Default for Preferences {
+    fn default() -> Self {
+        Self {
+            show_in_discover: Some(true),
+            extra_data: Default::default(),
+        }
     }
 }

@@ -6,15 +6,98 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 /// Record defining a single gated chat message.
-#[jacquard_derive::lexicon]
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    rename = "place.stream.chat.gate",
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct Gate<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///URI of the hidden chat message.
+    pub hidden_message: jacquard_common::types::string::AtUri<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// Typed wrapper for GetRecord response with this collection's record type.
+
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
-pub struct Gate<'a> {
-    /// URI of the hidden chat message.
-    #[serde(borrow)]
-    pub hidden_message: jacquard_common::types::string::AtUri<'a>,
+pub struct GateGetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
+    pub uri: jacquard_common::types::string::AtUri<S>,
+    pub value: Gate<S>,
+}
+
+impl<S: jacquard_common::BosStr> Gate<S> {
+    pub fn uri(
+        uri: S,
+    ) -> Result<
+        jacquard_common::types::uri::RecordUri<S, GateRecord>,
+        jacquard_common::types::uri::UriError,
+    > {
+        jacquard_common::types::uri::RecordUri::try_from_uri(
+            jacquard_common::types::string::AtUri::new(uri)?,
+        )
+    }
+}
+
+/// Marker type for deserializing records from this collection.
+
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+pub struct GateRecord;
+impl jacquard_common::xrpc::XrpcResp for GateRecord {
+    const NSID: &'static str = "place.stream.chat.gate";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = GateGetRecordOutput<S>;
+    type Err = jacquard_common::types::collection::RecordError;
+}
+
+impl<S: jacquard_common::BosStr> From<GateGetRecordOutput<S>> for Gate<S> {
+    fn from(output: GateGetRecordOutput<S>) -> Self {
+        output.value
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection for Gate<S> {
+    const NSID: &'static str = "place.stream.chat.gate";
+    type Record = GateRecord;
+}
+
+impl jacquard_common::types::collection::Collection for GateRecord {
+    const NSID: &'static str = "place.stream.chat.gate";
+    type Record = GateRecord;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Gate<S> {
+    fn nsid() -> &'static str {
+        "place.stream.chat.gate"
+    }
+    fn def_name() -> &'static str {
+        "main"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_place_stream_chat_gate()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
 }
 
 pub mod gate_state {
@@ -36,9 +119,9 @@ pub mod gate_state {
         type HiddenMessage = Unset;
     }
     ///State transition - sets the `hidden_message` field to Set
-    pub struct SetHiddenMessage<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetHiddenMessage<S> {}
-    impl<S: State> State for SetHiddenMessage<S> {
+    pub struct SetHiddenMessage<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetHiddenMessage<St> {}
+    impl<St: State> State for SetHiddenMessage<St> {
         type HiddenMessage = Set<members::hidden_message>;
     }
     /// Marker types for field names
@@ -49,159 +132,106 @@ pub mod gate_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct GateBuilder<'a, S: gate_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<jacquard_common::types::string::AtUri<'a>>,),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct GateBuilder<
+    St: gate_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<jacquard_common::types::string::AtUri<S>>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> Gate<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> GateBuilder<'a, gate_state::Empty> {
+impl Gate<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> GateBuilder<gate_state::Empty, jacquard_common::DefaultStr> {
         GateBuilder::new()
     }
 }
 
-impl<'a> GateBuilder<'a, gate_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> Gate<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> GateBuilder<gate_state::Empty, S> {
+        GateBuilder::builder()
+    }
+}
+
+impl GateBuilder<gate_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GateBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GateBuilder<'a, S>
+impl<S: jacquard_common::BosStr> GateBuilder<gate_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GateBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> GateBuilder<St, S>
 where
-    S: gate_state::State,
-    S::HiddenMessage: gate_state::IsUnset,
+    St: gate_state::State,
+    St::HiddenMessage: gate_state::IsUnset,
 {
     /// Set the `hiddenMessage` field (required)
     pub fn hidden_message(
         mut self,
-        value: impl Into<jacquard_common::types::string::AtUri<'a>>,
-    ) -> GateBuilder<'a, gate_state::SetHiddenMessage<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::AtUri<S>>,
+    ) -> GateBuilder<gate_state::SetHiddenMessage<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         GateBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GateBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GateBuilder<St, S>
 where
-    S: gate_state::State,
-    S::HiddenMessage: gate_state::IsSet,
+    St: gate_state::State,
+    St::HiddenMessage: gate_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> Gate<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> Gate<S> {
         Gate {
-            hidden_message: self.__unsafe_private_named.0.unwrap(),
+            hidden_message: self._fields.0.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> Gate<'a> {
+    ) -> Gate<S> {
         Gate {
-            hidden_message: self.__unsafe_private_named.0.unwrap(),
+            hidden_message: self._fields.0.unwrap(),
             extra_data: Some(extra_data),
         }
     }
 }
 
-impl<'a> Gate<'a> {
-    pub fn uri(
-        uri: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> Result<
-        jacquard_common::types::uri::RecordUri<'a, GateRecord>,
-        jacquard_common::types::uri::UriError,
-    > {
-        jacquard_common::types::uri::RecordUri::try_from_uri(
-            jacquard_common::types::string::AtUri::new_cow(uri.into())?,
-        )
-    }
-}
-
-/// Typed wrapper for GetRecord response with this collection's record type.
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GateGetRecordOutput<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cid: std::option::Option<jacquard_common::types::string::Cid<'a>>,
-    #[serde(borrow)]
-    pub uri: jacquard_common::types::string::AtUri<'a>,
-    #[serde(borrow)]
-    pub value: Gate<'a>,
-}
-
-impl From<GateGetRecordOutput<'_>> for Gate<'_> {
-    fn from(output: GateGetRecordOutput<'_>) -> Self {
-        use jacquard_common::IntoStatic;
-        output.value.into_static()
-    }
-}
-
-impl jacquard_common::types::collection::Collection for Gate<'_> {
-    const NSID: &'static str = "place.stream.chat.gate";
-    type Record = GateRecord;
-}
-
-/// Marker type for deserializing records from this collection.
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
-pub struct GateRecord;
-impl jacquard_common::xrpc::XrpcResp for GateRecord {
-    const NSID: &'static str = "place.stream.chat.gate";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = GateGetRecordOutput<'de>;
-    type Err<'de> = jacquard_common::types::collection::RecordError<'de>;
-}
-
-impl jacquard_common::types::collection::Collection for GateRecord {
-    const NSID: &'static str = "place.stream.chat.gate";
-    type Record = GateRecord;
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Gate<'a> {
-    fn nsid() -> &'static str {
-        "place.stream.chat.gate"
-    }
-    fn def_name() -> &'static str {
-        "main"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_place_stream_chat_gate()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-fn lexicon_doc_place_stream_chat_gate() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_place_stream_chat_gate() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("place.stream.chat.gate"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
                 ::jacquard_lexicon::lexicon::LexUserType::Record(::jacquard_lexicon::lexicon::LexRecord {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
@@ -210,18 +240,16 @@ fn lexicon_doc_place_stream_chat_gate() -> ::jacquard_lexicon::lexicon::LexiconD
                     ),
                     key: Some(::jacquard_common::CowStr::new_static("tid")),
                     record: ::jacquard_lexicon::lexicon::LexRecordRecord::Object(::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(
                             vec![
-                                ::jacquard_common::smol_str::SmolStr::new_static("hiddenMessage")
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("hiddenMessage")
                             ],
                         ),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "hiddenMessage",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -233,22 +261,18 @@ fn lexicon_doc_place_stream_chat_gate() -> ::jacquard_lexicon::lexicon::LexiconD
                                     format: Some(
                                         ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
                                     ),
-                                    default: None,
-                                    min_length: None,
-                                    max_length: None,
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
                             );
                             map
                         },
+                        ..Default::default()
                     }),
+                    ..Default::default()
                 }),
             );
             map
         },
+        ..Default::default()
     }
 }

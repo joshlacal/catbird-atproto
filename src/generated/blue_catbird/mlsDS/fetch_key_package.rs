@@ -8,154 +8,41 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct FetchKeyPackage<'a> {
-    #[serde(borrow)]
-    pub convo_id: jacquard_common::CowStr<'a>,
-    #[serde(borrow)]
-    pub recipient_did: jacquard_common::CowStr<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct FetchKeyPackage<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub convo_id: S,
+    pub recipient_did: S,
 }
 
-pub mod fetch_key_package_state {
-
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
-    #[allow(unused)]
-    use core::marker::PhantomData;
-    mod sealed {
-        pub trait Sealed {}
-    }
-    /// State trait tracking which required fields have been set
-    pub trait State: sealed::Sealed {
-        type RecipientDid;
-        type ConvoId;
-    }
-    /// Empty state - all required fields are unset
-    pub struct Empty(());
-    impl sealed::Sealed for Empty {}
-    impl State for Empty {
-        type RecipientDid = Unset;
-        type ConvoId = Unset;
-    }
-    ///State transition - sets the `recipient_did` field to Set
-    pub struct SetRecipientDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRecipientDid<S> {}
-    impl<S: State> State for SetRecipientDid<S> {
-        type RecipientDid = Set<members::recipient_did>;
-        type ConvoId = S::ConvoId;
-    }
-    ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type RecipientDid = S::RecipientDid;
-        type ConvoId = Set<members::convo_id>;
-    }
-    /// Marker types for field names
-    #[allow(non_camel_case_types)]
-    pub mod members {
-        ///Marker type for the `recipient_did` field
-        pub struct recipient_did(());
-        ///Marker type for the `convo_id` field
-        pub struct convo_id(());
-    }
-}
-
-/// Builder for constructing an instance of this type
-pub struct FetchKeyPackageBuilder<'a, S: fetch_key_package_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-    ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
-}
-
-impl<'a> FetchKeyPackage<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> FetchKeyPackageBuilder<'a, fetch_key_package_state::Empty> {
-        FetchKeyPackageBuilder::new()
-    }
-}
-
-impl<'a> FetchKeyPackageBuilder<'a, fetch_key_package_state::Empty> {
-    /// Create a new builder with all fields unset
-    pub fn new() -> Self {
-        FetchKeyPackageBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> FetchKeyPackageBuilder<'a, S>
-where
-    S: fetch_key_package_state::State,
-    S::ConvoId: fetch_key_package_state::IsUnset,
-{
-    /// Set the `convoId` field (required)
-    pub fn convo_id(
-        mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> FetchKeyPackageBuilder<'a, fetch_key_package_state::SetConvoId<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
-        FetchKeyPackageBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> FetchKeyPackageBuilder<'a, S>
-where
-    S: fetch_key_package_state::State,
-    S::RecipientDid: fetch_key_package_state::IsUnset,
-{
-    /// Set the `recipientDid` field (required)
-    pub fn recipient_did(
-        mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> FetchKeyPackageBuilder<'a, fetch_key_package_state::SetRecipientDid<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
-        FetchKeyPackageBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> FetchKeyPackageBuilder<'a, S>
-where
-    S: fetch_key_package_state::State,
-    S::RecipientDid: fetch_key_package_state::IsSet,
-    S::ConvoId: fetch_key_package_state::IsSet,
-{
-    /// Build the final struct
-    pub fn build(self) -> FetchKeyPackage<'a> {
-        FetchKeyPackage {
-            convo_id: self.__unsafe_private_named.0.unwrap(),
-            recipient_did: self.__unsafe_private_named.1.unwrap(),
-        }
-    }
-}
-
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct FetchKeyPackageOutput<'a> {
-    /// MLS key package
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct FetchKeyPackageOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///MLS key package
     #[serde(with = "jacquard_common::serde_bytes_helper")]
-    pub key_package: bytes::Bytes,
-    /// Hash of the key package
-    #[serde(borrow)]
-    pub key_package_hash: jacquard_common::CowStr<'a>,
+    pub key_package: jacquard_common::deps::bytes::Bytes,
+    ///Hash of the key package
+    pub key_package_hash: S,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::open_union]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -165,21 +52,25 @@ pub struct FetchKeyPackageOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum FetchKeyPackageError<'a> {
+pub enum FetchKeyPackageError {
     #[serde(rename = "ConversationNotFound")]
-    ConversationNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
+    ConversationNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "RecipientNotFound")]
-    RecipientNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
+    RecipientNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "NoKeyPackagesAvailable")]
-    NoKeyPackagesAvailable(std::option::Option<jacquard_common::CowStr<'a>>),
+    NoKeyPackagesAvailable(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
 }
 
-impl std::fmt::Display for FetchKeyPackageError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for FetchKeyPackageError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             Self::ConversationNotFound(msg) => {
                 write!(f, "ConversationNotFound")?;
@@ -202,33 +93,185 @@ impl std::fmt::Display for FetchKeyPackageError<'_> {
                 }
                 Ok(())
             }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
         }
     }
 }
 
-/// Response type for
-///blue.catbird.mlsDS.fetchKeyPackage
+/** Response marker for the `blue.catbird.mlsDS.fetchKeyPackage` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `FetchKeyPackageOutput<S>` for this endpoint.*/
 pub struct FetchKeyPackageResponse;
 impl jacquard_common::xrpc::XrpcResp for FetchKeyPackageResponse {
     const NSID: &'static str = "blue.catbird.mlsDS.fetchKeyPackage";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = FetchKeyPackageOutput<'de>;
-    type Err<'de> = FetchKeyPackageError<'de>;
+    type Output<S: jacquard_common::BosStr> = FetchKeyPackageOutput<S>;
+    type Err = FetchKeyPackageError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for FetchKeyPackage<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for FetchKeyPackage<S> {
     const NSID: &'static str = "blue.catbird.mlsDS.fetchKeyPackage";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = FetchKeyPackageResponse;
 }
 
-/// Endpoint type for
-///blue.catbird.mlsDS.fetchKeyPackage
+/** Endpoint marker for the `blue.catbird.mlsDS.fetchKeyPackage` query.
+
+Path: `/xrpc/blue.catbird.mlsDS.fetchKeyPackage`. The request payload type is `FetchKeyPackage<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct FetchKeyPackageRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for FetchKeyPackageRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.mlsDS.fetchKeyPackage";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = FetchKeyPackage<'de>;
+    type Request<S: jacquard_common::BosStr> = FetchKeyPackage<S>;
     type Response = FetchKeyPackageResponse;
+}
+
+pub mod fetch_key_package_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type ConvoId;
+        type RecipientDid;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type ConvoId = Unset;
+        type RecipientDid = Unset;
+    }
+    ///State transition - sets the `convo_id` field to Set
+    pub struct SetConvoId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetConvoId<St> {}
+    impl<St: State> State for SetConvoId<St> {
+        type ConvoId = Set<members::convo_id>;
+        type RecipientDid = St::RecipientDid;
+    }
+    ///State transition - sets the `recipient_did` field to Set
+    pub struct SetRecipientDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRecipientDid<St> {}
+    impl<St: State> State for SetRecipientDid<St> {
+        type ConvoId = St::ConvoId;
+        type RecipientDid = Set<members::recipient_did>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `convo_id` field
+        pub struct convo_id(());
+        ///Marker type for the `recipient_did` field
+        pub struct recipient_did(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct FetchKeyPackageBuilder<
+    St: fetch_key_package_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<S>, core::option::Option<S>),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl FetchKeyPackage<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> FetchKeyPackageBuilder<fetch_key_package_state::Empty, jacquard_common::DefaultStr> {
+        FetchKeyPackageBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> FetchKeyPackage<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> FetchKeyPackageBuilder<fetch_key_package_state::Empty, S> {
+        FetchKeyPackageBuilder::builder()
+    }
+}
+
+impl FetchKeyPackageBuilder<fetch_key_package_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        FetchKeyPackageBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> FetchKeyPackageBuilder<fetch_key_package_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        FetchKeyPackageBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> FetchKeyPackageBuilder<St, S>
+where
+    St: fetch_key_package_state::State,
+    St::ConvoId: fetch_key_package_state::IsUnset,
+{
+    /// Set the `convoId` field (required)
+    pub fn convo_id(
+        mut self,
+        value: impl Into<S>,
+    ) -> FetchKeyPackageBuilder<fetch_key_package_state::SetConvoId<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        FetchKeyPackageBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> FetchKeyPackageBuilder<St, S>
+where
+    St: fetch_key_package_state::State,
+    St::RecipientDid: fetch_key_package_state::IsUnset,
+{
+    /// Set the `recipientDid` field (required)
+    pub fn recipient_did(
+        mut self,
+        value: impl Into<S>,
+    ) -> FetchKeyPackageBuilder<fetch_key_package_state::SetRecipientDid<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
+        FetchKeyPackageBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> FetchKeyPackageBuilder<St, S>
+where
+    St: fetch_key_package_state::State,
+    St::ConvoId: fetch_key_package_state::IsSet,
+    St::RecipientDid: fetch_key_package_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> FetchKeyPackage<S> {
+        FetchKeyPackage {
+            convo_id: self._fields.0.unwrap(),
+            recipient_did: self._fields.1.unwrap(),
+        }
+    }
 }

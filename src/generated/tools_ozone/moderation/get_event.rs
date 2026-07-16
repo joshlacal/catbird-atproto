@@ -13,6 +13,57 @@ pub struct GetEvent {
     pub id: i64,
 }
 
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetEventOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(flatten)]
+    pub value: crate::generated::tools_ozone::moderation::ModEventViewDetail<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `tools.ozone.moderation.getEvent` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetEventOutput<S>` for this endpoint.*/
+pub struct GetEventResponse;
+impl jacquard_common::xrpc::XrpcResp for GetEventResponse {
+    const NSID: &'static str = "tools.ozone.moderation.getEvent";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = GetEventOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl jacquard_common::xrpc::XrpcRequest for GetEvent {
+    const NSID: &'static str = "tools.ozone.moderation.getEvent";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = GetEventResponse;
+}
+
+/** Endpoint marker for the `tools.ozone.moderation.getEvent` query.
+
+Path: `/xrpc/tools.ozone.moderation.getEvent`. The request payload type is `GetEvent`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct GetEventRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for GetEventRequest {
+    const PATH: &'static str = "/xrpc/tools.ozone.moderation.getEvent";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = GetEvent;
+    type Response = GetEventResponse;
+}
+
 pub mod get_event_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
@@ -32,9 +83,9 @@ pub mod get_event_state {
         type Id = Unset;
     }
     ///State transition - sets the `id` field to Set
-    pub struct SetId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetId<S> {}
-    impl<S: State> State for SetId<S> {
+    pub struct SetId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetId<St> {}
+    impl<St: State> State for SetId<St> {
         type Id = Set<members::id>;
     }
     /// Marker types for field names
@@ -45,90 +96,63 @@ pub mod get_event_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct GetEventBuilder<S: get_event_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<i64>,),
+/// Builder for constructing an instance of this type.
+pub struct GetEventBuilder<St: get_event_state::State> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<i64>,),
 }
 
 impl GetEvent {
-    /// Create a new builder for this type
+    /// Create a new builder for this type.
     pub fn new() -> GetEventBuilder<get_event_state::Empty> {
         GetEventBuilder::new()
     }
 }
 
 impl GetEventBuilder<get_event_state::Empty> {
-    /// Create a new builder with all fields unset
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
         }
     }
 }
 
-impl<S> GetEventBuilder<S>
+impl GetEventBuilder<get_event_state::Empty> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GetEventBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+        }
+    }
+}
+
+impl<St> GetEventBuilder<St>
 where
-    S: get_event_state::State,
-    S::Id: get_event_state::IsUnset,
+    St: get_event_state::State,
+    St::Id: get_event_state::IsUnset,
 {
     /// Set the `id` field (required)
-    pub fn id(mut self, value: impl Into<i64>) -> GetEventBuilder<get_event_state::SetId<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+    pub fn id(mut self, value: impl Into<i64>) -> GetEventBuilder<get_event_state::SetId<St>> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         GetEventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
         }
     }
 }
 
-impl<S> GetEventBuilder<S>
+impl<St> GetEventBuilder<St>
 where
-    S: get_event_state::State,
-    S::Id: get_event_state::IsSet,
+    St: get_event_state::State,
+    St::Id: get_event_state::IsSet,
 {
-    /// Build the final struct
+    /// Build the final struct.
     pub fn build(self) -> GetEvent {
         GetEvent {
-            id: self.__unsafe_private_named.0.unwrap(),
+            id: self._fields.0.unwrap(),
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GetEventOutput<'a> {
-    #[serde(flatten)]
-    #[serde(borrow)]
-    pub value: crate::generated::tools_ozone::moderation::ModEventViewDetail<'a>,
-}
-
-/// Response type for
-///tools.ozone.moderation.getEvent
-pub struct GetEventResponse;
-impl jacquard_common::xrpc::XrpcResp for GetEventResponse {
-    const NSID: &'static str = "tools.ozone.moderation.getEvent";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetEventOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl jacquard_common::xrpc::XrpcRequest for GetEvent {
-    const NSID: &'static str = "tools.ozone.moderation.getEvent";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = GetEventResponse;
-}
-
-/// Endpoint type for
-///tools.ozone.moderation.getEvent
-pub struct GetEventRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for GetEventRequest {
-    const PATH: &'static str = "/xrpc/tools.ozone.moderation.getEvent";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetEvent;
-    type Response = GetEventResponse;
 }

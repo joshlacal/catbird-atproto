@@ -5,45 +5,60 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetUploadLimitsOutput<'a> {
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetUploadLimitsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub can_upload: bool,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub error: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub message: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub remaining_daily_bytes: std::option::Option<i64>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub remaining_daily_videos: std::option::Option<i64>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub error: core::option::Option<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub message: core::option::Option<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub remaining_daily_bytes: core::option::Option<i64>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub remaining_daily_videos: core::option::Option<i64>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-/// XRPC request marker type
+/** Request marker for the `app.bsky.video.getUploadLimits` query.
+
+This endpoint has no request parameters or input body; send this marker with `jacquard::Client`.*/
+
 #[derive(
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
     serde::Serialize,
     serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
     jacquard_derive::IntoStatic,
+    Copy,
 )]
 pub struct GetUploadLimits;
-/// Response type for
-///app.bsky.video.getUploadLimits
+/** Response marker for the `app.bsky.video.getUploadLimits` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetUploadLimitsOutput<S>` for this endpoint.*/
 pub struct GetUploadLimitsResponse;
 impl jacquard_common::xrpc::XrpcResp for GetUploadLimitsResponse {
     const NSID: &'static str = "app.bsky.video.getUploadLimits";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetUploadLimitsOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
+    type Output<S: jacquard_common::BosStr> = GetUploadLimitsOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
 }
 
 impl jacquard_common::xrpc::XrpcRequest for GetUploadLimits {
@@ -52,12 +67,13 @@ impl jacquard_common::xrpc::XrpcRequest for GetUploadLimits {
     type Response = GetUploadLimitsResponse;
 }
 
-/// Endpoint type for
-///app.bsky.video.getUploadLimits
+/** Endpoint marker for the `app.bsky.video.getUploadLimits` query.
+
+Path: `/xrpc/app.bsky.video.getUploadLimits`. The request payload type is `GetUploadLimits`; use this marker with lower-level `XrpcEndpoint` APIs when you need endpoint metadata.*/
 pub struct GetUploadLimitsRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for GetUploadLimitsRequest {
     const PATH: &'static str = "/xrpc/app.bsky.video.getUploadLimits";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetUploadLimits;
+    type Request<S: jacquard_common::BosStr> = GetUploadLimits;
     type Response = GetUploadLimitsResponse;
 }

@@ -3,5 +3,6 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
+//! Generated bindings for the `blue.catbird.bskychat` Lexicon namespace/module.
 pub mod push_heartbeat;
 pub mod update_mute_status;

@@ -5,19 +5,128 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct RevokeVerifications<'a> {
-    /// Reason for revoking the verification. This is optional and can be omitted if not needed.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub revoke_reason: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// Array of verification record uris to revoke
-    #[serde(borrow)]
-    pub uris: Vec<jacquard_common::types::string::AtUri<'a>>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct RevokeVerifications<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Reason for revoking the verification. This is optional and can be omitted if not needed.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub revoke_reason: core::option::Option<S>,
+    ///Array of verification record uris to revoke
+    pub uris: Vec<jacquard_common::types::string::AtUri<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct RevokeVerificationsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///List of verification uris that couldn't be revoked, including failure reasons
+    pub failed_revocations:
+        Vec<crate::generated::tools_ozone::verification::revoke_verifications::RevokeError<S>>,
+    ///List of verification uris successfully revoked
+    pub revoked_verifications: Vec<jacquard_common::types::string::AtUri<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// Error object for failed revocations
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct RevokeError<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Description of the error that occurred during revocation.
+    pub error: S,
+    ///The AT-URI of the verification record that failed to revoke.
+    pub uri: jacquard_common::types::string::AtUri<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `tools.ozone.verification.revokeVerifications` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `RevokeVerificationsOutput<S>` for this endpoint.*/
+pub struct RevokeVerificationsResponse;
+impl jacquard_common::xrpc::XrpcResp for RevokeVerificationsResponse {
+    const NSID: &'static str = "tools.ozone.verification.revokeVerifications";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = RevokeVerificationsOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for RevokeVerifications<S> {
+    const NSID: &'static str = "tools.ozone.verification.revokeVerifications";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Response = RevokeVerificationsResponse;
+}
+
+/** Endpoint marker for the `tools.ozone.verification.revokeVerifications` procedure.
+
+Path: `/xrpc/tools.ozone.verification.revokeVerifications`. The request payload type is `RevokeVerifications<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct RevokeVerificationsRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for RevokeVerificationsRequest {
+    const PATH: &'static str = "/xrpc/tools.ozone.verification.revokeVerifications";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Request<S: jacquard_common::BosStr> = RevokeVerifications<S>;
+    type Response = RevokeVerificationsResponse;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for RevokeError<S> {
+    fn nsid() -> &'static str {
+        "tools.ozone.verification.revokeVerifications"
+    }
+    fn def_name() -> &'static str {
+        "revokeError"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_tools_ozone_verification_revokeVerifications()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
 }
 
 pub mod revoke_verifications_state {
@@ -39,9 +148,9 @@ pub mod revoke_verifications_state {
         type Uris = Unset;
     }
     ///State transition - sets the `uris` field to Set
-    pub struct SetUris<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUris<S> {}
-    impl<S: State> State for SetUris<S> {
+    pub struct SetUris<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetUris<St> {}
+    impl<St: State> State for SetUris<St> {
         type Uris = Set<members::uris>;
     }
     /// Marker types for field names
@@ -52,151 +161,118 @@ pub mod revoke_verifications_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct RevokeVerificationsBuilder<'a, S: revoke_verifications_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<Vec<jacquard_common::types::string::AtUri<'a>>>,
+/// Builder for constructing an instance of this type.
+pub struct RevokeVerificationsBuilder<
+    St: revoke_verifications_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<Vec<jacquard_common::types::string::AtUri<S>>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> RevokeVerifications<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> RevokeVerificationsBuilder<'a, revoke_verifications_state::Empty> {
+impl RevokeVerifications<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> RevokeVerificationsBuilder<revoke_verifications_state::Empty, jacquard_common::DefaultStr>
+    {
         RevokeVerificationsBuilder::new()
     }
 }
 
-impl<'a> RevokeVerificationsBuilder<'a, revoke_verifications_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> RevokeVerifications<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> RevokeVerificationsBuilder<revoke_verifications_state::Empty, S> {
+        RevokeVerificationsBuilder::builder()
+    }
+}
+
+impl RevokeVerificationsBuilder<revoke_verifications_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         RevokeVerificationsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: revoke_verifications_state::State> RevokeVerificationsBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> RevokeVerificationsBuilder<revoke_verifications_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        RevokeVerificationsBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: revoke_verifications_state::State, S: jacquard_common::BosStr>
+    RevokeVerificationsBuilder<St, S>
+{
     /// Set the `revokeReason` field (optional)
-    pub fn revoke_reason(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+    pub fn revoke_reason(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.0 = value.into();
         self
     }
     /// Set the `revokeReason` field to an Option value (optional)
-    pub fn maybe_revoke_reason(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.0 = value;
+    pub fn maybe_revoke_reason(mut self, value: Option<S>) -> Self {
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S> RevokeVerificationsBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> RevokeVerificationsBuilder<St, S>
 where
-    S: revoke_verifications_state::State,
-    S::Uris: revoke_verifications_state::IsUnset,
+    St: revoke_verifications_state::State,
+    St::Uris: revoke_verifications_state::IsUnset,
 {
     /// Set the `uris` field (required)
     pub fn uris(
         mut self,
-        value: impl Into<Vec<jacquard_common::types::string::AtUri<'a>>>,
-    ) -> RevokeVerificationsBuilder<'a, revoke_verifications_state::SetUris<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<Vec<jacquard_common::types::string::AtUri<S>>>,
+    ) -> RevokeVerificationsBuilder<revoke_verifications_state::SetUris<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         RevokeVerificationsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> RevokeVerificationsBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> RevokeVerificationsBuilder<St, S>
 where
-    S: revoke_verifications_state::State,
-    S::Uris: revoke_verifications_state::IsSet,
+    St: revoke_verifications_state::State,
+    St::Uris: revoke_verifications_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> RevokeVerifications<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> RevokeVerifications<S> {
         RevokeVerifications {
-            revoke_reason: self.__unsafe_private_named.0,
-            uris: self.__unsafe_private_named.1.unwrap(),
+            revoke_reason: self._fields.0,
+            uris: self._fields.1.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> RevokeVerifications<'a> {
+    ) -> RevokeVerifications<S> {
         RevokeVerifications {
-            revoke_reason: self.__unsafe_private_named.0,
-            uris: self.__unsafe_private_named.1.unwrap(),
+            revoke_reason: self._fields.0,
+            uris: self._fields.1.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct RevokeVerificationsOutput<'a> {
-    /// List of verification uris that couldn't be revoked, including failure reasons
-    #[serde(borrow)]
-    pub failed_revocations:
-        Vec<crate::generated::tools_ozone::verification::revoke_verifications::RevokeError<'a>>,
-    /// List of verification uris successfully revoked
-    #[serde(borrow)]
-    pub revoked_verifications: Vec<jacquard_common::types::string::AtUri<'a>>,
-}
-
-/// Response type for
-///tools.ozone.verification.revokeVerifications
-pub struct RevokeVerificationsResponse;
-impl jacquard_common::xrpc::XrpcResp for RevokeVerificationsResponse {
-    const NSID: &'static str = "tools.ozone.verification.revokeVerifications";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = RevokeVerificationsOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for RevokeVerifications<'a> {
-    const NSID: &'static str = "tools.ozone.verification.revokeVerifications";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Response = RevokeVerificationsResponse;
-}
-
-/// Endpoint type for
-///tools.ozone.verification.revokeVerifications
-pub struct RevokeVerificationsRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for RevokeVerificationsRequest {
-    const PATH: &'static str = "/xrpc/tools.ozone.verification.revokeVerifications";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = RevokeVerifications<'de>;
-    type Response = RevokeVerificationsResponse;
-}
-
-/// Error object for failed revocations
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct RevokeError<'a> {
-    /// Description of the error that occurred during revocation.
-    #[serde(borrow)]
-    pub error: jacquard_common::CowStr<'a>,
-    /// The AT-URI of the verification record that failed to revoke.
-    #[serde(borrow)]
-    pub uri: jacquard_common::types::string::AtUri<'a>,
 }
 
 pub mod revoke_error_state {
@@ -209,169 +285,183 @@ pub mod revoke_error_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Uri;
         type Error;
+        type Uri;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Uri = Unset;
         type Error = Unset;
-    }
-    ///State transition - sets the `uri` field to Set
-    pub struct SetUri<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUri<S> {}
-    impl<S: State> State for SetUri<S> {
-        type Uri = Set<members::uri>;
-        type Error = S::Error;
+        type Uri = Unset;
     }
     ///State transition - sets the `error` field to Set
-    pub struct SetError<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetError<S> {}
-    impl<S: State> State for SetError<S> {
-        type Uri = S::Uri;
+    pub struct SetError<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetError<St> {}
+    impl<St: State> State for SetError<St> {
         type Error = Set<members::error>;
+        type Uri = St::Uri;
+    }
+    ///State transition - sets the `uri` field to Set
+    pub struct SetUri<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetUri<St> {}
+    impl<St: State> State for SetUri<St> {
+        type Error = St::Error;
+        type Uri = Set<members::uri>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `uri` field
-        pub struct uri(());
         ///Marker type for the `error` field
         pub struct error(());
+        ///Marker type for the `uri` field
+        pub struct uri(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct RevokeErrorBuilder<'a, S: revoke_error_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct RevokeErrorBuilder<
+    St: revoke_error_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::AtUri<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> RevokeError<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> RevokeErrorBuilder<'a, revoke_error_state::Empty> {
+impl RevokeError<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> RevokeErrorBuilder<revoke_error_state::Empty, jacquard_common::DefaultStr> {
         RevokeErrorBuilder::new()
     }
 }
 
-impl<'a> RevokeErrorBuilder<'a, revoke_error_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> RevokeError<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> RevokeErrorBuilder<revoke_error_state::Empty, S> {
+        RevokeErrorBuilder::builder()
+    }
+}
+
+impl RevokeErrorBuilder<revoke_error_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         RevokeErrorBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> RevokeErrorBuilder<'a, S>
+impl<S: jacquard_common::BosStr> RevokeErrorBuilder<revoke_error_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        RevokeErrorBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> RevokeErrorBuilder<St, S>
 where
-    S: revoke_error_state::State,
-    S::Error: revoke_error_state::IsUnset,
+    St: revoke_error_state::State,
+    St::Error: revoke_error_state::IsUnset,
 {
     /// Set the `error` field (required)
     pub fn error(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> RevokeErrorBuilder<'a, revoke_error_state::SetError<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> RevokeErrorBuilder<revoke_error_state::SetError<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         RevokeErrorBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> RevokeErrorBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> RevokeErrorBuilder<St, S>
 where
-    S: revoke_error_state::State,
-    S::Uri: revoke_error_state::IsUnset,
+    St: revoke_error_state::State,
+    St::Uri: revoke_error_state::IsUnset,
 {
     /// Set the `uri` field (required)
     pub fn uri(
         mut self,
-        value: impl Into<jacquard_common::types::string::AtUri<'a>>,
-    ) -> RevokeErrorBuilder<'a, revoke_error_state::SetUri<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::AtUri<S>>,
+    ) -> RevokeErrorBuilder<revoke_error_state::SetUri<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         RevokeErrorBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> RevokeErrorBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> RevokeErrorBuilder<St, S>
 where
-    S: revoke_error_state::State,
-    S::Uri: revoke_error_state::IsSet,
-    S::Error: revoke_error_state::IsSet,
+    St: revoke_error_state::State,
+    St::Error: revoke_error_state::IsSet,
+    St::Uri: revoke_error_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> RevokeError<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> RevokeError<S> {
         RevokeError {
-            error: self.__unsafe_private_named.0.unwrap(),
-            uri: self.__unsafe_private_named.1.unwrap(),
+            error: self._fields.0.unwrap(),
+            uri: self._fields.1.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> RevokeError<'a> {
+    ) -> RevokeError<S> {
         RevokeError {
-            error: self.__unsafe_private_named.0.unwrap(),
-            uri: self.__unsafe_private_named.1.unwrap(),
+            error: self._fields.0.unwrap(),
+            uri: self._fields.1.unwrap(),
             extra_data: Some(extra_data),
         }
     }
 }
 
 fn lexicon_doc_tools_ozone_verification_revokeVerifications(
-) -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+) -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("tools.ozone.verification.revokeVerifications"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
                 ::jacquard_lexicon::lexicon::LexUserType::XrpcProcedure(::jacquard_lexicon::lexicon::LexXrpcProcedure {
-                    description: None,
-                    parameters: None,
                     input: Some(::jacquard_lexicon::lexicon::LexXrpcBody {
-                        description: None,
                         encoding: ::jacquard_common::CowStr::new_static(
                             "application/json",
                         ),
                         schema: Some(
                             ::jacquard_lexicon::lexicon::LexXrpcBodySchema::Object(::jacquard_lexicon::lexicon::LexObject {
-                                description: None,
                                 required: Some(
                                     vec![
-                                        ::jacquard_common::smol_str::SmolStr::new_static("uris")
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static("uris")
                                     ],
                                 ),
-                                nullable: None,
                                 properties: {
                                     #[allow(unused_mut)]
-                                    let mut map = ::std::collections::BTreeMap::new();
+                                    let mut map = ::alloc::collections::BTreeMap::new();
                                     map.insert(
-                                        ::jacquard_common::smol_str::SmolStr::new_static(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                             "revokeReason",
                                         ),
                                         ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -380,19 +470,14 @@ fn lexicon_doc_tools_ozone_verification_revokeVerifications(
                                                     "Reason for revoking the verification. This is optional and can be omitted if not needed.",
                                                 ),
                                             ),
-                                            format: None,
-                                            default: None,
-                                            min_length: None,
                                             max_length: Some(1000usize),
-                                            min_graphemes: None,
-                                            max_graphemes: None,
-                                            r#enum: None,
-                                            r#const: None,
-                                            known_values: None,
+                                            ..Default::default()
                                         }),
                                     );
                                     map.insert(
-                                        ::jacquard_common::smol_str::SmolStr::new_static("uris"),
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "uris",
+                                        ),
                                         ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
                                             description: Some(
                                                 ::jacquard_common::CowStr::new_static(
@@ -408,30 +493,24 @@ fn lexicon_doc_tools_ozone_verification_revokeVerifications(
                                                 format: Some(
                                                     ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
                                                 ),
-                                                default: None,
-                                                min_length: None,
-                                                max_length: None,
-                                                min_graphemes: None,
-                                                max_graphemes: None,
-                                                r#enum: None,
-                                                r#const: None,
-                                                known_values: None,
+                                                ..Default::default()
                                             }),
-                                            min_length: None,
                                             max_length: Some(100usize),
+                                            ..Default::default()
                                         }),
                                     );
                                     map
                                 },
+                                ..Default::default()
                             }),
                         ),
+                        ..Default::default()
                     }),
-                    output: None,
-                    errors: None,
+                    ..Default::default()
                 }),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("revokeError"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("revokeError"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
@@ -440,35 +519,30 @@ fn lexicon_doc_tools_ozone_verification_revokeVerifications(
                     ),
                     required: Some(
                         vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("uri"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("error")
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("uri"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("error")
                         ],
                     ),
-                    nullable: None,
                     properties: {
                         #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
+                        let mut map = ::alloc::collections::BTreeMap::new();
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("error"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "error",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
                                         "Description of the error that occurred during revocation.",
                                     ),
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("uri"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "uri",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
@@ -478,38 +552,16 @@ fn lexicon_doc_tools_ozone_verification_revokeVerifications(
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map
                     },
+                    ..Default::default()
                 }),
             );
             map
         },
-    }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for RevokeError<'a> {
-    fn nsid() -> &'static str {
-        "tools.ozone.verification.revokeVerifications"
-    }
-    fn def_name() -> &'static str {
-        "revokeError"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_tools_ozone_verification_revokeVerifications()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
+        ..Default::default()
     }
 }

@@ -8,13 +8,122 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetKeyPackages<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cipher_suite: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(borrow)]
-    pub dids: Vec<jacquard_common::types::string::Did<'a>>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetKeyPackages<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cipher_suite: core::option::Option<S>,
+    pub dids: Vec<jacquard_common::types::string::Did<S>>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetKeyPackagesOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Available key packages for the requested DIDs
+    pub key_packages: Vec<crate::generated::blue_catbird::mlsChat::KeyPackageRef<S>>,
+    ///DIDs for which no key packages were found
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub missing: core::option::Option<Vec<jacquard_common::types::string::Did<S>>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    thiserror::Error,
+    miette::Diagnostic,
+)]
+#[serde(tag = "error", content = "message")]
+pub enum GetKeyPackagesError {
+    /// Too many DIDs requested (max 100)
+    #[serde(rename = "TooManyDids")]
+    TooManyDids(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// One or more DIDs are invalid
+    #[serde(rename = "InvalidDid")]
+    InvalidDid(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
+}
+
+impl core::fmt::Display for GetKeyPackagesError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+            Self::TooManyDids(msg) => {
+                write!(f, "TooManyDids")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::InvalidDid(msg) => {
+                write!(f, "InvalidDid")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+        }
+    }
+}
+
+/** Response marker for the `blue.catbird.mlsChat.getKeyPackages` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetKeyPackagesOutput<S>` for this endpoint.*/
+pub struct GetKeyPackagesResponse;
+impl jacquard_common::xrpc::XrpcResp for GetKeyPackagesResponse {
+    const NSID: &'static str = "blue.catbird.mlsChat.getKeyPackages";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = GetKeyPackagesOutput<S>;
+    type Err = GetKeyPackagesError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetKeyPackages<S> {
+    const NSID: &'static str = "blue.catbird.mlsChat.getKeyPackages";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = GetKeyPackagesResponse;
+}
+
+/** Endpoint marker for the `blue.catbird.mlsChat.getKeyPackages` query.
+
+Path: `/xrpc/blue.catbird.mlsChat.getKeyPackages`. The request payload type is `GetKeyPackages<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct GetKeyPackagesRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for GetKeyPackagesRequest {
+    const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.getKeyPackages";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = GetKeyPackages<S>;
+    type Response = GetKeyPackagesResponse;
 }
 
 pub mod get_key_packages_state {
@@ -36,9 +145,9 @@ pub mod get_key_packages_state {
         type Dids = Unset;
     }
     ///State transition - sets the `dids` field to Set
-    pub struct SetDids<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDids<S> {}
-    impl<S: State> State for SetDids<S> {
+    pub struct SetDids<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetDids<St> {}
+    impl<St: State> State for SetDids<St> {
         type Dids = Set<members::dids>;
     }
     /// Marker types for field names
@@ -49,162 +158,98 @@ pub mod get_key_packages_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct GetKeyPackagesBuilder<'a, S: get_key_packages_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<Vec<jacquard_common::types::string::Did<'a>>>,
+/// Builder for constructing an instance of this type.
+pub struct GetKeyPackagesBuilder<
+    St: get_key_packages_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<Vec<jacquard_common::types::string::Did<S>>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> GetKeyPackages<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> GetKeyPackagesBuilder<'a, get_key_packages_state::Empty> {
+impl GetKeyPackages<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> GetKeyPackagesBuilder<get_key_packages_state::Empty, jacquard_common::DefaultStr>
+    {
         GetKeyPackagesBuilder::new()
     }
 }
 
-impl<'a> GetKeyPackagesBuilder<'a, get_key_packages_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> GetKeyPackages<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> GetKeyPackagesBuilder<get_key_packages_state::Empty, S> {
+        GetKeyPackagesBuilder::builder()
+    }
+}
+
+impl GetKeyPackagesBuilder<get_key_packages_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetKeyPackagesBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: get_key_packages_state::State> GetKeyPackagesBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> GetKeyPackagesBuilder<get_key_packages_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GetKeyPackagesBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: get_key_packages_state::State, S: jacquard_common::BosStr> GetKeyPackagesBuilder<St, S> {
     /// Set the `cipherSuite` field (optional)
-    pub fn cipher_suite(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+    pub fn cipher_suite(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.0 = value.into();
         self
     }
     /// Set the `cipherSuite` field to an Option value (optional)
-    pub fn maybe_cipher_suite(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.0 = value;
+    pub fn maybe_cipher_suite(mut self, value: Option<S>) -> Self {
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S> GetKeyPackagesBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GetKeyPackagesBuilder<St, S>
 where
-    S: get_key_packages_state::State,
-    S::Dids: get_key_packages_state::IsUnset,
+    St: get_key_packages_state::State,
+    St::Dids: get_key_packages_state::IsUnset,
 {
     /// Set the `dids` field (required)
     pub fn dids(
         mut self,
-        value: impl Into<Vec<jacquard_common::types::string::Did<'a>>>,
-    ) -> GetKeyPackagesBuilder<'a, get_key_packages_state::SetDids<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<Vec<jacquard_common::types::string::Did<S>>>,
+    ) -> GetKeyPackagesBuilder<get_key_packages_state::SetDids<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         GetKeyPackagesBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GetKeyPackagesBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GetKeyPackagesBuilder<St, S>
 where
-    S: get_key_packages_state::State,
-    S::Dids: get_key_packages_state::IsSet,
+    St: get_key_packages_state::State,
+    St::Dids: get_key_packages_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> GetKeyPackages<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> GetKeyPackages<S> {
         GetKeyPackages {
-            cipher_suite: self.__unsafe_private_named.0,
-            dids: self.__unsafe_private_named.1.unwrap(),
+            cipher_suite: self._fields.0,
+            dids: self._fields.1.unwrap(),
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GetKeyPackagesOutput<'a> {
-    /// Available key packages for the requested DIDs
-    #[serde(borrow)]
-    pub key_packages: Vec<crate::generated::blue_catbird::mlsChat::KeyPackageRef<'a>>,
-    /// DIDs for which no key packages were found
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub missing: std::option::Option<Vec<jacquard_common::types::string::Did<'a>>>,
-}
-
-#[jacquard_derive::open_union]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    thiserror::Error,
-    miette::Diagnostic,
-    jacquard_derive::IntoStatic,
-)]
-#[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum GetKeyPackagesError<'a> {
-    /// Too many DIDs requested (max 100)
-    #[serde(rename = "TooManyDids")]
-    TooManyDids(std::option::Option<jacquard_common::CowStr<'a>>),
-    /// One or more DIDs are invalid
-    #[serde(rename = "InvalidDid")]
-    InvalidDid(std::option::Option<jacquard_common::CowStr<'a>>),
-}
-
-impl std::fmt::Display for GetKeyPackagesError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::TooManyDids(msg) => {
-                write!(f, "TooManyDids")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
-            Self::InvalidDid(msg) => {
-                write!(f, "InvalidDid")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
-        }
-    }
-}
-
-/// Response type for
-///blue.catbird.mlsChat.getKeyPackages
-pub struct GetKeyPackagesResponse;
-impl jacquard_common::xrpc::XrpcResp for GetKeyPackagesResponse {
-    const NSID: &'static str = "blue.catbird.mlsChat.getKeyPackages";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetKeyPackagesOutput<'de>;
-    type Err<'de> = GetKeyPackagesError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for GetKeyPackages<'a> {
-    const NSID: &'static str = "blue.catbird.mlsChat.getKeyPackages";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = GetKeyPackagesResponse;
-}
-
-/// Endpoint type for
-///blue.catbird.mlsChat.getKeyPackages
-pub struct GetKeyPackagesRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for GetKeyPackagesRequest {
-    const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.getKeyPackages";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetKeyPackages<'de>;
-    type Response = GetKeyPackagesResponse;
 }

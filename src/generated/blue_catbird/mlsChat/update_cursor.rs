@@ -5,7 +5,6 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -16,27 +15,51 @@
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct UpdateCursor<'a> {
-    /// Conversation identifier
-    #[serde(borrow)]
-    pub convo_id: jacquard_common::CowStr<'a>,
-    /// Opaque cursor value representing the read position (e.g., seq number as string)
-    #[serde(borrow)]
-    pub cursor: jacquard_common::CowStr<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct UpdateCursor<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Conversation identifier
+    pub convo_id: S,
+    ///Opaque cursor value representing the read position (e.g., seq number as string)
+    pub cursor: S,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct UpdateCursorOutput<'a> {
-    /// Timestamp when the cursor was updated
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct UpdateCursorOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Timestamp when the cursor was updated
     pub updated_at: jacquard_common::types::string::Datetime,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::open_union]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -46,24 +69,28 @@ pub struct UpdateCursorOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum UpdateCursorError<'a> {
+pub enum UpdateCursorError {
     /// Conversation not found
     #[serde(rename = "ConvoNotFound")]
-    ConvoNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
+    ConvoNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// Caller is not a member of the conversation
     #[serde(rename = "NotMember")]
-    NotMember(std::option::Option<jacquard_common::CowStr<'a>>),
+    NotMember(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// The provided cursor value is invalid
     #[serde(rename = "InvalidCursor")]
-    InvalidCursor(std::option::Option<jacquard_common::CowStr<'a>>),
+    InvalidCursor(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
 }
 
-impl std::fmt::Display for UpdateCursorError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for UpdateCursorError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             Self::ConvoNotFound(msg) => {
                 write!(f, "ConvoNotFound")?;
@@ -86,35 +113,43 @@ impl std::fmt::Display for UpdateCursorError<'_> {
                 }
                 Ok(())
             }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
         }
     }
 }
 
-/// Response type for
-///blue.catbird.mlsChat.updateCursor
+/** Response marker for the `blue.catbird.mlsChat.updateCursor` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `UpdateCursorOutput<S>` for this endpoint.*/
 pub struct UpdateCursorResponse;
 impl jacquard_common::xrpc::XrpcResp for UpdateCursorResponse {
     const NSID: &'static str = "blue.catbird.mlsChat.updateCursor";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = UpdateCursorOutput<'de>;
-    type Err<'de> = UpdateCursorError<'de>;
+    type Output<S: jacquard_common::BosStr> = UpdateCursorOutput<S>;
+    type Err = UpdateCursorError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for UpdateCursor<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for UpdateCursor<S> {
     const NSID: &'static str = "blue.catbird.mlsChat.updateCursor";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = UpdateCursorResponse;
 }
 
-/// Endpoint type for
-///blue.catbird.mlsChat.updateCursor
+/** Endpoint marker for the `blue.catbird.mlsChat.updateCursor` procedure.
+
+Path: `/xrpc/blue.catbird.mlsChat.updateCursor`. The request payload type is `UpdateCursor<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct UpdateCursorRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for UpdateCursorRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.updateCursor";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = UpdateCursor<'de>;
+    type Request<S: jacquard_common::BosStr> = UpdateCursor<S>;
     type Response = UpdateCursorResponse;
 }

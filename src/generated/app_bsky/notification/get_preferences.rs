@@ -10,24 +10,38 @@
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetPreferences;
-#[jacquard_derive::lexicon]
+
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetPreferencesOutput<'a> {
-    #[serde(borrow)]
-    pub preferences: crate::generated::app_bsky::notification::Preferences<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetPreferencesOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub preferences: crate::generated::app_bsky::notification::Preferences<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-/// Response type for
-///app.bsky.notification.getPreferences
+/** Response marker for the `app.bsky.notification.getPreferences` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetPreferencesOutput<S>` for this endpoint.*/
 pub struct GetPreferencesResponse;
 impl jacquard_common::xrpc::XrpcResp for GetPreferencesResponse {
     const NSID: &'static str = "app.bsky.notification.getPreferences";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetPreferencesOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
+    type Output<S: jacquard_common::BosStr> = GetPreferencesOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
 }
 
 impl jacquard_common::xrpc::XrpcRequest for GetPreferences {
@@ -36,12 +50,13 @@ impl jacquard_common::xrpc::XrpcRequest for GetPreferences {
     type Response = GetPreferencesResponse;
 }
 
-/// Endpoint type for
-///app.bsky.notification.getPreferences
+/** Endpoint marker for the `app.bsky.notification.getPreferences` query.
+
+Path: `/xrpc/app.bsky.notification.getPreferences`. The request payload type is `GetPreferences`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct GetPreferencesRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for GetPreferencesRequest {
     const PATH: &'static str = "/xrpc/app.bsky.notification.getPreferences";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetPreferences;
+    type Request<S: jacquard_common::BosStr> = GetPreferences;
     type Response = GetPreferencesResponse;
 }

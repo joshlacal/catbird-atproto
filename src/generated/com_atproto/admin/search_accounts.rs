@@ -8,17 +8,75 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct SearchAccounts<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub email: std::option::Option<jacquard_common::CowStr<'a>>,
-    ///(default: 50, min: 1, max: 100)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub limit: std::option::Option<i64>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct SearchAccounts<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub email: core::option::Option<S>,
+    /// Defaults to `50`. Min: 1. Max: 100.
+    #[serde(default = "_default_limit")]
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub limit: core::option::Option<i64>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct SearchAccountsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub accounts: Vec<crate::generated::com_atproto::admin::AccountView<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `com.atproto.admin.searchAccounts` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `SearchAccountsOutput<S>` for this endpoint.*/
+pub struct SearchAccountsResponse;
+impl jacquard_common::xrpc::XrpcResp for SearchAccountsResponse {
+    const NSID: &'static str = "com.atproto.admin.searchAccounts";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = SearchAccountsOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for SearchAccounts<S> {
+    const NSID: &'static str = "com.atproto.admin.searchAccounts";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = SearchAccountsResponse;
+}
+
+/** Endpoint marker for the `com.atproto.admin.searchAccounts` query.
+
+Path: `/xrpc/com.atproto.admin.searchAccounts`. The request payload type is `SearchAccounts<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct SearchAccountsRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for SearchAccountsRequest {
+    const PATH: &'static str = "/xrpc/com.atproto.admin.searchAccounts";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = SearchAccounts<S>;
+    type Response = SearchAccountsResponse;
+}
+
+fn _default_limit() -> core::option::Option<i64> {
+    Some(50i64)
 }
 
 pub mod search_accounts_state {
@@ -40,123 +98,106 @@ pub mod search_accounts_state {
     pub mod members {}
 }
 
-/// Builder for constructing an instance of this type
-pub struct SearchAccountsBuilder<'a, S: search_accounts_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<i64>,
+/// Builder for constructing an instance of this type.
+pub struct SearchAccountsBuilder<
+    St: search_accounts_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<S>,
+        core::option::Option<i64>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> SearchAccounts<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> SearchAccountsBuilder<'a, search_accounts_state::Empty> {
+impl SearchAccounts<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> SearchAccountsBuilder<search_accounts_state::Empty, jacquard_common::DefaultStr>
+    {
         SearchAccountsBuilder::new()
     }
 }
 
-impl<'a> SearchAccountsBuilder<'a, search_accounts_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> SearchAccounts<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> SearchAccountsBuilder<search_accounts_state::Empty, S> {
+        SearchAccountsBuilder::builder()
+    }
+}
+
+impl SearchAccountsBuilder<search_accounts_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         SearchAccountsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: search_accounts_state::State> SearchAccountsBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> SearchAccountsBuilder<search_accounts_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        SearchAccountsBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: search_accounts_state::State, S: jacquard_common::BosStr> SearchAccountsBuilder<St, S> {
     /// Set the `cursor` field (optional)
-    pub fn cursor(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+    pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.0 = value.into();
         self
     }
     /// Set the `cursor` field to an Option value (optional)
-    pub fn maybe_cursor(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.0 = value;
+    pub fn maybe_cursor(mut self, value: Option<S>) -> Self {
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S: search_accounts_state::State> SearchAccountsBuilder<'a, S> {
+impl<St: search_accounts_state::State, S: jacquard_common::BosStr> SearchAccountsBuilder<St, S> {
     /// Set the `email` field (optional)
-    pub fn email(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+    pub fn email(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.1 = value.into();
         self
     }
     /// Set the `email` field to an Option value (optional)
-    pub fn maybe_email(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.1 = value;
+    pub fn maybe_email(mut self, value: Option<S>) -> Self {
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S: search_accounts_state::State> SearchAccountsBuilder<'a, S> {
+impl<St: search_accounts_state::State, S: jacquard_common::BosStr> SearchAccountsBuilder<St, S> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.2 = value.into();
+        self._fields.2 = value.into();
         self
     }
     /// Set the `limit` field to an Option value (optional)
     pub fn maybe_limit(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.2 = value;
+        self._fields.2 = value;
         self
     }
 }
 
-impl<'a, S> SearchAccountsBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> SearchAccountsBuilder<St, S>
 where
-    S: search_accounts_state::State,
+    St: search_accounts_state::State,
 {
-    /// Build the final struct
-    pub fn build(self) -> SearchAccounts<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> SearchAccounts<S> {
         SearchAccounts {
-            cursor: self.__unsafe_private_named.0,
-            email: self.__unsafe_private_named.1,
-            limit: self.__unsafe_private_named.2,
+            cursor: self._fields.0,
+            email: self._fields.1,
+            limit: self._fields.2,
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct SearchAccountsOutput<'a> {
-    #[serde(borrow)]
-    pub accounts: Vec<crate::generated::com_atproto::admin::AccountView<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-}
-
-/// Response type for
-///com.atproto.admin.searchAccounts
-pub struct SearchAccountsResponse;
-impl jacquard_common::xrpc::XrpcResp for SearchAccountsResponse {
-    const NSID: &'static str = "com.atproto.admin.searchAccounts";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = SearchAccountsOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for SearchAccounts<'a> {
-    const NSID: &'static str = "com.atproto.admin.searchAccounts";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = SearchAccountsResponse;
-}
-
-/// Endpoint type for
-///com.atproto.admin.searchAccounts
-pub struct SearchAccountsRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for SearchAccountsRequest {
-    const PATH: &'static str = "/xrpc/com.atproto.admin.searchAccounts";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = SearchAccounts<'de>;
-    type Response = SearchAccountsResponse;
 }

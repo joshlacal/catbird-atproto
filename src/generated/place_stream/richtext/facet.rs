@@ -6,16 +6,58 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 /// Annotation of a sub-string within rich text.
-#[jacquard_derive::lexicon]
+
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct Facet<'a> {
-    #[serde(borrow)]
-    pub features: Vec<FacetFeaturesItem<'a>>,
-    #[serde(borrow)]
-    pub index: crate::generated::app_bsky::richtext::facet::ByteSlice<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct Facet<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub features: Vec<FacetFeaturesItem<S>>,
+    pub index: crate::generated::app_bsky::richtext::facet::ByteSlice<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[jacquard_derive::open_union]
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub enum FacetFeaturesItem<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(rename = "app.bsky.richtext.facet#mention")]
+    FacetMention(Box<crate::generated::app_bsky::richtext::facet::Mention<S>>),
+    #[serde(rename = "app.bsky.richtext.facet#link")]
+    FacetLink(Box<crate::generated::app_bsky::richtext::facet::Link<S>>),
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Facet<S> {
+    fn nsid() -> &'static str {
+        "place.stream.richtext.facet"
+    }
+    fn def_name() -> &'static str {
+        "main"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_place_stream_richtext_facet()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
 }
 
 pub mod facet_state {
@@ -28,180 +70,183 @@ pub mod facet_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Index;
         type Features;
+        type Index;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Index = Unset;
         type Features = Unset;
-    }
-    ///State transition - sets the `index` field to Set
-    pub struct SetIndex<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetIndex<S> {}
-    impl<S: State> State for SetIndex<S> {
-        type Index = Set<members::index>;
-        type Features = S::Features;
+        type Index = Unset;
     }
     ///State transition - sets the `features` field to Set
-    pub struct SetFeatures<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetFeatures<S> {}
-    impl<S: State> State for SetFeatures<S> {
-        type Index = S::Index;
+    pub struct SetFeatures<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetFeatures<St> {}
+    impl<St: State> State for SetFeatures<St> {
         type Features = Set<members::features>;
+        type Index = St::Index;
+    }
+    ///State transition - sets the `index` field to Set
+    pub struct SetIndex<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetIndex<St> {}
+    impl<St: State> State for SetIndex<St> {
+        type Features = St::Features;
+        type Index = Set<members::index>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `index` field
-        pub struct index(());
         ///Marker type for the `features` field
         pub struct features(());
+        ///Marker type for the `index` field
+        pub struct index(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct FacetBuilder<'a, S: facet_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<Vec<FacetFeaturesItem<'a>>>,
-        ::core::option::Option<crate::generated::app_bsky::richtext::facet::ByteSlice<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct FacetBuilder<
+    St: facet_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<Vec<FacetFeaturesItem<S>>>,
+        core::option::Option<crate::generated::app_bsky::richtext::facet::ByteSlice<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> Facet<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> FacetBuilder<'a, facet_state::Empty> {
+impl Facet<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> FacetBuilder<facet_state::Empty, jacquard_common::DefaultStr> {
         FacetBuilder::new()
     }
 }
 
-impl<'a> FacetBuilder<'a, facet_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> Facet<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> FacetBuilder<facet_state::Empty, S> {
+        FacetBuilder::builder()
+    }
+}
+
+impl FacetBuilder<facet_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         FacetBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> FacetBuilder<'a, S>
+impl<S: jacquard_common::BosStr> FacetBuilder<facet_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        FacetBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> FacetBuilder<St, S>
 where
-    S: facet_state::State,
-    S::Features: facet_state::IsUnset,
+    St: facet_state::State,
+    St::Features: facet_state::IsUnset,
 {
     /// Set the `features` field (required)
     pub fn features(
         mut self,
-        value: impl Into<Vec<FacetFeaturesItem<'a>>>,
-    ) -> FacetBuilder<'a, facet_state::SetFeatures<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<Vec<FacetFeaturesItem<S>>>,
+    ) -> FacetBuilder<facet_state::SetFeatures<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         FacetBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> FacetBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> FacetBuilder<St, S>
 where
-    S: facet_state::State,
-    S::Index: facet_state::IsUnset,
+    St: facet_state::State,
+    St::Index: facet_state::IsUnset,
 {
     /// Set the `index` field (required)
     pub fn index(
         mut self,
-        value: impl Into<crate::generated::app_bsky::richtext::facet::ByteSlice<'a>>,
-    ) -> FacetBuilder<'a, facet_state::SetIndex<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<crate::generated::app_bsky::richtext::facet::ByteSlice<S>>,
+    ) -> FacetBuilder<facet_state::SetIndex<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         FacetBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> FacetBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> FacetBuilder<St, S>
 where
-    S: facet_state::State,
-    S::Index: facet_state::IsSet,
-    S::Features: facet_state::IsSet,
+    St: facet_state::State,
+    St::Features: facet_state::IsSet,
+    St::Index: facet_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> Facet<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> Facet<S> {
         Facet {
-            features: self.__unsafe_private_named.0.unwrap(),
-            index: self.__unsafe_private_named.1.unwrap(),
+            features: self._fields.0.unwrap(),
+            index: self._fields.1.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> Facet<'a> {
+    ) -> Facet<S> {
         Facet {
-            features: self.__unsafe_private_named.0.unwrap(),
-            index: self.__unsafe_private_named.1.unwrap(),
+            features: self._fields.0.unwrap(),
+            index: self._fields.1.unwrap(),
             extra_data: Some(extra_data),
         }
     }
 }
 
-#[jacquard_derive::open_union]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(tag = "$type")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum FacetFeaturesItem<'a> {
-    #[serde(rename = "app.bsky.richtext.facet#mention")]
-    FacetMention(Box<crate::generated::app_bsky::richtext::facet::Mention<'a>>),
-    #[serde(rename = "app.bsky.richtext.facet#link")]
-    FacetLink(Box<crate::generated::app_bsky::richtext::facet::Link<'a>>),
-}
-
-fn lexicon_doc_place_stream_richtext_facet() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_place_stream_richtext_facet() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("place.stream.richtext.facet"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
                         description: Some(::jacquard_common::CowStr::new_static(
                             "Annotation of a sub-string within rich text.",
                         )),
                         required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("index"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("features"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("index"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("features"),
                         ]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("features"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("features"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Array(
                                     ::jacquard_lexicon::lexicon::LexArray {
-                                        description: None,
                                         items: ::jacquard_lexicon::lexicon::LexArrayItem::Union(
                                             ::jacquard_lexicon::lexicon::LexRefUnion {
-                                                description: None,
                                                 refs: vec![
                                                     ::jacquard_common::CowStr::new_static(
                                                         "app.bsky.richtext.facet#mention",
@@ -210,48 +255,32 @@ fn lexicon_doc_place_stream_richtext_facet() -> ::jacquard_lexicon::lexicon::Lex
                                                         "app.bsky.richtext.facet#link",
                                                     ),
                                                 ],
-                                                closed: None,
+                                                ..Default::default()
                                             },
                                         ),
-                                        min_length: None,
-                                        max_length: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("index"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("index"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
                                     ::jacquard_lexicon::lexicon::LexRef {
-                                        description: None,
                                         r#ref: ::jacquard_common::CowStr::new_static(
                                             "app.bsky.richtext.facet#byteSlice",
                                         ),
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map
         },
-    }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Facet<'a> {
-    fn nsid() -> &'static str {
-        "place.stream.richtext.facet"
-    }
-    fn def_name() -> &'static str {
-        "main"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_place_stream_richtext_facet()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
+        ..Default::default()
     }
 }

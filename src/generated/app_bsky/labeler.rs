@@ -5,23 +5,219 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
+//! Generated bindings for the `app.bsky.labeler` Lexicon namespace/module.
 pub mod get_services;
 pub mod service;
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct LabelerPolicies<'a> {
-    /// Label values created by this labeler and scoped exclusively to it. Labels defined here will override global label definitions for this labeler.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct LabelerPolicies<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Label values created by this labeler and scoped exclusively to it. Labels defined here will override global label definitions for this labeler.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub label_value_definitions:
-        std::option::Option<Vec<crate::generated::com_atproto::label::LabelValueDefinition<'a>>>,
-    /// The label values which this labeler publishes. May include global or custom labels.
-    #[serde(borrow)]
-    pub label_values: Vec<crate::generated::com_atproto::label::LabelValue<'a>>,
+        core::option::Option<Vec<crate::generated::com_atproto::label::LabelValueDefinition<S>>>,
+    ///The label values which this labeler publishes. May include global or custom labels.
+    pub label_values: Vec<crate::generated::com_atproto::label::LabelValue<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct LabelerView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub cid: jacquard_common::types::string::Cid<S>,
+    pub creator: crate::generated::app_bsky::actor::ProfileView<S>,
+    pub indexed_at: jacquard_common::types::string::Datetime,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub labels: core::option::Option<Vec<crate::generated::com_atproto::label::Label<S>>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub like_count: core::option::Option<i64>,
+    pub uri: jacquard_common::types::string::AtUri<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub viewer: core::option::Option<crate::generated::app_bsky::labeler::LabelerViewerState<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct LabelerViewDetailed<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub cid: jacquard_common::types::string::Cid<S>,
+    pub creator: crate::generated::app_bsky::actor::ProfileView<S>,
+    pub indexed_at: jacquard_common::types::string::Datetime,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub labels: core::option::Option<Vec<crate::generated::com_atproto::label::Label<S>>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub like_count: core::option::Option<i64>,
+    pub policies: crate::generated::app_bsky::labeler::LabelerPolicies<S>,
+    ///The set of report reason 'codes' which are in-scope for this service to review and action. These usually align to policy categories. If not defined (distinct from empty array), all reason types are allowed.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub reason_types:
+        core::option::Option<Vec<crate::generated::com_atproto::moderation::ReasonType<S>>>,
+    ///Set of record types (collection NSIDs) which can be reported to this service. If not defined (distinct from empty array), default is any record type.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub subject_collections: core::option::Option<Vec<jacquard_common::types::string::Nsid<S>>>,
+    ///The set of subject types (account, record, etc) this service accepts reports on.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub subject_types:
+        core::option::Option<Vec<crate::generated::com_atproto::moderation::SubjectType<S>>>,
+    pub uri: jacquard_common::types::string::AtUri<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub viewer: core::option::Option<crate::generated::app_bsky::labeler::LabelerViewerState<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic,
+    Default,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct LabelerViewerState<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub like: core::option::Option<jacquard_common::types::string::AtUri<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for LabelerPolicies<S> {
+    fn nsid() -> &'static str {
+        "app.bsky.labeler.defs"
+    }
+    fn def_name() -> &'static str {
+        "labelerPolicies"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_app_bsky_labeler_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for LabelerView<S> {
+    fn nsid() -> &'static str {
+        "app.bsky.labeler.defs"
+    }
+    fn def_name() -> &'static str {
+        "labelerView"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_app_bsky_labeler_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        if let Some(ref value) = self.like_count {
+            if *value < 0i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("like_count"),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+    for LabelerViewDetailed<S>
+{
+    fn nsid() -> &'static str {
+        "app.bsky.labeler.defs"
+    }
+    fn def_name() -> &'static str {
+        "labelerViewDetailed"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_app_bsky_labeler_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        if let Some(ref value) = self.like_count {
+            if *value < 0i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("like_count"),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for LabelerViewerState<S> {
+    fn nsid() -> &'static str {
+        "app.bsky.labeler.defs"
+    }
+    fn def_name() -> &'static str {
+        "labelerViewerState"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_app_bsky_labeler_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
 }
 
 pub mod labeler_policies_state {
@@ -43,9 +239,9 @@ pub mod labeler_policies_state {
         type LabelValues = Unset;
     }
     ///State transition - sets the `label_values` field to Set
-    pub struct SetLabelValues<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetLabelValues<S> {}
-    impl<S: State> State for SetLabelValues<S> {
+    pub struct SetLabelValues<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetLabelValues<St> {}
+    impl<St: State> State for SetLabelValues<St> {
         type LabelValues = Set<members::label_values>;
     }
     /// Marker types for field names
@@ -56,124 +252,144 @@ pub mod labeler_policies_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct LabelerPoliciesBuilder<'a, S: labeler_policies_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<Vec<crate::generated::com_atproto::label::LabelValueDefinition<'a>>>,
-        ::core::option::Option<Vec<crate::generated::com_atproto::label::LabelValue<'a>>>,
+/// Builder for constructing an instance of this type.
+pub struct LabelerPoliciesBuilder<
+    St: labeler_policies_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<Vec<crate::generated::com_atproto::label::LabelValueDefinition<S>>>,
+        core::option::Option<Vec<crate::generated::com_atproto::label::LabelValue<S>>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> LabelerPolicies<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> LabelerPoliciesBuilder<'a, labeler_policies_state::Empty> {
+impl LabelerPolicies<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> LabelerPoliciesBuilder<labeler_policies_state::Empty, jacquard_common::DefaultStr> {
         LabelerPoliciesBuilder::new()
     }
 }
 
-impl<'a> LabelerPoliciesBuilder<'a, labeler_policies_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> LabelerPolicies<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> LabelerPoliciesBuilder<labeler_policies_state::Empty, S> {
+        LabelerPoliciesBuilder::builder()
+    }
+}
+
+impl LabelerPoliciesBuilder<labeler_policies_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         LabelerPoliciesBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: labeler_policies_state::State> LabelerPoliciesBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> LabelerPoliciesBuilder<labeler_policies_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        LabelerPoliciesBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: labeler_policies_state::State, S: jacquard_common::BosStr> LabelerPoliciesBuilder<St, S> {
     /// Set the `labelValueDefinitions` field (optional)
     pub fn label_value_definitions(
         mut self,
-        value: impl Into<Option<Vec<crate::generated::com_atproto::label::LabelValueDefinition<'a>>>>,
+        value: impl Into<Option<Vec<crate::generated::com_atproto::label::LabelValueDefinition<S>>>>,
     ) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+        self._fields.0 = value.into();
         self
     }
     /// Set the `labelValueDefinitions` field to an Option value (optional)
     pub fn maybe_label_value_definitions(
         mut self,
-        value: Option<Vec<crate::generated::com_atproto::label::LabelValueDefinition<'a>>>,
+        value: Option<Vec<crate::generated::com_atproto::label::LabelValueDefinition<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.0 = value;
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S> LabelerPoliciesBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> LabelerPoliciesBuilder<St, S>
 where
-    S: labeler_policies_state::State,
-    S::LabelValues: labeler_policies_state::IsUnset,
+    St: labeler_policies_state::State,
+    St::LabelValues: labeler_policies_state::IsUnset,
 {
     /// Set the `labelValues` field (required)
     pub fn label_values(
         mut self,
-        value: impl Into<Vec<crate::generated::com_atproto::label::LabelValue<'a>>>,
-    ) -> LabelerPoliciesBuilder<'a, labeler_policies_state::SetLabelValues<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<Vec<crate::generated::com_atproto::label::LabelValue<S>>>,
+    ) -> LabelerPoliciesBuilder<labeler_policies_state::SetLabelValues<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         LabelerPoliciesBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> LabelerPoliciesBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> LabelerPoliciesBuilder<St, S>
 where
-    S: labeler_policies_state::State,
-    S::LabelValues: labeler_policies_state::IsSet,
+    St: labeler_policies_state::State,
+    St::LabelValues: labeler_policies_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> LabelerPolicies<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> LabelerPolicies<S> {
         LabelerPolicies {
-            label_value_definitions: self.__unsafe_private_named.0,
-            label_values: self.__unsafe_private_named.1.unwrap(),
+            label_value_definitions: self._fields.0,
+            label_values: self._fields.1.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> LabelerPolicies<'a> {
+    ) -> LabelerPolicies<S> {
         LabelerPolicies {
-            label_value_definitions: self.__unsafe_private_named.0,
-            label_values: self.__unsafe_private_named.1.unwrap(),
+            label_value_definitions: self._fields.0,
+            label_values: self._fields.1.unwrap(),
             extra_data: Some(extra_data),
         }
     }
 }
 
-fn lexicon_doc_app_bsky_labeler_defs() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_app_bsky_labeler_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("app.bsky.labeler.defs"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("labelerPolicies"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "labelerPolicies",
+                ),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: None,
                     required: Some(
                         vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("labelValues")
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("labelValues")
                         ],
                     ),
-                    nullable: None,
                     properties: {
                         #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
+                        let mut map = ::alloc::collections::BTreeMap::new();
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "labelValueDefinitions",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
@@ -183,17 +399,16 @@ fn lexicon_doc_app_bsky_labeler_defs() -> ::jacquard_lexicon::lexicon::LexiconDo
                                     ),
                                 ),
                                 items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                    description: None,
                                     r#ref: ::jacquard_common::CowStr::new_static(
                                         "com.atproto.label.defs#labelValueDefinition",
                                     ),
+                                    ..Default::default()
                                 }),
-                                min_length: None,
-                                max_length: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "labelValues",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
@@ -203,249 +418,204 @@ fn lexicon_doc_app_bsky_labeler_defs() -> ::jacquard_lexicon::lexicon::LexiconDo
                                     ),
                                 ),
                                 items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                    description: None,
                                     r#ref: ::jacquard_common::CowStr::new_static(
                                         "com.atproto.label.defs#labelValue",
                                     ),
+                                    ..Default::default()
                                 }),
-                                min_length: None,
-                                max_length: None,
+                                ..Default::default()
                             }),
                         );
                         map
                     },
+                    ..Default::default()
                 }),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("labelerView"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("labelerView"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("uri"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("cid"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("creator"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("indexedAt"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("uri"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("cid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("creator"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("indexedAt"),
                         ]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("cid"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("cid"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Cid,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("creator"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("creator"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
                                     ::jacquard_lexicon::lexicon::LexRef {
-                                        description: None,
                                         r#ref: ::jacquard_common::CowStr::new_static(
                                             "app.bsky.actor.defs#profileView",
                                         ),
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("indexedAt"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("indexedAt"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("labels"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("labels"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Array(
                                     ::jacquard_lexicon::lexicon::LexArray {
-                                        description: None,
                                         items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(
                                             ::jacquard_lexicon::lexicon::LexRef {
-                                                description: None,
                                                 r#ref: ::jacquard_common::CowStr::new_static(
                                                     "com.atproto.label.defs#label",
                                                 ),
+                                                ..Default::default()
                                             },
                                         ),
-                                        min_length: None,
-                                        max_length: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("likeCount"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("likeCount"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
                                     ::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
                                         minimum: Some(0i64),
-                                        maximum: None,
-                                        r#enum: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("uri"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("uri"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("viewer"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("viewer"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
                                     ::jacquard_lexicon::lexicon::LexRef {
-                                        description: None,
                                         r#ref: ::jacquard_common::CowStr::new_static(
                                             "#labelerViewerState",
                                         ),
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("labelerViewDetailed"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "labelerViewDetailed",
+                ),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: None,
                     required: Some(
                         vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("uri"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("cid"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("creator"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("policies"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("indexedAt")
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("uri"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("cid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("creator"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("policies"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("indexedAt")
                         ],
                     ),
-                    nullable: None,
                     properties: {
                         #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
+                        let mut map = ::alloc::collections::BTreeMap::new();
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("cid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "cid",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Cid,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("creator"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "creator",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                description: None,
                                 r#ref: ::jacquard_common::CowStr::new_static(
                                     "app.bsky.actor.defs#profileView",
                                 ),
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "indexedAt",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("labels"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "labels",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
-                                description: None,
                                 items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                    description: None,
                                     r#ref: ::jacquard_common::CowStr::new_static(
                                         "com.atproto.label.defs#label",
                                     ),
+                                    ..Default::default()
                                 }),
-                                min_length: None,
-                                max_length: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "likeCount",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                description: None,
-                                default: None,
                                 minimum: Some(0i64),
-                                maximum: None,
-                                r#enum: None,
-                                r#const: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("policies"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "policies",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                description: None,
                                 r#ref: ::jacquard_common::CowStr::new_static(
                                     "app.bsky.labeler.defs#labelerPolicies",
                                 ),
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "reasonTypes",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
@@ -455,17 +625,16 @@ fn lexicon_doc_app_bsky_labeler_defs() -> ::jacquard_lexicon::lexicon::LexiconDo
                                     ),
                                 ),
                                 items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                    description: None,
                                     r#ref: ::jacquard_common::CowStr::new_static(
                                         "com.atproto.moderation.defs#reasonType",
                                     ),
+                                    ..Default::default()
                                 }),
-                                min_length: None,
-                                max_length: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "subjectCollections",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
@@ -475,25 +644,16 @@ fn lexicon_doc_app_bsky_labeler_defs() -> ::jacquard_lexicon::lexicon::LexiconDo
                                     ),
                                 ),
                                 items: ::jacquard_lexicon::lexicon::LexArrayItem::String(::jacquard_lexicon::lexicon::LexString {
-                                    description: None,
                                     format: Some(
                                         ::jacquard_lexicon::lexicon::LexStringFormat::Nsid,
                                     ),
-                                    default: None,
-                                    min_length: None,
-                                    max_length: None,
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
-                                min_length: None,
-                                max_length: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "subjectTypes",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
@@ -503,122 +663,69 @@ fn lexicon_doc_app_bsky_labeler_defs() -> ::jacquard_lexicon::lexicon::LexiconDo
                                     ),
                                 ),
                                 items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                    description: None,
                                     r#ref: ::jacquard_common::CowStr::new_static(
                                         "com.atproto.moderation.defs#subjectType",
                                     ),
+                                    ..Default::default()
                                 }),
-                                min_length: None,
-                                max_length: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("uri"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "uri",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("viewer"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "viewer",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                description: None,
                                 r#ref: ::jacquard_common::CowStr::new_static(
                                     "#labelerViewerState",
                                 ),
+                                ..Default::default()
                             }),
                         );
                         map
                     },
+                    ..Default::default()
                 }),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("labelerViewerState"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("labelerViewerState"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
-                        required: None,
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("like"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("like"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map
         },
+        ..Default::default()
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for LabelerPolicies<'a> {
-    fn nsid() -> &'static str {
-        "app.bsky.labeler.defs"
-    }
-    fn def_name() -> &'static str {
-        "labelerPolicies"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_app_bsky_labeler_defs()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct LabelerView<'a> {
-    #[serde(borrow)]
-    pub cid: jacquard_common::types::string::Cid<'a>,
-    #[serde(borrow)]
-    pub creator: crate::generated::app_bsky::actor::ProfileView<'a>,
-    pub indexed_at: jacquard_common::types::string::Datetime,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub labels: std::option::Option<Vec<crate::generated::com_atproto::label::Label<'a>>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub like_count: std::option::Option<i64>,
-    #[serde(borrow)]
-    pub uri: jacquard_common::types::string::AtUri<'a>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub viewer: std::option::Option<crate::generated::app_bsky::labeler::LabelerViewerState<'a>>,
 }
 
 pub mod labeler_view_state {
@@ -631,335 +738,291 @@ pub mod labeler_view_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Uri;
         type Cid;
         type Creator;
         type IndexedAt;
+        type Uri;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Uri = Unset;
         type Cid = Unset;
         type Creator = Unset;
         type IndexedAt = Unset;
-    }
-    ///State transition - sets the `uri` field to Set
-    pub struct SetUri<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUri<S> {}
-    impl<S: State> State for SetUri<S> {
-        type Uri = Set<members::uri>;
-        type Cid = S::Cid;
-        type Creator = S::Creator;
-        type IndexedAt = S::IndexedAt;
+        type Uri = Unset;
     }
     ///State transition - sets the `cid` field to Set
-    pub struct SetCid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCid<S> {}
-    impl<S: State> State for SetCid<S> {
-        type Uri = S::Uri;
+    pub struct SetCid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCid<St> {}
+    impl<St: State> State for SetCid<St> {
         type Cid = Set<members::cid>;
-        type Creator = S::Creator;
-        type IndexedAt = S::IndexedAt;
+        type Creator = St::Creator;
+        type IndexedAt = St::IndexedAt;
+        type Uri = St::Uri;
     }
     ///State transition - sets the `creator` field to Set
-    pub struct SetCreator<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreator<S> {}
-    impl<S: State> State for SetCreator<S> {
-        type Uri = S::Uri;
-        type Cid = S::Cid;
+    pub struct SetCreator<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCreator<St> {}
+    impl<St: State> State for SetCreator<St> {
+        type Cid = St::Cid;
         type Creator = Set<members::creator>;
-        type IndexedAt = S::IndexedAt;
+        type IndexedAt = St::IndexedAt;
+        type Uri = St::Uri;
     }
     ///State transition - sets the `indexed_at` field to Set
-    pub struct SetIndexedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetIndexedAt<S> {}
-    impl<S: State> State for SetIndexedAt<S> {
-        type Uri = S::Uri;
-        type Cid = S::Cid;
-        type Creator = S::Creator;
+    pub struct SetIndexedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetIndexedAt<St> {}
+    impl<St: State> State for SetIndexedAt<St> {
+        type Cid = St::Cid;
+        type Creator = St::Creator;
         type IndexedAt = Set<members::indexed_at>;
+        type Uri = St::Uri;
+    }
+    ///State transition - sets the `uri` field to Set
+    pub struct SetUri<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetUri<St> {}
+    impl<St: State> State for SetUri<St> {
+        type Cid = St::Cid;
+        type Creator = St::Creator;
+        type IndexedAt = St::IndexedAt;
+        type Uri = Set<members::uri>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `uri` field
-        pub struct uri(());
         ///Marker type for the `cid` field
         pub struct cid(());
         ///Marker type for the `creator` field
         pub struct creator(());
         ///Marker type for the `indexed_at` field
         pub struct indexed_at(());
+        ///Marker type for the `uri` field
+        pub struct uri(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct LabelerViewBuilder<'a, S: labeler_view_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Cid<'a>>,
-        ::core::option::Option<crate::generated::app_bsky::actor::ProfileView<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<Vec<crate::generated::com_atproto::label::Label<'a>>>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
-        ::core::option::Option<crate::generated::app_bsky::labeler::LabelerViewerState<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct LabelerViewBuilder<
+    St: labeler_view_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Cid<S>>,
+        core::option::Option<crate::generated::app_bsky::actor::ProfileView<S>>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<Vec<crate::generated::com_atproto::label::Label<S>>>,
+        core::option::Option<i64>,
+        core::option::Option<jacquard_common::types::string::AtUri<S>>,
+        core::option::Option<crate::generated::app_bsky::labeler::LabelerViewerState<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> LabelerView<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> LabelerViewBuilder<'a, labeler_view_state::Empty> {
+impl LabelerView<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> LabelerViewBuilder<labeler_view_state::Empty, jacquard_common::DefaultStr> {
         LabelerViewBuilder::new()
     }
 }
 
-impl<'a> LabelerViewBuilder<'a, labeler_view_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> LabelerView<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> LabelerViewBuilder<labeler_view_state::Empty, S> {
+        LabelerViewBuilder::builder()
+    }
+}
+
+impl LabelerViewBuilder<labeler_view_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         LabelerViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> LabelerViewBuilder<'a, S>
+impl<S: jacquard_common::BosStr> LabelerViewBuilder<labeler_view_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        LabelerViewBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> LabelerViewBuilder<St, S>
 where
-    S: labeler_view_state::State,
-    S::Cid: labeler_view_state::IsUnset,
+    St: labeler_view_state::State,
+    St::Cid: labeler_view_state::IsUnset,
 {
     /// Set the `cid` field (required)
     pub fn cid(
         mut self,
-        value: impl Into<jacquard_common::types::string::Cid<'a>>,
-    ) -> LabelerViewBuilder<'a, labeler_view_state::SetCid<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Cid<S>>,
+    ) -> LabelerViewBuilder<labeler_view_state::SetCid<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         LabelerViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> LabelerViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> LabelerViewBuilder<St, S>
 where
-    S: labeler_view_state::State,
-    S::Creator: labeler_view_state::IsUnset,
+    St: labeler_view_state::State,
+    St::Creator: labeler_view_state::IsUnset,
 {
     /// Set the `creator` field (required)
     pub fn creator(
         mut self,
-        value: impl Into<crate::generated::app_bsky::actor::ProfileView<'a>>,
-    ) -> LabelerViewBuilder<'a, labeler_view_state::SetCreator<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<crate::generated::app_bsky::actor::ProfileView<S>>,
+    ) -> LabelerViewBuilder<labeler_view_state::SetCreator<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         LabelerViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> LabelerViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> LabelerViewBuilder<St, S>
 where
-    S: labeler_view_state::State,
-    S::IndexedAt: labeler_view_state::IsUnset,
+    St: labeler_view_state::State,
+    St::IndexedAt: labeler_view_state::IsUnset,
 {
     /// Set the `indexedAt` field (required)
     pub fn indexed_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> LabelerViewBuilder<'a, labeler_view_state::SetIndexedAt<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+    ) -> LabelerViewBuilder<labeler_view_state::SetIndexedAt<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         LabelerViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: labeler_view_state::State> LabelerViewBuilder<'a, S> {
+impl<St: labeler_view_state::State, S: jacquard_common::BosStr> LabelerViewBuilder<St, S> {
     /// Set the `labels` field (optional)
     pub fn labels(
         mut self,
-        value: impl Into<Option<Vec<crate::generated::com_atproto::label::Label<'a>>>>,
+        value: impl Into<Option<Vec<crate::generated::com_atproto::label::Label<S>>>>,
     ) -> Self {
-        self.__unsafe_private_named.3 = value.into();
+        self._fields.3 = value.into();
         self
     }
     /// Set the `labels` field to an Option value (optional)
     pub fn maybe_labels(
         mut self,
-        value: Option<Vec<crate::generated::com_atproto::label::Label<'a>>>,
+        value: Option<Vec<crate::generated::com_atproto::label::Label<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.3 = value;
+        self._fields.3 = value;
         self
     }
 }
 
-impl<'a, S: labeler_view_state::State> LabelerViewBuilder<'a, S> {
+impl<St: labeler_view_state::State, S: jacquard_common::BosStr> LabelerViewBuilder<St, S> {
     /// Set the `likeCount` field (optional)
     pub fn like_count(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.4 = value.into();
+        self._fields.4 = value.into();
         self
     }
     /// Set the `likeCount` field to an Option value (optional)
     pub fn maybe_like_count(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.4 = value;
+        self._fields.4 = value;
         self
     }
 }
 
-impl<'a, S> LabelerViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> LabelerViewBuilder<St, S>
 where
-    S: labeler_view_state::State,
-    S::Uri: labeler_view_state::IsUnset,
+    St: labeler_view_state::State,
+    St::Uri: labeler_view_state::IsUnset,
 {
     /// Set the `uri` field (required)
     pub fn uri(
         mut self,
-        value: impl Into<jacquard_common::types::string::AtUri<'a>>,
-    ) -> LabelerViewBuilder<'a, labeler_view_state::SetUri<S>> {
-        self.__unsafe_private_named.5 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::AtUri<S>>,
+    ) -> LabelerViewBuilder<labeler_view_state::SetUri<St>, S> {
+        self._fields.5 = ::core::option::Option::Some(value.into());
         LabelerViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: labeler_view_state::State> LabelerViewBuilder<'a, S> {
+impl<St: labeler_view_state::State, S: jacquard_common::BosStr> LabelerViewBuilder<St, S> {
     /// Set the `viewer` field (optional)
     pub fn viewer(
         mut self,
-        value: impl Into<Option<crate::generated::app_bsky::labeler::LabelerViewerState<'a>>>,
+        value: impl Into<Option<crate::generated::app_bsky::labeler::LabelerViewerState<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.6 = value.into();
+        self._fields.6 = value.into();
         self
     }
     /// Set the `viewer` field to an Option value (optional)
     pub fn maybe_viewer(
         mut self,
-        value: Option<crate::generated::app_bsky::labeler::LabelerViewerState<'a>>,
+        value: Option<crate::generated::app_bsky::labeler::LabelerViewerState<S>>,
     ) -> Self {
-        self.__unsafe_private_named.6 = value;
+        self._fields.6 = value;
         self
     }
 }
 
-impl<'a, S> LabelerViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> LabelerViewBuilder<St, S>
 where
-    S: labeler_view_state::State,
-    S::Uri: labeler_view_state::IsSet,
-    S::Cid: labeler_view_state::IsSet,
-    S::Creator: labeler_view_state::IsSet,
-    S::IndexedAt: labeler_view_state::IsSet,
+    St: labeler_view_state::State,
+    St::Cid: labeler_view_state::IsSet,
+    St::Creator: labeler_view_state::IsSet,
+    St::IndexedAt: labeler_view_state::IsSet,
+    St::Uri: labeler_view_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> LabelerView<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> LabelerView<S> {
         LabelerView {
-            cid: self.__unsafe_private_named.0.unwrap(),
-            creator: self.__unsafe_private_named.1.unwrap(),
-            indexed_at: self.__unsafe_private_named.2.unwrap(),
-            labels: self.__unsafe_private_named.3,
-            like_count: self.__unsafe_private_named.4,
-            uri: self.__unsafe_private_named.5.unwrap(),
-            viewer: self.__unsafe_private_named.6,
+            cid: self._fields.0.unwrap(),
+            creator: self._fields.1.unwrap(),
+            indexed_at: self._fields.2.unwrap(),
+            labels: self._fields.3,
+            like_count: self._fields.4,
+            uri: self._fields.5.unwrap(),
+            viewer: self._fields.6,
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> LabelerView<'a> {
+    ) -> LabelerView<S> {
         LabelerView {
-            cid: self.__unsafe_private_named.0.unwrap(),
-            creator: self.__unsafe_private_named.1.unwrap(),
-            indexed_at: self.__unsafe_private_named.2.unwrap(),
-            labels: self.__unsafe_private_named.3,
-            like_count: self.__unsafe_private_named.4,
-            uri: self.__unsafe_private_named.5.unwrap(),
-            viewer: self.__unsafe_private_named.6,
+            cid: self._fields.0.unwrap(),
+            creator: self._fields.1.unwrap(),
+            indexed_at: self._fields.2.unwrap(),
+            labels: self._fields.3,
+            like_count: self._fields.4,
+            uri: self._fields.5.unwrap(),
+            viewer: self._fields.6,
             extra_data: Some(extra_data),
         }
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for LabelerView<'a> {
-    fn nsid() -> &'static str {
-        "app.bsky.labeler.defs"
-    }
-    fn def_name() -> &'static str {
-        "labelerView"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_app_bsky_labeler_defs()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        if let Some(ref value) = self.like_count {
-            if *value < 0i64 {
-                return Err(::jacquard_lexicon::validation::ConstraintError::Minimum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("like_count"),
-                    min: 0i64,
-                    actual: *value,
-                });
-            }
-        }
-        Ok(())
-    }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct LabelerViewDetailed<'a> {
-    #[serde(borrow)]
-    pub cid: jacquard_common::types::string::Cid<'a>,
-    #[serde(borrow)]
-    pub creator: crate::generated::app_bsky::actor::ProfileView<'a>,
-    pub indexed_at: jacquard_common::types::string::Datetime,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub labels: std::option::Option<Vec<crate::generated::com_atproto::label::Label<'a>>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub like_count: std::option::Option<i64>,
-    #[serde(borrow)]
-    pub policies: crate::generated::app_bsky::labeler::LabelerPolicies<'a>,
-    /// The set of report reason 'codes' which are in-scope for this service to review and action. These usually align to policy categories. If not defined (distinct from empty array), all reason types are allowed.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub reason_types:
-        std::option::Option<Vec<crate::generated::com_atproto::moderation::ReasonType<'a>>>,
-    /// Set of record types (collection NSIDs) which can be reported to this service. If not defined (distinct from empty array), default is any record type.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub subject_collections: std::option::Option<Vec<jacquard_common::types::string::Nsid<'a>>>,
-    /// The set of subject types (account, record, etc) this service accepts reports on.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub subject_types:
-        std::option::Option<Vec<crate::generated::com_atproto::moderation::SubjectType<'a>>>,
-    #[serde(borrow)]
-    pub uri: jacquard_common::types::string::AtUri<'a>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub viewer: std::option::Option<crate::generated::app_bsky::labeler::LabelerViewerState<'a>>,
 }
 
 pub mod labeler_view_detailed_state {
@@ -972,438 +1035,414 @@ pub mod labeler_view_detailed_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Uri;
         type Cid;
         type Creator;
-        type Policies;
         type IndexedAt;
+        type Policies;
+        type Uri;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Uri = Unset;
         type Cid = Unset;
         type Creator = Unset;
-        type Policies = Unset;
         type IndexedAt = Unset;
-    }
-    ///State transition - sets the `uri` field to Set
-    pub struct SetUri<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUri<S> {}
-    impl<S: State> State for SetUri<S> {
-        type Uri = Set<members::uri>;
-        type Cid = S::Cid;
-        type Creator = S::Creator;
-        type Policies = S::Policies;
-        type IndexedAt = S::IndexedAt;
+        type Policies = Unset;
+        type Uri = Unset;
     }
     ///State transition - sets the `cid` field to Set
-    pub struct SetCid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCid<S> {}
-    impl<S: State> State for SetCid<S> {
-        type Uri = S::Uri;
+    pub struct SetCid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCid<St> {}
+    impl<St: State> State for SetCid<St> {
         type Cid = Set<members::cid>;
-        type Creator = S::Creator;
-        type Policies = S::Policies;
-        type IndexedAt = S::IndexedAt;
+        type Creator = St::Creator;
+        type IndexedAt = St::IndexedAt;
+        type Policies = St::Policies;
+        type Uri = St::Uri;
     }
     ///State transition - sets the `creator` field to Set
-    pub struct SetCreator<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreator<S> {}
-    impl<S: State> State for SetCreator<S> {
-        type Uri = S::Uri;
-        type Cid = S::Cid;
+    pub struct SetCreator<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCreator<St> {}
+    impl<St: State> State for SetCreator<St> {
+        type Cid = St::Cid;
         type Creator = Set<members::creator>;
-        type Policies = S::Policies;
-        type IndexedAt = S::IndexedAt;
-    }
-    ///State transition - sets the `policies` field to Set
-    pub struct SetPolicies<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetPolicies<S> {}
-    impl<S: State> State for SetPolicies<S> {
-        type Uri = S::Uri;
-        type Cid = S::Cid;
-        type Creator = S::Creator;
-        type Policies = Set<members::policies>;
-        type IndexedAt = S::IndexedAt;
+        type IndexedAt = St::IndexedAt;
+        type Policies = St::Policies;
+        type Uri = St::Uri;
     }
     ///State transition - sets the `indexed_at` field to Set
-    pub struct SetIndexedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetIndexedAt<S> {}
-    impl<S: State> State for SetIndexedAt<S> {
-        type Uri = S::Uri;
-        type Cid = S::Cid;
-        type Creator = S::Creator;
-        type Policies = S::Policies;
+    pub struct SetIndexedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetIndexedAt<St> {}
+    impl<St: State> State for SetIndexedAt<St> {
+        type Cid = St::Cid;
+        type Creator = St::Creator;
         type IndexedAt = Set<members::indexed_at>;
+        type Policies = St::Policies;
+        type Uri = St::Uri;
+    }
+    ///State transition - sets the `policies` field to Set
+    pub struct SetPolicies<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetPolicies<St> {}
+    impl<St: State> State for SetPolicies<St> {
+        type Cid = St::Cid;
+        type Creator = St::Creator;
+        type IndexedAt = St::IndexedAt;
+        type Policies = Set<members::policies>;
+        type Uri = St::Uri;
+    }
+    ///State transition - sets the `uri` field to Set
+    pub struct SetUri<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetUri<St> {}
+    impl<St: State> State for SetUri<St> {
+        type Cid = St::Cid;
+        type Creator = St::Creator;
+        type IndexedAt = St::IndexedAt;
+        type Policies = St::Policies;
+        type Uri = Set<members::uri>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `uri` field
-        pub struct uri(());
         ///Marker type for the `cid` field
         pub struct cid(());
         ///Marker type for the `creator` field
         pub struct creator(());
-        ///Marker type for the `policies` field
-        pub struct policies(());
         ///Marker type for the `indexed_at` field
         pub struct indexed_at(());
+        ///Marker type for the `policies` field
+        pub struct policies(());
+        ///Marker type for the `uri` field
+        pub struct uri(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct LabelerViewDetailedBuilder<'a, S: labeler_view_detailed_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Cid<'a>>,
-        ::core::option::Option<crate::generated::app_bsky::actor::ProfileView<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<Vec<crate::generated::com_atproto::label::Label<'a>>>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<crate::generated::app_bsky::labeler::LabelerPolicies<'a>>,
-        ::core::option::Option<Vec<crate::generated::com_atproto::moderation::ReasonType<'a>>>,
-        ::core::option::Option<Vec<jacquard_common::types::string::Nsid<'a>>>,
-        ::core::option::Option<Vec<crate::generated::com_atproto::moderation::SubjectType<'a>>>,
-        ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
-        ::core::option::Option<crate::generated::app_bsky::labeler::LabelerViewerState<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct LabelerViewDetailedBuilder<
+    St: labeler_view_detailed_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Cid<S>>,
+        core::option::Option<crate::generated::app_bsky::actor::ProfileView<S>>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<Vec<crate::generated::com_atproto::label::Label<S>>>,
+        core::option::Option<i64>,
+        core::option::Option<crate::generated::app_bsky::labeler::LabelerPolicies<S>>,
+        core::option::Option<Vec<crate::generated::com_atproto::moderation::ReasonType<S>>>,
+        core::option::Option<Vec<jacquard_common::types::string::Nsid<S>>>,
+        core::option::Option<Vec<crate::generated::com_atproto::moderation::SubjectType<S>>>,
+        core::option::Option<jacquard_common::types::string::AtUri<S>>,
+        core::option::Option<crate::generated::app_bsky::labeler::LabelerViewerState<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> LabelerViewDetailed<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> LabelerViewDetailedBuilder<'a, labeler_view_detailed_state::Empty> {
+impl LabelerViewDetailed<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> LabelerViewDetailedBuilder<labeler_view_detailed_state::Empty, jacquard_common::DefaultStr>
+    {
         LabelerViewDetailedBuilder::new()
     }
 }
 
-impl<'a> LabelerViewDetailedBuilder<'a, labeler_view_detailed_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> LabelerViewDetailed<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> LabelerViewDetailedBuilder<labeler_view_detailed_state::Empty, S> {
+        LabelerViewDetailedBuilder::builder()
+    }
+}
+
+impl LabelerViewDetailedBuilder<labeler_view_detailed_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         LabelerViewDetailedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (
+            _state: ::core::marker::PhantomData,
+            _fields: (
                 None, None, None, None, None, None, None, None, None, None, None,
             ),
-            _phantom: ::core::marker::PhantomData,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> LabelerViewDetailedBuilder<'a, S>
+impl<S: jacquard_common::BosStr> LabelerViewDetailedBuilder<labeler_view_detailed_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        LabelerViewDetailedBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (
+                None, None, None, None, None, None, None, None, None, None, None,
+            ),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> LabelerViewDetailedBuilder<St, S>
 where
-    S: labeler_view_detailed_state::State,
-    S::Cid: labeler_view_detailed_state::IsUnset,
+    St: labeler_view_detailed_state::State,
+    St::Cid: labeler_view_detailed_state::IsUnset,
 {
     /// Set the `cid` field (required)
     pub fn cid(
         mut self,
-        value: impl Into<jacquard_common::types::string::Cid<'a>>,
-    ) -> LabelerViewDetailedBuilder<'a, labeler_view_detailed_state::SetCid<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Cid<S>>,
+    ) -> LabelerViewDetailedBuilder<labeler_view_detailed_state::SetCid<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         LabelerViewDetailedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> LabelerViewDetailedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> LabelerViewDetailedBuilder<St, S>
 where
-    S: labeler_view_detailed_state::State,
-    S::Creator: labeler_view_detailed_state::IsUnset,
+    St: labeler_view_detailed_state::State,
+    St::Creator: labeler_view_detailed_state::IsUnset,
 {
     /// Set the `creator` field (required)
     pub fn creator(
         mut self,
-        value: impl Into<crate::generated::app_bsky::actor::ProfileView<'a>>,
-    ) -> LabelerViewDetailedBuilder<'a, labeler_view_detailed_state::SetCreator<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<crate::generated::app_bsky::actor::ProfileView<S>>,
+    ) -> LabelerViewDetailedBuilder<labeler_view_detailed_state::SetCreator<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         LabelerViewDetailedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> LabelerViewDetailedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> LabelerViewDetailedBuilder<St, S>
 where
-    S: labeler_view_detailed_state::State,
-    S::IndexedAt: labeler_view_detailed_state::IsUnset,
+    St: labeler_view_detailed_state::State,
+    St::IndexedAt: labeler_view_detailed_state::IsUnset,
 {
     /// Set the `indexedAt` field (required)
     pub fn indexed_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> LabelerViewDetailedBuilder<'a, labeler_view_detailed_state::SetIndexedAt<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+    ) -> LabelerViewDetailedBuilder<labeler_view_detailed_state::SetIndexedAt<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         LabelerViewDetailedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: labeler_view_detailed_state::State> LabelerViewDetailedBuilder<'a, S> {
+impl<St: labeler_view_detailed_state::State, S: jacquard_common::BosStr>
+    LabelerViewDetailedBuilder<St, S>
+{
     /// Set the `labels` field (optional)
     pub fn labels(
         mut self,
-        value: impl Into<Option<Vec<crate::generated::com_atproto::label::Label<'a>>>>,
+        value: impl Into<Option<Vec<crate::generated::com_atproto::label::Label<S>>>>,
     ) -> Self {
-        self.__unsafe_private_named.3 = value.into();
+        self._fields.3 = value.into();
         self
     }
     /// Set the `labels` field to an Option value (optional)
     pub fn maybe_labels(
         mut self,
-        value: Option<Vec<crate::generated::com_atproto::label::Label<'a>>>,
+        value: Option<Vec<crate::generated::com_atproto::label::Label<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.3 = value;
+        self._fields.3 = value;
         self
     }
 }
 
-impl<'a, S: labeler_view_detailed_state::State> LabelerViewDetailedBuilder<'a, S> {
+impl<St: labeler_view_detailed_state::State, S: jacquard_common::BosStr>
+    LabelerViewDetailedBuilder<St, S>
+{
     /// Set the `likeCount` field (optional)
     pub fn like_count(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.4 = value.into();
+        self._fields.4 = value.into();
         self
     }
     /// Set the `likeCount` field to an Option value (optional)
     pub fn maybe_like_count(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.4 = value;
+        self._fields.4 = value;
         self
     }
 }
 
-impl<'a, S> LabelerViewDetailedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> LabelerViewDetailedBuilder<St, S>
 where
-    S: labeler_view_detailed_state::State,
-    S::Policies: labeler_view_detailed_state::IsUnset,
+    St: labeler_view_detailed_state::State,
+    St::Policies: labeler_view_detailed_state::IsUnset,
 {
     /// Set the `policies` field (required)
     pub fn policies(
         mut self,
-        value: impl Into<crate::generated::app_bsky::labeler::LabelerPolicies<'a>>,
-    ) -> LabelerViewDetailedBuilder<'a, labeler_view_detailed_state::SetPolicies<S>> {
-        self.__unsafe_private_named.5 = ::core::option::Option::Some(value.into());
+        value: impl Into<crate::generated::app_bsky::labeler::LabelerPolicies<S>>,
+    ) -> LabelerViewDetailedBuilder<labeler_view_detailed_state::SetPolicies<St>, S> {
+        self._fields.5 = ::core::option::Option::Some(value.into());
         LabelerViewDetailedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: labeler_view_detailed_state::State> LabelerViewDetailedBuilder<'a, S> {
+impl<St: labeler_view_detailed_state::State, S: jacquard_common::BosStr>
+    LabelerViewDetailedBuilder<St, S>
+{
     /// Set the `reasonTypes` field (optional)
     pub fn reason_types(
         mut self,
-        value: impl Into<Option<Vec<crate::generated::com_atproto::moderation::ReasonType<'a>>>>,
+        value: impl Into<Option<Vec<crate::generated::com_atproto::moderation::ReasonType<S>>>>,
     ) -> Self {
-        self.__unsafe_private_named.6 = value.into();
+        self._fields.6 = value.into();
         self
     }
     /// Set the `reasonTypes` field to an Option value (optional)
     pub fn maybe_reason_types(
         mut self,
-        value: Option<Vec<crate::generated::com_atproto::moderation::ReasonType<'a>>>,
+        value: Option<Vec<crate::generated::com_atproto::moderation::ReasonType<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.6 = value;
+        self._fields.6 = value;
         self
     }
 }
 
-impl<'a, S: labeler_view_detailed_state::State> LabelerViewDetailedBuilder<'a, S> {
+impl<St: labeler_view_detailed_state::State, S: jacquard_common::BosStr>
+    LabelerViewDetailedBuilder<St, S>
+{
     /// Set the `subjectCollections` field (optional)
     pub fn subject_collections(
         mut self,
-        value: impl Into<Option<Vec<jacquard_common::types::string::Nsid<'a>>>>,
+        value: impl Into<Option<Vec<jacquard_common::types::string::Nsid<S>>>>,
     ) -> Self {
-        self.__unsafe_private_named.7 = value.into();
+        self._fields.7 = value.into();
         self
     }
     /// Set the `subjectCollections` field to an Option value (optional)
     pub fn maybe_subject_collections(
         mut self,
-        value: Option<Vec<jacquard_common::types::string::Nsid<'a>>>,
+        value: Option<Vec<jacquard_common::types::string::Nsid<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.7 = value;
+        self._fields.7 = value;
         self
     }
 }
 
-impl<'a, S: labeler_view_detailed_state::State> LabelerViewDetailedBuilder<'a, S> {
+impl<St: labeler_view_detailed_state::State, S: jacquard_common::BosStr>
+    LabelerViewDetailedBuilder<St, S>
+{
     /// Set the `subjectTypes` field (optional)
     pub fn subject_types(
         mut self,
-        value: impl Into<Option<Vec<crate::generated::com_atproto::moderation::SubjectType<'a>>>>,
+        value: impl Into<Option<Vec<crate::generated::com_atproto::moderation::SubjectType<S>>>>,
     ) -> Self {
-        self.__unsafe_private_named.8 = value.into();
+        self._fields.8 = value.into();
         self
     }
     /// Set the `subjectTypes` field to an Option value (optional)
     pub fn maybe_subject_types(
         mut self,
-        value: Option<Vec<crate::generated::com_atproto::moderation::SubjectType<'a>>>,
+        value: Option<Vec<crate::generated::com_atproto::moderation::SubjectType<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.8 = value;
+        self._fields.8 = value;
         self
     }
 }
 
-impl<'a, S> LabelerViewDetailedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> LabelerViewDetailedBuilder<St, S>
 where
-    S: labeler_view_detailed_state::State,
-    S::Uri: labeler_view_detailed_state::IsUnset,
+    St: labeler_view_detailed_state::State,
+    St::Uri: labeler_view_detailed_state::IsUnset,
 {
     /// Set the `uri` field (required)
     pub fn uri(
         mut self,
-        value: impl Into<jacquard_common::types::string::AtUri<'a>>,
-    ) -> LabelerViewDetailedBuilder<'a, labeler_view_detailed_state::SetUri<S>> {
-        self.__unsafe_private_named.9 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::AtUri<S>>,
+    ) -> LabelerViewDetailedBuilder<labeler_view_detailed_state::SetUri<St>, S> {
+        self._fields.9 = ::core::option::Option::Some(value.into());
         LabelerViewDetailedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: labeler_view_detailed_state::State> LabelerViewDetailedBuilder<'a, S> {
+impl<St: labeler_view_detailed_state::State, S: jacquard_common::BosStr>
+    LabelerViewDetailedBuilder<St, S>
+{
     /// Set the `viewer` field (optional)
     pub fn viewer(
         mut self,
-        value: impl Into<Option<crate::generated::app_bsky::labeler::LabelerViewerState<'a>>>,
+        value: impl Into<Option<crate::generated::app_bsky::labeler::LabelerViewerState<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.10 = value.into();
+        self._fields.10 = value.into();
         self
     }
     /// Set the `viewer` field to an Option value (optional)
     pub fn maybe_viewer(
         mut self,
-        value: Option<crate::generated::app_bsky::labeler::LabelerViewerState<'a>>,
+        value: Option<crate::generated::app_bsky::labeler::LabelerViewerState<S>>,
     ) -> Self {
-        self.__unsafe_private_named.10 = value;
+        self._fields.10 = value;
         self
     }
 }
 
-impl<'a, S> LabelerViewDetailedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> LabelerViewDetailedBuilder<St, S>
 where
-    S: labeler_view_detailed_state::State,
-    S::Uri: labeler_view_detailed_state::IsSet,
-    S::Cid: labeler_view_detailed_state::IsSet,
-    S::Creator: labeler_view_detailed_state::IsSet,
-    S::Policies: labeler_view_detailed_state::IsSet,
-    S::IndexedAt: labeler_view_detailed_state::IsSet,
+    St: labeler_view_detailed_state::State,
+    St::Cid: labeler_view_detailed_state::IsSet,
+    St::Creator: labeler_view_detailed_state::IsSet,
+    St::IndexedAt: labeler_view_detailed_state::IsSet,
+    St::Policies: labeler_view_detailed_state::IsSet,
+    St::Uri: labeler_view_detailed_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> LabelerViewDetailed<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> LabelerViewDetailed<S> {
         LabelerViewDetailed {
-            cid: self.__unsafe_private_named.0.unwrap(),
-            creator: self.__unsafe_private_named.1.unwrap(),
-            indexed_at: self.__unsafe_private_named.2.unwrap(),
-            labels: self.__unsafe_private_named.3,
-            like_count: self.__unsafe_private_named.4,
-            policies: self.__unsafe_private_named.5.unwrap(),
-            reason_types: self.__unsafe_private_named.6,
-            subject_collections: self.__unsafe_private_named.7,
-            subject_types: self.__unsafe_private_named.8,
-            uri: self.__unsafe_private_named.9.unwrap(),
-            viewer: self.__unsafe_private_named.10,
+            cid: self._fields.0.unwrap(),
+            creator: self._fields.1.unwrap(),
+            indexed_at: self._fields.2.unwrap(),
+            labels: self._fields.3,
+            like_count: self._fields.4,
+            policies: self._fields.5.unwrap(),
+            reason_types: self._fields.6,
+            subject_collections: self._fields.7,
+            subject_types: self._fields.8,
+            uri: self._fields.9.unwrap(),
+            viewer: self._fields.10,
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> LabelerViewDetailed<'a> {
+    ) -> LabelerViewDetailed<S> {
         LabelerViewDetailed {
-            cid: self.__unsafe_private_named.0.unwrap(),
-            creator: self.__unsafe_private_named.1.unwrap(),
-            indexed_at: self.__unsafe_private_named.2.unwrap(),
-            labels: self.__unsafe_private_named.3,
-            like_count: self.__unsafe_private_named.4,
-            policies: self.__unsafe_private_named.5.unwrap(),
-            reason_types: self.__unsafe_private_named.6,
-            subject_collections: self.__unsafe_private_named.7,
-            subject_types: self.__unsafe_private_named.8,
-            uri: self.__unsafe_private_named.9.unwrap(),
-            viewer: self.__unsafe_private_named.10,
+            cid: self._fields.0.unwrap(),
+            creator: self._fields.1.unwrap(),
+            indexed_at: self._fields.2.unwrap(),
+            labels: self._fields.3,
+            like_count: self._fields.4,
+            policies: self._fields.5.unwrap(),
+            reason_types: self._fields.6,
+            subject_collections: self._fields.7,
+            subject_types: self._fields.8,
+            uri: self._fields.9.unwrap(),
+            viewer: self._fields.10,
             extra_data: Some(extra_data),
         }
-    }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for LabelerViewDetailed<'a> {
-    fn nsid() -> &'static str {
-        "app.bsky.labeler.defs"
-    }
-    fn def_name() -> &'static str {
-        "labelerViewDetailed"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_app_bsky_labeler_defs()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        if let Some(ref value) = self.like_count {
-            if *value < 0i64 {
-                return Err(::jacquard_lexicon::validation::ConstraintError::Minimum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("like_count"),
-                    min: 0i64,
-                    actual: *value,
-                });
-            }
-        }
-        Ok(())
-    }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic,
-    Default,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct LabelerViewerState<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub like: std::option::Option<jacquard_common::types::string::AtUri<'a>>,
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for LabelerViewerState<'a> {
-    fn nsid() -> &'static str {
-        "app.bsky.labeler.defs"
-    }
-    fn def_name() -> &'static str {
-        "labelerViewerState"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_app_bsky_labeler_defs()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
     }
 }

@@ -5,23 +5,91 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
+//! Generated bindings for the `place.stream.multistream` Lexicon namespace/module.
 pub mod create_target;
 pub mod delete_target;
 pub mod list_targets;
 pub mod put_target;
 pub mod target;
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct Event<'a> {
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct Event<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub created_at: jacquard_common::types::string::Datetime,
-    #[serde(borrow)]
-    pub message: jacquard_common::CowStr<'a>,
-    #[serde(borrow)]
-    pub status: jacquard_common::CowStr<'a>,
+    pub message: S,
+    pub status: S,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct TargetView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub cid: jacquard_common::types::string::Cid<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub latest_event: core::option::Option<crate::generated::place_stream::multistream::Event<S>>,
+    pub record: jacquard_common::types::value::Data<S>,
+    pub uri: jacquard_common::types::string::AtUri<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Event<S> {
+    fn nsid() -> &'static str {
+        "place.stream.multistream.defs"
+    }
+    fn def_name() -> &'static str {
+        "event"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_place_stream_multistream_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for TargetView<S> {
+    fn nsid() -> &'static str {
+        "place.stream.multistream.defs"
+    }
+    fn def_name() -> &'static str {
+        "targetView"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_place_stream_multistream_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
 }
 
 pub mod event_state {
@@ -34,364 +102,304 @@ pub mod event_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
+        type CreatedAt;
         type Message;
         type Status;
-        type CreatedAt;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
+        type CreatedAt = Unset;
         type Message = Unset;
         type Status = Unset;
-        type CreatedAt = Unset;
-    }
-    ///State transition - sets the `message` field to Set
-    pub struct SetMessage<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetMessage<S> {}
-    impl<S: State> State for SetMessage<S> {
-        type Message = Set<members::message>;
-        type Status = S::Status;
-        type CreatedAt = S::CreatedAt;
-    }
-    ///State transition - sets the `status` field to Set
-    pub struct SetStatus<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetStatus<S> {}
-    impl<S: State> State for SetStatus<S> {
-        type Message = S::Message;
-        type Status = Set<members::status>;
-        type CreatedAt = S::CreatedAt;
     }
     ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type Message = S::Message;
-        type Status = S::Status;
+    pub struct SetCreatedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCreatedAt<St> {}
+    impl<St: State> State for SetCreatedAt<St> {
         type CreatedAt = Set<members::created_at>;
+        type Message = St::Message;
+        type Status = St::Status;
+    }
+    ///State transition - sets the `message` field to Set
+    pub struct SetMessage<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetMessage<St> {}
+    impl<St: State> State for SetMessage<St> {
+        type CreatedAt = St::CreatedAt;
+        type Message = Set<members::message>;
+        type Status = St::Status;
+    }
+    ///State transition - sets the `status` field to Set
+    pub struct SetStatus<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetStatus<St> {}
+    impl<St: State> State for SetStatus<St> {
+        type CreatedAt = St::CreatedAt;
+        type Message = St::Message;
+        type Status = Set<members::status>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
+        ///Marker type for the `created_at` field
+        pub struct created_at(());
         ///Marker type for the `message` field
         pub struct message(());
         ///Marker type for the `status` field
         pub struct status(());
-        ///Marker type for the `created_at` field
-        pub struct created_at(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct EventBuilder<'a, S: event_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct EventBuilder<
+    St: event_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<S>,
+        core::option::Option<S>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> Event<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> EventBuilder<'a, event_state::Empty> {
+impl Event<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> EventBuilder<event_state::Empty, jacquard_common::DefaultStr> {
         EventBuilder::new()
     }
 }
 
-impl<'a> EventBuilder<'a, event_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> Event<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> EventBuilder<event_state::Empty, S> {
+        EventBuilder::builder()
+    }
+}
+
+impl EventBuilder<event_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         EventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventBuilder<'a, S>
+impl<S: jacquard_common::BosStr> EventBuilder<event_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        EventBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> EventBuilder<St, S>
 where
-    S: event_state::State,
-    S::CreatedAt: event_state::IsUnset,
+    St: event_state::State,
+    St::CreatedAt: event_state::IsUnset,
 {
     /// Set the `createdAt` field (required)
     pub fn created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> EventBuilder<'a, event_state::SetCreatedAt<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+    ) -> EventBuilder<event_state::SetCreatedAt<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         EventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventBuilder<St, S>
 where
-    S: event_state::State,
-    S::Message: event_state::IsUnset,
+    St: event_state::State,
+    St::Message: event_state::IsUnset,
 {
     /// Set the `message` field (required)
-    pub fn message(
-        mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> EventBuilder<'a, event_state::SetMessage<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+    pub fn message(mut self, value: impl Into<S>) -> EventBuilder<event_state::SetMessage<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         EventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventBuilder<St, S>
 where
-    S: event_state::State,
-    S::Status: event_state::IsUnset,
+    St: event_state::State,
+    St::Status: event_state::IsUnset,
 {
     /// Set the `status` field (required)
-    pub fn status(
-        mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> EventBuilder<'a, event_state::SetStatus<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+    pub fn status(mut self, value: impl Into<S>) -> EventBuilder<event_state::SetStatus<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         EventBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventBuilder<St, S>
 where
-    S: event_state::State,
-    S::Message: event_state::IsSet,
-    S::Status: event_state::IsSet,
-    S::CreatedAt: event_state::IsSet,
+    St: event_state::State,
+    St::CreatedAt: event_state::IsSet,
+    St::Message: event_state::IsSet,
+    St::Status: event_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> Event<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> Event<S> {
         Event {
-            created_at: self.__unsafe_private_named.0.unwrap(),
-            message: self.__unsafe_private_named.1.unwrap(),
-            status: self.__unsafe_private_named.2.unwrap(),
+            created_at: self._fields.0.unwrap(),
+            message: self._fields.1.unwrap(),
+            status: self._fields.2.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> Event<'a> {
+    ) -> Event<S> {
         Event {
-            created_at: self.__unsafe_private_named.0.unwrap(),
-            message: self.__unsafe_private_named.1.unwrap(),
-            status: self.__unsafe_private_named.2.unwrap(),
+            created_at: self._fields.0.unwrap(),
+            message: self._fields.1.unwrap(),
+            status: self._fields.2.unwrap(),
             extra_data: Some(extra_data),
         }
     }
 }
 
-fn lexicon_doc_place_stream_multistream_defs() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_place_stream_multistream_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("place.stream.multistream.defs"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("event"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("event"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("message"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("status"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("createdAt"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("message"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("status"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
                         ]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("createdAt"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("message"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("message"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("status"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("status"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("targetView"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("targetView"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("uri"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("cid"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("record"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("uri"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("cid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("record"),
                         ]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("cid"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("cid"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Cid,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("latestEvent"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "latestEvent",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
                                     ::jacquard_lexicon::lexicon::LexRef {
-                                        description: None,
                                         r#ref: ::jacquard_common::CowStr::new_static(
                                             "place.stream.multistream.defs#event",
                                         ),
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("record"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("record"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Unknown(
-                                    ::jacquard_lexicon::lexicon::LexUnknown { description: None },
+                                    ::jacquard_lexicon::lexicon::LexUnknown {
+                                        ..Default::default()
+                                    },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("uri"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("uri"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map
         },
+        ..Default::default()
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Event<'a> {
-    fn nsid() -> &'static str {
-        "place.stream.multistream.defs"
-    }
-    fn def_name() -> &'static str {
-        "event"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_place_stream_multistream_defs()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct TargetView<'a> {
-    #[serde(borrow)]
-    pub cid: jacquard_common::types::string::Cid<'a>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub latest_event: std::option::Option<crate::generated::place_stream::multistream::Event<'a>>,
-    #[serde(borrow)]
-    pub record: jacquard_common::types::value::Data<'a>,
-    #[serde(borrow)]
-    pub uri: jacquard_common::types::string::AtUri<'a>,
 }
 
 pub mod target_view_state {
@@ -404,208 +412,212 @@ pub mod target_view_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Uri;
         type Cid;
         type Record;
+        type Uri;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Uri = Unset;
         type Cid = Unset;
         type Record = Unset;
-    }
-    ///State transition - sets the `uri` field to Set
-    pub struct SetUri<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUri<S> {}
-    impl<S: State> State for SetUri<S> {
-        type Uri = Set<members::uri>;
-        type Cid = S::Cid;
-        type Record = S::Record;
+        type Uri = Unset;
     }
     ///State transition - sets the `cid` field to Set
-    pub struct SetCid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCid<S> {}
-    impl<S: State> State for SetCid<S> {
-        type Uri = S::Uri;
+    pub struct SetCid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCid<St> {}
+    impl<St: State> State for SetCid<St> {
         type Cid = Set<members::cid>;
-        type Record = S::Record;
+        type Record = St::Record;
+        type Uri = St::Uri;
     }
     ///State transition - sets the `record` field to Set
-    pub struct SetRecord<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRecord<S> {}
-    impl<S: State> State for SetRecord<S> {
-        type Uri = S::Uri;
-        type Cid = S::Cid;
+    pub struct SetRecord<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRecord<St> {}
+    impl<St: State> State for SetRecord<St> {
+        type Cid = St::Cid;
         type Record = Set<members::record>;
+        type Uri = St::Uri;
+    }
+    ///State transition - sets the `uri` field to Set
+    pub struct SetUri<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetUri<St> {}
+    impl<St: State> State for SetUri<St> {
+        type Cid = St::Cid;
+        type Record = St::Record;
+        type Uri = Set<members::uri>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `uri` field
-        pub struct uri(());
         ///Marker type for the `cid` field
         pub struct cid(());
         ///Marker type for the `record` field
         pub struct record(());
+        ///Marker type for the `uri` field
+        pub struct uri(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct TargetViewBuilder<'a, S: target_view_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Cid<'a>>,
-        ::core::option::Option<crate::generated::place_stream::multistream::Event<'a>>,
-        ::core::option::Option<jacquard_common::types::value::Data<'a>>,
-        ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct TargetViewBuilder<
+    St: target_view_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Cid<S>>,
+        core::option::Option<crate::generated::place_stream::multistream::Event<S>>,
+        core::option::Option<jacquard_common::types::value::Data<S>>,
+        core::option::Option<jacquard_common::types::string::AtUri<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> TargetView<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> TargetViewBuilder<'a, target_view_state::Empty> {
+impl TargetView<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> TargetViewBuilder<target_view_state::Empty, jacquard_common::DefaultStr> {
         TargetViewBuilder::new()
     }
 }
 
-impl<'a> TargetViewBuilder<'a, target_view_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> TargetView<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> TargetViewBuilder<target_view_state::Empty, S> {
+        TargetViewBuilder::builder()
+    }
+}
+
+impl TargetViewBuilder<target_view_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         TargetViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> TargetViewBuilder<'a, S>
+impl<S: jacquard_common::BosStr> TargetViewBuilder<target_view_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        TargetViewBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> TargetViewBuilder<St, S>
 where
-    S: target_view_state::State,
-    S::Cid: target_view_state::IsUnset,
+    St: target_view_state::State,
+    St::Cid: target_view_state::IsUnset,
 {
     /// Set the `cid` field (required)
     pub fn cid(
         mut self,
-        value: impl Into<jacquard_common::types::string::Cid<'a>>,
-    ) -> TargetViewBuilder<'a, target_view_state::SetCid<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Cid<S>>,
+    ) -> TargetViewBuilder<target_view_state::SetCid<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         TargetViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: target_view_state::State> TargetViewBuilder<'a, S> {
+impl<St: target_view_state::State, S: jacquard_common::BosStr> TargetViewBuilder<St, S> {
     /// Set the `latestEvent` field (optional)
     pub fn latest_event(
         mut self,
-        value: impl Into<Option<crate::generated::place_stream::multistream::Event<'a>>>,
+        value: impl Into<Option<crate::generated::place_stream::multistream::Event<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self._fields.1 = value.into();
         self
     }
     /// Set the `latestEvent` field to an Option value (optional)
     pub fn maybe_latest_event(
         mut self,
-        value: Option<crate::generated::place_stream::multistream::Event<'a>>,
+        value: Option<crate::generated::place_stream::multistream::Event<S>>,
     ) -> Self {
-        self.__unsafe_private_named.1 = value;
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S> TargetViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> TargetViewBuilder<St, S>
 where
-    S: target_view_state::State,
-    S::Record: target_view_state::IsUnset,
+    St: target_view_state::State,
+    St::Record: target_view_state::IsUnset,
 {
     /// Set the `record` field (required)
     pub fn record(
         mut self,
-        value: impl Into<jacquard_common::types::value::Data<'a>>,
-    ) -> TargetViewBuilder<'a, target_view_state::SetRecord<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::value::Data<S>>,
+    ) -> TargetViewBuilder<target_view_state::SetRecord<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         TargetViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> TargetViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> TargetViewBuilder<St, S>
 where
-    S: target_view_state::State,
-    S::Uri: target_view_state::IsUnset,
+    St: target_view_state::State,
+    St::Uri: target_view_state::IsUnset,
 {
     /// Set the `uri` field (required)
     pub fn uri(
         mut self,
-        value: impl Into<jacquard_common::types::string::AtUri<'a>>,
-    ) -> TargetViewBuilder<'a, target_view_state::SetUri<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::AtUri<S>>,
+    ) -> TargetViewBuilder<target_view_state::SetUri<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
         TargetViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> TargetViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> TargetViewBuilder<St, S>
 where
-    S: target_view_state::State,
-    S::Uri: target_view_state::IsSet,
-    S::Cid: target_view_state::IsSet,
-    S::Record: target_view_state::IsSet,
+    St: target_view_state::State,
+    St::Cid: target_view_state::IsSet,
+    St::Record: target_view_state::IsSet,
+    St::Uri: target_view_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> TargetView<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> TargetView<S> {
         TargetView {
-            cid: self.__unsafe_private_named.0.unwrap(),
-            latest_event: self.__unsafe_private_named.1,
-            record: self.__unsafe_private_named.2.unwrap(),
-            uri: self.__unsafe_private_named.3.unwrap(),
+            cid: self._fields.0.unwrap(),
+            latest_event: self._fields.1,
+            record: self._fields.2.unwrap(),
+            uri: self._fields.3.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> TargetView<'a> {
+    ) -> TargetView<S> {
         TargetView {
-            cid: self.__unsafe_private_named.0.unwrap(),
-            latest_event: self.__unsafe_private_named.1,
-            record: self.__unsafe_private_named.2.unwrap(),
-            uri: self.__unsafe_private_named.3.unwrap(),
+            cid: self._fields.0.unwrap(),
+            latest_event: self._fields.1,
+            record: self._fields.2.unwrap(),
+            uri: self._fields.3.unwrap(),
             extra_data: Some(extra_data),
         }
-    }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for TargetView<'a> {
-    fn nsid() -> &'static str {
-        "place.stream.multistream.defs"
-    }
-    fn def_name() -> &'static str {
-        "targetView"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_place_stream_multistream_defs()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
     }
 }

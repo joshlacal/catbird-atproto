@@ -5,7 +5,6 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -16,28 +15,51 @@
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct EditJoinLink<'a> {
-    #[serde(borrow)]
-    pub convo_id: jacquard_common::CowStr<'a>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub join_rule: std::option::Option<crate::generated::chat_bsky::group::JoinRule<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub require_approval: std::option::Option<bool>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct EditJoinLink<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub convo_id: S,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub join_rule: core::option::Option<crate::generated::chat_bsky::group::JoinRule<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub require_approval: core::option::Option<bool>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct EditJoinLinkOutput<'a> {
-    #[serde(borrow)]
-    pub join_link: crate::generated::chat_bsky::group::JoinLinkView<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct EditJoinLinkOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub join_link: crate::generated::chat_bsky::group::JoinLinkView<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::open_union]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -47,21 +69,25 @@ pub struct EditJoinLinkOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum EditJoinLinkError<'a> {
+pub enum EditJoinLinkError {
     #[serde(rename = "InvalidConvo")]
-    InvalidConvo(std::option::Option<jacquard_common::CowStr<'a>>),
+    InvalidConvo(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "InsufficientRole")]
-    InsufficientRole(std::option::Option<jacquard_common::CowStr<'a>>),
+    InsufficientRole(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "NoJoinLink")]
-    NoJoinLink(std::option::Option<jacquard_common::CowStr<'a>>),
+    NoJoinLink(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
 }
 
-impl std::fmt::Display for EditJoinLinkError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for EditJoinLinkError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             Self::InvalidConvo(msg) => {
                 write!(f, "InvalidConvo")?;
@@ -84,35 +110,43 @@ impl std::fmt::Display for EditJoinLinkError<'_> {
                 }
                 Ok(())
             }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
         }
     }
 }
 
-/// Response type for
-///chat.bsky.group.editJoinLink
+/** Response marker for the `chat.bsky.group.editJoinLink` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `EditJoinLinkOutput<S>` for this endpoint.*/
 pub struct EditJoinLinkResponse;
 impl jacquard_common::xrpc::XrpcResp for EditJoinLinkResponse {
     const NSID: &'static str = "chat.bsky.group.editJoinLink";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = EditJoinLinkOutput<'de>;
-    type Err<'de> = EditJoinLinkError<'de>;
+    type Output<S: jacquard_common::BosStr> = EditJoinLinkOutput<S>;
+    type Err = EditJoinLinkError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for EditJoinLink<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for EditJoinLink<S> {
     const NSID: &'static str = "chat.bsky.group.editJoinLink";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = EditJoinLinkResponse;
 }
 
-/// Endpoint type for
-///chat.bsky.group.editJoinLink
+/** Endpoint marker for the `chat.bsky.group.editJoinLink` procedure.
+
+Path: `/xrpc/chat.bsky.group.editJoinLink`. The request payload type is `EditJoinLink<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct EditJoinLinkRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for EditJoinLinkRequest {
     const PATH: &'static str = "/xrpc/chat.bsky.group.editJoinLink";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = EditJoinLink<'de>;
+    type Request<S: jacquard_common::BosStr> = EditJoinLink<S>;
     type Response = EditJoinLinkResponse;
 }

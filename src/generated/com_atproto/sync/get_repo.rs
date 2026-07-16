@@ -8,118 +8,14 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetRepo<'a> {
-    #[serde(borrow)]
-    pub did: jacquard_common::types::string::Did<'a>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub since: std::option::Option<jacquard_common::types::string::Tid>,
-}
-
-pub mod get_repo_state {
-
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
-    #[allow(unused)]
-    use core::marker::PhantomData;
-    mod sealed {
-        pub trait Sealed {}
-    }
-    /// State trait tracking which required fields have been set
-    pub trait State: sealed::Sealed {
-        type Did;
-    }
-    /// Empty state - all required fields are unset
-    pub struct Empty(());
-    impl sealed::Sealed for Empty {}
-    impl State for Empty {
-        type Did = Unset;
-    }
-    ///State transition - sets the `did` field to Set
-    pub struct SetDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDid<S> {}
-    impl<S: State> State for SetDid<S> {
-        type Did = Set<members::did>;
-    }
-    /// Marker types for field names
-    #[allow(non_camel_case_types)]
-    pub mod members {
-        ///Marker type for the `did` field
-        pub struct did(());
-    }
-}
-
-/// Builder for constructing an instance of this type
-pub struct GetRepoBuilder<'a, S: get_repo_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Tid>,
-    ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
-}
-
-impl<'a> GetRepo<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> GetRepoBuilder<'a, get_repo_state::Empty> {
-        GetRepoBuilder::new()
-    }
-}
-
-impl<'a> GetRepoBuilder<'a, get_repo_state::Empty> {
-    /// Create a new builder with all fields unset
-    pub fn new() -> Self {
-        GetRepoBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> GetRepoBuilder<'a, S>
-where
-    S: get_repo_state::State,
-    S::Did: get_repo_state::IsUnset,
-{
-    /// Set the `did` field (required)
-    pub fn did(
-        mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> GetRepoBuilder<'a, get_repo_state::SetDid<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
-        GetRepoBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S: get_repo_state::State> GetRepoBuilder<'a, S> {
-    /// Set the `since` field (optional)
-    pub fn since(mut self, value: impl Into<Option<jacquard_common::types::string::Tid>>) -> Self {
-        self.__unsafe_private_named.1 = value.into();
-        self
-    }
-    /// Set the `since` field to an Option value (optional)
-    pub fn maybe_since(mut self, value: Option<jacquard_common::types::string::Tid>) -> Self {
-        self.__unsafe_private_named.1 = value;
-        self
-    }
-}
-
-impl<'a, S> GetRepoBuilder<'a, S>
-where
-    S: get_repo_state::State,
-    S::Did: get_repo_state::IsSet,
-{
-    /// Build the final struct
-    pub fn build(self) -> GetRepo<'a> {
-        GetRepo {
-            did: self.__unsafe_private_named.0.unwrap(),
-            since: self.__unsafe_private_named.1,
-        }
-    }
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetRepo<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub did: jacquard_common::types::string::Did<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub since: core::option::Option<jacquard_common::types::string::Tid>,
 }
 
 #[derive(
@@ -127,10 +23,9 @@ where
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetRepoOutput {
-    pub body: bytes::Bytes,
+    pub body: jacquard_common::deps::bytes::Bytes,
 }
 
-#[jacquard_derive::open_union]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -140,23 +35,27 @@ pub struct GetRepoOutput {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum GetRepoError<'a> {
+pub enum GetRepoError {
     #[serde(rename = "RepoNotFound")]
-    RepoNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
+    RepoNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "RepoTakendown")]
-    RepoTakendown(std::option::Option<jacquard_common::CowStr<'a>>),
+    RepoTakendown(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "RepoSuspended")]
-    RepoSuspended(std::option::Option<jacquard_common::CowStr<'a>>),
+    RepoSuspended(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "RepoDeactivated")]
-    RepoDeactivated(std::option::Option<jacquard_common::CowStr<'a>>),
+    RepoDeactivated(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
 }
 
-impl std::fmt::Display for GetRepoError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for GetRepoError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             Self::RepoNotFound(msg) => {
                 write!(f, "RepoNotFound")?;
@@ -186,48 +85,187 @@ impl std::fmt::Display for GetRepoError<'_> {
                 }
                 Ok(())
             }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
         }
     }
 }
 
-/// Response type for
-///com.atproto.sync.getRepo
+/** Response marker for the `com.atproto.sync.getRepo` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetRepoOutput` for this endpoint.*/
 pub struct GetRepoResponse;
 impl jacquard_common::xrpc::XrpcResp for GetRepoResponse {
     const NSID: &'static str = "com.atproto.sync.getRepo";
     const ENCODING: &'static str = "application/vnd.ipld.car";
-    type Output<'de> = GetRepoOutput;
-    type Err<'de> = GetRepoError<'de>;
-    fn encode_output(
-        output: &Self::Output<'_>,
-    ) -> Result<Vec<u8>, jacquard_common::xrpc::EncodeError> {
+    type Output<S: jacquard_common::BosStr> = GetRepoOutput;
+    type Err = GetRepoError;
+    fn encode_output<S: jacquard_common::BosStr>(
+        output: &Self::Output<S>,
+    ) -> Result<Vec<u8>, jacquard_common::xrpc::EncodeError>
+    where
+        Self::Output<S>: serde::Serialize,
+    {
         Ok(output.body.to_vec())
     }
-    fn decode_output<'de>(
+    fn decode_output<'de, S>(
         body: &'de [u8],
-    ) -> Result<Self::Output<'de>, jacquard_common::error::DecodeError>
+    ) -> Result<Self::Output<S>, jacquard_common::error::DecodeError>
     where
-        Self::Output<'de>: serde::Deserialize<'de>,
+        S: jacquard_common::BosStr + serde::Deserialize<'de>,
+        Self::Output<S>: serde::Deserialize<'de>,
     {
         Ok(GetRepoOutput {
-            body: bytes::Bytes::copy_from_slice(body),
+            body: jacquard_common::deps::bytes::Bytes::copy_from_slice(body),
         })
     }
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for GetRepo<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetRepo<S> {
     const NSID: &'static str = "com.atproto.sync.getRepo";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = GetRepoResponse;
 }
 
-/// Endpoint type for
-///com.atproto.sync.getRepo
+/** Endpoint marker for the `com.atproto.sync.getRepo` query.
+
+Path: `/xrpc/com.atproto.sync.getRepo`. The request payload type is `GetRepo<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct GetRepoRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for GetRepoRequest {
     const PATH: &'static str = "/xrpc/com.atproto.sync.getRepo";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetRepo<'de>;
+    type Request<S: jacquard_common::BosStr> = GetRepo<S>;
     type Response = GetRepoResponse;
+}
+
+pub mod get_repo_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type Did;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type Did = Unset;
+    }
+    ///State transition - sets the `did` field to Set
+    pub struct SetDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetDid<St> {}
+    impl<St: State> State for SetDid<St> {
+        type Did = Set<members::did>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `did` field
+        pub struct did(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct GetRepoBuilder<
+    St: get_repo_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<jacquard_common::types::string::Tid>,
+    ),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl GetRepo<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> GetRepoBuilder<get_repo_state::Empty, jacquard_common::DefaultStr> {
+        GetRepoBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> GetRepo<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> GetRepoBuilder<get_repo_state::Empty, S> {
+        GetRepoBuilder::builder()
+    }
+}
+
+impl GetRepoBuilder<get_repo_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        GetRepoBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> GetRepoBuilder<get_repo_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GetRepoBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> GetRepoBuilder<St, S>
+where
+    St: get_repo_state::State,
+    St::Did: get_repo_state::IsUnset,
+{
+    /// Set the `did` field (required)
+    pub fn did(
+        mut self,
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> GetRepoBuilder<get_repo_state::SetDid<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        GetRepoBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: get_repo_state::State, S: jacquard_common::BosStr> GetRepoBuilder<St, S> {
+    /// Set the `since` field (optional)
+    pub fn since(mut self, value: impl Into<Option<jacquard_common::types::string::Tid>>) -> Self {
+        self._fields.1 = value.into();
+        self
+    }
+    /// Set the `since` field to an Option value (optional)
+    pub fn maybe_since(mut self, value: Option<jacquard_common::types::string::Tid>) -> Self {
+        self._fields.1 = value;
+        self
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> GetRepoBuilder<St, S>
+where
+    St: get_repo_state::State,
+    St::Did: get_repo_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> GetRepo<S> {
+        GetRepo {
+            did: self._fields.0.unwrap(),
+            since: self._fields.1,
+        }
+    }
 }

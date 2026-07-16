@@ -6,18 +6,168 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 /// Error object for failed verifications.
-#[jacquard_derive::lexicon]
+
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GrantError<'a> {
-    /// Error message describing the reason for failure.
-    #[serde(borrow)]
-    pub error: jacquard_common::CowStr<'a>,
-    /// The did of the subject being verified
-    #[serde(borrow)]
-    pub subject: jacquard_common::types::string::Did<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GrantError<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Error message describing the reason for failure.
+    pub error: S,
+    ///The did of the subject being verified
+    pub subject: jacquard_common::types::string::Did<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GrantVerifications<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Array of verification requests to process
+    pub verifications:
+        Vec<crate::generated::tools_ozone::verification::grant_verifications::VerificationInput<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GrantVerificationsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub failed_verifications:
+        Vec<crate::generated::tools_ozone::verification::grant_verifications::GrantError<S>>,
+    pub verifications: Vec<crate::generated::tools_ozone::verification::VerificationView<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct VerificationInput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Timestamp for verification record. Defaults to current time when not specified.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub created_at: core::option::Option<jacquard_common::types::string::Datetime>,
+    ///Display name of the subject the verification applies to at the moment of verifying.
+    pub display_name: S,
+    ///Handle of the subject the verification applies to at the moment of verifying.
+    pub handle: jacquard_common::types::string::Handle<S>,
+    ///The did of the subject being verified
+    pub subject: jacquard_common::types::string::Did<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for GrantError<S> {
+    fn nsid() -> &'static str {
+        "tools.ozone.verification.grantVerifications"
+    }
+    fn def_name() -> &'static str {
+        "grantError"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_tools_ozone_verification_grantVerifications()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+/** Response marker for the `tools.ozone.verification.grantVerifications` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GrantVerificationsOutput<S>` for this endpoint.*/
+pub struct GrantVerificationsResponse;
+impl jacquard_common::xrpc::XrpcResp for GrantVerificationsResponse {
+    const NSID: &'static str = "tools.ozone.verification.grantVerifications";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = GrantVerificationsOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GrantVerifications<S> {
+    const NSID: &'static str = "tools.ozone.verification.grantVerifications";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Response = GrantVerificationsResponse;
+}
+
+/** Endpoint marker for the `tools.ozone.verification.grantVerifications` procedure.
+
+Path: `/xrpc/tools.ozone.verification.grantVerifications`. The request payload type is `GrantVerifications<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct GrantVerificationsRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for GrantVerificationsRequest {
+    const PATH: &'static str = "/xrpc/tools.ozone.verification.grantVerifications";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Request<S: jacquard_common::BosStr> = GrantVerifications<S>;
+    type Response = GrantVerificationsResponse;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for VerificationInput<S> {
+    fn nsid() -> &'static str {
+        "tools.ozone.verification.grantVerifications"
+    }
+    fn def_name() -> &'static str {
+        "verificationInput"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_tools_ozone_verification_grantVerifications()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
 }
 
 pub mod grant_error_state {
@@ -41,17 +191,17 @@ pub mod grant_error_state {
         type Subject = Unset;
     }
     ///State transition - sets the `error` field to Set
-    pub struct SetError<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetError<S> {}
-    impl<S: State> State for SetError<S> {
+    pub struct SetError<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetError<St> {}
+    impl<St: State> State for SetError<St> {
         type Error = Set<members::error>;
-        type Subject = S::Subject;
+        type Subject = St::Subject;
     }
     ///State transition - sets the `subject` field to Set
-    pub struct SetSubject<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetSubject<S> {}
-    impl<S: State> State for SetSubject<S> {
-        type Error = S::Error;
+    pub struct SetSubject<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSubject<St> {}
+    impl<St: State> State for SetSubject<St> {
+        type Error = St::Error;
         type Subject = Set<members::subject>;
     }
     /// Marker types for field names
@@ -64,147 +214,157 @@ pub mod grant_error_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct GrantErrorBuilder<'a, S: grant_error_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct GrantErrorBuilder<
+    St: grant_error_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> GrantError<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> GrantErrorBuilder<'a, grant_error_state::Empty> {
+impl GrantError<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> GrantErrorBuilder<grant_error_state::Empty, jacquard_common::DefaultStr> {
         GrantErrorBuilder::new()
     }
 }
 
-impl<'a> GrantErrorBuilder<'a, grant_error_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> GrantError<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> GrantErrorBuilder<grant_error_state::Empty, S> {
+        GrantErrorBuilder::builder()
+    }
+}
+
+impl GrantErrorBuilder<grant_error_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GrantErrorBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GrantErrorBuilder<'a, S>
+impl<S: jacquard_common::BosStr> GrantErrorBuilder<grant_error_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GrantErrorBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> GrantErrorBuilder<St, S>
 where
-    S: grant_error_state::State,
-    S::Error: grant_error_state::IsUnset,
+    St: grant_error_state::State,
+    St::Error: grant_error_state::IsUnset,
 {
     /// Set the `error` field (required)
     pub fn error(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> GrantErrorBuilder<'a, grant_error_state::SetError<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> GrantErrorBuilder<grant_error_state::SetError<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         GrantErrorBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GrantErrorBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GrantErrorBuilder<St, S>
 where
-    S: grant_error_state::State,
-    S::Subject: grant_error_state::IsUnset,
+    St: grant_error_state::State,
+    St::Subject: grant_error_state::IsUnset,
 {
     /// Set the `subject` field (required)
     pub fn subject(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> GrantErrorBuilder<'a, grant_error_state::SetSubject<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> GrantErrorBuilder<grant_error_state::SetSubject<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         GrantErrorBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GrantErrorBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GrantErrorBuilder<St, S>
 where
-    S: grant_error_state::State,
-    S::Error: grant_error_state::IsSet,
-    S::Subject: grant_error_state::IsSet,
+    St: grant_error_state::State,
+    St::Error: grant_error_state::IsSet,
+    St::Subject: grant_error_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> GrantError<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> GrantError<S> {
         GrantError {
-            error: self.__unsafe_private_named.0.unwrap(),
-            subject: self.__unsafe_private_named.1.unwrap(),
+            error: self._fields.0.unwrap(),
+            subject: self._fields.1.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> GrantError<'a> {
+    ) -> GrantError<S> {
         GrantError {
-            error: self.__unsafe_private_named.0.unwrap(),
-            subject: self.__unsafe_private_named.1.unwrap(),
+            error: self._fields.0.unwrap(),
+            subject: self._fields.1.unwrap(),
             extra_data: Some(extra_data),
         }
     }
 }
 
 fn lexicon_doc_tools_ozone_verification_grantVerifications(
-) -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+) -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("tools.ozone.verification.grantVerifications"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("grantError"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("grantError"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
                         description: Some(::jacquard_common::CowStr::new_static(
                             "Error object for failed verifications.",
                         )),
                         required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("error"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("subject"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("error"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("subject"),
                         ]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("error"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("error"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
                                             "Error message describing the reason for failure.",
                                         )),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("subject"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("subject"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
@@ -213,46 +373,35 @@ fn lexicon_doc_tools_ozone_verification_grantVerifications(
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
                 ::jacquard_lexicon::lexicon::LexUserType::XrpcProcedure(::jacquard_lexicon::lexicon::LexXrpcProcedure {
-                    description: None,
-                    parameters: None,
                     input: Some(::jacquard_lexicon::lexicon::LexXrpcBody {
-                        description: None,
                         encoding: ::jacquard_common::CowStr::new_static(
                             "application/json",
                         ),
                         schema: Some(
                             ::jacquard_lexicon::lexicon::LexXrpcBodySchema::Object(::jacquard_lexicon::lexicon::LexObject {
-                                description: None,
                                 required: Some(
                                     vec![
-                                        ::jacquard_common::smol_str::SmolStr::new_static("verifications")
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static("verifications")
                                     ],
                                 ),
-                                nullable: None,
                                 properties: {
                                     #[allow(unused_mut)]
-                                    let mut map = ::std::collections::BTreeMap::new();
+                                    let mut map = ::alloc::collections::BTreeMap::new();
                                     map.insert(
-                                        ::jacquard_common::smol_str::SmolStr::new_static(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                             "verifications",
                                         ),
                                         ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
@@ -262,41 +411,42 @@ fn lexicon_doc_tools_ozone_verification_grantVerifications(
                                                 ),
                                             ),
                                             items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                                description: None,
                                                 r#ref: ::jacquard_common::CowStr::new_static(
                                                     "#verificationInput",
                                                 ),
+                                                ..Default::default()
                                             }),
-                                            min_length: None,
                                             max_length: Some(100usize),
+                                            ..Default::default()
                                         }),
                                     );
                                     map
                                 },
+                                ..Default::default()
                             }),
                         ),
+                        ..Default::default()
                     }),
-                    output: None,
-                    errors: None,
+                    ..Default::default()
                 }),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("verificationInput"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "verificationInput",
+                ),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: None,
                     required: Some(
                         vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("subject"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("handle"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("displayName")
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("subject"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("handle"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("displayName")
                         ],
                     ),
-                    nullable: None,
                     properties: {
                         #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
+                        let mut map = ::alloc::collections::BTreeMap::new();
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "createdAt",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -308,18 +458,11 @@ fn lexicon_doc_tools_ozone_verification_grantVerifications(
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "displayName",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -328,19 +471,13 @@ fn lexicon_doc_tools_ozone_verification_grantVerifications(
                                         "Display name of the subject the verification applies to at the moment of verifying.",
                                     ),
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("handle"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "handle",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
@@ -350,18 +487,13 @@ fn lexicon_doc_tools_ozone_verification_grantVerifications(
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Handle,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("subject"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "subject",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
@@ -371,53 +503,18 @@ fn lexicon_doc_tools_ozone_verification_grantVerifications(
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map
                     },
+                    ..Default::default()
                 }),
             );
             map
         },
+        ..Default::default()
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for GrantError<'a> {
-    fn nsid() -> &'static str {
-        "tools.ozone.verification.grantVerifications"
-    }
-    fn def_name() -> &'static str {
-        "grantError"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_tools_ozone_verification_grantVerifications()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GrantVerifications<'a> {
-    /// Array of verification requests to process
-    #[serde(borrow)]
-    pub verifications: Vec<
-        crate::generated::tools_ozone::verification::grant_verifications::VerificationInput<'a>,
-    >,
 }
 
 pub mod grant_verifications_state {
@@ -439,9 +536,9 @@ pub mod grant_verifications_state {
         type Verifications = Unset;
     }
     ///State transition - sets the `verifications` field to Set
-    pub struct SetVerifications<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetVerifications<S> {}
-    impl<S: State> State for SetVerifications<S> {
+    pub struct SetVerifications<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetVerifications<St> {}
+    impl<St: State> State for SetVerifications<St> {
         type Verifications = Set<members::verifications>;
     }
     /// Marker types for field names
@@ -452,43 +549,66 @@ pub mod grant_verifications_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct GrantVerificationsBuilder<'a, S: grant_verifications_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<
+/// Builder for constructing an instance of this type.
+pub struct GrantVerificationsBuilder<
+    St: grant_verifications_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<
             Vec<
                 crate::generated::tools_ozone::verification::grant_verifications::VerificationInput<
-                    'a,
+                    S,
                 >,
             >,
         >,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> GrantVerifications<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> GrantVerificationsBuilder<'a, grant_verifications_state::Empty> {
+impl GrantVerifications<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> GrantVerificationsBuilder<grant_verifications_state::Empty, jacquard_common::DefaultStr>
+    {
         GrantVerificationsBuilder::new()
     }
 }
 
-impl<'a> GrantVerificationsBuilder<'a, grant_verifications_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> GrantVerifications<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> GrantVerificationsBuilder<grant_verifications_state::Empty, S> {
+        GrantVerificationsBuilder::builder()
+    }
+}
+
+impl GrantVerificationsBuilder<grant_verifications_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GrantVerificationsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GrantVerificationsBuilder<'a, S>
+impl<S: jacquard_common::BosStr> GrantVerificationsBuilder<grant_verifications_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GrantVerificationsBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> GrantVerificationsBuilder<St, S>
 where
-    S: grant_verifications_state::State,
-    S::Verifications: grant_verifications_state::IsUnset,
+    St: grant_verifications_state::State,
+    St::Verifications: grant_verifications_state::IsUnset,
 {
     /// Set the `verifications` field (required)
     pub fn verifications(
@@ -496,106 +616,45 @@ where
         value: impl Into<
             Vec<
                 crate::generated::tools_ozone::verification::grant_verifications::VerificationInput<
-                    'a,
+                    S,
                 >,
             >,
         >,
-    ) -> GrantVerificationsBuilder<'a, grant_verifications_state::SetVerifications<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+    ) -> GrantVerificationsBuilder<grant_verifications_state::SetVerifications<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         GrantVerificationsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GrantVerificationsBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GrantVerificationsBuilder<St, S>
 where
-    S: grant_verifications_state::State,
-    S::Verifications: grant_verifications_state::IsSet,
+    St: grant_verifications_state::State,
+    St::Verifications: grant_verifications_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> GrantVerifications<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> GrantVerifications<S> {
         GrantVerifications {
-            verifications: self.__unsafe_private_named.0.unwrap(),
+            verifications: self._fields.0.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> GrantVerifications<'a> {
+    ) -> GrantVerifications<S> {
         GrantVerifications {
-            verifications: self.__unsafe_private_named.0.unwrap(),
+            verifications: self._fields.0.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GrantVerificationsOutput<'a> {
-    #[serde(borrow)]
-    pub failed_verifications:
-        Vec<crate::generated::tools_ozone::verification::grant_verifications::GrantError<'a>>,
-    #[serde(borrow)]
-    pub verifications: Vec<crate::generated::tools_ozone::verification::VerificationView<'a>>,
-}
-
-/// Response type for
-///tools.ozone.verification.grantVerifications
-pub struct GrantVerificationsResponse;
-impl jacquard_common::xrpc::XrpcResp for GrantVerificationsResponse {
-    const NSID: &'static str = "tools.ozone.verification.grantVerifications";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = GrantVerificationsOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for GrantVerifications<'a> {
-    const NSID: &'static str = "tools.ozone.verification.grantVerifications";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Response = GrantVerificationsResponse;
-}
-
-/// Endpoint type for
-///tools.ozone.verification.grantVerifications
-pub struct GrantVerificationsRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for GrantVerificationsRequest {
-    const PATH: &'static str = "/xrpc/tools.ozone.verification.grantVerifications";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = GrantVerifications<'de>;
-    type Response = GrantVerificationsResponse;
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct VerificationInput<'a> {
-    /// Timestamp for verification record. Defaults to current time when not specified.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub created_at: std::option::Option<jacquard_common::types::string::Datetime>,
-    /// Display name of the subject the verification applies to at the moment of verifying.
-    #[serde(borrow)]
-    pub display_name: jacquard_common::CowStr<'a>,
-    /// Handle of the subject the verification applies to at the moment of verifying.
-    #[serde(borrow)]
-    pub handle: jacquard_common::types::string::Handle<'a>,
-    /// The did of the subject being verified
-    #[serde(borrow)]
-    pub subject: jacquard_common::types::string::Did<'a>,
 }
 
 pub mod verification_input_state {
@@ -608,91 +667,116 @@ pub mod verification_input_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Subject;
-        type Handle;
         type DisplayName;
+        type Handle;
+        type Subject;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Subject = Unset;
-        type Handle = Unset;
         type DisplayName = Unset;
-    }
-    ///State transition - sets the `subject` field to Set
-    pub struct SetSubject<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetSubject<S> {}
-    impl<S: State> State for SetSubject<S> {
-        type Subject = Set<members::subject>;
-        type Handle = S::Handle;
-        type DisplayName = S::DisplayName;
-    }
-    ///State transition - sets the `handle` field to Set
-    pub struct SetHandle<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetHandle<S> {}
-    impl<S: State> State for SetHandle<S> {
-        type Subject = S::Subject;
-        type Handle = Set<members::handle>;
-        type DisplayName = S::DisplayName;
+        type Handle = Unset;
+        type Subject = Unset;
     }
     ///State transition - sets the `display_name` field to Set
-    pub struct SetDisplayName<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDisplayName<S> {}
-    impl<S: State> State for SetDisplayName<S> {
-        type Subject = S::Subject;
-        type Handle = S::Handle;
+    pub struct SetDisplayName<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetDisplayName<St> {}
+    impl<St: State> State for SetDisplayName<St> {
         type DisplayName = Set<members::display_name>;
+        type Handle = St::Handle;
+        type Subject = St::Subject;
+    }
+    ///State transition - sets the `handle` field to Set
+    pub struct SetHandle<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetHandle<St> {}
+    impl<St: State> State for SetHandle<St> {
+        type DisplayName = St::DisplayName;
+        type Handle = Set<members::handle>;
+        type Subject = St::Subject;
+    }
+    ///State transition - sets the `subject` field to Set
+    pub struct SetSubject<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSubject<St> {}
+    impl<St: State> State for SetSubject<St> {
+        type DisplayName = St::DisplayName;
+        type Handle = St::Handle;
+        type Subject = Set<members::subject>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `subject` field
-        pub struct subject(());
-        ///Marker type for the `handle` field
-        pub struct handle(());
         ///Marker type for the `display_name` field
         pub struct display_name(());
+        ///Marker type for the `handle` field
+        pub struct handle(());
+        ///Marker type for the `subject` field
+        pub struct subject(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct VerificationInputBuilder<'a, S: verification_input_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Handle<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct VerificationInputBuilder<
+    St: verification_input_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Handle<S>>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> VerificationInput<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> VerificationInputBuilder<'a, verification_input_state::Empty> {
+impl VerificationInput<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> VerificationInputBuilder<verification_input_state::Empty, jacquard_common::DefaultStr>
+    {
         VerificationInputBuilder::new()
     }
 }
 
-impl<'a> VerificationInputBuilder<'a, verification_input_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> VerificationInput<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> VerificationInputBuilder<verification_input_state::Empty, S> {
+        VerificationInputBuilder::builder()
+    }
+}
+
+impl VerificationInputBuilder<verification_input_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         VerificationInputBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: verification_input_state::State> VerificationInputBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> VerificationInputBuilder<verification_input_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        VerificationInputBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: verification_input_state::State, S: jacquard_common::BosStr>
+    VerificationInputBuilder<St, S>
+{
     /// Set the `createdAt` field (optional)
     pub fn created_at(
         mut self,
         value: impl Into<Option<jacquard_common::types::string::Datetime>>,
     ) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+        self._fields.0 = value.into();
         self
     }
     /// Set the `createdAt` field to an Option value (optional)
@@ -700,116 +784,99 @@ impl<'a, S: verification_input_state::State> VerificationInputBuilder<'a, S> {
         mut self,
         value: Option<jacquard_common::types::string::Datetime>,
     ) -> Self {
-        self.__unsafe_private_named.0 = value;
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S> VerificationInputBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> VerificationInputBuilder<St, S>
 where
-    S: verification_input_state::State,
-    S::DisplayName: verification_input_state::IsUnset,
+    St: verification_input_state::State,
+    St::DisplayName: verification_input_state::IsUnset,
 {
     /// Set the `displayName` field (required)
     pub fn display_name(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> VerificationInputBuilder<'a, verification_input_state::SetDisplayName<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> VerificationInputBuilder<verification_input_state::SetDisplayName<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         VerificationInputBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> VerificationInputBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> VerificationInputBuilder<St, S>
 where
-    S: verification_input_state::State,
-    S::Handle: verification_input_state::IsUnset,
+    St: verification_input_state::State,
+    St::Handle: verification_input_state::IsUnset,
 {
     /// Set the `handle` field (required)
     pub fn handle(
         mut self,
-        value: impl Into<jacquard_common::types::string::Handle<'a>>,
-    ) -> VerificationInputBuilder<'a, verification_input_state::SetHandle<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Handle<S>>,
+    ) -> VerificationInputBuilder<verification_input_state::SetHandle<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         VerificationInputBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> VerificationInputBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> VerificationInputBuilder<St, S>
 where
-    S: verification_input_state::State,
-    S::Subject: verification_input_state::IsUnset,
+    St: verification_input_state::State,
+    St::Subject: verification_input_state::IsUnset,
 {
     /// Set the `subject` field (required)
     pub fn subject(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> VerificationInputBuilder<'a, verification_input_state::SetSubject<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> VerificationInputBuilder<verification_input_state::SetSubject<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
         VerificationInputBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> VerificationInputBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> VerificationInputBuilder<St, S>
 where
-    S: verification_input_state::State,
-    S::Subject: verification_input_state::IsSet,
-    S::Handle: verification_input_state::IsSet,
-    S::DisplayName: verification_input_state::IsSet,
+    St: verification_input_state::State,
+    St::DisplayName: verification_input_state::IsSet,
+    St::Handle: verification_input_state::IsSet,
+    St::Subject: verification_input_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> VerificationInput<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> VerificationInput<S> {
         VerificationInput {
-            created_at: self.__unsafe_private_named.0,
-            display_name: self.__unsafe_private_named.1.unwrap(),
-            handle: self.__unsafe_private_named.2.unwrap(),
-            subject: self.__unsafe_private_named.3.unwrap(),
+            created_at: self._fields.0,
+            display_name: self._fields.1.unwrap(),
+            handle: self._fields.2.unwrap(),
+            subject: self._fields.3.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> VerificationInput<'a> {
+    ) -> VerificationInput<S> {
         VerificationInput {
-            created_at: self.__unsafe_private_named.0,
-            display_name: self.__unsafe_private_named.1.unwrap(),
-            handle: self.__unsafe_private_named.2.unwrap(),
-            subject: self.__unsafe_private_named.3.unwrap(),
+            created_at: self._fields.0,
+            display_name: self._fields.1.unwrap(),
+            handle: self._fields.2.unwrap(),
+            subject: self._fields.3.unwrap(),
             extra_data: Some(extra_data),
         }
-    }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for VerificationInput<'a> {
-    fn nsid() -> &'static str {
-        "tools.ozone.verification.grantVerifications"
-    }
-    fn def_name() -> &'static str {
-        "verificationInput"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_tools_ozone_verification_grantVerifications()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
     }
 }

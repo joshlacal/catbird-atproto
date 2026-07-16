@@ -8,10 +8,105 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetConvo<'a> {
-    #[serde(borrow)]
-    pub convo_id: jacquard_common::CowStr<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetConvo<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub convo_id: S,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetConvoOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub convo: crate::generated::chat_bsky::moderation::ConvoView<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    thiserror::Error,
+    miette::Diagnostic,
+)]
+#[serde(tag = "error", content = "message")]
+pub enum GetConvoError {
+    #[serde(rename = "InvalidConvo")]
+    InvalidConvo(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
+}
+
+impl core::fmt::Display for GetConvoError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+            Self::InvalidConvo(msg) => {
+                write!(f, "InvalidConvo")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+        }
+    }
+}
+
+/** Response marker for the `chat.bsky.moderation.getConvo` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetConvoOutput<S>` for this endpoint.*/
+pub struct GetConvoResponse;
+impl jacquard_common::xrpc::XrpcResp for GetConvoResponse {
+    const NSID: &'static str = "chat.bsky.moderation.getConvo";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = GetConvoOutput<S>;
+    type Err = GetConvoError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetConvo<S> {
+    const NSID: &'static str = "chat.bsky.moderation.getConvo";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = GetConvoResponse;
+}
+
+/** Endpoint marker for the `chat.bsky.moderation.getConvo` query.
+
+Path: `/xrpc/chat.bsky.moderation.getConvo`. The request payload type is `GetConvo<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct GetConvoRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for GetConvoRequest {
+    const PATH: &'static str = "/xrpc/chat.bsky.moderation.getConvo";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = GetConvo<S>;
+    type Response = GetConvoResponse;
 }
 
 pub mod get_convo_state {
@@ -33,9 +128,9 @@ pub mod get_convo_state {
         type ConvoId = Unset;
     }
     ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
+    pub struct SetConvoId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetConvoId<St> {}
+    impl<St: State> State for SetConvoId<St> {
         type ConvoId = Set<members::convo_id>;
     }
     /// Marker types for field names
@@ -46,129 +141,80 @@ pub mod get_convo_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct GetConvoBuilder<'a, S: get_convo_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<jacquard_common::CowStr<'a>>,),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct GetConvoBuilder<
+    St: get_convo_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<S>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> GetConvo<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> GetConvoBuilder<'a, get_convo_state::Empty> {
+impl GetConvo<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> GetConvoBuilder<get_convo_state::Empty, jacquard_common::DefaultStr> {
         GetConvoBuilder::new()
     }
 }
 
-impl<'a> GetConvoBuilder<'a, get_convo_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> GetConvo<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> GetConvoBuilder<get_convo_state::Empty, S> {
+        GetConvoBuilder::builder()
+    }
+}
+
+impl GetConvoBuilder<get_convo_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetConvoBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GetConvoBuilder<'a, S>
+impl<S: jacquard_common::BosStr> GetConvoBuilder<get_convo_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GetConvoBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> GetConvoBuilder<St, S>
 where
-    S: get_convo_state::State,
-    S::ConvoId: get_convo_state::IsUnset,
+    St: get_convo_state::State,
+    St::ConvoId: get_convo_state::IsUnset,
 {
     /// Set the `convoId` field (required)
     pub fn convo_id(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> GetConvoBuilder<'a, get_convo_state::SetConvoId<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> GetConvoBuilder<get_convo_state::SetConvoId<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         GetConvoBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GetConvoBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GetConvoBuilder<St, S>
 where
-    S: get_convo_state::State,
-    S::ConvoId: get_convo_state::IsSet,
+    St: get_convo_state::State,
+    St::ConvoId: get_convo_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> GetConvo<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> GetConvo<S> {
         GetConvo {
-            convo_id: self.__unsafe_private_named.0.unwrap(),
+            convo_id: self._fields.0.unwrap(),
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GetConvoOutput<'a> {
-    #[serde(borrow)]
-    pub convo: crate::generated::chat_bsky::moderation::ConvoView<'a>,
-}
-
-#[jacquard_derive::open_union]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    thiserror::Error,
-    miette::Diagnostic,
-    jacquard_derive::IntoStatic,
-)]
-#[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum GetConvoError<'a> {
-    #[serde(rename = "InvalidConvo")]
-    InvalidConvo(std::option::Option<jacquard_common::CowStr<'a>>),
-}
-
-impl std::fmt::Display for GetConvoError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::InvalidConvo(msg) => {
-                write!(f, "InvalidConvo")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
-        }
-    }
-}
-
-/// Response type for
-///chat.bsky.moderation.getConvo
-pub struct GetConvoResponse;
-impl jacquard_common::xrpc::XrpcResp for GetConvoResponse {
-    const NSID: &'static str = "chat.bsky.moderation.getConvo";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetConvoOutput<'de>;
-    type Err<'de> = GetConvoError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for GetConvo<'a> {
-    const NSID: &'static str = "chat.bsky.moderation.getConvo";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = GetConvoResponse;
-}
-
-/// Endpoint type for
-///chat.bsky.moderation.getConvo
-pub struct GetConvoRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for GetConvoRequest {
-    const PATH: &'static str = "/xrpc/chat.bsky.moderation.getConvo";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetConvo<'de>;
-    type Response = GetConvoResponse;
 }

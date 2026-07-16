@@ -5,7 +5,6 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -16,40 +15,55 @@
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetFederationModeOutput<'a> {
-    /// Currently effective federation mode
-    #[serde(borrow)]
-    pub effective_mode: jacquard_common::CowStr<'a>,
-    /// Federation mode from environment configuration
-    #[serde(borrow)]
-    pub env_mode: jacquard_common::CowStr<'a>,
-    /// Runtime override mode (if set)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub override_mode: std::option::Option<jacquard_common::CowStr<'a>>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetFederationModeOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Currently effective federation mode
+    pub effective_mode: S,
+    ///Federation mode from environment configuration
+    pub env_mode: S,
+    ///Runtime override mode (if set)
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub override_mode: core::option::Option<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-/// XRPC request marker type
+/** Request marker for the `blue.catbird.mlsDS.getFederationMode` query.
+
+This endpoint has no request parameters or input body; send this marker with `jacquard::Client`.*/
+
 #[derive(
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
     serde::Serialize,
     serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
     jacquard_derive::IntoStatic,
+    Copy,
 )]
 pub struct GetFederationMode;
-/// Response type for
-///blue.catbird.mlsDS.getFederationMode
+/** Response marker for the `blue.catbird.mlsDS.getFederationMode` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetFederationModeOutput<S>` for this endpoint.*/
 pub struct GetFederationModeResponse;
 impl jacquard_common::xrpc::XrpcResp for GetFederationModeResponse {
     const NSID: &'static str = "blue.catbird.mlsDS.getFederationMode";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetFederationModeOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
+    type Output<S: jacquard_common::BosStr> = GetFederationModeOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
 }
 
 impl jacquard_common::xrpc::XrpcRequest for GetFederationMode {
@@ -58,12 +72,13 @@ impl jacquard_common::xrpc::XrpcRequest for GetFederationMode {
     type Response = GetFederationModeResponse;
 }
 
-/// Endpoint type for
-///blue.catbird.mlsDS.getFederationMode
+/** Endpoint marker for the `blue.catbird.mlsDS.getFederationMode` query.
+
+Path: `/xrpc/blue.catbird.mlsDS.getFederationMode`. The request payload type is `GetFederationMode`; use this marker with lower-level `XrpcEndpoint` APIs when you need endpoint metadata.*/
 pub struct GetFederationModeRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for GetFederationModeRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.mlsDS.getFederationMode";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetFederationMode;
+    type Request<S: jacquard_common::BosStr> = GetFederationMode;
     type Response = GetFederationModeResponse;
 }

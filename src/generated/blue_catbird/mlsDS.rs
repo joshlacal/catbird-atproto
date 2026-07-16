@@ -3,6 +3,7 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
+//! Generated bindings for the `blue.catbird.mlsDS` Lexicon namespace/module.
 pub mod delete_federation_peer;
 pub mod deliver_message;
 pub mod deliver_welcome;

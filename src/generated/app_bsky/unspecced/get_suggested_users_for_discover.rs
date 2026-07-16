@@ -10,9 +10,69 @@
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetSuggestedUsersForDiscover {
-    ///(default: 25, min: 1, max: 50)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub limit: std::option::Option<i64>,
+    /// Defaults to `25`. Min: 1. Max: 50.
+    #[serde(default = "_default_limit")]
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub limit: core::option::Option<i64>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetSuggestedUsersForDiscoverOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    pub actors: Vec<crate::generated::app_bsky::actor::ProfileView<S>>,
+    ///Snowflake for this recommendation, use when submitting recommendation events.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub rec_id_str: core::option::Option<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `app.bsky.unspecced.getSuggestedUsersForDiscover` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetSuggestedUsersForDiscoverOutput<S>` for this endpoint.*/
+pub struct GetSuggestedUsersForDiscoverResponse;
+impl jacquard_common::xrpc::XrpcResp for GetSuggestedUsersForDiscoverResponse {
+    const NSID: &'static str = "app.bsky.unspecced.getSuggestedUsersForDiscover";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = GetSuggestedUsersForDiscoverOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl jacquard_common::xrpc::XrpcRequest for GetSuggestedUsersForDiscover {
+    const NSID: &'static str = "app.bsky.unspecced.getSuggestedUsersForDiscover";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = GetSuggestedUsersForDiscoverResponse;
+}
+
+/** Endpoint marker for the `app.bsky.unspecced.getSuggestedUsersForDiscover` query.
+
+Path: `/xrpc/app.bsky.unspecced.getSuggestedUsersForDiscover`. The request payload type is `GetSuggestedUsersForDiscover`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct GetSuggestedUsersForDiscoverRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for GetSuggestedUsersForDiscoverRequest {
+    const PATH: &'static str = "/xrpc/app.bsky.unspecced.getSuggestedUsersForDiscover";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = GetSuggestedUsersForDiscover;
+    type Response = GetSuggestedUsersForDiscoverResponse;
+}
+
+fn _default_limit() -> core::option::Option<i64> {
+    Some(25i64)
 }
 
 pub mod get_suggested_users_for_discover_state {
@@ -34,14 +94,14 @@ pub mod get_suggested_users_for_discover_state {
     pub mod members {}
 }
 
-/// Builder for constructing an instance of this type
-pub struct GetSuggestedUsersForDiscoverBuilder<S: get_suggested_users_for_discover_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<i64>,),
+/// Builder for constructing an instance of this type.
+pub struct GetSuggestedUsersForDiscoverBuilder<St: get_suggested_users_for_discover_state::State> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<i64>,),
 }
 
 impl GetSuggestedUsersForDiscover {
-    /// Create a new builder for this type
+    /// Create a new builder for this type.
     pub fn new(
     ) -> GetSuggestedUsersForDiscoverBuilder<get_suggested_users_for_discover_state::Empty> {
         GetSuggestedUsersForDiscoverBuilder::new()
@@ -49,76 +109,46 @@ impl GetSuggestedUsersForDiscover {
 }
 
 impl GetSuggestedUsersForDiscoverBuilder<get_suggested_users_for_discover_state::Empty> {
-    /// Create a new builder with all fields unset
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetSuggestedUsersForDiscoverBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
         }
     }
 }
 
-impl<S: get_suggested_users_for_discover_state::State> GetSuggestedUsersForDiscoverBuilder<S> {
+impl GetSuggestedUsersForDiscoverBuilder<get_suggested_users_for_discover_state::Empty> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GetSuggestedUsersForDiscoverBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+        }
+    }
+}
+
+impl<St: get_suggested_users_for_discover_state::State> GetSuggestedUsersForDiscoverBuilder<St> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+        self._fields.0 = value.into();
         self
     }
     /// Set the `limit` field to an Option value (optional)
     pub fn maybe_limit(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.0 = value;
+        self._fields.0 = value;
         self
     }
 }
 
-impl<S> GetSuggestedUsersForDiscoverBuilder<S>
+impl<St> GetSuggestedUsersForDiscoverBuilder<St>
 where
-    S: get_suggested_users_for_discover_state::State,
+    St: get_suggested_users_for_discover_state::State,
 {
-    /// Build the final struct
+    /// Build the final struct.
     pub fn build(self) -> GetSuggestedUsersForDiscover {
         GetSuggestedUsersForDiscover {
-            limit: self.__unsafe_private_named.0,
+            limit: self._fields.0,
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GetSuggestedUsersForDiscoverOutput<'a> {
-    #[serde(borrow)]
-    pub actors: Vec<crate::generated::app_bsky::actor::ProfileView<'a>>,
-    /// Snowflake for this recommendation, use when submitting recommendation events.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub rec_id_str: std::option::Option<jacquard_common::CowStr<'a>>,
-}
-
-/// Response type for
-///app.bsky.unspecced.getSuggestedUsersForDiscover
-pub struct GetSuggestedUsersForDiscoverResponse;
-impl jacquard_common::xrpc::XrpcResp for GetSuggestedUsersForDiscoverResponse {
-    const NSID: &'static str = "app.bsky.unspecced.getSuggestedUsersForDiscover";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetSuggestedUsersForDiscoverOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl jacquard_common::xrpc::XrpcRequest for GetSuggestedUsersForDiscover {
-    const NSID: &'static str = "app.bsky.unspecced.getSuggestedUsersForDiscover";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = GetSuggestedUsersForDiscoverResponse;
-}
-
-/// Endpoint type for
-///app.bsky.unspecced.getSuggestedUsersForDiscover
-pub struct GetSuggestedUsersForDiscoverRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for GetSuggestedUsersForDiscoverRequest {
-    const PATH: &'static str = "/xrpc/app.bsky.unspecced.getSuggestedUsersForDiscover";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetSuggestedUsersForDiscover;
-    type Response = GetSuggestedUsersForDiscoverResponse;
 }

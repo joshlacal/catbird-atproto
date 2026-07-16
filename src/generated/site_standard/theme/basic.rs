@@ -6,24 +6,104 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 /// A simplified theme definition for publications, providing basic color customization for content display across different platforms and applications.
-#[jacquard_derive::lexicon]
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    rename = "site.standard.theme.basic",
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct Basic<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Color used for links and button backgrounds.
+    pub accent: crate::generated::site_standard::theme::color::Rgb<S>,
+    ///Color used for button text.
+    pub accent_foreground: crate::generated::site_standard::theme::color::Rgb<S>,
+    ///Color used for content background.
+    pub background: crate::generated::site_standard::theme::color::Rgb<S>,
+    ///Color used for content text.
+    pub foreground: crate::generated::site_standard::theme::color::Rgb<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// Typed wrapper for GetRecord response with this collection's record type.
+
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
-pub struct Basic<'a> {
-    /// Color used for links and button backgrounds.
-    #[serde(borrow)]
-    pub accent: crate::generated::site_standard::theme::color::Rgb<'a>,
-    /// Color used for button text.
-    #[serde(borrow)]
-    pub accent_foreground: crate::generated::site_standard::theme::color::Rgb<'a>,
-    /// Color used for content background.
-    #[serde(borrow)]
-    pub background: crate::generated::site_standard::theme::color::Rgb<'a>,
-    /// Color used for content text.
-    #[serde(borrow)]
-    pub foreground: crate::generated::site_standard::theme::color::Rgb<'a>,
+pub struct BasicGetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
+    pub uri: jacquard_common::types::string::AtUri<S>,
+    pub value: Basic<S>,
+}
+
+impl<S: jacquard_common::BosStr> Basic<S> {
+    pub fn uri(
+        uri: S,
+    ) -> Result<
+        jacquard_common::types::uri::RecordUri<S, BasicRecord>,
+        jacquard_common::types::uri::UriError,
+    > {
+        jacquard_common::types::uri::RecordUri::try_from_uri(
+            jacquard_common::types::string::AtUri::new(uri)?,
+        )
+    }
+}
+
+/// Marker type for deserializing records from this collection.
+
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+pub struct BasicRecord;
+impl jacquard_common::xrpc::XrpcResp for BasicRecord {
+    const NSID: &'static str = "site.standard.theme.basic";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = BasicGetRecordOutput<S>;
+    type Err = jacquard_common::types::collection::RecordError;
+}
+
+impl<S: jacquard_common::BosStr> From<BasicGetRecordOutput<S>> for Basic<S> {
+    fn from(output: BasicGetRecordOutput<S>) -> Self {
+        output.value
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection for Basic<S> {
+    const NSID: &'static str = "site.standard.theme.basic";
+    type Record = BasicRecord;
+}
+
+impl jacquard_common::types::collection::Collection for BasicRecord {
+    const NSID: &'static str = "site.standard.theme.basic";
+    type Record = BasicRecord;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Basic<S> {
+    fn nsid() -> &'static str {
+        "site.standard.theme.basic"
+    }
+    fn def_name() -> &'static str {
+        "main"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_site_standard_theme_basic()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
 }
 
 pub mod basic_state {
@@ -36,294 +116,241 @@ pub mod basic_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Background;
-        type Foreground;
         type Accent;
         type AccentForeground;
+        type Background;
+        type Foreground;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Background = Unset;
-        type Foreground = Unset;
         type Accent = Unset;
         type AccentForeground = Unset;
-    }
-    ///State transition - sets the `background` field to Set
-    pub struct SetBackground<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetBackground<S> {}
-    impl<S: State> State for SetBackground<S> {
-        type Background = Set<members::background>;
-        type Foreground = S::Foreground;
-        type Accent = S::Accent;
-        type AccentForeground = S::AccentForeground;
-    }
-    ///State transition - sets the `foreground` field to Set
-    pub struct SetForeground<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetForeground<S> {}
-    impl<S: State> State for SetForeground<S> {
-        type Background = S::Background;
-        type Foreground = Set<members::foreground>;
-        type Accent = S::Accent;
-        type AccentForeground = S::AccentForeground;
+        type Background = Unset;
+        type Foreground = Unset;
     }
     ///State transition - sets the `accent` field to Set
-    pub struct SetAccent<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetAccent<S> {}
-    impl<S: State> State for SetAccent<S> {
-        type Background = S::Background;
-        type Foreground = S::Foreground;
+    pub struct SetAccent<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetAccent<St> {}
+    impl<St: State> State for SetAccent<St> {
         type Accent = Set<members::accent>;
-        type AccentForeground = S::AccentForeground;
+        type AccentForeground = St::AccentForeground;
+        type Background = St::Background;
+        type Foreground = St::Foreground;
     }
     ///State transition - sets the `accent_foreground` field to Set
-    pub struct SetAccentForeground<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetAccentForeground<S> {}
-    impl<S: State> State for SetAccentForeground<S> {
-        type Background = S::Background;
-        type Foreground = S::Foreground;
-        type Accent = S::Accent;
+    pub struct SetAccentForeground<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetAccentForeground<St> {}
+    impl<St: State> State for SetAccentForeground<St> {
+        type Accent = St::Accent;
         type AccentForeground = Set<members::accent_foreground>;
+        type Background = St::Background;
+        type Foreground = St::Foreground;
+    }
+    ///State transition - sets the `background` field to Set
+    pub struct SetBackground<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetBackground<St> {}
+    impl<St: State> State for SetBackground<St> {
+        type Accent = St::Accent;
+        type AccentForeground = St::AccentForeground;
+        type Background = Set<members::background>;
+        type Foreground = St::Foreground;
+    }
+    ///State transition - sets the `foreground` field to Set
+    pub struct SetForeground<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetForeground<St> {}
+    impl<St: State> State for SetForeground<St> {
+        type Accent = St::Accent;
+        type AccentForeground = St::AccentForeground;
+        type Background = St::Background;
+        type Foreground = Set<members::foreground>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `background` field
-        pub struct background(());
-        ///Marker type for the `foreground` field
-        pub struct foreground(());
         ///Marker type for the `accent` field
         pub struct accent(());
         ///Marker type for the `accent_foreground` field
         pub struct accent_foreground(());
+        ///Marker type for the `background` field
+        pub struct background(());
+        ///Marker type for the `foreground` field
+        pub struct foreground(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct BasicBuilder<'a, S: basic_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<crate::generated::site_standard::theme::color::Rgb<'a>>,
-        ::core::option::Option<crate::generated::site_standard::theme::color::Rgb<'a>>,
-        ::core::option::Option<crate::generated::site_standard::theme::color::Rgb<'a>>,
-        ::core::option::Option<crate::generated::site_standard::theme::color::Rgb<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct BasicBuilder<
+    St: basic_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<crate::generated::site_standard::theme::color::Rgb<S>>,
+        core::option::Option<crate::generated::site_standard::theme::color::Rgb<S>>,
+        core::option::Option<crate::generated::site_standard::theme::color::Rgb<S>>,
+        core::option::Option<crate::generated::site_standard::theme::color::Rgb<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> Basic<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> BasicBuilder<'a, basic_state::Empty> {
+impl Basic<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> BasicBuilder<basic_state::Empty, jacquard_common::DefaultStr> {
         BasicBuilder::new()
     }
 }
 
-impl<'a> BasicBuilder<'a, basic_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> Basic<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> BasicBuilder<basic_state::Empty, S> {
+        BasicBuilder::builder()
+    }
+}
+
+impl BasicBuilder<basic_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         BasicBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> BasicBuilder<'a, S>
+impl<S: jacquard_common::BosStr> BasicBuilder<basic_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        BasicBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> BasicBuilder<St, S>
 where
-    S: basic_state::State,
-    S::Accent: basic_state::IsUnset,
+    St: basic_state::State,
+    St::Accent: basic_state::IsUnset,
 {
     /// Set the `accent` field (required)
     pub fn accent(
         mut self,
-        value: impl Into<crate::generated::site_standard::theme::color::Rgb<'a>>,
-    ) -> BasicBuilder<'a, basic_state::SetAccent<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<crate::generated::site_standard::theme::color::Rgb<S>>,
+    ) -> BasicBuilder<basic_state::SetAccent<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         BasicBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> BasicBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> BasicBuilder<St, S>
 where
-    S: basic_state::State,
-    S::AccentForeground: basic_state::IsUnset,
+    St: basic_state::State,
+    St::AccentForeground: basic_state::IsUnset,
 {
     /// Set the `accentForeground` field (required)
     pub fn accent_foreground(
         mut self,
-        value: impl Into<crate::generated::site_standard::theme::color::Rgb<'a>>,
-    ) -> BasicBuilder<'a, basic_state::SetAccentForeground<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<crate::generated::site_standard::theme::color::Rgb<S>>,
+    ) -> BasicBuilder<basic_state::SetAccentForeground<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         BasicBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> BasicBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> BasicBuilder<St, S>
 where
-    S: basic_state::State,
-    S::Background: basic_state::IsUnset,
+    St: basic_state::State,
+    St::Background: basic_state::IsUnset,
 {
     /// Set the `background` field (required)
     pub fn background(
         mut self,
-        value: impl Into<crate::generated::site_standard::theme::color::Rgb<'a>>,
-    ) -> BasicBuilder<'a, basic_state::SetBackground<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        value: impl Into<crate::generated::site_standard::theme::color::Rgb<S>>,
+    ) -> BasicBuilder<basic_state::SetBackground<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         BasicBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> BasicBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> BasicBuilder<St, S>
 where
-    S: basic_state::State,
-    S::Foreground: basic_state::IsUnset,
+    St: basic_state::State,
+    St::Foreground: basic_state::IsUnset,
 {
     /// Set the `foreground` field (required)
     pub fn foreground(
         mut self,
-        value: impl Into<crate::generated::site_standard::theme::color::Rgb<'a>>,
-    ) -> BasicBuilder<'a, basic_state::SetForeground<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        value: impl Into<crate::generated::site_standard::theme::color::Rgb<S>>,
+    ) -> BasicBuilder<basic_state::SetForeground<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
         BasicBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> BasicBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> BasicBuilder<St, S>
 where
-    S: basic_state::State,
-    S::Background: basic_state::IsSet,
-    S::Foreground: basic_state::IsSet,
-    S::Accent: basic_state::IsSet,
-    S::AccentForeground: basic_state::IsSet,
+    St: basic_state::State,
+    St::Accent: basic_state::IsSet,
+    St::AccentForeground: basic_state::IsSet,
+    St::Background: basic_state::IsSet,
+    St::Foreground: basic_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> Basic<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> Basic<S> {
         Basic {
-            accent: self.__unsafe_private_named.0.unwrap(),
-            accent_foreground: self.__unsafe_private_named.1.unwrap(),
-            background: self.__unsafe_private_named.2.unwrap(),
-            foreground: self.__unsafe_private_named.3.unwrap(),
+            accent: self._fields.0.unwrap(),
+            accent_foreground: self._fields.1.unwrap(),
+            background: self._fields.2.unwrap(),
+            foreground: self._fields.3.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> Basic<'a> {
+    ) -> Basic<S> {
         Basic {
-            accent: self.__unsafe_private_named.0.unwrap(),
-            accent_foreground: self.__unsafe_private_named.1.unwrap(),
-            background: self.__unsafe_private_named.2.unwrap(),
-            foreground: self.__unsafe_private_named.3.unwrap(),
+            accent: self._fields.0.unwrap(),
+            accent_foreground: self._fields.1.unwrap(),
+            background: self._fields.2.unwrap(),
+            foreground: self._fields.3.unwrap(),
             extra_data: Some(extra_data),
         }
     }
 }
 
-impl<'a> Basic<'a> {
-    pub fn uri(
-        uri: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> Result<
-        jacquard_common::types::uri::RecordUri<'a, BasicRecord>,
-        jacquard_common::types::uri::UriError,
-    > {
-        jacquard_common::types::uri::RecordUri::try_from_uri(
-            jacquard_common::types::string::AtUri::new_cow(uri.into())?,
-        )
-    }
-}
-
-/// Typed wrapper for GetRecord response with this collection's record type.
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct BasicGetRecordOutput<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cid: std::option::Option<jacquard_common::types::string::Cid<'a>>,
-    #[serde(borrow)]
-    pub uri: jacquard_common::types::string::AtUri<'a>,
-    #[serde(borrow)]
-    pub value: Basic<'a>,
-}
-
-impl From<BasicGetRecordOutput<'_>> for Basic<'_> {
-    fn from(output: BasicGetRecordOutput<'_>) -> Self {
-        use jacquard_common::IntoStatic;
-        output.value.into_static()
-    }
-}
-
-impl jacquard_common::types::collection::Collection for Basic<'_> {
-    const NSID: &'static str = "site.standard.theme.basic";
-    type Record = BasicRecord;
-}
-
-/// Marker type for deserializing records from this collection.
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
-pub struct BasicRecord;
-impl jacquard_common::xrpc::XrpcResp for BasicRecord {
-    const NSID: &'static str = "site.standard.theme.basic";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = BasicGetRecordOutput<'de>;
-    type Err<'de> = jacquard_common::types::collection::RecordError<'de>;
-}
-
-impl jacquard_common::types::collection::Collection for BasicRecord {
-    const NSID: &'static str = "site.standard.theme.basic";
-    type Record = BasicRecord;
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Basic<'a> {
-    fn nsid() -> &'static str {
-        "site.standard.theme.basic"
-    }
-    fn def_name() -> &'static str {
-        "main"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_site_standard_theme_basic()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-fn lexicon_doc_site_standard_theme_basic() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_site_standard_theme_basic() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("site.standard.theme.basic"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
                 ::jacquard_lexicon::lexicon::LexUserType::Record(::jacquard_lexicon::lexicon::LexRecord {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
@@ -332,21 +359,21 @@ fn lexicon_doc_site_standard_theme_basic() -> ::jacquard_lexicon::lexicon::Lexic
                     ),
                     key: Some(::jacquard_common::CowStr::new_static("tid")),
                     record: ::jacquard_lexicon::lexicon::LexRecordRecord::Object(::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(
                             vec![
-                                ::jacquard_common::smol_str::SmolStr::new_static("background"),
-                                ::jacquard_common::smol_str::SmolStr::new_static("foreground"),
-                                ::jacquard_common::smol_str::SmolStr::new_static("accent"),
-                                ::jacquard_common::smol_str::SmolStr::new_static("accentForeground")
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("background"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("foreground"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("accent"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("accentForeground")
                             ],
                         ),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("accent"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "accent",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Union(::jacquard_lexicon::lexicon::LexRefUnion {
                                     description: Some(
                                         ::jacquard_common::CowStr::new_static(
@@ -356,11 +383,11 @@ fn lexicon_doc_site_standard_theme_basic() -> ::jacquard_lexicon::lexicon::Lexic
                                     refs: vec![
                                         ::jacquard_common::CowStr::new_static("site.standard.theme.color#rgb")
                                     ],
-                                    closed: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "accentForeground",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Union(::jacquard_lexicon::lexicon::LexRefUnion {
@@ -372,11 +399,11 @@ fn lexicon_doc_site_standard_theme_basic() -> ::jacquard_lexicon::lexicon::Lexic
                                     refs: vec![
                                         ::jacquard_common::CowStr::new_static("site.standard.theme.color#rgb")
                                     ],
-                                    closed: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "background",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Union(::jacquard_lexicon::lexicon::LexRefUnion {
@@ -388,11 +415,11 @@ fn lexicon_doc_site_standard_theme_basic() -> ::jacquard_lexicon::lexicon::Lexic
                                     refs: vec![
                                         ::jacquard_common::CowStr::new_static("site.standard.theme.color#rgb")
                                     ],
-                                    closed: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "foreground",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Union(::jacquard_lexicon::lexicon::LexRefUnion {
@@ -404,15 +431,18 @@ fn lexicon_doc_site_standard_theme_basic() -> ::jacquard_lexicon::lexicon::Lexic
                                     refs: vec![
                                         ::jacquard_common::CowStr::new_static("site.standard.theme.color#rgb")
                                     ],
-                                    closed: None,
+                                    ..Default::default()
                                 }),
                             );
                             map
                         },
+                        ..Default::default()
                     }),
+                    ..Default::default()
                 }),
             );
             map
         },
+        ..Default::default()
     }
 }

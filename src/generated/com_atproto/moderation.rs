@@ -5,9 +5,11 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
+//! Generated bindings for the `com.atproto.moderation` Lexicon namespace/module.
 pub mod create_report;
 
 /// Appeal a previously taken moderation action
+
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -15,17 +17,18 @@ pub mod create_report;
     Clone,
     PartialEq,
     Eq,
-    Hash,
     jacquard_derive::IntoStatic,
+    Hash,
 )]
 pub struct ReasonAppeal;
-impl std::fmt::Display for ReasonAppeal {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for ReasonAppeal {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(f, "reasonAppeal")
     }
 }
 
 /// Misleading identity, affiliation, or content. Prefer new lexicon definition `tools.ozone.report.defs#reasonMisleadingOther`.
+
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -33,17 +36,18 @@ impl std::fmt::Display for ReasonAppeal {
     Clone,
     PartialEq,
     Eq,
-    Hash,
     jacquard_derive::IntoStatic,
+    Hash,
 )]
 pub struct ReasonMisleading;
-impl std::fmt::Display for ReasonMisleading {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for ReasonMisleading {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(f, "reasonMisleading")
     }
 }
 
 /// Reports not falling under another report category. Prefer new lexicon definition `tools.ozone.report.defs#reasonOther`.
+
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -51,17 +55,18 @@ impl std::fmt::Display for ReasonMisleading {
     Clone,
     PartialEq,
     Eq,
-    Hash,
     jacquard_derive::IntoStatic,
+    Hash,
 )]
 pub struct ReasonOther;
-impl std::fmt::Display for ReasonOther {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for ReasonOther {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(f, "reasonOther")
     }
 }
 
 /// Rude, harassing, explicit, or otherwise unwelcoming behavior. Prefer new lexicon definition `tools.ozone.report.defs#reasonHarassmentOther`.
+
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -69,17 +74,18 @@ impl std::fmt::Display for ReasonOther {
     Clone,
     PartialEq,
     Eq,
-    Hash,
     jacquard_derive::IntoStatic,
+    Hash,
 )]
 pub struct ReasonRude;
-impl std::fmt::Display for ReasonRude {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for ReasonRude {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(f, "reasonRude")
     }
 }
 
 /// Unwanted or mislabeled sexual content. Prefer new lexicon definition `tools.ozone.report.defs#reasonSexualUnlabeled`.
+
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -87,17 +93,18 @@ impl std::fmt::Display for ReasonRude {
     Clone,
     PartialEq,
     Eq,
-    Hash,
     jacquard_derive::IntoStatic,
+    Hash,
 )]
 pub struct ReasonSexual;
-impl std::fmt::Display for ReasonSexual {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for ReasonSexual {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(f, "reasonSexual")
     }
 }
 
 /// Spam: frequent unwanted promotion, replies, mentions. Prefer new lexicon definition `tools.ozone.report.defs#reasonMisleadingSpam`.
+
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -105,18 +112,18 @@ impl std::fmt::Display for ReasonSexual {
     Clone,
     PartialEq,
     Eq,
-    Hash,
     jacquard_derive::IntoStatic,
+    Hash,
 )]
 pub struct ReasonSpam;
-impl std::fmt::Display for ReasonSpam {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for ReasonSpam {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(f, "reasonSpam")
     }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum ReasonType<'a> {
+pub enum ReasonType<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     ComAtprotoModerationDefsReasonSpam,
     ComAtprotoModerationDefsReasonViolation,
     ComAtprotoModerationDefsReasonMisleading,
@@ -164,10 +171,10 @@ pub enum ReasonType<'a> {
     ToolsOzoneReportDefsReasonSelfHarmStunts,
     ToolsOzoneReportDefsReasonSelfHarmSubstances,
     ToolsOzoneReportDefsReasonSelfHarmOther,
-    Other(jacquard_common::CowStr<'a>),
+    Other(S),
 }
 
-impl<'a> ReasonType<'a> {
+impl<S: jacquard_common::BosStr> ReasonType<S> {
     pub fn as_str(&self) -> &str {
         match self {
             Self::ComAtprotoModerationDefsReasonSpam => "com.atproto.moderation.defs#reasonSpam",
@@ -302,11 +309,9 @@ impl<'a> ReasonType<'a> {
             Self::Other(s) => s.as_ref(),
         }
     }
-}
-
-impl<'a> From<&'a str> for ReasonType<'a> {
-    fn from(s: &'a str) -> Self {
-        match s {
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
             "com.atproto.moderation.defs#reasonSpam" => Self::ComAtprotoModerationDefsReasonSpam,
             "com.atproto.moderation.defs#reasonViolation" => {
                 Self::ComAtprotoModerationDefsReasonViolation
@@ -436,178 +441,50 @@ impl<'a> From<&'a str> for ReasonType<'a> {
             "tools.ozone.report.defs#reasonSelfHarmOther" => {
                 Self::ToolsOzoneReportDefsReasonSelfHarmOther
             }
-            _ => Self::Other(jacquard_common::CowStr::from(s)),
+            _ => Self::Other(s),
         }
     }
 }
 
-impl<'a> From<String> for ReasonType<'a> {
-    fn from(s: String) -> Self {
-        match s.as_str() {
-            "com.atproto.moderation.defs#reasonSpam" => Self::ComAtprotoModerationDefsReasonSpam,
-            "com.atproto.moderation.defs#reasonViolation" => {
-                Self::ComAtprotoModerationDefsReasonViolation
-            }
-            "com.atproto.moderation.defs#reasonMisleading" => {
-                Self::ComAtprotoModerationDefsReasonMisleading
-            }
-            "com.atproto.moderation.defs#reasonSexual" => {
-                Self::ComAtprotoModerationDefsReasonSexual
-            }
-            "com.atproto.moderation.defs#reasonRude" => Self::ComAtprotoModerationDefsReasonRude,
-            "com.atproto.moderation.defs#reasonOther" => Self::ComAtprotoModerationDefsReasonOther,
-            "com.atproto.moderation.defs#reasonAppeal" => {
-                Self::ComAtprotoModerationDefsReasonAppeal
-            }
-            "tools.ozone.report.defs#reasonAppeal" => Self::ToolsOzoneReportDefsReasonAppeal,
-            "tools.ozone.report.defs#reasonOther" => Self::ToolsOzoneReportDefsReasonOther,
-            "tools.ozone.report.defs#reasonViolenceAnimal" => {
-                Self::ToolsOzoneReportDefsReasonViolenceAnimal
-            }
-            "tools.ozone.report.defs#reasonViolenceThreats" => {
-                Self::ToolsOzoneReportDefsReasonViolenceThreats
-            }
-            "tools.ozone.report.defs#reasonViolenceGraphicContent" => {
-                Self::ToolsOzoneReportDefsReasonViolenceGraphicContent
-            }
-            "tools.ozone.report.defs#reasonViolenceGlorification" => {
-                Self::ToolsOzoneReportDefsReasonViolenceGlorification
-            }
-            "tools.ozone.report.defs#reasonViolenceExtremistContent" => {
-                Self::ToolsOzoneReportDefsReasonViolenceExtremistContent
-            }
-            "tools.ozone.report.defs#reasonViolenceTrafficking" => {
-                Self::ToolsOzoneReportDefsReasonViolenceTrafficking
-            }
-            "tools.ozone.report.defs#reasonViolenceOther" => {
-                Self::ToolsOzoneReportDefsReasonViolenceOther
-            }
-            "tools.ozone.report.defs#reasonSexualAbuseContent" => {
-                Self::ToolsOzoneReportDefsReasonSexualAbuseContent
-            }
-            "tools.ozone.report.defs#reasonSexualNCII" => {
-                Self::ToolsOzoneReportDefsReasonSexualNcii
-            }
-            "tools.ozone.report.defs#reasonSexualDeepfake" => {
-                Self::ToolsOzoneReportDefsReasonSexualDeepfake
-            }
-            "tools.ozone.report.defs#reasonSexualAnimal" => {
-                Self::ToolsOzoneReportDefsReasonSexualAnimal
-            }
-            "tools.ozone.report.defs#reasonSexualUnlabeled" => {
-                Self::ToolsOzoneReportDefsReasonSexualUnlabeled
-            }
-            "tools.ozone.report.defs#reasonSexualOther" => {
-                Self::ToolsOzoneReportDefsReasonSexualOther
-            }
-            "tools.ozone.report.defs#reasonChildSafetyCSAM" => {
-                Self::ToolsOzoneReportDefsReasonChildSafetyCsam
-            }
-            "tools.ozone.report.defs#reasonChildSafetyGroom" => {
-                Self::ToolsOzoneReportDefsReasonChildSafetyGroom
-            }
-            "tools.ozone.report.defs#reasonChildSafetyPrivacy" => {
-                Self::ToolsOzoneReportDefsReasonChildSafetyPrivacy
-            }
-            "tools.ozone.report.defs#reasonChildSafetyHarassment" => {
-                Self::ToolsOzoneReportDefsReasonChildSafetyHarassment
-            }
-            "tools.ozone.report.defs#reasonChildSafetyOther" => {
-                Self::ToolsOzoneReportDefsReasonChildSafetyOther
-            }
-            "tools.ozone.report.defs#reasonHarassmentTroll" => {
-                Self::ToolsOzoneReportDefsReasonHarassmentTroll
-            }
-            "tools.ozone.report.defs#reasonHarassmentTargeted" => {
-                Self::ToolsOzoneReportDefsReasonHarassmentTargeted
-            }
-            "tools.ozone.report.defs#reasonHarassmentHateSpeech" => {
-                Self::ToolsOzoneReportDefsReasonHarassmentHateSpeech
-            }
-            "tools.ozone.report.defs#reasonHarassmentDoxxing" => {
-                Self::ToolsOzoneReportDefsReasonHarassmentDoxxing
-            }
-            "tools.ozone.report.defs#reasonHarassmentOther" => {
-                Self::ToolsOzoneReportDefsReasonHarassmentOther
-            }
-            "tools.ozone.report.defs#reasonMisleadingBot" => {
-                Self::ToolsOzoneReportDefsReasonMisleadingBot
-            }
-            "tools.ozone.report.defs#reasonMisleadingImpersonation" => {
-                Self::ToolsOzoneReportDefsReasonMisleadingImpersonation
-            }
-            "tools.ozone.report.defs#reasonMisleadingSpam" => {
-                Self::ToolsOzoneReportDefsReasonMisleadingSpam
-            }
-            "tools.ozone.report.defs#reasonMisleadingScam" => {
-                Self::ToolsOzoneReportDefsReasonMisleadingScam
-            }
-            "tools.ozone.report.defs#reasonMisleadingElections" => {
-                Self::ToolsOzoneReportDefsReasonMisleadingElections
-            }
-            "tools.ozone.report.defs#reasonMisleadingOther" => {
-                Self::ToolsOzoneReportDefsReasonMisleadingOther
-            }
-            "tools.ozone.report.defs#reasonRuleSiteSecurity" => {
-                Self::ToolsOzoneReportDefsReasonRuleSiteSecurity
-            }
-            "tools.ozone.report.defs#reasonRuleProhibitedSales" => {
-                Self::ToolsOzoneReportDefsReasonRuleProhibitedSales
-            }
-            "tools.ozone.report.defs#reasonRuleBanEvasion" => {
-                Self::ToolsOzoneReportDefsReasonRuleBanEvasion
-            }
-            "tools.ozone.report.defs#reasonRuleOther" => Self::ToolsOzoneReportDefsReasonRuleOther,
-            "tools.ozone.report.defs#reasonSelfHarmContent" => {
-                Self::ToolsOzoneReportDefsReasonSelfHarmContent
-            }
-            "tools.ozone.report.defs#reasonSelfHarmED" => {
-                Self::ToolsOzoneReportDefsReasonSelfHarmEd
-            }
-            "tools.ozone.report.defs#reasonSelfHarmStunts" => {
-                Self::ToolsOzoneReportDefsReasonSelfHarmStunts
-            }
-            "tools.ozone.report.defs#reasonSelfHarmSubstances" => {
-                Self::ToolsOzoneReportDefsReasonSelfHarmSubstances
-            }
-            "tools.ozone.report.defs#reasonSelfHarmOther" => {
-                Self::ToolsOzoneReportDefsReasonSelfHarmOther
-            }
-            _ => Self::Other(jacquard_common::CowStr::from(s)),
-        }
-    }
-}
-
-impl<'a> AsRef<str> for ReasonType<'a> {
+impl<S: jacquard_common::BosStr> AsRef<str> for ReasonType<S> {
     fn as_ref(&self) -> &str {
         self.as_str()
     }
 }
 
-impl<'a> serde::Serialize for ReasonType<'a> {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+impl<S: jacquard_common::BosStr> core::fmt::Display for ReasonType<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for ReasonType<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
     where
-        S: serde::Serializer,
+        Ser: serde::Serializer,
     {
         serializer.serialize_str(self.as_str())
     }
 }
 
-impl<'de, 'a> serde::Deserialize<'de> for ReasonType<'a>
-where
-    'de: 'a,
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for ReasonType<S>
 {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
     {
-        let s = <&'de str>::deserialize(deserializer)?;
-        Ok(Self::from(s))
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
     }
 }
 
-impl jacquard_common::IntoStatic for ReasonType<'_> {
-    type Output = ReasonType<'static>;
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for ReasonType<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = ReasonType<S::Output>;
     fn into_static(self) -> Self::Output {
         match self {
             ReasonType::ComAtprotoModerationDefsReasonSpam => {
@@ -757,6 +634,7 @@ impl jacquard_common::IntoStatic for ReasonType<'_> {
 }
 
 /// Direct violation of server rules, laws, terms of service. Prefer new lexicon definition `tools.ozone.report.defs#reasonRuleOther`.
+
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -764,26 +642,27 @@ impl jacquard_common::IntoStatic for ReasonType<'_> {
     Clone,
     PartialEq,
     Eq,
-    Hash,
     jacquard_derive::IntoStatic,
+    Hash,
 )]
 pub struct ReasonViolation;
-impl std::fmt::Display for ReasonViolation {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for ReasonViolation {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(f, "reasonViolation")
     }
 }
 
 /// Tag describing a type of subject that might be reported.
+
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum SubjectType<'a> {
+pub enum SubjectType<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     Account,
     Record,
     Chat,
-    Other(jacquard_common::CowStr<'a>),
+    Other(S),
 }
 
-impl<'a> SubjectType<'a> {
+impl<S: jacquard_common::BosStr> SubjectType<S> {
     pub fn as_str(&self) -> &str {
         match self {
             Self::Account => "account",
@@ -792,60 +671,56 @@ impl<'a> SubjectType<'a> {
             Self::Other(s) => s.as_ref(),
         }
     }
-}
-
-impl<'a> From<&'a str> for SubjectType<'a> {
-    fn from(s: &'a str) -> Self {
-        match s {
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
             "account" => Self::Account,
             "record" => Self::Record,
             "chat" => Self::Chat,
-            _ => Self::Other(jacquard_common::CowStr::from(s)),
+            _ => Self::Other(s),
         }
     }
 }
 
-impl<'a> From<String> for SubjectType<'a> {
-    fn from(s: String) -> Self {
-        match s.as_str() {
-            "account" => Self::Account,
-            "record" => Self::Record,
-            "chat" => Self::Chat,
-            _ => Self::Other(jacquard_common::CowStr::from(s)),
-        }
-    }
-}
-
-impl<'a> AsRef<str> for SubjectType<'a> {
+impl<S: jacquard_common::BosStr> AsRef<str> for SubjectType<S> {
     fn as_ref(&self) -> &str {
         self.as_str()
     }
 }
 
-impl<'a> serde::Serialize for SubjectType<'a> {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+impl<S: jacquard_common::BosStr> core::fmt::Display for SubjectType<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for SubjectType<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
     where
-        S: serde::Serializer,
+        Ser: serde::Serializer,
     {
         serializer.serialize_str(self.as_str())
     }
 }
 
-impl<'de, 'a> serde::Deserialize<'de> for SubjectType<'a>
-where
-    'de: 'a,
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for SubjectType<S>
 {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
     {
-        let s = <&'de str>::deserialize(deserializer)?;
-        Ok(Self::from(s))
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
     }
 }
 
-impl jacquard_common::IntoStatic for SubjectType<'_> {
-    type Output = SubjectType<'static>;
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for SubjectType<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = SubjectType<S::Output>;
     fn into_static(self) -> Self::Output {
         match self {
             SubjectType::Account => SubjectType::Account,

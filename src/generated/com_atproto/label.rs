@@ -5,868 +5,61 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
+//! Generated bindings for the `com.atproto.label` Lexicon namespace/module.
 pub mod query_labels;
 
 #[cfg(feature = "streaming")]
 pub mod subscribe_labels;
 
 /// Metadata tag on an atproto resource (eg, repo or record).
-#[jacquard_derive::lexicon]
+
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct Label<'a> {
-    /// Optionally, CID specifying the specific version of 'uri' resource this label applies to.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cid: std::option::Option<jacquard_common::types::string::Cid<'a>>,
-    /// Timestamp when this label was created.
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct Label<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Optionally, CID specifying the specific version of 'uri' resource this label applies to.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
+    ///Timestamp when this label was created.
     pub cts: jacquard_common::types::string::Datetime,
-    /// Timestamp at which this label expires (no longer applies).
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub exp: std::option::Option<jacquard_common::types::string::Datetime>,
-    /// If true, this is a negation label, overwriting a previous label.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub neg: std::option::Option<bool>,
-    /// Signature of dag-cbor encoded label.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+    ///Timestamp at which this label expires (no longer applies).
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub exp: core::option::Option<jacquard_common::types::string::Datetime>,
+    ///If true, this is a negation label, overwriting a previous label.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub neg: core::option::Option<bool>,
+    ///Signature of dag-cbor encoded label.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
     #[serde(default, with = "jacquard_common::opt_serde_bytes_helper")]
-    pub sig: std::option::Option<bytes::Bytes>,
-    /// DID of the actor who created this label.
-    #[serde(borrow)]
-    pub src: jacquard_common::types::string::Did<'a>,
-    /// AT URI of the record, repository (account), or other resource that this label applies to.
-    #[serde(borrow)]
-    pub uri: jacquard_common::types::string::Uri<'a>,
-    /// The short string name of the value or type of this label.
-    #[serde(borrow)]
-    pub val: jacquard_common::CowStr<'a>,
-    /// The AT Protocol version of the label object.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub ver: std::option::Option<i64>,
-}
-
-pub mod label_state {
-
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
-    #[allow(unused)]
-    use core::marker::PhantomData;
-    mod sealed {
-        pub trait Sealed {}
-    }
-    /// State trait tracking which required fields have been set
-    pub trait State: sealed::Sealed {
-        type Src;
-        type Uri;
-        type Val;
-        type Cts;
-    }
-    /// Empty state - all required fields are unset
-    pub struct Empty(());
-    impl sealed::Sealed for Empty {}
-    impl State for Empty {
-        type Src = Unset;
-        type Uri = Unset;
-        type Val = Unset;
-        type Cts = Unset;
-    }
-    ///State transition - sets the `src` field to Set
-    pub struct SetSrc<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetSrc<S> {}
-    impl<S: State> State for SetSrc<S> {
-        type Src = Set<members::src>;
-        type Uri = S::Uri;
-        type Val = S::Val;
-        type Cts = S::Cts;
-    }
-    ///State transition - sets the `uri` field to Set
-    pub struct SetUri<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUri<S> {}
-    impl<S: State> State for SetUri<S> {
-        type Src = S::Src;
-        type Uri = Set<members::uri>;
-        type Val = S::Val;
-        type Cts = S::Cts;
-    }
-    ///State transition - sets the `val` field to Set
-    pub struct SetVal<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetVal<S> {}
-    impl<S: State> State for SetVal<S> {
-        type Src = S::Src;
-        type Uri = S::Uri;
-        type Val = Set<members::val>;
-        type Cts = S::Cts;
-    }
-    ///State transition - sets the `cts` field to Set
-    pub struct SetCts<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCts<S> {}
-    impl<S: State> State for SetCts<S> {
-        type Src = S::Src;
-        type Uri = S::Uri;
-        type Val = S::Val;
-        type Cts = Set<members::cts>;
-    }
-    /// Marker types for field names
-    #[allow(non_camel_case_types)]
-    pub mod members {
-        ///Marker type for the `src` field
-        pub struct src(());
-        ///Marker type for the `uri` field
-        pub struct uri(());
-        ///Marker type for the `val` field
-        pub struct val(());
-        ///Marker type for the `cts` field
-        pub struct cts(());
-    }
-}
-
-/// Builder for constructing an instance of this type
-pub struct LabelBuilder<'a, S: label_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Cid<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<bool>,
-        ::core::option::Option<bytes::Bytes>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Uri<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<i64>,
-    ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
-}
-
-impl<'a> Label<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> LabelBuilder<'a, label_state::Empty> {
-        LabelBuilder::new()
-    }
-}
-
-impl<'a> LabelBuilder<'a, label_state::Empty> {
-    /// Create a new builder with all fields unset
-    pub fn new() -> Self {
-        LabelBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S: label_state::State> LabelBuilder<'a, S> {
-    /// Set the `cid` field (optional)
-    pub fn cid(
-        mut self,
-        value: impl Into<Option<jacquard_common::types::string::Cid<'a>>>,
-    ) -> Self {
-        self.__unsafe_private_named.0 = value.into();
-        self
-    }
-    /// Set the `cid` field to an Option value (optional)
-    pub fn maybe_cid(mut self, value: Option<jacquard_common::types::string::Cid<'a>>) -> Self {
-        self.__unsafe_private_named.0 = value;
-        self
-    }
-}
-
-impl<'a, S> LabelBuilder<'a, S>
-where
-    S: label_state::State,
-    S::Cts: label_state::IsUnset,
-{
-    /// Set the `cts` field (required)
-    pub fn cts(
-        mut self,
-        value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> LabelBuilder<'a, label_state::SetCts<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
-        LabelBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S: label_state::State> LabelBuilder<'a, S> {
-    /// Set the `exp` field (optional)
-    pub fn exp(
-        mut self,
-        value: impl Into<Option<jacquard_common::types::string::Datetime>>,
-    ) -> Self {
-        self.__unsafe_private_named.2 = value.into();
-        self
-    }
-    /// Set the `exp` field to an Option value (optional)
-    pub fn maybe_exp(mut self, value: Option<jacquard_common::types::string::Datetime>) -> Self {
-        self.__unsafe_private_named.2 = value;
-        self
-    }
-}
-
-impl<'a, S: label_state::State> LabelBuilder<'a, S> {
-    /// Set the `neg` field (optional)
-    pub fn neg(mut self, value: impl Into<Option<bool>>) -> Self {
-        self.__unsafe_private_named.3 = value.into();
-        self
-    }
-    /// Set the `neg` field to an Option value (optional)
-    pub fn maybe_neg(mut self, value: Option<bool>) -> Self {
-        self.__unsafe_private_named.3 = value;
-        self
-    }
-}
-
-impl<'a, S: label_state::State> LabelBuilder<'a, S> {
-    /// Set the `sig` field (optional)
-    pub fn sig(mut self, value: impl Into<Option<bytes::Bytes>>) -> Self {
-        self.__unsafe_private_named.4 = value.into();
-        self
-    }
-    /// Set the `sig` field to an Option value (optional)
-    pub fn maybe_sig(mut self, value: Option<bytes::Bytes>) -> Self {
-        self.__unsafe_private_named.4 = value;
-        self
-    }
-}
-
-impl<'a, S> LabelBuilder<'a, S>
-where
-    S: label_state::State,
-    S::Src: label_state::IsUnset,
-{
-    /// Set the `src` field (required)
-    pub fn src(
-        mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> LabelBuilder<'a, label_state::SetSrc<S>> {
-        self.__unsafe_private_named.5 = ::core::option::Option::Some(value.into());
-        LabelBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> LabelBuilder<'a, S>
-where
-    S: label_state::State,
-    S::Uri: label_state::IsUnset,
-{
-    /// Set the `uri` field (required)
-    pub fn uri(
-        mut self,
-        value: impl Into<jacquard_common::types::string::Uri<'a>>,
-    ) -> LabelBuilder<'a, label_state::SetUri<S>> {
-        self.__unsafe_private_named.6 = ::core::option::Option::Some(value.into());
-        LabelBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> LabelBuilder<'a, S>
-where
-    S: label_state::State,
-    S::Val: label_state::IsUnset,
-{
-    /// Set the `val` field (required)
-    pub fn val(
-        mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> LabelBuilder<'a, label_state::SetVal<S>> {
-        self.__unsafe_private_named.7 = ::core::option::Option::Some(value.into());
-        LabelBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S: label_state::State> LabelBuilder<'a, S> {
-    /// Set the `ver` field (optional)
-    pub fn ver(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.8 = value.into();
-        self
-    }
-    /// Set the `ver` field to an Option value (optional)
-    pub fn maybe_ver(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.8 = value;
-        self
-    }
-}
-
-impl<'a, S> LabelBuilder<'a, S>
-where
-    S: label_state::State,
-    S::Src: label_state::IsSet,
-    S::Uri: label_state::IsSet,
-    S::Val: label_state::IsSet,
-    S::Cts: label_state::IsSet,
-{
-    /// Build the final struct
-    pub fn build(self) -> Label<'a> {
-        Label {
-            cid: self.__unsafe_private_named.0,
-            cts: self.__unsafe_private_named.1.unwrap(),
-            exp: self.__unsafe_private_named.2,
-            neg: self.__unsafe_private_named.3,
-            sig: self.__unsafe_private_named.4,
-            src: self.__unsafe_private_named.5.unwrap(),
-            uri: self.__unsafe_private_named.6.unwrap(),
-            val: self.__unsafe_private_named.7.unwrap(),
-            ver: self.__unsafe_private_named.8,
-            extra_data: Default::default(),
-        }
-    }
-    /// Build the final struct with custom extra_data
-    pub fn build_with_data(
-        self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+    pub sig: core::option::Option<jacquard_common::deps::bytes::Bytes>,
+    ///DID of the actor who created this label.
+    pub src: jacquard_common::types::string::Did<S>,
+    ///AT URI of the record, repository (account), or other resource that this label applies to.
+    pub uri: jacquard_common::types::string::UriValue<S>,
+    ///The short string name of the value or type of this label.
+    pub val: S,
+    ///The AT Protocol version of the label object.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub ver: core::option::Option<i64>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> Label<'a> {
-        Label {
-            cid: self.__unsafe_private_named.0,
-            cts: self.__unsafe_private_named.1.unwrap(),
-            exp: self.__unsafe_private_named.2,
-            neg: self.__unsafe_private_named.3,
-            sig: self.__unsafe_private_named.4,
-            src: self.__unsafe_private_named.5.unwrap(),
-            uri: self.__unsafe_private_named.6.unwrap(),
-            val: self.__unsafe_private_named.7.unwrap(),
-            ver: self.__unsafe_private_named.8,
-            extra_data: Some(extra_data),
-        }
-    }
-}
-
-fn lexicon_doc_com_atproto_label_defs() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-    ::jacquard_lexicon::lexicon::LexiconDoc {
-        lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
-        id: ::jacquard_common::CowStr::new_static("com.atproto.label.defs"),
-        revision: None,
-        description: None,
-        defs: {
-            let mut map = ::std::collections::BTreeMap::new();
-            map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("label"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: Some(
-                        ::jacquard_common::CowStr::new_static(
-                            "Metadata tag on an atproto resource (eg, repo or record).",
-                        ),
-                    ),
-                    required: Some(
-                        vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("src"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("uri"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("val"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("cts")
-                        ],
-                    ),
-                    nullable: None,
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("cid"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "Optionally, CID specifying the specific version of 'uri' resource this label applies to.",
-                                    ),
-                                ),
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Cid,
-                                ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("cts"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "Timestamp when this label was created.",
-                                    ),
-                                ),
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
-                                ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("exp"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "Timestamp at which this label expires (no longer applies).",
-                                    ),
-                                ),
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
-                                ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("neg"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
-                                description: None,
-                                default: None,
-                                r#const: None,
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("sig"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
-                                description: None,
-                                max_length: None,
-                                min_length: None,
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("src"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "DID of the actor who created this label.",
-                                    ),
-                                ),
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
-                                ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("uri"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "AT URI of the record, repository (account), or other resource that this label applies to.",
-                                    ),
-                                ),
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Uri,
-                                ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("val"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "The short string name of the value or type of this label.",
-                                    ),
-                                ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: Some(128usize),
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("ver"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                description: None,
-                                default: None,
-                                minimum: None,
-                                maximum: None,
-                                r#enum: None,
-                                r#const: None,
-                            }),
-                        );
-                        map
-                    },
-                }),
-            );
-            map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("labelValue"),
-                ::jacquard_lexicon::lexicon::LexUserType::String(
-                    ::jacquard_lexicon::lexicon::LexString {
-                        description: None,
-                        format: None,
-                        default: None,
-                        min_length: None,
-                        max_length: None,
-                        min_graphemes: None,
-                        max_graphemes: None,
-                        r#enum: None,
-                        r#const: None,
-                        known_values: None,
-                    },
-                ),
-            );
-            map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("labelValueDefinition"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: Some(
-                        ::jacquard_common::CowStr::new_static(
-                            "Declares a label value and its expected interpretations and behaviors.",
-                        ),
-                    ),
-                    required: Some(
-                        vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("identifier"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("severity"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("blurs"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("locales")
-                        ],
-                    ),
-                    nullable: None,
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
-                                "adultOnly",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
-                                description: None,
-                                default: None,
-                                r#const: None,
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("blurs"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "What should this label hide in the UI, if applied? 'content' hides all of the target; 'media' hides the images/video/audio; 'none' hides nothing.",
-                                    ),
-                                ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
-                                "defaultSetting",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "The default setting for this label.",
-                                    ),
-                                ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
-                                "identifier",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "The value of the label being defined. Must only include lowercase ascii and the '-' character ([a-z-]+).",
-                                    ),
-                                ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: Some(100usize),
-                                min_graphemes: None,
-                                max_graphemes: Some(100usize),
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("locales"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
-                                description: None,
-                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                    description: None,
-                                    r#ref: ::jacquard_common::CowStr::new_static(
-                                        "#labelValueDefinitionStrings",
-                                    ),
-                                }),
-                                min_length: None,
-                                max_length: None,
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("severity"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "How should a client visually convey this label? 'inform' means neutral and informational; 'alert' means negative and warning; 'none' means show nothing.",
-                                    ),
-                                ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map
-                    },
-                }),
-            );
-            map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static(
-                    "labelValueDefinitionStrings",
-                ),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: Some(
-                        ::jacquard_common::CowStr::new_static(
-                            "Strings which describe the label in the UI, localized into a specific language.",
-                        ),
-                    ),
-                    required: Some(
-                        vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("lang"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("name"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("description")
-                        ],
-                    ),
-                    nullable: None,
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
-                                "description",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "A longer description of what the label means and why it might be applied.",
-                                    ),
-                                ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: Some(100000usize),
-                                min_graphemes: None,
-                                max_graphemes: Some(10000usize),
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("lang"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "The code of the language these strings are written in.",
-                                    ),
-                                ),
-                                format: Some(
-                                    ::jacquard_lexicon::lexicon::LexStringFormat::Language,
-                                ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("name"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "A short human-readable name for the label.",
-                                    ),
-                                ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: Some(640usize),
-                                min_graphemes: None,
-                                max_graphemes: Some(64usize),
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map
-                    },
-                }),
-            );
-            map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("selfLabel"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: Some(
-                        ::jacquard_common::CowStr::new_static(
-                            "Metadata tag on an atproto record, published by the author within the record. Note that schemas should use #selfLabels, not #selfLabel.",
-                        ),
-                    ),
-                    required: Some(
-                        vec![::jacquard_common::smol_str::SmolStr::new_static("val")],
-                    ),
-                    nullable: None,
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("val"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "The short string name of the value or type of this label.",
-                                    ),
-                                ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: Some(128usize),
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
-                            }),
-                        );
-                        map
-                    },
-                }),
-            );
-            map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("selfLabels"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: Some(
-                        ::jacquard_common::CowStr::new_static(
-                            "Metadata tags on an atproto record, published by the author within the record.",
-                        ),
-                    ),
-                    required: Some(
-                        vec![::jacquard_common::smol_str::SmolStr::new_static("values")],
-                    ),
-                    nullable: None,
-                    properties: {
-                        #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
-                        map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("values"),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
-                                description: None,
-                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                    description: None,
-                                    r#ref: ::jacquard_common::CowStr::new_static("#selfLabel"),
-                                }),
-                                min_length: None,
-                                max_length: Some(10usize),
-                            }),
-                        );
-                        map
-                    },
-                }),
-            );
-            map
-        },
-    }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Label<'a> {
-    fn nsid() -> &'static str {
-        "com.atproto.label.defs"
-    }
-    fn def_name() -> &'static str {
-        "label"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_com_atproto_label_defs()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        {
-            let value = &self.val;
-            #[allow(unused_comparisons)]
-            if <str>::len(value.as_ref()) > 128usize {
-                return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("val"),
-                    max: 128usize,
-                    actual: <str>::len(value.as_ref()),
-                });
-            }
-        }
-        Ok(())
-    }
+    >,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum LabelValue<'a> {
+pub enum LabelValue<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     Hide,
     Warn,
     NoUnauthenticated,
@@ -875,10 +68,10 @@ pub enum LabelValue<'a> {
     Nudity,
     GraphicMedia,
     Bot,
-    Other(jacquard_common::CowStr<'a>),
+    Other(S),
 }
 
-impl<'a> LabelValue<'a> {
+impl<S: jacquard_common::BosStr> LabelValue<S> {
     pub fn as_str(&self) -> &str {
         match self {
             Self::Hide => "!hide",
@@ -892,11 +85,9 @@ impl<'a> LabelValue<'a> {
             Self::Other(s) => s.as_ref(),
         }
     }
-}
-
-impl<'a> From<&'a str> for LabelValue<'a> {
-    fn from(s: &'a str) -> Self {
-        match s {
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
             "!hide" => Self::Hide,
             "!warn" => Self::Warn,
             "!no-unauthenticated" => Self::NoUnauthenticated,
@@ -905,57 +96,50 @@ impl<'a> From<&'a str> for LabelValue<'a> {
             "nudity" => Self::Nudity,
             "graphic-media" => Self::GraphicMedia,
             "bot" => Self::Bot,
-            _ => Self::Other(jacquard_common::CowStr::from(s)),
+            _ => Self::Other(s),
         }
     }
 }
 
-impl<'a> From<String> for LabelValue<'a> {
-    fn from(s: String) -> Self {
-        match s.as_str() {
-            "!hide" => Self::Hide,
-            "!warn" => Self::Warn,
-            "!no-unauthenticated" => Self::NoUnauthenticated,
-            "porn" => Self::Porn,
-            "sexual" => Self::Sexual,
-            "nudity" => Self::Nudity,
-            "graphic-media" => Self::GraphicMedia,
-            "bot" => Self::Bot,
-            _ => Self::Other(jacquard_common::CowStr::from(s)),
-        }
-    }
-}
-
-impl<'a> AsRef<str> for LabelValue<'a> {
+impl<S: jacquard_common::BosStr> AsRef<str> for LabelValue<S> {
     fn as_ref(&self) -> &str {
         self.as_str()
     }
 }
 
-impl<'a> serde::Serialize for LabelValue<'a> {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+impl<S: jacquard_common::BosStr> core::fmt::Display for LabelValue<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for LabelValue<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
     where
-        S: serde::Serializer,
+        Ser: serde::Serializer,
     {
         serializer.serialize_str(self.as_str())
     }
 }
 
-impl<'de, 'a> serde::Deserialize<'de> for LabelValue<'a>
-where
-    'de: 'a,
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for LabelValue<S>
 {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
     {
-        let s = <&'de str>::deserialize(deserializer)?;
-        Ok(Self::from(s))
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
     }
 }
 
-impl jacquard_common::IntoStatic for LabelValue<'_> {
-    type Output = LabelValue<'static>;
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for LabelValue<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = LabelValue<S::Output>;
     fn into_static(self) -> Self::Output {
         match self {
             LabelValue::Hide => LabelValue::Hide,
@@ -972,304 +156,437 @@ impl jacquard_common::IntoStatic for LabelValue<'_> {
 }
 
 /// Declares a label value and its expected interpretations and behaviors.
-#[jacquard_derive::lexicon]
+
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct LabelValueDefinition<'a> {
-    /// Does the user need to have adult content enabled in order to configure this label?
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub adult_only: std::option::Option<bool>,
-    /// What should this label hide in the UI, if applied? 'content' hides all of the target; 'media' hides the images/video/audio; 'none' hides nothing.
-    #[serde(borrow)]
-    pub blurs: jacquard_common::CowStr<'a>,
-    /// The default setting for this label.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub default_setting: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// The value of the label being defined. Must only include lowercase ascii and the '-' character ([a-z-]+).
-    #[serde(borrow)]
-    pub identifier: jacquard_common::CowStr<'a>,
-    #[serde(borrow)]
-    pub locales: Vec<crate::generated::com_atproto::label::LabelValueDefinitionStrings<'a>>,
-    /// How should a client visually convey this label? 'inform' means neutral and informational; 'alert' means negative and warning; 'none' means show nothing.
-    #[serde(borrow)]
-    pub severity: jacquard_common::CowStr<'a>,
-}
-
-pub mod label_value_definition_state {
-
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
-    #[allow(unused)]
-    use core::marker::PhantomData;
-    mod sealed {
-        pub trait Sealed {}
-    }
-    /// State trait tracking which required fields have been set
-    pub trait State: sealed::Sealed {
-        type Identifier;
-        type Severity;
-        type Blurs;
-        type Locales;
-    }
-    /// Empty state - all required fields are unset
-    pub struct Empty(());
-    impl sealed::Sealed for Empty {}
-    impl State for Empty {
-        type Identifier = Unset;
-        type Severity = Unset;
-        type Blurs = Unset;
-        type Locales = Unset;
-    }
-    ///State transition - sets the `identifier` field to Set
-    pub struct SetIdentifier<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetIdentifier<S> {}
-    impl<S: State> State for SetIdentifier<S> {
-        type Identifier = Set<members::identifier>;
-        type Severity = S::Severity;
-        type Blurs = S::Blurs;
-        type Locales = S::Locales;
-    }
-    ///State transition - sets the `severity` field to Set
-    pub struct SetSeverity<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetSeverity<S> {}
-    impl<S: State> State for SetSeverity<S> {
-        type Identifier = S::Identifier;
-        type Severity = Set<members::severity>;
-        type Blurs = S::Blurs;
-        type Locales = S::Locales;
-    }
-    ///State transition - sets the `blurs` field to Set
-    pub struct SetBlurs<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetBlurs<S> {}
-    impl<S: State> State for SetBlurs<S> {
-        type Identifier = S::Identifier;
-        type Severity = S::Severity;
-        type Blurs = Set<members::blurs>;
-        type Locales = S::Locales;
-    }
-    ///State transition - sets the `locales` field to Set
-    pub struct SetLocales<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetLocales<S> {}
-    impl<S: State> State for SetLocales<S> {
-        type Identifier = S::Identifier;
-        type Severity = S::Severity;
-        type Blurs = S::Blurs;
-        type Locales = Set<members::locales>;
-    }
-    /// Marker types for field names
-    #[allow(non_camel_case_types)]
-    pub mod members {
-        ///Marker type for the `identifier` field
-        pub struct identifier(());
-        ///Marker type for the `severity` field
-        pub struct severity(());
-        ///Marker type for the `blurs` field
-        pub struct blurs(());
-        ///Marker type for the `locales` field
-        pub struct locales(());
-    }
-}
-
-/// Builder for constructing an instance of this type
-pub struct LabelValueDefinitionBuilder<'a, S: label_value_definition_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<bool>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<
-            Vec<crate::generated::com_atproto::label::LabelValueDefinitionStrings<'a>>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct LabelValueDefinition<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Does the user need to have adult content enabled in order to configure this label?
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub adult_only: core::option::Option<bool>,
+    ///What should this label hide in the UI, if applied? 'content' hides all of the target; 'media' hides the images/video/audio; 'none' hides nothing.
+    pub blurs: LabelValueDefinitionBlurs<S>,
+    ///The default setting for this label.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub default_setting: core::option::Option<LabelValueDefinitionDefaultSetting<S>>,
+    ///The value of the label being defined. Must only include lowercase ascii and the '-' character ([a-z-]+).
+    pub identifier: S,
+    pub locales: Vec<crate::generated::com_atproto::label::LabelValueDefinitionStrings<S>>,
+    ///How should a client visually convey this label? 'inform' means neutral and informational; 'alert' means negative and warning; 'none' means show nothing.
+    pub severity: LabelValueDefinitionSeverity<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-    ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    >,
 }
 
-impl<'a> LabelValueDefinition<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> LabelValueDefinitionBuilder<'a, label_value_definition_state::Empty> {
-        LabelValueDefinitionBuilder::new()
+/// What should this label hide in the UI, if applied? 'content' hides all of the target; 'media' hides the images/video/audio; 'none' hides nothing.
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum LabelValueDefinitionBlurs<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    Content,
+    Media,
+    None,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> LabelValueDefinitionBlurs<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Content => "content",
+            Self::Media => "media",
+            Self::None => "none",
+            Self::Other(s) => s.as_ref(),
+        }
     }
-}
-
-impl<'a> LabelValueDefinitionBuilder<'a, label_value_definition_state::Empty> {
-    /// Create a new builder with all fields unset
-    pub fn new() -> Self {
-        LabelValueDefinitionBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "content" => Self::Content,
+            "media" => Self::Media,
+            "none" => Self::None,
+            _ => Self::Other(s),
         }
     }
 }
 
-impl<'a, S: label_value_definition_state::State> LabelValueDefinitionBuilder<'a, S> {
-    /// Set the `adultOnly` field (optional)
-    pub fn adult_only(mut self, value: impl Into<Option<bool>>) -> Self {
-        self.__unsafe_private_named.0 = value.into();
-        self
-    }
-    /// Set the `adultOnly` field to an Option value (optional)
-    pub fn maybe_adult_only(mut self, value: Option<bool>) -> Self {
-        self.__unsafe_private_named.0 = value;
-        self
+impl<S: jacquard_common::BosStr> core::fmt::Display for LabelValueDefinitionBlurs<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
     }
 }
 
-impl<'a, S> LabelValueDefinitionBuilder<'a, S>
-where
-    S: label_value_definition_state::State,
-    S::Blurs: label_value_definition_state::IsUnset,
+impl<S: jacquard_common::BosStr> AsRef<str> for LabelValueDefinitionBlurs<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for LabelValueDefinitionBlurs<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for LabelValueDefinitionBlurs<S>
 {
-    /// Set the `blurs` field (required)
-    pub fn blurs(
-        mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> LabelValueDefinitionBuilder<'a, label_value_definition_state::SetBlurs<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
-        LabelValueDefinitionBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
     }
 }
 
-impl<'a, S: label_value_definition_state::State> LabelValueDefinitionBuilder<'a, S> {
-    /// Set the `defaultSetting` field (optional)
-    pub fn default_setting(
-        mut self,
-        value: impl Into<Option<jacquard_common::CowStr<'a>>>,
-    ) -> Self {
-        self.__unsafe_private_named.2 = value.into();
-        self
-    }
-    /// Set the `defaultSetting` field to an Option value (optional)
-    pub fn maybe_default_setting(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.2 = value;
-        self
+impl<S: jacquard_common::BosStr + Default> Default for LabelValueDefinitionBlurs<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
     }
 }
 
-impl<'a, S> LabelValueDefinitionBuilder<'a, S>
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for LabelValueDefinitionBlurs<S>
 where
-    S: label_value_definition_state::State,
-    S::Identifier: label_value_definition_state::IsUnset,
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
 {
-    /// Set the `identifier` field (required)
-    pub fn identifier(
-        mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> LabelValueDefinitionBuilder<'a, label_value_definition_state::SetIdentifier<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
-        LabelValueDefinitionBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+    type Output = LabelValueDefinitionBlurs<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            LabelValueDefinitionBlurs::Content => LabelValueDefinitionBlurs::Content,
+            LabelValueDefinitionBlurs::Media => LabelValueDefinitionBlurs::Media,
+            LabelValueDefinitionBlurs::None => LabelValueDefinitionBlurs::None,
+            LabelValueDefinitionBlurs::Other(v) => {
+                LabelValueDefinitionBlurs::Other(v.into_static())
+            }
         }
     }
 }
 
-impl<'a, S> LabelValueDefinitionBuilder<'a, S>
-where
-    S: label_value_definition_state::State,
-    S::Locales: label_value_definition_state::IsUnset,
-{
-    /// Set the `locales` field (required)
-    pub fn locales(
-        mut self,
-        value: impl Into<Vec<crate::generated::com_atproto::label::LabelValueDefinitionStrings<'a>>>,
-    ) -> LabelValueDefinitionBuilder<'a, label_value_definition_state::SetLocales<S>> {
-        self.__unsafe_private_named.4 = ::core::option::Option::Some(value.into());
-        LabelValueDefinitionBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+/// The default setting for this label.
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum LabelValueDefinitionDefaultSetting<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    Ignore,
+    Warn,
+    Hide,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> LabelValueDefinitionDefaultSetting<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Ignore => "ignore",
+            Self::Warn => "warn",
+            Self::Hide => "hide",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "ignore" => Self::Ignore,
+            "warn" => Self::Warn,
+            "hide" => Self::Hide,
+            _ => Self::Other(s),
         }
     }
 }
 
-impl<'a, S> LabelValueDefinitionBuilder<'a, S>
-where
-    S: label_value_definition_state::State,
-    S::Severity: label_value_definition_state::IsUnset,
+impl<S: jacquard_common::BosStr> core::fmt::Display for LabelValueDefinitionDefaultSetting<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for LabelValueDefinitionDefaultSetting<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for LabelValueDefinitionDefaultSetting<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for LabelValueDefinitionDefaultSetting<S>
 {
-    /// Set the `severity` field (required)
-    pub fn severity(
-        mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> LabelValueDefinitionBuilder<'a, label_value_definition_state::SetSeverity<S>> {
-        self.__unsafe_private_named.5 = ::core::option::Option::Some(value.into());
-        LabelValueDefinitionBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for LabelValueDefinitionDefaultSetting<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic
+    for LabelValueDefinitionDefaultSetting<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = LabelValueDefinitionDefaultSetting<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            LabelValueDefinitionDefaultSetting::Ignore => {
+                LabelValueDefinitionDefaultSetting::Ignore
+            }
+            LabelValueDefinitionDefaultSetting::Warn => LabelValueDefinitionDefaultSetting::Warn,
+            LabelValueDefinitionDefaultSetting::Hide => LabelValueDefinitionDefaultSetting::Hide,
+            LabelValueDefinitionDefaultSetting::Other(v) => {
+                LabelValueDefinitionDefaultSetting::Other(v.into_static())
+            }
         }
     }
 }
 
-impl<'a, S> LabelValueDefinitionBuilder<'a, S>
-where
-    S: label_value_definition_state::State,
-    S::Identifier: label_value_definition_state::IsSet,
-    S::Severity: label_value_definition_state::IsSet,
-    S::Blurs: label_value_definition_state::IsSet,
-    S::Locales: label_value_definition_state::IsSet,
-{
-    /// Build the final struct
-    pub fn build(self) -> LabelValueDefinition<'a> {
-        LabelValueDefinition {
-            adult_only: self.__unsafe_private_named.0,
-            blurs: self.__unsafe_private_named.1.unwrap(),
-            default_setting: self.__unsafe_private_named.2,
-            identifier: self.__unsafe_private_named.3.unwrap(),
-            locales: self.__unsafe_private_named.4.unwrap(),
-            severity: self.__unsafe_private_named.5.unwrap(),
-            extra_data: Default::default(),
+/// How should a client visually convey this label? 'inform' means neutral and informational; 'alert' means negative and warning; 'none' means show nothing.
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum LabelValueDefinitionSeverity<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    Inform,
+    Alert,
+    None,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> LabelValueDefinitionSeverity<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Inform => "inform",
+            Self::Alert => "alert",
+            Self::None => "none",
+            Self::Other(s) => s.as_ref(),
         }
     }
-    /// Build the final struct with custom extra_data
-    pub fn build_with_data(
-        self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "inform" => Self::Inform,
+            "alert" => Self::Alert,
+            "none" => Self::None,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for LabelValueDefinitionSeverity<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for LabelValueDefinitionSeverity<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for LabelValueDefinitionSeverity<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for LabelValueDefinitionSeverity<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for LabelValueDefinitionSeverity<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for LabelValueDefinitionSeverity<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = LabelValueDefinitionSeverity<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            LabelValueDefinitionSeverity::Inform => LabelValueDefinitionSeverity::Inform,
+            LabelValueDefinitionSeverity::Alert => LabelValueDefinitionSeverity::Alert,
+            LabelValueDefinitionSeverity::None => LabelValueDefinitionSeverity::None,
+            LabelValueDefinitionSeverity::Other(v) => {
+                LabelValueDefinitionSeverity::Other(v.into_static())
+            }
+        }
+    }
+}
+
+/// Strings which describe the label in the UI, localized into a specific language.
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct LabelValueDefinitionStrings<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///A longer description of what the label means and why it might be applied.
+    pub description: S,
+    ///The code of the language these strings are written in.
+    pub lang: jacquard_common::types::string::Language,
+    ///A short human-readable name for the label.
+    pub name: S,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> LabelValueDefinition<'a> {
-        LabelValueDefinition {
-            adult_only: self.__unsafe_private_named.0,
-            blurs: self.__unsafe_private_named.1.unwrap(),
-            default_setting: self.__unsafe_private_named.2,
-            identifier: self.__unsafe_private_named.3.unwrap(),
-            locales: self.__unsafe_private_named.4.unwrap(),
-            severity: self.__unsafe_private_named.5.unwrap(),
-            extra_data: Some(extra_data),
+    >,
+}
+
+/// Metadata tag on an atproto record, published by the author within the record. Note that schemas should use #selfLabels, not #selfLabel.
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic,
+    Default,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct SelfLabel<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///The short string name of the value or type of this label.
+    pub val: S,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// Metadata tags on an atproto record, published by the author within the record.
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct SelfLabels<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub values: Vec<crate::generated::com_atproto::label::SelfLabel<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Label<S> {
+    fn nsid() -> &'static str {
+        "com.atproto.label.defs"
+    }
+    fn def_name() -> &'static str {
+        "label"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_com_atproto_label_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.val;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 128usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("val"),
+                    max: 128usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
         }
+        Ok(())
     }
 }
 
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for LabelValueDefinition<'a> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+    for LabelValueDefinition<S>
+{
     fn nsid() -> &'static str {
         "com.atproto.label.defs"
     }
     fn def_name() -> &'static str {
         "labelValueDefinition"
     }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
         lexicon_doc_com_atproto_label_defs()
     }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
         {
             let value = &self.identifier;
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) > 100usize {
-                return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("identifier"),
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("identifier"),
                     max: 100usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -1278,13 +595,15 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for LabelValueDefinition<'a> 
         {
             let value = &self.identifier;
             {
-                let count =
-                    ::unicode_segmentation::UnicodeSegmentation::graphemes(value.as_ref(), true)
-                        .count();
+                let count = jacquard_common::deps::codegen::unicode_segmentation::UnicodeSegmentation::graphemes(
+                        value.as_ref(),
+                        true,
+                    )
+                    .count();
                 if count > 100usize {
                     return Err(
-                        ::jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
-                            path: ::jacquard_lexicon::validation::ValidationPath::from_field(
+                        jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field(
                                 "identifier",
                             ),
                             max: 100usize,
@@ -1298,225 +617,25 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for LabelValueDefinition<'a> 
     }
 }
 
-/// Strings which describe the label in the UI, localized into a specific language.
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct LabelValueDefinitionStrings<'a> {
-    /// A longer description of what the label means and why it might be applied.
-    #[serde(borrow)]
-    pub description: jacquard_common::CowStr<'a>,
-    /// The code of the language these strings are written in.
-    pub lang: jacquard_common::types::string::Language,
-    /// A short human-readable name for the label.
-    #[serde(borrow)]
-    pub name: jacquard_common::CowStr<'a>,
-}
-
-pub mod label_value_definition_strings_state {
-
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
-    #[allow(unused)]
-    use core::marker::PhantomData;
-    mod sealed {
-        pub trait Sealed {}
-    }
-    /// State trait tracking which required fields have been set
-    pub trait State: sealed::Sealed {
-        type Lang;
-        type Name;
-        type Description;
-    }
-    /// Empty state - all required fields are unset
-    pub struct Empty(());
-    impl sealed::Sealed for Empty {}
-    impl State for Empty {
-        type Lang = Unset;
-        type Name = Unset;
-        type Description = Unset;
-    }
-    ///State transition - sets the `lang` field to Set
-    pub struct SetLang<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetLang<S> {}
-    impl<S: State> State for SetLang<S> {
-        type Lang = Set<members::lang>;
-        type Name = S::Name;
-        type Description = S::Description;
-    }
-    ///State transition - sets the `name` field to Set
-    pub struct SetName<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetName<S> {}
-    impl<S: State> State for SetName<S> {
-        type Lang = S::Lang;
-        type Name = Set<members::name>;
-        type Description = S::Description;
-    }
-    ///State transition - sets the `description` field to Set
-    pub struct SetDescription<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDescription<S> {}
-    impl<S: State> State for SetDescription<S> {
-        type Lang = S::Lang;
-        type Name = S::Name;
-        type Description = Set<members::description>;
-    }
-    /// Marker types for field names
-    #[allow(non_camel_case_types)]
-    pub mod members {
-        ///Marker type for the `lang` field
-        pub struct lang(());
-        ///Marker type for the `name` field
-        pub struct name(());
-        ///Marker type for the `description` field
-        pub struct description(());
-    }
-}
-
-/// Builder for constructing an instance of this type
-pub struct LabelValueDefinitionStringsBuilder<'a, S: label_value_definition_strings_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Language>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-    ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
-}
-
-impl<'a> LabelValueDefinitionStrings<'a> {
-    /// Create a new builder for this type
-    pub fn new(
-    ) -> LabelValueDefinitionStringsBuilder<'a, label_value_definition_strings_state::Empty> {
-        LabelValueDefinitionStringsBuilder::new()
-    }
-}
-
-impl<'a> LabelValueDefinitionStringsBuilder<'a, label_value_definition_strings_state::Empty> {
-    /// Create a new builder with all fields unset
-    pub fn new() -> Self {
-        LabelValueDefinitionStringsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None),
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> LabelValueDefinitionStringsBuilder<'a, S>
-where
-    S: label_value_definition_strings_state::State,
-    S::Description: label_value_definition_strings_state::IsUnset,
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+    for LabelValueDefinitionStrings<S>
 {
-    /// Set the `description` field (required)
-    pub fn description(
-        mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> LabelValueDefinitionStringsBuilder<
-        'a,
-        label_value_definition_strings_state::SetDescription<S>,
-    > {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
-        LabelValueDefinitionStringsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> LabelValueDefinitionStringsBuilder<'a, S>
-where
-    S: label_value_definition_strings_state::State,
-    S::Lang: label_value_definition_strings_state::IsUnset,
-{
-    /// Set the `lang` field (required)
-    pub fn lang(
-        mut self,
-        value: impl Into<jacquard_common::types::string::Language>,
-    ) -> LabelValueDefinitionStringsBuilder<'a, label_value_definition_strings_state::SetLang<S>>
-    {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
-        LabelValueDefinitionStringsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> LabelValueDefinitionStringsBuilder<'a, S>
-where
-    S: label_value_definition_strings_state::State,
-    S::Name: label_value_definition_strings_state::IsUnset,
-{
-    /// Set the `name` field (required)
-    pub fn name(
-        mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> LabelValueDefinitionStringsBuilder<'a, label_value_definition_strings_state::SetName<S>>
-    {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
-        LabelValueDefinitionStringsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> LabelValueDefinitionStringsBuilder<'a, S>
-where
-    S: label_value_definition_strings_state::State,
-    S::Lang: label_value_definition_strings_state::IsSet,
-    S::Name: label_value_definition_strings_state::IsSet,
-    S::Description: label_value_definition_strings_state::IsSet,
-{
-    /// Build the final struct
-    pub fn build(self) -> LabelValueDefinitionStrings<'a> {
-        LabelValueDefinitionStrings {
-            description: self.__unsafe_private_named.0.unwrap(),
-            lang: self.__unsafe_private_named.1.unwrap(),
-            name: self.__unsafe_private_named.2.unwrap(),
-            extra_data: Default::default(),
-        }
-    }
-    /// Build the final struct with custom extra_data
-    pub fn build_with_data(
-        self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
-        >,
-    ) -> LabelValueDefinitionStrings<'a> {
-        LabelValueDefinitionStrings {
-            description: self.__unsafe_private_named.0.unwrap(),
-            lang: self.__unsafe_private_named.1.unwrap(),
-            name: self.__unsafe_private_named.2.unwrap(),
-            extra_data: Some(extra_data),
-        }
-    }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for LabelValueDefinitionStrings<'a> {
     fn nsid() -> &'static str {
         "com.atproto.label.defs"
     }
     fn def_name() -> &'static str {
         "labelValueDefinitionStrings"
     }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
         lexicon_doc_com_atproto_label_defs()
     }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
         {
             let value = &self.description;
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) > 100000usize {
-                return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("description"),
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("description"),
                     max: 100000usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -1525,13 +644,15 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for LabelValueDefinitionStrin
         {
             let value = &self.description;
             {
-                let count =
-                    ::unicode_segmentation::UnicodeSegmentation::graphemes(value.as_ref(), true)
-                        .count();
+                let count = jacquard_common::deps::codegen::unicode_segmentation::UnicodeSegmentation::graphemes(
+                        value.as_ref(),
+                        true,
+                    )
+                    .count();
                 if count > 10000usize {
                     return Err(
-                        ::jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
-                            path: ::jacquard_lexicon::validation::ValidationPath::from_field(
+                        jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field(
                                 "description",
                             ),
                             max: 10000usize,
@@ -1545,8 +666,8 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for LabelValueDefinitionStrin
             let value = &self.name;
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) > 640usize {
-                return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("name"),
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("name"),
                     max: 640usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -1555,15 +676,15 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for LabelValueDefinitionStrin
         {
             let value = &self.name;
             {
-                let count =
-                    ::unicode_segmentation::UnicodeSegmentation::graphemes(value.as_ref(), true)
-                        .count();
+                let count = jacquard_common::deps::codegen::unicode_segmentation::UnicodeSegmentation::graphemes(
+                        value.as_ref(),
+                        true,
+                    )
+                    .count();
                 if count > 64usize {
                     return Err(
-                        ::jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
-                            path: ::jacquard_lexicon::validation::ValidationPath::from_field(
-                                "name",
-                            ),
+                        jacquard_lexicon::validation::ConstraintError::MaxGraphemes {
+                            path: jacquard_lexicon::validation::ValidationPath::from_field("name"),
                             max: 64usize,
                             actual: count,
                         },
@@ -1575,44 +696,23 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for LabelValueDefinitionStrin
     }
 }
 
-/// Metadata tag on an atproto record, published by the author within the record. Note that schemas should use #selfLabels, not #selfLabel.
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic,
-    Default,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct SelfLabel<'a> {
-    /// The short string name of the value or type of this label.
-    #[serde(borrow)]
-    pub val: jacquard_common::CowStr<'a>,
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for SelfLabel<'a> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for SelfLabel<S> {
     fn nsid() -> &'static str {
         "com.atproto.label.defs"
     }
     fn def_name() -> &'static str {
         "selfLabel"
     }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
         lexicon_doc_com_atproto_label_defs()
     }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
         {
             let value = &self.val;
             #[allow(unused_comparisons)]
             if <str>::len(value.as_ref()) > 128usize {
-                return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("val"),
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("val"),
                     max: 128usize,
                     actual: <str>::len(value.as_ref()),
                 });
@@ -1622,15 +722,1250 @@ impl<'a> ::jacquard_lexicon::schema::LexiconSchema for SelfLabel<'a> {
     }
 }
 
-/// Metadata tags on an atproto record, published by the author within the record.
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct SelfLabels<'a> {
-    #[serde(borrow)]
-    pub values: Vec<crate::generated::com_atproto::label::SelfLabel<'a>>,
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for SelfLabels<S> {
+    fn nsid() -> &'static str {
+        "com.atproto.label.defs"
+    }
+    fn def_name() -> &'static str {
+        "selfLabels"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_com_atproto_label_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.values;
+            #[allow(unused_comparisons)]
+            if value.len() > 10usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("values"),
+                    max: 10usize,
+                    actual: value.len(),
+                });
+            }
+        }
+        Ok(())
+    }
+}
+
+pub mod label_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type Cts;
+        type Src;
+        type Uri;
+        type Val;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type Cts = Unset;
+        type Src = Unset;
+        type Uri = Unset;
+        type Val = Unset;
+    }
+    ///State transition - sets the `cts` field to Set
+    pub struct SetCts<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCts<St> {}
+    impl<St: State> State for SetCts<St> {
+        type Cts = Set<members::cts>;
+        type Src = St::Src;
+        type Uri = St::Uri;
+        type Val = St::Val;
+    }
+    ///State transition - sets the `src` field to Set
+    pub struct SetSrc<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSrc<St> {}
+    impl<St: State> State for SetSrc<St> {
+        type Cts = St::Cts;
+        type Src = Set<members::src>;
+        type Uri = St::Uri;
+        type Val = St::Val;
+    }
+    ///State transition - sets the `uri` field to Set
+    pub struct SetUri<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetUri<St> {}
+    impl<St: State> State for SetUri<St> {
+        type Cts = St::Cts;
+        type Src = St::Src;
+        type Uri = Set<members::uri>;
+        type Val = St::Val;
+    }
+    ///State transition - sets the `val` field to Set
+    pub struct SetVal<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetVal<St> {}
+    impl<St: State> State for SetVal<St> {
+        type Cts = St::Cts;
+        type Src = St::Src;
+        type Uri = St::Uri;
+        type Val = Set<members::val>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `cts` field
+        pub struct cts(());
+        ///Marker type for the `src` field
+        pub struct src(());
+        ///Marker type for the `uri` field
+        pub struct uri(());
+        ///Marker type for the `val` field
+        pub struct val(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct LabelBuilder<
+    St: label_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Cid<S>>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<bool>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<jacquard_common::types::string::UriValue<S>>,
+        core::option::Option<S>,
+        core::option::Option<i64>,
+    ),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl Label<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> LabelBuilder<label_state::Empty, jacquard_common::DefaultStr> {
+        LabelBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> Label<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> LabelBuilder<label_state::Empty, S> {
+        LabelBuilder::builder()
+    }
+}
+
+impl LabelBuilder<label_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        LabelBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> LabelBuilder<label_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        LabelBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: label_state::State, S: jacquard_common::BosStr> LabelBuilder<St, S> {
+    /// Set the `cid` field (optional)
+    pub fn cid(mut self, value: impl Into<Option<jacquard_common::types::string::Cid<S>>>) -> Self {
+        self._fields.0 = value.into();
+        self
+    }
+    /// Set the `cid` field to an Option value (optional)
+    pub fn maybe_cid(mut self, value: Option<jacquard_common::types::string::Cid<S>>) -> Self {
+        self._fields.0 = value;
+        self
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> LabelBuilder<St, S>
+where
+    St: label_state::State,
+    St::Cts: label_state::IsUnset,
+{
+    /// Set the `cts` field (required)
+    pub fn cts(
+        mut self,
+        value: impl Into<jacquard_common::types::string::Datetime>,
+    ) -> LabelBuilder<label_state::SetCts<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
+        LabelBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: label_state::State, S: jacquard_common::BosStr> LabelBuilder<St, S> {
+    /// Set the `exp` field (optional)
+    pub fn exp(
+        mut self,
+        value: impl Into<Option<jacquard_common::types::string::Datetime>>,
+    ) -> Self {
+        self._fields.2 = value.into();
+        self
+    }
+    /// Set the `exp` field to an Option value (optional)
+    pub fn maybe_exp(mut self, value: Option<jacquard_common::types::string::Datetime>) -> Self {
+        self._fields.2 = value;
+        self
+    }
+}
+
+impl<St: label_state::State, S: jacquard_common::BosStr> LabelBuilder<St, S> {
+    /// Set the `neg` field (optional)
+    pub fn neg(mut self, value: impl Into<Option<bool>>) -> Self {
+        self._fields.3 = value.into();
+        self
+    }
+    /// Set the `neg` field to an Option value (optional)
+    pub fn maybe_neg(mut self, value: Option<bool>) -> Self {
+        self._fields.3 = value;
+        self
+    }
+}
+
+impl<St: label_state::State, S: jacquard_common::BosStr> LabelBuilder<St, S> {
+    /// Set the `sig` field (optional)
+    pub fn sig(mut self, value: impl Into<Option<jacquard_common::deps::bytes::Bytes>>) -> Self {
+        self._fields.4 = value.into();
+        self
+    }
+    /// Set the `sig` field to an Option value (optional)
+    pub fn maybe_sig(mut self, value: Option<jacquard_common::deps::bytes::Bytes>) -> Self {
+        self._fields.4 = value;
+        self
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> LabelBuilder<St, S>
+where
+    St: label_state::State,
+    St::Src: label_state::IsUnset,
+{
+    /// Set the `src` field (required)
+    pub fn src(
+        mut self,
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> LabelBuilder<label_state::SetSrc<St>, S> {
+        self._fields.5 = ::core::option::Option::Some(value.into());
+        LabelBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> LabelBuilder<St, S>
+where
+    St: label_state::State,
+    St::Uri: label_state::IsUnset,
+{
+    /// Set the `uri` field (required)
+    pub fn uri(
+        mut self,
+        value: impl Into<jacquard_common::types::string::UriValue<S>>,
+    ) -> LabelBuilder<label_state::SetUri<St>, S> {
+        self._fields.6 = ::core::option::Option::Some(value.into());
+        LabelBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> LabelBuilder<St, S>
+where
+    St: label_state::State,
+    St::Val: label_state::IsUnset,
+{
+    /// Set the `val` field (required)
+    pub fn val(mut self, value: impl Into<S>) -> LabelBuilder<label_state::SetVal<St>, S> {
+        self._fields.7 = ::core::option::Option::Some(value.into());
+        LabelBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: label_state::State, S: jacquard_common::BosStr> LabelBuilder<St, S> {
+    /// Set the `ver` field (optional)
+    pub fn ver(mut self, value: impl Into<Option<i64>>) -> Self {
+        self._fields.8 = value.into();
+        self
+    }
+    /// Set the `ver` field to an Option value (optional)
+    pub fn maybe_ver(mut self, value: Option<i64>) -> Self {
+        self._fields.8 = value;
+        self
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> LabelBuilder<St, S>
+where
+    St: label_state::State,
+    St::Cts: label_state::IsSet,
+    St::Src: label_state::IsSet,
+    St::Uri: label_state::IsSet,
+    St::Val: label_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> Label<S> {
+        Label {
+            cid: self._fields.0,
+            cts: self._fields.1.unwrap(),
+            exp: self._fields.2,
+            neg: self._fields.3,
+            sig: self._fields.4,
+            src: self._fields.5.unwrap(),
+            uri: self._fields.6.unwrap(),
+            val: self._fields.7.unwrap(),
+            ver: self._fields.8,
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> Label<S> {
+        Label {
+            cid: self._fields.0,
+            cts: self._fields.1.unwrap(),
+            exp: self._fields.2,
+            neg: self._fields.3,
+            sig: self._fields.4,
+            src: self._fields.5.unwrap(),
+            uri: self._fields.6.unwrap(),
+            val: self._fields.7.unwrap(),
+            ver: self._fields.8,
+            extra_data: Some(extra_data),
+        }
+    }
+}
+
+fn lexicon_doc_com_atproto_label_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+    ::jacquard_lexicon::lexicon::LexiconDoc {
+        lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
+        id: ::jacquard_common::CowStr::new_static("com.atproto.label.defs"),
+        defs: {
+            let mut map = ::alloc::collections::BTreeMap::new();
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("label"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
+                            "Metadata tag on an atproto resource (eg, repo or record).",
+                        ),
+                    ),
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("src"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("uri"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("val"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("cts")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "cid",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Optionally, CID specifying the specific version of 'uri' resource this label applies to.",
+                                    ),
+                                ),
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Cid,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "cts",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Timestamp when this label was created.",
+                                    ),
+                                ),
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "exp",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Timestamp at which this label expires (no longer applies).",
+                                    ),
+                                ),
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "neg",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "sig",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "src",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "DID of the actor who created this label.",
+                                    ),
+                                ),
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "uri",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "AT URI of the record, repository (account), or other resource that this label applies to.",
+                                    ),
+                                ),
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Uri,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "val",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "The short string name of the value or type of this label.",
+                                    ),
+                                ),
+                                max_length: Some(128usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "ver",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map
+                    },
+                    ..Default::default()
+                }),
+            );
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("labelValue"),
+                ::jacquard_lexicon::lexicon::LexUserType::String(
+                    ::jacquard_lexicon::lexicon::LexString {
+                        ..Default::default()
+                    },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "labelValueDefinition",
+                ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
+                            "Declares a label value and its expected interpretations and behaviors.",
+                        ),
+                    ),
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("identifier"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("severity"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("blurs"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("locales")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "adultOnly",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "blurs",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "What should this label hide in the UI, if applied? 'content' hides all of the target; 'media' hides the images/video/audio; 'none' hides nothing.",
+                                    ),
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "defaultSetting",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "The default setting for this label.",
+                                    ),
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "identifier",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "The value of the label being defined. Must only include lowercase ascii and the '-' character ([a-z-]+).",
+                                    ),
+                                ),
+                                max_length: Some(100usize),
+                                max_graphemes: Some(100usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "locales",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                    r#ref: ::jacquard_common::CowStr::new_static(
+                                        "#labelValueDefinitionStrings",
+                                    ),
+                                    ..Default::default()
+                                }),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "severity",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "How should a client visually convey this label? 'inform' means neutral and informational; 'alert' means negative and warning; 'none' means show nothing.",
+                                    ),
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map
+                    },
+                    ..Default::default()
+                }),
+            );
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "labelValueDefinitionStrings",
+                ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
+                            "Strings which describe the label in the UI, localized into a specific language.",
+                        ),
+                    ),
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("lang"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("name"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("description")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "description",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "A longer description of what the label means and why it might be applied.",
+                                    ),
+                                ),
+                                max_length: Some(100000usize),
+                                max_graphemes: Some(10000usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "lang",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "The code of the language these strings are written in.",
+                                    ),
+                                ),
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Language,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "name",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "A short human-readable name for the label.",
+                                    ),
+                                ),
+                                max_length: Some(640usize),
+                                max_graphemes: Some(64usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map
+                    },
+                    ..Default::default()
+                }),
+            );
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("selfLabel"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
+                            "Metadata tag on an atproto record, published by the author within the record. Note that schemas should use #selfLabels, not #selfLabel.",
+                        ),
+                    ),
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("val")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "val",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "The short string name of the value or type of this label.",
+                                    ),
+                                ),
+                                max_length: Some(128usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map
+                    },
+                    ..Default::default()
+                }),
+            );
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("selfLabels"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
+                            "Metadata tags on an atproto record, published by the author within the record.",
+                        ),
+                    ),
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("values")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "values",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                    r#ref: ::jacquard_common::CowStr::new_static("#selfLabel"),
+                                    ..Default::default()
+                                }),
+                                max_length: Some(10usize),
+                                ..Default::default()
+                            }),
+                        );
+                        map
+                    },
+                    ..Default::default()
+                }),
+            );
+            map
+        },
+        ..Default::default()
+    }
+}
+
+pub mod label_value_definition_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type Blurs;
+        type Identifier;
+        type Locales;
+        type Severity;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type Blurs = Unset;
+        type Identifier = Unset;
+        type Locales = Unset;
+        type Severity = Unset;
+    }
+    ///State transition - sets the `blurs` field to Set
+    pub struct SetBlurs<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetBlurs<St> {}
+    impl<St: State> State for SetBlurs<St> {
+        type Blurs = Set<members::blurs>;
+        type Identifier = St::Identifier;
+        type Locales = St::Locales;
+        type Severity = St::Severity;
+    }
+    ///State transition - sets the `identifier` field to Set
+    pub struct SetIdentifier<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetIdentifier<St> {}
+    impl<St: State> State for SetIdentifier<St> {
+        type Blurs = St::Blurs;
+        type Identifier = Set<members::identifier>;
+        type Locales = St::Locales;
+        type Severity = St::Severity;
+    }
+    ///State transition - sets the `locales` field to Set
+    pub struct SetLocales<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetLocales<St> {}
+    impl<St: State> State for SetLocales<St> {
+        type Blurs = St::Blurs;
+        type Identifier = St::Identifier;
+        type Locales = Set<members::locales>;
+        type Severity = St::Severity;
+    }
+    ///State transition - sets the `severity` field to Set
+    pub struct SetSeverity<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSeverity<St> {}
+    impl<St: State> State for SetSeverity<St> {
+        type Blurs = St::Blurs;
+        type Identifier = St::Identifier;
+        type Locales = St::Locales;
+        type Severity = Set<members::severity>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `blurs` field
+        pub struct blurs(());
+        ///Marker type for the `identifier` field
+        pub struct identifier(());
+        ///Marker type for the `locales` field
+        pub struct locales(());
+        ///Marker type for the `severity` field
+        pub struct severity(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct LabelValueDefinitionBuilder<
+    St: label_value_definition_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<bool>,
+        core::option::Option<LabelValueDefinitionBlurs<S>>,
+        core::option::Option<LabelValueDefinitionDefaultSetting<S>>,
+        core::option::Option<S>,
+        core::option::Option<
+            Vec<crate::generated::com_atproto::label::LabelValueDefinitionStrings<S>>,
+        >,
+        core::option::Option<LabelValueDefinitionSeverity<S>>,
+    ),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl LabelValueDefinition<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> LabelValueDefinitionBuilder<label_value_definition_state::Empty, jacquard_common::DefaultStr>
+    {
+        LabelValueDefinitionBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> LabelValueDefinition<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> LabelValueDefinitionBuilder<label_value_definition_state::Empty, S> {
+        LabelValueDefinitionBuilder::builder()
+    }
+}
+
+impl LabelValueDefinitionBuilder<label_value_definition_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        LabelValueDefinitionBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr>
+    LabelValueDefinitionBuilder<label_value_definition_state::Empty, S>
+{
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        LabelValueDefinitionBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: label_value_definition_state::State, S: jacquard_common::BosStr>
+    LabelValueDefinitionBuilder<St, S>
+{
+    /// Set the `adultOnly` field (optional)
+    pub fn adult_only(mut self, value: impl Into<Option<bool>>) -> Self {
+        self._fields.0 = value.into();
+        self
+    }
+    /// Set the `adultOnly` field to an Option value (optional)
+    pub fn maybe_adult_only(mut self, value: Option<bool>) -> Self {
+        self._fields.0 = value;
+        self
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> LabelValueDefinitionBuilder<St, S>
+where
+    St: label_value_definition_state::State,
+    St::Blurs: label_value_definition_state::IsUnset,
+{
+    /// Set the `blurs` field (required)
+    pub fn blurs(
+        mut self,
+        value: impl Into<LabelValueDefinitionBlurs<S>>,
+    ) -> LabelValueDefinitionBuilder<label_value_definition_state::SetBlurs<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
+        LabelValueDefinitionBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: label_value_definition_state::State, S: jacquard_common::BosStr>
+    LabelValueDefinitionBuilder<St, S>
+{
+    /// Set the `defaultSetting` field (optional)
+    pub fn default_setting(
+        mut self,
+        value: impl Into<Option<LabelValueDefinitionDefaultSetting<S>>>,
+    ) -> Self {
+        self._fields.2 = value.into();
+        self
+    }
+    /// Set the `defaultSetting` field to an Option value (optional)
+    pub fn maybe_default_setting(
+        mut self,
+        value: Option<LabelValueDefinitionDefaultSetting<S>>,
+    ) -> Self {
+        self._fields.2 = value;
+        self
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> LabelValueDefinitionBuilder<St, S>
+where
+    St: label_value_definition_state::State,
+    St::Identifier: label_value_definition_state::IsUnset,
+{
+    /// Set the `identifier` field (required)
+    pub fn identifier(
+        mut self,
+        value: impl Into<S>,
+    ) -> LabelValueDefinitionBuilder<label_value_definition_state::SetIdentifier<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
+        LabelValueDefinitionBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> LabelValueDefinitionBuilder<St, S>
+where
+    St: label_value_definition_state::State,
+    St::Locales: label_value_definition_state::IsUnset,
+{
+    /// Set the `locales` field (required)
+    pub fn locales(
+        mut self,
+        value: impl Into<Vec<crate::generated::com_atproto::label::LabelValueDefinitionStrings<S>>>,
+    ) -> LabelValueDefinitionBuilder<label_value_definition_state::SetLocales<St>, S> {
+        self._fields.4 = ::core::option::Option::Some(value.into());
+        LabelValueDefinitionBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> LabelValueDefinitionBuilder<St, S>
+where
+    St: label_value_definition_state::State,
+    St::Severity: label_value_definition_state::IsUnset,
+{
+    /// Set the `severity` field (required)
+    pub fn severity(
+        mut self,
+        value: impl Into<LabelValueDefinitionSeverity<S>>,
+    ) -> LabelValueDefinitionBuilder<label_value_definition_state::SetSeverity<St>, S> {
+        self._fields.5 = ::core::option::Option::Some(value.into());
+        LabelValueDefinitionBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> LabelValueDefinitionBuilder<St, S>
+where
+    St: label_value_definition_state::State,
+    St::Blurs: label_value_definition_state::IsSet,
+    St::Identifier: label_value_definition_state::IsSet,
+    St::Locales: label_value_definition_state::IsSet,
+    St::Severity: label_value_definition_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> LabelValueDefinition<S> {
+        LabelValueDefinition {
+            adult_only: self._fields.0,
+            blurs: self._fields.1.unwrap(),
+            default_setting: self._fields.2,
+            identifier: self._fields.3.unwrap(),
+            locales: self._fields.4.unwrap(),
+            severity: self._fields.5.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> LabelValueDefinition<S> {
+        LabelValueDefinition {
+            adult_only: self._fields.0,
+            blurs: self._fields.1.unwrap(),
+            default_setting: self._fields.2,
+            identifier: self._fields.3.unwrap(),
+            locales: self._fields.4.unwrap(),
+            severity: self._fields.5.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
+}
+
+pub mod label_value_definition_strings_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type Description;
+        type Lang;
+        type Name;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type Description = Unset;
+        type Lang = Unset;
+        type Name = Unset;
+    }
+    ///State transition - sets the `description` field to Set
+    pub struct SetDescription<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetDescription<St> {}
+    impl<St: State> State for SetDescription<St> {
+        type Description = Set<members::description>;
+        type Lang = St::Lang;
+        type Name = St::Name;
+    }
+    ///State transition - sets the `lang` field to Set
+    pub struct SetLang<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetLang<St> {}
+    impl<St: State> State for SetLang<St> {
+        type Description = St::Description;
+        type Lang = Set<members::lang>;
+        type Name = St::Name;
+    }
+    ///State transition - sets the `name` field to Set
+    pub struct SetName<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetName<St> {}
+    impl<St: State> State for SetName<St> {
+        type Description = St::Description;
+        type Lang = St::Lang;
+        type Name = Set<members::name>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `description` field
+        pub struct description(());
+        ///Marker type for the `lang` field
+        pub struct lang(());
+        ///Marker type for the `name` field
+        pub struct name(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct LabelValueDefinitionStringsBuilder<
+    St: label_value_definition_strings_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Language>,
+        core::option::Option<S>,
+    ),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl LabelValueDefinitionStrings<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> LabelValueDefinitionStringsBuilder<
+        label_value_definition_strings_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
+        LabelValueDefinitionStringsBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> LabelValueDefinitionStrings<S> {
+    /// Create a new builder for this type
+    pub fn builder(
+    ) -> LabelValueDefinitionStringsBuilder<label_value_definition_strings_state::Empty, S> {
+        LabelValueDefinitionStringsBuilder::builder()
+    }
+}
+
+impl
+    LabelValueDefinitionStringsBuilder<
+        label_value_definition_strings_state::Empty,
+        jacquard_common::DefaultStr,
+    >
+{
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        LabelValueDefinitionStringsBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr>
+    LabelValueDefinitionStringsBuilder<label_value_definition_strings_state::Empty, S>
+{
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        LabelValueDefinitionStringsBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> LabelValueDefinitionStringsBuilder<St, S>
+where
+    St: label_value_definition_strings_state::State,
+    St::Description: label_value_definition_strings_state::IsUnset,
+{
+    /// Set the `description` field (required)
+    pub fn description(
+        mut self,
+        value: impl Into<S>,
+    ) -> LabelValueDefinitionStringsBuilder<
+        label_value_definition_strings_state::SetDescription<St>,
+        S,
+    > {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        LabelValueDefinitionStringsBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> LabelValueDefinitionStringsBuilder<St, S>
+where
+    St: label_value_definition_strings_state::State,
+    St::Lang: label_value_definition_strings_state::IsUnset,
+{
+    /// Set the `lang` field (required)
+    pub fn lang(
+        mut self,
+        value: impl Into<jacquard_common::types::string::Language>,
+    ) -> LabelValueDefinitionStringsBuilder<label_value_definition_strings_state::SetLang<St>, S>
+    {
+        self._fields.1 = ::core::option::Option::Some(value.into());
+        LabelValueDefinitionStringsBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> LabelValueDefinitionStringsBuilder<St, S>
+where
+    St: label_value_definition_strings_state::State,
+    St::Name: label_value_definition_strings_state::IsUnset,
+{
+    /// Set the `name` field (required)
+    pub fn name(
+        mut self,
+        value: impl Into<S>,
+    ) -> LabelValueDefinitionStringsBuilder<label_value_definition_strings_state::SetName<St>, S>
+    {
+        self._fields.2 = ::core::option::Option::Some(value.into());
+        LabelValueDefinitionStringsBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> LabelValueDefinitionStringsBuilder<St, S>
+where
+    St: label_value_definition_strings_state::State,
+    St::Description: label_value_definition_strings_state::IsSet,
+    St::Lang: label_value_definition_strings_state::IsSet,
+    St::Name: label_value_definition_strings_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> LabelValueDefinitionStrings<S> {
+        LabelValueDefinitionStrings {
+            description: self._fields.0.unwrap(),
+            lang: self._fields.1.unwrap(),
+            name: self._fields.2.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> LabelValueDefinitionStrings<S> {
+        LabelValueDefinitionStrings {
+            description: self._fields.0.unwrap(),
+            lang: self._fields.1.unwrap(),
+            name: self._fields.2.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
 }
 
 pub mod self_labels_state {
@@ -1652,9 +1987,9 @@ pub mod self_labels_state {
         type Values = Unset;
     }
     ///State transition - sets the `values` field to Set
-    pub struct SetValues<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetValues<S> {}
-    impl<S: State> State for SetValues<S> {
+    pub struct SetValues<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetValues<St> {}
+    impl<St: State> State for SetValues<St> {
         type Values = Set<members::values>;
     }
     /// Marker types for field names
@@ -1665,102 +2000,94 @@ pub mod self_labels_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct SelfLabelsBuilder<'a, S: self_labels_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named:
-        (::core::option::Option<Vec<crate::generated::com_atproto::label::SelfLabel<'a>>>,),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct SelfLabelsBuilder<
+    St: self_labels_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<Vec<crate::generated::com_atproto::label::SelfLabel<S>>>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> SelfLabels<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> SelfLabelsBuilder<'a, self_labels_state::Empty> {
+impl SelfLabels<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> SelfLabelsBuilder<self_labels_state::Empty, jacquard_common::DefaultStr> {
         SelfLabelsBuilder::new()
     }
 }
 
-impl<'a> SelfLabelsBuilder<'a, self_labels_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> SelfLabels<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> SelfLabelsBuilder<self_labels_state::Empty, S> {
+        SelfLabelsBuilder::builder()
+    }
+}
+
+impl SelfLabelsBuilder<self_labels_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         SelfLabelsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> SelfLabelsBuilder<'a, S>
+impl<S: jacquard_common::BosStr> SelfLabelsBuilder<self_labels_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        SelfLabelsBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> SelfLabelsBuilder<St, S>
 where
-    S: self_labels_state::State,
-    S::Values: self_labels_state::IsUnset,
+    St: self_labels_state::State,
+    St::Values: self_labels_state::IsUnset,
 {
     /// Set the `values` field (required)
     pub fn values(
         mut self,
-        value: impl Into<Vec<crate::generated::com_atproto::label::SelfLabel<'a>>>,
-    ) -> SelfLabelsBuilder<'a, self_labels_state::SetValues<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<Vec<crate::generated::com_atproto::label::SelfLabel<S>>>,
+    ) -> SelfLabelsBuilder<self_labels_state::SetValues<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         SelfLabelsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> SelfLabelsBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> SelfLabelsBuilder<St, S>
 where
-    S: self_labels_state::State,
-    S::Values: self_labels_state::IsSet,
+    St: self_labels_state::State,
+    St::Values: self_labels_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> SelfLabels<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> SelfLabels<S> {
         SelfLabels {
-            values: self.__unsafe_private_named.0.unwrap(),
+            values: self._fields.0.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> SelfLabels<'a> {
+    ) -> SelfLabels<S> {
         SelfLabels {
-            values: self.__unsafe_private_named.0.unwrap(),
+            values: self._fields.0.unwrap(),
             extra_data: Some(extra_data),
         }
-    }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for SelfLabels<'a> {
-    fn nsid() -> &'static str {
-        "com.atproto.label.defs"
-    }
-    fn def_name() -> &'static str {
-        "selfLabels"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_com_atproto_label_defs()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        {
-            let value = &self.values;
-            #[allow(unused_comparisons)]
-            if value.len() > 10usize {
-                return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("values"),
-                    max: 10usize,
-                    actual: value.len(),
-                });
-            }
-        }
-        Ok(())
     }
 }

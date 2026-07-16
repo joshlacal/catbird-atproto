@@ -6,32 +6,111 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 /// A declaration of the existence of labeler service.
-#[jacquard_derive::lexicon]
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    rename = "app.bsky.labeler.service",
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct Service<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub created_at: jacquard_common::types::string::Datetime,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub labels: core::option::Option<crate::generated::com_atproto::label::SelfLabels<S>>,
+    pub policies: crate::generated::app_bsky::labeler::LabelerPolicies<S>,
+    ///The set of report reason 'codes' which are in-scope for this service to review and action. These usually align to policy categories. If not defined (distinct from empty array), all reason types are allowed.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub reason_types:
+        core::option::Option<Vec<crate::generated::com_atproto::moderation::ReasonType<S>>>,
+    ///Set of record types (collection NSIDs) which can be reported to this service. If not defined (distinct from empty array), default is any record type.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub subject_collections: core::option::Option<Vec<jacquard_common::types::string::Nsid<S>>>,
+    ///The set of subject types (account, record, etc) this service accepts reports on.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub subject_types:
+        core::option::Option<Vec<crate::generated::com_atproto::moderation::SubjectType<S>>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// Typed wrapper for GetRecord response with this collection's record type.
+
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
-pub struct Service<'a> {
-    pub created_at: jacquard_common::types::string::Datetime,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub labels: std::option::Option<crate::generated::com_atproto::label::SelfLabels<'a>>,
-    #[serde(borrow)]
-    pub policies: crate::generated::app_bsky::labeler::LabelerPolicies<'a>,
-    /// The set of report reason 'codes' which are in-scope for this service to review and action. These usually align to policy categories. If not defined (distinct from empty array), all reason types are allowed.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub reason_types:
-        std::option::Option<Vec<crate::generated::com_atproto::moderation::ReasonType<'a>>>,
-    /// Set of record types (collection NSIDs) which can be reported to this service. If not defined (distinct from empty array), default is any record type.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub subject_collections: std::option::Option<Vec<jacquard_common::types::string::Nsid<'a>>>,
-    /// The set of subject types (account, record, etc) this service accepts reports on.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub subject_types:
-        std::option::Option<Vec<crate::generated::com_atproto::moderation::SubjectType<'a>>>,
+pub struct ServiceGetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
+    pub uri: jacquard_common::types::string::AtUri<S>,
+    pub value: Service<S>,
+}
+
+impl<S: jacquard_common::BosStr> Service<S> {
+    pub fn uri(
+        uri: S,
+    ) -> Result<
+        jacquard_common::types::uri::RecordUri<S, ServiceRecord>,
+        jacquard_common::types::uri::UriError,
+    > {
+        jacquard_common::types::uri::RecordUri::try_from_uri(
+            jacquard_common::types::string::AtUri::new(uri)?,
+        )
+    }
+}
+
+/// Marker type for deserializing records from this collection.
+
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+pub struct ServiceRecord;
+impl jacquard_common::xrpc::XrpcResp for ServiceRecord {
+    const NSID: &'static str = "app.bsky.labeler.service";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = ServiceGetRecordOutput<S>;
+    type Err = jacquard_common::types::collection::RecordError;
+}
+
+impl<S: jacquard_common::BosStr> From<ServiceGetRecordOutput<S>> for Service<S> {
+    fn from(output: ServiceGetRecordOutput<S>) -> Self {
+        output.value
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection for Service<S> {
+    const NSID: &'static str = "app.bsky.labeler.service";
+    type Record = ServiceRecord;
+}
+
+impl jacquard_common::types::collection::Collection for ServiceRecord {
+    const NSID: &'static str = "app.bsky.labeler.service";
+    type Record = ServiceRecord;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Service<S> {
+    fn nsid() -> &'static str {
+        "app.bsky.labeler.service"
+    }
+    fn def_name() -> &'static str {
+        "main"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_app_bsky_labeler_service()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
 }
 
 pub mod service_state {
@@ -44,306 +123,253 @@ pub mod service_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Policies;
         type CreatedAt;
+        type Policies;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Policies = Unset;
         type CreatedAt = Unset;
-    }
-    ///State transition - sets the `policies` field to Set
-    pub struct SetPolicies<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetPolicies<S> {}
-    impl<S: State> State for SetPolicies<S> {
-        type Policies = Set<members::policies>;
-        type CreatedAt = S::CreatedAt;
+        type Policies = Unset;
     }
     ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type Policies = S::Policies;
+    pub struct SetCreatedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCreatedAt<St> {}
+    impl<St: State> State for SetCreatedAt<St> {
         type CreatedAt = Set<members::created_at>;
+        type Policies = St::Policies;
+    }
+    ///State transition - sets the `policies` field to Set
+    pub struct SetPolicies<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetPolicies<St> {}
+    impl<St: State> State for SetPolicies<St> {
+        type CreatedAt = St::CreatedAt;
+        type Policies = Set<members::policies>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `policies` field
-        pub struct policies(());
         ///Marker type for the `created_at` field
         pub struct created_at(());
+        ///Marker type for the `policies` field
+        pub struct policies(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct ServiceBuilder<'a, S: service_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<crate::generated::com_atproto::label::SelfLabels<'a>>,
-        ::core::option::Option<crate::generated::app_bsky::labeler::LabelerPolicies<'a>>,
-        ::core::option::Option<Vec<crate::generated::com_atproto::moderation::ReasonType<'a>>>,
-        ::core::option::Option<Vec<jacquard_common::types::string::Nsid<'a>>>,
-        ::core::option::Option<Vec<crate::generated::com_atproto::moderation::SubjectType<'a>>>,
+/// Builder for constructing an instance of this type.
+pub struct ServiceBuilder<
+    St: service_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<crate::generated::com_atproto::label::SelfLabels<S>>,
+        core::option::Option<crate::generated::app_bsky::labeler::LabelerPolicies<S>>,
+        core::option::Option<Vec<crate::generated::com_atproto::moderation::ReasonType<S>>>,
+        core::option::Option<Vec<jacquard_common::types::string::Nsid<S>>>,
+        core::option::Option<Vec<crate::generated::com_atproto::moderation::SubjectType<S>>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> Service<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> ServiceBuilder<'a, service_state::Empty> {
+impl Service<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> ServiceBuilder<service_state::Empty, jacquard_common::DefaultStr> {
         ServiceBuilder::new()
     }
 }
 
-impl<'a> ServiceBuilder<'a, service_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> Service<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> ServiceBuilder<service_state::Empty, S> {
+        ServiceBuilder::builder()
+    }
+}
+
+impl ServiceBuilder<service_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ServiceBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ServiceBuilder<'a, S>
+impl<S: jacquard_common::BosStr> ServiceBuilder<service_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        ServiceBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ServiceBuilder<St, S>
 where
-    S: service_state::State,
-    S::CreatedAt: service_state::IsUnset,
+    St: service_state::State,
+    St::CreatedAt: service_state::IsUnset,
 {
     /// Set the `createdAt` field (required)
     pub fn created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> ServiceBuilder<'a, service_state::SetCreatedAt<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+    ) -> ServiceBuilder<service_state::SetCreatedAt<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         ServiceBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: service_state::State> ServiceBuilder<'a, S> {
+impl<St: service_state::State, S: jacquard_common::BosStr> ServiceBuilder<St, S> {
     /// Set the `labels` field (optional)
     pub fn labels(
         mut self,
-        value: impl Into<Option<crate::generated::com_atproto::label::SelfLabels<'a>>>,
+        value: impl Into<Option<crate::generated::com_atproto::label::SelfLabels<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self._fields.1 = value.into();
         self
     }
     /// Set the `labels` field to an Option value (optional)
     pub fn maybe_labels(
         mut self,
-        value: Option<crate::generated::com_atproto::label::SelfLabels<'a>>,
+        value: Option<crate::generated::com_atproto::label::SelfLabels<S>>,
     ) -> Self {
-        self.__unsafe_private_named.1 = value;
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S> ServiceBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ServiceBuilder<St, S>
 where
-    S: service_state::State,
-    S::Policies: service_state::IsUnset,
+    St: service_state::State,
+    St::Policies: service_state::IsUnset,
 {
     /// Set the `policies` field (required)
     pub fn policies(
         mut self,
-        value: impl Into<crate::generated::app_bsky::labeler::LabelerPolicies<'a>>,
-    ) -> ServiceBuilder<'a, service_state::SetPolicies<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        value: impl Into<crate::generated::app_bsky::labeler::LabelerPolicies<S>>,
+    ) -> ServiceBuilder<service_state::SetPolicies<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         ServiceBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: service_state::State> ServiceBuilder<'a, S> {
+impl<St: service_state::State, S: jacquard_common::BosStr> ServiceBuilder<St, S> {
     /// Set the `reasonTypes` field (optional)
     pub fn reason_types(
         mut self,
-        value: impl Into<Option<Vec<crate::generated::com_atproto::moderation::ReasonType<'a>>>>,
+        value: impl Into<Option<Vec<crate::generated::com_atproto::moderation::ReasonType<S>>>>,
     ) -> Self {
-        self.__unsafe_private_named.3 = value.into();
+        self._fields.3 = value.into();
         self
     }
     /// Set the `reasonTypes` field to an Option value (optional)
     pub fn maybe_reason_types(
         mut self,
-        value: Option<Vec<crate::generated::com_atproto::moderation::ReasonType<'a>>>,
+        value: Option<Vec<crate::generated::com_atproto::moderation::ReasonType<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.3 = value;
+        self._fields.3 = value;
         self
     }
 }
 
-impl<'a, S: service_state::State> ServiceBuilder<'a, S> {
+impl<St: service_state::State, S: jacquard_common::BosStr> ServiceBuilder<St, S> {
     /// Set the `subjectCollections` field (optional)
     pub fn subject_collections(
         mut self,
-        value: impl Into<Option<Vec<jacquard_common::types::string::Nsid<'a>>>>,
+        value: impl Into<Option<Vec<jacquard_common::types::string::Nsid<S>>>>,
     ) -> Self {
-        self.__unsafe_private_named.4 = value.into();
+        self._fields.4 = value.into();
         self
     }
     /// Set the `subjectCollections` field to an Option value (optional)
     pub fn maybe_subject_collections(
         mut self,
-        value: Option<Vec<jacquard_common::types::string::Nsid<'a>>>,
+        value: Option<Vec<jacquard_common::types::string::Nsid<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.4 = value;
+        self._fields.4 = value;
         self
     }
 }
 
-impl<'a, S: service_state::State> ServiceBuilder<'a, S> {
+impl<St: service_state::State, S: jacquard_common::BosStr> ServiceBuilder<St, S> {
     /// Set the `subjectTypes` field (optional)
     pub fn subject_types(
         mut self,
-        value: impl Into<Option<Vec<crate::generated::com_atproto::moderation::SubjectType<'a>>>>,
+        value: impl Into<Option<Vec<crate::generated::com_atproto::moderation::SubjectType<S>>>>,
     ) -> Self {
-        self.__unsafe_private_named.5 = value.into();
+        self._fields.5 = value.into();
         self
     }
     /// Set the `subjectTypes` field to an Option value (optional)
     pub fn maybe_subject_types(
         mut self,
-        value: Option<Vec<crate::generated::com_atproto::moderation::SubjectType<'a>>>,
+        value: Option<Vec<crate::generated::com_atproto::moderation::SubjectType<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.5 = value;
+        self._fields.5 = value;
         self
     }
 }
 
-impl<'a, S> ServiceBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ServiceBuilder<St, S>
 where
-    S: service_state::State,
-    S::Policies: service_state::IsSet,
-    S::CreatedAt: service_state::IsSet,
+    St: service_state::State,
+    St::CreatedAt: service_state::IsSet,
+    St::Policies: service_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> Service<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> Service<S> {
         Service {
-            created_at: self.__unsafe_private_named.0.unwrap(),
-            labels: self.__unsafe_private_named.1,
-            policies: self.__unsafe_private_named.2.unwrap(),
-            reason_types: self.__unsafe_private_named.3,
-            subject_collections: self.__unsafe_private_named.4,
-            subject_types: self.__unsafe_private_named.5,
+            created_at: self._fields.0.unwrap(),
+            labels: self._fields.1,
+            policies: self._fields.2.unwrap(),
+            reason_types: self._fields.3,
+            subject_collections: self._fields.4,
+            subject_types: self._fields.5,
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> Service<'a> {
+    ) -> Service<S> {
         Service {
-            created_at: self.__unsafe_private_named.0.unwrap(),
-            labels: self.__unsafe_private_named.1,
-            policies: self.__unsafe_private_named.2.unwrap(),
-            reason_types: self.__unsafe_private_named.3,
-            subject_collections: self.__unsafe_private_named.4,
-            subject_types: self.__unsafe_private_named.5,
+            created_at: self._fields.0.unwrap(),
+            labels: self._fields.1,
+            policies: self._fields.2.unwrap(),
+            reason_types: self._fields.3,
+            subject_collections: self._fields.4,
+            subject_types: self._fields.5,
             extra_data: Some(extra_data),
         }
     }
 }
 
-impl<'a> Service<'a> {
-    pub fn uri(
-        uri: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> Result<
-        jacquard_common::types::uri::RecordUri<'a, ServiceRecord>,
-        jacquard_common::types::uri::UriError,
-    > {
-        jacquard_common::types::uri::RecordUri::try_from_uri(
-            jacquard_common::types::string::AtUri::new_cow(uri.into())?,
-        )
-    }
-}
-
-/// Typed wrapper for GetRecord response with this collection's record type.
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct ServiceGetRecordOutput<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cid: std::option::Option<jacquard_common::types::string::Cid<'a>>,
-    #[serde(borrow)]
-    pub uri: jacquard_common::types::string::AtUri<'a>,
-    #[serde(borrow)]
-    pub value: Service<'a>,
-}
-
-impl From<ServiceGetRecordOutput<'_>> for Service<'_> {
-    fn from(output: ServiceGetRecordOutput<'_>) -> Self {
-        use jacquard_common::IntoStatic;
-        output.value.into_static()
-    }
-}
-
-impl jacquard_common::types::collection::Collection for Service<'_> {
-    const NSID: &'static str = "app.bsky.labeler.service";
-    type Record = ServiceRecord;
-}
-
-/// Marker type for deserializing records from this collection.
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
-pub struct ServiceRecord;
-impl jacquard_common::xrpc::XrpcResp for ServiceRecord {
-    const NSID: &'static str = "app.bsky.labeler.service";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = ServiceGetRecordOutput<'de>;
-    type Err<'de> = jacquard_common::types::collection::RecordError<'de>;
-}
-
-impl jacquard_common::types::collection::Collection for ServiceRecord {
-    const NSID: &'static str = "app.bsky.labeler.service";
-    type Record = ServiceRecord;
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Service<'a> {
-    fn nsid() -> &'static str {
-        "app.bsky.labeler.service"
-    }
-    fn def_name() -> &'static str {
-        "main"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_app_bsky_labeler_service()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-fn lexicon_doc_app_bsky_labeler_service() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_app_bsky_labeler_service() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("app.bsky.labeler.service"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
                 ::jacquard_lexicon::lexicon::LexUserType::Record(::jacquard_lexicon::lexicon::LexRecord {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
@@ -352,59 +378,50 @@ fn lexicon_doc_app_bsky_labeler_service() -> ::jacquard_lexicon::lexicon::Lexico
                     ),
                     key: Some(::jacquard_common::CowStr::new_static("literal:self")),
                     record: ::jacquard_lexicon::lexicon::LexRecordRecord::Object(::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(
                             vec![
-                                ::jacquard_common::smol_str::SmolStr::new_static("policies"),
-                                ::jacquard_common::smol_str::SmolStr::new_static("createdAt")
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("policies"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt")
                             ],
                         ),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "createdAt",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                    description: None,
                                     format: Some(
                                         ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                     ),
-                                    default: None,
-                                    min_length: None,
-                                    max_length: None,
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("labels"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "labels",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Union(::jacquard_lexicon::lexicon::LexRefUnion {
-                                    description: None,
                                     refs: vec![
                                         ::jacquard_common::CowStr::new_static("com.atproto.label.defs#selfLabels")
                                     ],
-                                    closed: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "policies",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                    description: None,
                                     r#ref: ::jacquard_common::CowStr::new_static(
                                         "app.bsky.labeler.defs#labelerPolicies",
                                     ),
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "reasonTypes",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
@@ -414,17 +431,16 @@ fn lexicon_doc_app_bsky_labeler_service() -> ::jacquard_lexicon::lexicon::Lexico
                                         ),
                                     ),
                                     items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                        description: None,
                                         r#ref: ::jacquard_common::CowStr::new_static(
                                             "com.atproto.moderation.defs#reasonType",
                                         ),
+                                        ..Default::default()
                                     }),
-                                    min_length: None,
-                                    max_length: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "subjectCollections",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
@@ -434,25 +450,16 @@ fn lexicon_doc_app_bsky_labeler_service() -> ::jacquard_lexicon::lexicon::Lexico
                                         ),
                                     ),
                                     items: ::jacquard_lexicon::lexicon::LexArrayItem::String(::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Nsid,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     }),
-                                    min_length: None,
-                                    max_length: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "subjectTypes",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
@@ -462,21 +469,23 @@ fn lexicon_doc_app_bsky_labeler_service() -> ::jacquard_lexicon::lexicon::Lexico
                                         ),
                                     ),
                                     items: ::jacquard_lexicon::lexicon::LexArrayItem::Ref(::jacquard_lexicon::lexicon::LexRef {
-                                        description: None,
                                         r#ref: ::jacquard_common::CowStr::new_static(
                                             "com.atproto.moderation.defs#subjectType",
                                         ),
+                                        ..Default::default()
                                     }),
-                                    min_length: None,
-                                    max_length: None,
+                                    ..Default::default()
                                 }),
                             );
                             map
                         },
+                        ..Default::default()
                     }),
+                    ..Default::default()
                 }),
             );
             map
         },
+        ..Default::default()
     }
 }

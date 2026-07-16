@@ -8,10 +8,62 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct FindCorrelation<'a> {
-    #[serde(borrow)]
-    pub dids: Vec<jacquard_common::types::string::Did<'a>>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct FindCorrelation<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub dids: Vec<jacquard_common::types::string::Did<S>>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct FindCorrelationOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub details: Vec<crate::generated::tools_ozone::signature::SigDetail<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `tools.ozone.signature.findCorrelation` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `FindCorrelationOutput<S>` for this endpoint.*/
+pub struct FindCorrelationResponse;
+impl jacquard_common::xrpc::XrpcResp for FindCorrelationResponse {
+    const NSID: &'static str = "tools.ozone.signature.findCorrelation";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = FindCorrelationOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for FindCorrelation<S> {
+    const NSID: &'static str = "tools.ozone.signature.findCorrelation";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = FindCorrelationResponse;
+}
+
+/** Endpoint marker for the `tools.ozone.signature.findCorrelation` query.
+
+Path: `/xrpc/tools.ozone.signature.findCorrelation`. The request payload type is `FindCorrelation<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct FindCorrelationRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for FindCorrelationRequest {
+    const PATH: &'static str = "/xrpc/tools.ozone.signature.findCorrelation";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = FindCorrelation<S>;
+    type Response = FindCorrelationResponse;
 }
 
 pub mod find_correlation_state {
@@ -33,9 +85,9 @@ pub mod find_correlation_state {
         type Dids = Unset;
     }
     ///State transition - sets the `dids` field to Set
-    pub struct SetDids<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDids<S> {}
-    impl<S: State> State for SetDids<S> {
+    pub struct SetDids<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetDids<St> {}
+    impl<St: State> State for SetDids<St> {
         type Dids = Set<members::dids>;
     }
     /// Marker types for field names
@@ -46,95 +98,81 @@ pub mod find_correlation_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct FindCorrelationBuilder<'a, S: find_correlation_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<Vec<jacquard_common::types::string::Did<'a>>>,),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct FindCorrelationBuilder<
+    St: find_correlation_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<Vec<jacquard_common::types::string::Did<S>>>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> FindCorrelation<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> FindCorrelationBuilder<'a, find_correlation_state::Empty> {
+impl FindCorrelation<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> FindCorrelationBuilder<find_correlation_state::Empty, jacquard_common::DefaultStr> {
         FindCorrelationBuilder::new()
     }
 }
 
-impl<'a> FindCorrelationBuilder<'a, find_correlation_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> FindCorrelation<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> FindCorrelationBuilder<find_correlation_state::Empty, S> {
+        FindCorrelationBuilder::builder()
+    }
+}
+
+impl FindCorrelationBuilder<find_correlation_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         FindCorrelationBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> FindCorrelationBuilder<'a, S>
+impl<S: jacquard_common::BosStr> FindCorrelationBuilder<find_correlation_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        FindCorrelationBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> FindCorrelationBuilder<St, S>
 where
-    S: find_correlation_state::State,
-    S::Dids: find_correlation_state::IsUnset,
+    St: find_correlation_state::State,
+    St::Dids: find_correlation_state::IsUnset,
 {
     /// Set the `dids` field (required)
     pub fn dids(
         mut self,
-        value: impl Into<Vec<jacquard_common::types::string::Did<'a>>>,
-    ) -> FindCorrelationBuilder<'a, find_correlation_state::SetDids<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<Vec<jacquard_common::types::string::Did<S>>>,
+    ) -> FindCorrelationBuilder<find_correlation_state::SetDids<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         FindCorrelationBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> FindCorrelationBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> FindCorrelationBuilder<St, S>
 where
-    S: find_correlation_state::State,
-    S::Dids: find_correlation_state::IsSet,
+    St: find_correlation_state::State,
+    St::Dids: find_correlation_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> FindCorrelation<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> FindCorrelation<S> {
         FindCorrelation {
-            dids: self.__unsafe_private_named.0.unwrap(),
+            dids: self._fields.0.unwrap(),
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct FindCorrelationOutput<'a> {
-    #[serde(borrow)]
-    pub details: Vec<crate::generated::tools_ozone::signature::SigDetail<'a>>,
-}
-
-/// Response type for
-///tools.ozone.signature.findCorrelation
-pub struct FindCorrelationResponse;
-impl jacquard_common::xrpc::XrpcResp for FindCorrelationResponse {
-    const NSID: &'static str = "tools.ozone.signature.findCorrelation";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = FindCorrelationOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for FindCorrelation<'a> {
-    const NSID: &'static str = "tools.ozone.signature.findCorrelation";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = FindCorrelationResponse;
-}
-
-/// Endpoint type for
-///tools.ozone.signature.findCorrelation
-pub struct FindCorrelationRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for FindCorrelationRequest {
-    const PATH: &'static str = "/xrpc/tools.ozone.signature.findCorrelation";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = FindCorrelation<'de>;
-    type Response = FindCorrelationResponse;
 }

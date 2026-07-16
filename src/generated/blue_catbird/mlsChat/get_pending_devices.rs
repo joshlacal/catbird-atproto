@@ -8,14 +8,117 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetPendingDevices<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub convo_ids: std::option::Option<Vec<jacquard_common::CowStr<'a>>>,
-    ///(default: 50, min: 1, max: 100)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub limit: std::option::Option<i64>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetPendingDevices<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub convo_ids: core::option::Option<Vec<S>>,
+    /// Defaults to `50`. Min: 1. Max: 100.
+    #[serde(default = "_default_limit")]
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub limit: core::option::Option<i64>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetPendingDevicesOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub pending_additions:
+        Vec<crate::generated::blue_catbird::mlsChat::get_pending_devices::PendingDeviceAddition<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct PendingDeviceAddition<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub convo_id: S,
+    pub created_at: jacquard_common::types::string::Datetime,
+    pub device_id: S,
+    ///MLS Welcome message if available
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(default, with = "jacquard_common::opt_serde_bytes_helper")]
+    pub welcome: core::option::Option<jacquard_common::deps::bytes::Bytes>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `blue.catbird.mlsChat.getPendingDevices` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetPendingDevicesOutput<S>` for this endpoint.*/
+pub struct GetPendingDevicesResponse;
+impl jacquard_common::xrpc::XrpcResp for GetPendingDevicesResponse {
+    const NSID: &'static str = "blue.catbird.mlsChat.getPendingDevices";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = GetPendingDevicesOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetPendingDevices<S> {
+    const NSID: &'static str = "blue.catbird.mlsChat.getPendingDevices";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = GetPendingDevicesResponse;
+}
+
+/** Endpoint marker for the `blue.catbird.mlsChat.getPendingDevices` query.
+
+Path: `/xrpc/blue.catbird.mlsChat.getPendingDevices`. The request payload type is `GetPendingDevices<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct GetPendingDevicesRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for GetPendingDevicesRequest {
+    const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.getPendingDevices";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = GetPendingDevices<S>;
+    type Response = GetPendingDevicesResponse;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+    for PendingDeviceAddition<S>
+{
+    fn nsid() -> &'static str {
+        "blue.catbird.mlsChat.getPendingDevices"
+    }
+    fn def_name() -> &'static str {
+        "pendingDeviceAddition"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_blue_catbird_mlsChat_getPendingDevices()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+fn _default_limit() -> core::option::Option<i64> {
+    Some(50i64)
 }
 
 pub mod get_pending_devices_state {
@@ -37,126 +140,95 @@ pub mod get_pending_devices_state {
     pub mod members {}
 }
 
-/// Builder for constructing an instance of this type
-pub struct GetPendingDevicesBuilder<'a, S: get_pending_devices_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<Vec<jacquard_common::CowStr<'a>>>,
-        ::core::option::Option<i64>,
-    ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct GetPendingDevicesBuilder<
+    St: get_pending_devices_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<Vec<S>>, core::option::Option<i64>),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> GetPendingDevices<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> GetPendingDevicesBuilder<'a, get_pending_devices_state::Empty> {
+impl GetPendingDevices<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> GetPendingDevicesBuilder<get_pending_devices_state::Empty, jacquard_common::DefaultStr>
+    {
         GetPendingDevicesBuilder::new()
     }
 }
 
-impl<'a> GetPendingDevicesBuilder<'a, get_pending_devices_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> GetPendingDevices<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> GetPendingDevicesBuilder<get_pending_devices_state::Empty, S> {
+        GetPendingDevicesBuilder::builder()
+    }
+}
+
+impl GetPendingDevicesBuilder<get_pending_devices_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetPendingDevicesBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: get_pending_devices_state::State> GetPendingDevicesBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> GetPendingDevicesBuilder<get_pending_devices_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GetPendingDevicesBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: get_pending_devices_state::State, S: jacquard_common::BosStr>
+    GetPendingDevicesBuilder<St, S>
+{
     /// Set the `convoIds` field (optional)
-    pub fn convo_ids(mut self, value: impl Into<Option<Vec<jacquard_common::CowStr<'a>>>>) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+    pub fn convo_ids(mut self, value: impl Into<Option<Vec<S>>>) -> Self {
+        self._fields.0 = value.into();
         self
     }
     /// Set the `convoIds` field to an Option value (optional)
-    pub fn maybe_convo_ids(mut self, value: Option<Vec<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.0 = value;
+    pub fn maybe_convo_ids(mut self, value: Option<Vec<S>>) -> Self {
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S: get_pending_devices_state::State> GetPendingDevicesBuilder<'a, S> {
+impl<St: get_pending_devices_state::State, S: jacquard_common::BosStr>
+    GetPendingDevicesBuilder<St, S>
+{
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self._fields.1 = value.into();
         self
     }
     /// Set the `limit` field to an Option value (optional)
     pub fn maybe_limit(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.1 = value;
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S> GetPendingDevicesBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GetPendingDevicesBuilder<St, S>
 where
-    S: get_pending_devices_state::State,
+    St: get_pending_devices_state::State,
 {
-    /// Build the final struct
-    pub fn build(self) -> GetPendingDevices<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> GetPendingDevices<S> {
         GetPendingDevices {
-            convo_ids: self.__unsafe_private_named.0,
-            limit: self.__unsafe_private_named.1,
+            convo_ids: self._fields.0,
+            limit: self._fields.1,
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GetPendingDevicesOutput<'a> {
-    #[serde(borrow)]
-    pub pending_additions: Vec<
-        crate::generated::blue_catbird::mlsChat::get_pending_devices::PendingDeviceAddition<'a>,
-    >,
-}
-
-/// Response type for
-///blue.catbird.mlsChat.getPendingDevices
-pub struct GetPendingDevicesResponse;
-impl jacquard_common::xrpc::XrpcResp for GetPendingDevicesResponse {
-    const NSID: &'static str = "blue.catbird.mlsChat.getPendingDevices";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetPendingDevicesOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for GetPendingDevices<'a> {
-    const NSID: &'static str = "blue.catbird.mlsChat.getPendingDevices";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = GetPendingDevicesResponse;
-}
-
-/// Endpoint type for
-///blue.catbird.mlsChat.getPendingDevices
-pub struct GetPendingDevicesRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for GetPendingDevicesRequest {
-    const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.getPendingDevices";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetPendingDevices<'de>;
-    type Response = GetPendingDevicesResponse;
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct PendingDeviceAddition<'a> {
-    #[serde(borrow)]
-    pub convo_id: jacquard_common::CowStr<'a>,
-    pub created_at: jacquard_common::types::string::Datetime,
-    #[serde(borrow)]
-    pub device_id: jacquard_common::CowStr<'a>,
-    /// MLS Welcome message if available
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(default, with = "jacquard_common::opt_serde_bytes_helper")]
-    pub welcome: std::option::Option<bytes::Bytes>,
 }
 
 pub mod pending_device_addition_state {
@@ -170,349 +242,318 @@ pub mod pending_device_addition_state {
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
         type ConvoId;
-        type DeviceId;
         type CreatedAt;
+        type DeviceId;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
         type ConvoId = Unset;
-        type DeviceId = Unset;
         type CreatedAt = Unset;
+        type DeviceId = Unset;
     }
     ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
+    pub struct SetConvoId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetConvoId<St> {}
+    impl<St: State> State for SetConvoId<St> {
         type ConvoId = Set<members::convo_id>;
-        type DeviceId = S::DeviceId;
-        type CreatedAt = S::CreatedAt;
-    }
-    ///State transition - sets the `device_id` field to Set
-    pub struct SetDeviceId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDeviceId<S> {}
-    impl<S: State> State for SetDeviceId<S> {
-        type ConvoId = S::ConvoId;
-        type DeviceId = Set<members::device_id>;
-        type CreatedAt = S::CreatedAt;
+        type CreatedAt = St::CreatedAt;
+        type DeviceId = St::DeviceId;
     }
     ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type ConvoId = S::ConvoId;
-        type DeviceId = S::DeviceId;
+    pub struct SetCreatedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCreatedAt<St> {}
+    impl<St: State> State for SetCreatedAt<St> {
+        type ConvoId = St::ConvoId;
         type CreatedAt = Set<members::created_at>;
+        type DeviceId = St::DeviceId;
+    }
+    ///State transition - sets the `device_id` field to Set
+    pub struct SetDeviceId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetDeviceId<St> {}
+    impl<St: State> State for SetDeviceId<St> {
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type DeviceId = Set<members::device_id>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
         ///Marker type for the `convo_id` field
         pub struct convo_id(());
-        ///Marker type for the `device_id` field
-        pub struct device_id(());
         ///Marker type for the `created_at` field
         pub struct created_at(());
+        ///Marker type for the `device_id` field
+        pub struct device_id(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct PendingDeviceAdditionBuilder<'a, S: pending_device_addition_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<bytes::Bytes>,
+/// Builder for constructing an instance of this type.
+pub struct PendingDeviceAdditionBuilder<
+    St: pending_device_addition_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> PendingDeviceAddition<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> PendingDeviceAdditionBuilder<'a, pending_device_addition_state::Empty> {
+impl PendingDeviceAddition<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> PendingDeviceAdditionBuilder<
+        pending_device_addition_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         PendingDeviceAdditionBuilder::new()
     }
 }
 
-impl<'a> PendingDeviceAdditionBuilder<'a, pending_device_addition_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> PendingDeviceAddition<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> PendingDeviceAdditionBuilder<pending_device_addition_state::Empty, S> {
+        PendingDeviceAdditionBuilder::builder()
+    }
+}
+
+impl
+    PendingDeviceAdditionBuilder<pending_device_addition_state::Empty, jacquard_common::DefaultStr>
+{
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         PendingDeviceAdditionBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> PendingDeviceAdditionBuilder<'a, S>
+impl<S: jacquard_common::BosStr>
+    PendingDeviceAdditionBuilder<pending_device_addition_state::Empty, S>
+{
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        PendingDeviceAdditionBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> PendingDeviceAdditionBuilder<St, S>
 where
-    S: pending_device_addition_state::State,
-    S::ConvoId: pending_device_addition_state::IsUnset,
+    St: pending_device_addition_state::State,
+    St::ConvoId: pending_device_addition_state::IsUnset,
 {
     /// Set the `convoId` field (required)
     pub fn convo_id(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> PendingDeviceAdditionBuilder<'a, pending_device_addition_state::SetConvoId<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> PendingDeviceAdditionBuilder<pending_device_addition_state::SetConvoId<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         PendingDeviceAdditionBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> PendingDeviceAdditionBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> PendingDeviceAdditionBuilder<St, S>
 where
-    S: pending_device_addition_state::State,
-    S::CreatedAt: pending_device_addition_state::IsUnset,
+    St: pending_device_addition_state::State,
+    St::CreatedAt: pending_device_addition_state::IsUnset,
 {
     /// Set the `createdAt` field (required)
     pub fn created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> PendingDeviceAdditionBuilder<'a, pending_device_addition_state::SetCreatedAt<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+    ) -> PendingDeviceAdditionBuilder<pending_device_addition_state::SetCreatedAt<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         PendingDeviceAdditionBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> PendingDeviceAdditionBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> PendingDeviceAdditionBuilder<St, S>
 where
-    S: pending_device_addition_state::State,
-    S::DeviceId: pending_device_addition_state::IsUnset,
+    St: pending_device_addition_state::State,
+    St::DeviceId: pending_device_addition_state::IsUnset,
 {
     /// Set the `deviceId` field (required)
     pub fn device_id(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> PendingDeviceAdditionBuilder<'a, pending_device_addition_state::SetDeviceId<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> PendingDeviceAdditionBuilder<pending_device_addition_state::SetDeviceId<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         PendingDeviceAdditionBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: pending_device_addition_state::State> PendingDeviceAdditionBuilder<'a, S> {
+impl<St: pending_device_addition_state::State, S: jacquard_common::BosStr>
+    PendingDeviceAdditionBuilder<St, S>
+{
     /// Set the `welcome` field (optional)
-    pub fn welcome(mut self, value: impl Into<Option<bytes::Bytes>>) -> Self {
-        self.__unsafe_private_named.3 = value.into();
+    pub fn welcome(
+        mut self,
+        value: impl Into<Option<jacquard_common::deps::bytes::Bytes>>,
+    ) -> Self {
+        self._fields.3 = value.into();
         self
     }
     /// Set the `welcome` field to an Option value (optional)
-    pub fn maybe_welcome(mut self, value: Option<bytes::Bytes>) -> Self {
-        self.__unsafe_private_named.3 = value;
+    pub fn maybe_welcome(mut self, value: Option<jacquard_common::deps::bytes::Bytes>) -> Self {
+        self._fields.3 = value;
         self
     }
 }
 
-impl<'a, S> PendingDeviceAdditionBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> PendingDeviceAdditionBuilder<St, S>
 where
-    S: pending_device_addition_state::State,
-    S::ConvoId: pending_device_addition_state::IsSet,
-    S::DeviceId: pending_device_addition_state::IsSet,
-    S::CreatedAt: pending_device_addition_state::IsSet,
+    St: pending_device_addition_state::State,
+    St::ConvoId: pending_device_addition_state::IsSet,
+    St::CreatedAt: pending_device_addition_state::IsSet,
+    St::DeviceId: pending_device_addition_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> PendingDeviceAddition<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> PendingDeviceAddition<S> {
         PendingDeviceAddition {
-            convo_id: self.__unsafe_private_named.0.unwrap(),
-            created_at: self.__unsafe_private_named.1.unwrap(),
-            device_id: self.__unsafe_private_named.2.unwrap(),
-            welcome: self.__unsafe_private_named.3,
+            convo_id: self._fields.0.unwrap(),
+            created_at: self._fields.1.unwrap(),
+            device_id: self._fields.2.unwrap(),
+            welcome: self._fields.3,
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> PendingDeviceAddition<'a> {
+    ) -> PendingDeviceAddition<S> {
         PendingDeviceAddition {
-            convo_id: self.__unsafe_private_named.0.unwrap(),
-            created_at: self.__unsafe_private_named.1.unwrap(),
-            device_id: self.__unsafe_private_named.2.unwrap(),
-            welcome: self.__unsafe_private_named.3,
+            convo_id: self._fields.0.unwrap(),
+            created_at: self._fields.1.unwrap(),
+            device_id: self._fields.2.unwrap(),
+            welcome: self._fields.3,
             extra_data: Some(extra_data),
         }
     }
 }
 
 fn lexicon_doc_blue_catbird_mlsChat_getPendingDevices(
-) -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+) -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("blue.catbird.mlsChat.getPendingDevices"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
                 ::jacquard_lexicon::lexicon::LexUserType::XrpcQuery(::jacquard_lexicon::lexicon::LexXrpcQuery {
-                    description: None,
                     parameters: Some(
                         ::jacquard_lexicon::lexicon::LexXrpcQueryParameter::Params(::jacquard_lexicon::lexicon::LexXrpcParameters {
-                            description: None,
-                            required: None,
                             properties: {
                                 #[allow(unused_mut)]
-                                let mut map = ::std::collections::BTreeMap::new();
+                                let mut map = ::alloc::collections::BTreeMap::new();
                                 map.insert(
-                                    ::jacquard_common::smol_str::SmolStr::new_static(
+                                    ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                         "convoIds",
                                     ),
                                     ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::Array(::jacquard_lexicon::lexicon::LexPrimitiveArray {
-                                        description: None,
                                         items: ::jacquard_lexicon::lexicon::LexPrimitiveArrayItem::String(::jacquard_lexicon::lexicon::LexString {
-                                            description: None,
-                                            format: None,
-                                            default: None,
-                                            min_length: None,
-                                            max_length: None,
-                                            min_graphemes: None,
-                                            max_graphemes: None,
-                                            r#enum: None,
-                                            r#const: None,
-                                            known_values: None,
+                                            ..Default::default()
                                         }),
-                                        min_length: None,
-                                        max_length: None,
+                                        ..Default::default()
                                     }),
                                 );
                                 map.insert(
-                                    ::jacquard_common::smol_str::SmolStr::new_static("limit"),
+                                    ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                        "limit",
+                                    ),
                                     ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
-                                        minimum: None,
-                                        maximum: None,
-                                        r#enum: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     }),
                                 );
                                 map
                             },
+                            ..Default::default()
                         }),
                     ),
-                    output: None,
-                    errors: None,
+                    ..Default::default()
                 }),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("pendingDeviceAddition"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("pendingDeviceAddition"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("deviceId"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("createdAt"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("deviceId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
                         ]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("createdAt"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("deviceId"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("deviceId"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("welcome"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("welcome"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
                                     ::jacquard_lexicon::lexicon::LexBytes {
-                                        description: None,
-                                        max_length: None,
-                                        min_length: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map
         },
-    }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for PendingDeviceAddition<'a> {
-    fn nsid() -> &'static str {
-        "blue.catbird.mlsChat.getPendingDevices"
-    }
-    fn def_name() -> &'static str {
-        "pendingDeviceAddition"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_blue_catbird_mlsChat_getPendingDevices()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
+        ..Default::default()
     }
 }

@@ -6,33 +6,121 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 /// Record indicating a livestream is published and available for replication at a given address. By convention, the record key is streamer::server
-#[jacquard_derive::lexicon]
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    rename = "place.stream.broadcast.origin",
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct Origin<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///did of the broadcaster that operates the server syndicating the livestream
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub broadcaster: core::option::Option<jacquard_common::types::string::Did<S>>,
+    ///Iroh ticket that can be used to access the livestream from the server
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub iroh_ticket: core::option::Option<S>,
+    ///did of the server that's currently rebroadcasting the livestream
+    pub server: jacquard_common::types::string::Did<S>,
+    ///DID of the streamer whose livestream is being published
+    pub streamer: jacquard_common::types::string::Did<S>,
+    ///Periodically updated timestamp when this origin last saw a livestream
+    pub updated_at: jacquard_common::types::string::Datetime,
+    ///URL of the websocket endpoint for the livestream
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub websocket_url: core::option::Option<jacquard_common::types::string::UriValue<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// Typed wrapper for GetRecord response with this collection's record type.
+
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
-pub struct Origin<'a> {
-    /// did of the broadcaster that operates the server syndicating the livestream
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub broadcaster: std::option::Option<jacquard_common::types::string::Did<'a>>,
-    /// Iroh ticket that can be used to access the livestream from the server
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub iroh_ticket: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// did of the server that's currently rebroadcasting the livestream
-    #[serde(borrow)]
-    pub server: jacquard_common::types::string::Did<'a>,
-    /// DID of the streamer whose livestream is being published
-    #[serde(borrow)]
-    pub streamer: jacquard_common::types::string::Did<'a>,
-    /// Periodically updated timestamp when this origin last saw a livestream
-    pub updated_at: jacquard_common::types::string::Datetime,
-    /// URL of the websocket endpoint for the livestream
-    #[serde(rename = "websocketURL")]
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub websocket_url: std::option::Option<jacquard_common::types::string::Uri<'a>>,
+pub struct OriginGetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
+    pub uri: jacquard_common::types::string::AtUri<S>,
+    pub value: Origin<S>,
+}
+
+impl<S: jacquard_common::BosStr> Origin<S> {
+    pub fn uri(
+        uri: S,
+    ) -> Result<
+        jacquard_common::types::uri::RecordUri<S, OriginRecord>,
+        jacquard_common::types::uri::UriError,
+    > {
+        jacquard_common::types::uri::RecordUri::try_from_uri(
+            jacquard_common::types::string::AtUri::new(uri)?,
+        )
+    }
+}
+
+/// Marker type for deserializing records from this collection.
+
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+pub struct OriginRecord;
+impl jacquard_common::xrpc::XrpcResp for OriginRecord {
+    const NSID: &'static str = "place.stream.broadcast.origin";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = OriginGetRecordOutput<S>;
+    type Err = jacquard_common::types::collection::RecordError;
+}
+
+impl<S: jacquard_common::BosStr> From<OriginGetRecordOutput<S>> for Origin<S> {
+    fn from(output: OriginGetRecordOutput<S>) -> Self {
+        output.value
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection for Origin<S> {
+    const NSID: &'static str = "place.stream.broadcast.origin";
+    type Record = OriginRecord;
+}
+
+impl jacquard_common::types::collection::Collection for OriginRecord {
+    const NSID: &'static str = "place.stream.broadcast.origin";
+    type Record = OriginRecord;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Origin<S> {
+    fn nsid() -> &'static str {
+        "place.stream.broadcast.origin"
+    }
+    fn def_name() -> &'static str {
+        "main"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_place_stream_broadcast_origin()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        if let Some(ref value) = self.iroh_ticket {
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 2048usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("iroh_ticket"),
+                    max: 2048usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        Ok(())
+    }
 }
 
 pub mod origin_state {
@@ -45,325 +133,262 @@ pub mod origin_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Streamer;
         type Server;
+        type Streamer;
         type UpdatedAt;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Streamer = Unset;
         type Server = Unset;
+        type Streamer = Unset;
         type UpdatedAt = Unset;
     }
-    ///State transition - sets the `streamer` field to Set
-    pub struct SetStreamer<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetStreamer<S> {}
-    impl<S: State> State for SetStreamer<S> {
-        type Streamer = Set<members::streamer>;
-        type Server = S::Server;
-        type UpdatedAt = S::UpdatedAt;
-    }
     ///State transition - sets the `server` field to Set
-    pub struct SetServer<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetServer<S> {}
-    impl<S: State> State for SetServer<S> {
-        type Streamer = S::Streamer;
+    pub struct SetServer<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetServer<St> {}
+    impl<St: State> State for SetServer<St> {
         type Server = Set<members::server>;
-        type UpdatedAt = S::UpdatedAt;
+        type Streamer = St::Streamer;
+        type UpdatedAt = St::UpdatedAt;
+    }
+    ///State transition - sets the `streamer` field to Set
+    pub struct SetStreamer<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetStreamer<St> {}
+    impl<St: State> State for SetStreamer<St> {
+        type Server = St::Server;
+        type Streamer = Set<members::streamer>;
+        type UpdatedAt = St::UpdatedAt;
     }
     ///State transition - sets the `updated_at` field to Set
-    pub struct SetUpdatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUpdatedAt<S> {}
-    impl<S: State> State for SetUpdatedAt<S> {
-        type Streamer = S::Streamer;
-        type Server = S::Server;
+    pub struct SetUpdatedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetUpdatedAt<St> {}
+    impl<St: State> State for SetUpdatedAt<St> {
+        type Server = St::Server;
+        type Streamer = St::Streamer;
         type UpdatedAt = Set<members::updated_at>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `streamer` field
-        pub struct streamer(());
         ///Marker type for the `server` field
         pub struct server(());
+        ///Marker type for the `streamer` field
+        pub struct streamer(());
         ///Marker type for the `updated_at` field
         pub struct updated_at(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct OriginBuilder<'a, S: origin_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<jacquard_common::types::string::Uri<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct OriginBuilder<
+    St: origin_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<jacquard_common::types::string::UriValue<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> Origin<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> OriginBuilder<'a, origin_state::Empty> {
+impl Origin<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> OriginBuilder<origin_state::Empty, jacquard_common::DefaultStr> {
         OriginBuilder::new()
     }
 }
 
-impl<'a> OriginBuilder<'a, origin_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> Origin<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> OriginBuilder<origin_state::Empty, S> {
+        OriginBuilder::builder()
+    }
+}
+
+impl OriginBuilder<origin_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         OriginBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: origin_state::State> OriginBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> OriginBuilder<origin_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        OriginBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: origin_state::State, S: jacquard_common::BosStr> OriginBuilder<St, S> {
     /// Set the `broadcaster` field (optional)
     pub fn broadcaster(
         mut self,
-        value: impl Into<Option<jacquard_common::types::string::Did<'a>>>,
+        value: impl Into<Option<jacquard_common::types::string::Did<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+        self._fields.0 = value.into();
         self
     }
     /// Set the `broadcaster` field to an Option value (optional)
     pub fn maybe_broadcaster(
         mut self,
-        value: Option<jacquard_common::types::string::Did<'a>>,
+        value: Option<jacquard_common::types::string::Did<S>>,
     ) -> Self {
-        self.__unsafe_private_named.0 = value;
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S: origin_state::State> OriginBuilder<'a, S> {
+impl<St: origin_state::State, S: jacquard_common::BosStr> OriginBuilder<St, S> {
     /// Set the `irohTicket` field (optional)
-    pub fn iroh_ticket(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+    pub fn iroh_ticket(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.1 = value.into();
         self
     }
     /// Set the `irohTicket` field to an Option value (optional)
-    pub fn maybe_iroh_ticket(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.1 = value;
+    pub fn maybe_iroh_ticket(mut self, value: Option<S>) -> Self {
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S> OriginBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> OriginBuilder<St, S>
 where
-    S: origin_state::State,
-    S::Server: origin_state::IsUnset,
+    St: origin_state::State,
+    St::Server: origin_state::IsUnset,
 {
     /// Set the `server` field (required)
     pub fn server(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> OriginBuilder<'a, origin_state::SetServer<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> OriginBuilder<origin_state::SetServer<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         OriginBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> OriginBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> OriginBuilder<St, S>
 where
-    S: origin_state::State,
-    S::Streamer: origin_state::IsUnset,
+    St: origin_state::State,
+    St::Streamer: origin_state::IsUnset,
 {
     /// Set the `streamer` field (required)
     pub fn streamer(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> OriginBuilder<'a, origin_state::SetStreamer<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> OriginBuilder<origin_state::SetStreamer<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
         OriginBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> OriginBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> OriginBuilder<St, S>
 where
-    S: origin_state::State,
-    S::UpdatedAt: origin_state::IsUnset,
+    St: origin_state::State,
+    St::UpdatedAt: origin_state::IsUnset,
 {
     /// Set the `updatedAt` field (required)
     pub fn updated_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> OriginBuilder<'a, origin_state::SetUpdatedAt<S>> {
-        self.__unsafe_private_named.4 = ::core::option::Option::Some(value.into());
+    ) -> OriginBuilder<origin_state::SetUpdatedAt<St>, S> {
+        self._fields.4 = ::core::option::Option::Some(value.into());
         OriginBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: origin_state::State> OriginBuilder<'a, S> {
+impl<St: origin_state::State, S: jacquard_common::BosStr> OriginBuilder<St, S> {
     /// Set the `websocketURL` field (optional)
     pub fn websocket_url(
         mut self,
-        value: impl Into<Option<jacquard_common::types::string::Uri<'a>>>,
+        value: impl Into<Option<jacquard_common::types::string::UriValue<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.5 = value.into();
+        self._fields.5 = value.into();
         self
     }
     /// Set the `websocketURL` field to an Option value (optional)
     pub fn maybe_websocket_url(
         mut self,
-        value: Option<jacquard_common::types::string::Uri<'a>>,
+        value: Option<jacquard_common::types::string::UriValue<S>>,
     ) -> Self {
-        self.__unsafe_private_named.5 = value;
+        self._fields.5 = value;
         self
     }
 }
 
-impl<'a, S> OriginBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> OriginBuilder<St, S>
 where
-    S: origin_state::State,
-    S::Streamer: origin_state::IsSet,
-    S::Server: origin_state::IsSet,
-    S::UpdatedAt: origin_state::IsSet,
+    St: origin_state::State,
+    St::Server: origin_state::IsSet,
+    St::Streamer: origin_state::IsSet,
+    St::UpdatedAt: origin_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> Origin<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> Origin<S> {
         Origin {
-            broadcaster: self.__unsafe_private_named.0,
-            iroh_ticket: self.__unsafe_private_named.1,
-            server: self.__unsafe_private_named.2.unwrap(),
-            streamer: self.__unsafe_private_named.3.unwrap(),
-            updated_at: self.__unsafe_private_named.4.unwrap(),
-            websocket_url: self.__unsafe_private_named.5,
+            broadcaster: self._fields.0,
+            iroh_ticket: self._fields.1,
+            server: self._fields.2.unwrap(),
+            streamer: self._fields.3.unwrap(),
+            updated_at: self._fields.4.unwrap(),
+            websocket_url: self._fields.5,
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> Origin<'a> {
+    ) -> Origin<S> {
         Origin {
-            broadcaster: self.__unsafe_private_named.0,
-            iroh_ticket: self.__unsafe_private_named.1,
-            server: self.__unsafe_private_named.2.unwrap(),
-            streamer: self.__unsafe_private_named.3.unwrap(),
-            updated_at: self.__unsafe_private_named.4.unwrap(),
-            websocket_url: self.__unsafe_private_named.5,
+            broadcaster: self._fields.0,
+            iroh_ticket: self._fields.1,
+            server: self._fields.2.unwrap(),
+            streamer: self._fields.3.unwrap(),
+            updated_at: self._fields.4.unwrap(),
+            websocket_url: self._fields.5,
             extra_data: Some(extra_data),
         }
     }
 }
 
-impl<'a> Origin<'a> {
-    pub fn uri(
-        uri: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> Result<
-        jacquard_common::types::uri::RecordUri<'a, OriginRecord>,
-        jacquard_common::types::uri::UriError,
-    > {
-        jacquard_common::types::uri::RecordUri::try_from_uri(
-            jacquard_common::types::string::AtUri::new_cow(uri.into())?,
-        )
-    }
-}
-
-/// Typed wrapper for GetRecord response with this collection's record type.
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct OriginGetRecordOutput<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cid: std::option::Option<jacquard_common::types::string::Cid<'a>>,
-    #[serde(borrow)]
-    pub uri: jacquard_common::types::string::AtUri<'a>,
-    #[serde(borrow)]
-    pub value: Origin<'a>,
-}
-
-impl From<OriginGetRecordOutput<'_>> for Origin<'_> {
-    fn from(output: OriginGetRecordOutput<'_>) -> Self {
-        use jacquard_common::IntoStatic;
-        output.value.into_static()
-    }
-}
-
-impl jacquard_common::types::collection::Collection for Origin<'_> {
-    const NSID: &'static str = "place.stream.broadcast.origin";
-    type Record = OriginRecord;
-}
-
-/// Marker type for deserializing records from this collection.
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
-pub struct OriginRecord;
-impl jacquard_common::xrpc::XrpcResp for OriginRecord {
-    const NSID: &'static str = "place.stream.broadcast.origin";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = OriginGetRecordOutput<'de>;
-    type Err<'de> = jacquard_common::types::collection::RecordError<'de>;
-}
-
-impl jacquard_common::types::collection::Collection for OriginRecord {
-    const NSID: &'static str = "place.stream.broadcast.origin";
-    type Record = OriginRecord;
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Origin<'a> {
-    fn nsid() -> &'static str {
-        "place.stream.broadcast.origin"
-    }
-    fn def_name() -> &'static str {
-        "main"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_place_stream_broadcast_origin()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        if let Some(ref value) = self.iroh_ticket {
-            #[allow(unused_comparisons)]
-            if <str>::len(value.as_ref()) > 2048usize {
-                return Err(::jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("iroh_ticket"),
-                    max: 2048usize,
-                    actual: <str>::len(value.as_ref()),
-                });
-            }
-        }
-        Ok(())
-    }
-}
-
-fn lexicon_doc_place_stream_broadcast_origin() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_place_stream_broadcast_origin() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("place.stream.broadcast.origin"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
                 ::jacquard_lexicon::lexicon::LexUserType::Record(::jacquard_lexicon::lexicon::LexRecord {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
@@ -372,20 +397,18 @@ fn lexicon_doc_place_stream_broadcast_origin() -> ::jacquard_lexicon::lexicon::L
                     ),
                     key: Some(::jacquard_common::CowStr::new_static("any")),
                     record: ::jacquard_lexicon::lexicon::LexRecordRecord::Object(::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(
                             vec![
-                                ::jacquard_common::smol_str::SmolStr::new_static("streamer"),
-                                ::jacquard_common::smol_str::SmolStr::new_static("server"),
-                                ::jacquard_common::smol_str::SmolStr::new_static("updatedAt")
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("streamer"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("server"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("updatedAt")
                             ],
                         ),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "broadcaster",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -397,18 +420,11 @@ fn lexicon_doc_place_stream_broadcast_origin() -> ::jacquard_lexicon::lexicon::L
                                     format: Some(
                                         ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                     ),
-                                    default: None,
-                                    min_length: None,
-                                    max_length: None,
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "irohTicket",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -417,19 +433,14 @@ fn lexicon_doc_place_stream_broadcast_origin() -> ::jacquard_lexicon::lexicon::L
                                             "Iroh ticket that can be used to access the livestream from the server",
                                         ),
                                     ),
-                                    format: None,
-                                    default: None,
-                                    min_length: None,
                                     max_length: Some(2048usize),
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("server"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "server",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                     description: Some(
                                         ::jacquard_common::CowStr::new_static(
@@ -439,18 +450,11 @@ fn lexicon_doc_place_stream_broadcast_origin() -> ::jacquard_lexicon::lexicon::L
                                     format: Some(
                                         ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                     ),
-                                    default: None,
-                                    min_length: None,
-                                    max_length: None,
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "streamer",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -462,18 +466,11 @@ fn lexicon_doc_place_stream_broadcast_origin() -> ::jacquard_lexicon::lexicon::L
                                     format: Some(
                                         ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                     ),
-                                    default: None,
-                                    min_length: None,
-                                    max_length: None,
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "updatedAt",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -485,18 +482,11 @@ fn lexicon_doc_place_stream_broadcast_origin() -> ::jacquard_lexicon::lexicon::L
                                     format: Some(
                                         ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                     ),
-                                    default: None,
-                                    min_length: None,
-                                    max_length: None,
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "websocketURL",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -508,22 +498,18 @@ fn lexicon_doc_place_stream_broadcast_origin() -> ::jacquard_lexicon::lexicon::L
                                     format: Some(
                                         ::jacquard_lexicon::lexicon::LexStringFormat::Uri,
                                     ),
-                                    default: None,
-                                    min_length: None,
-                                    max_length: None,
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
                             );
                             map
                         },
+                        ..Default::default()
                     }),
+                    ..Default::default()
                 }),
             );
             map
         },
+        ..Default::default()
     }
 }

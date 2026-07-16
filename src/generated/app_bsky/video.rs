@@ -5,35 +5,157 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
+//! Generated bindings for the `app.bsky.video` Lexicon namespace/module.
 pub mod get_job_status;
 pub mod get_upload_limits;
 pub mod upload_video;
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct JobStatus<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub blob: std::option::Option<jacquard_common::types::blob::BlobRef<'a>>,
-    #[serde(borrow)]
-    pub did: jacquard_common::types::string::Did<'a>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub error: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(borrow)]
-    pub job_id: jacquard_common::CowStr<'a>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub message: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// Progress within the current processing state.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub progress: std::option::Option<i64>,
-    /// The state of the video processing job. All values not listed as a known value indicate that the job is in process.
-    #[serde(borrow)]
-    pub state: jacquard_common::CowStr<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct JobStatus<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub blob: core::option::Option<jacquard_common::types::blob::BlobRef<S>>,
+    pub did: jacquard_common::types::string::Did<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub error: core::option::Option<S>,
+    pub job_id: S,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub message: core::option::Option<S>,
+    ///Progress within the current processing state.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub progress: core::option::Option<i64>,
+    ///The state of the video processing job. All values not listed as a known value indicate that the job is in process.
+    pub state: JobStatusState<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// The state of the video processing job. All values not listed as a known value indicate that the job is in process.
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum JobStatusState<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    JobStateCompleted,
+    JobStateFailed,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> JobStatusState<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::JobStateCompleted => "JOB_STATE_COMPLETED",
+            Self::JobStateFailed => "JOB_STATE_FAILED",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "JOB_STATE_COMPLETED" => Self::JobStateCompleted,
+            "JOB_STATE_FAILED" => Self::JobStateFailed,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for JobStatusState<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for JobStatusState<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for JobStatusState<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for JobStatusState<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for JobStatusState<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for JobStatusState<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = JobStatusState<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            JobStatusState::JobStateCompleted => JobStatusState::JobStateCompleted,
+            JobStatusState::JobStateFailed => JobStatusState::JobStateFailed,
+            JobStatusState::Other(v) => JobStatusState::Other(v.into_static()),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for JobStatus<S> {
+    fn nsid() -> &'static str {
+        "app.bsky.video.defs"
+    }
+    fn def_name() -> &'static str {
+        "jobStatus"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_app_bsky_video_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        if let Some(ref value) = self.progress {
+            if *value > 100i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("progress"),
+                    max: 100i64,
+                    actual: *value,
+                });
+            }
+        }
+        if let Some(ref value) = self.progress {
+            if *value < 0i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("progress"),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
+        Ok(())
+    }
 }
 
 pub mod job_status_state {
@@ -46,403 +168,353 @@ pub mod job_status_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type JobId;
         type Did;
+        type JobId;
         type State;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type JobId = Unset;
         type Did = Unset;
+        type JobId = Unset;
         type State = Unset;
     }
-    ///State transition - sets the `job_id` field to Set
-    pub struct SetJobId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetJobId<S> {}
-    impl<S: State> State for SetJobId<S> {
-        type JobId = Set<members::job_id>;
-        type Did = S::Did;
-        type State = S::State;
-    }
     ///State transition - sets the `did` field to Set
-    pub struct SetDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDid<S> {}
-    impl<S: State> State for SetDid<S> {
-        type JobId = S::JobId;
+    pub struct SetDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetDid<St> {}
+    impl<St: State> State for SetDid<St> {
         type Did = Set<members::did>;
-        type State = S::State;
+        type JobId = St::JobId;
+        type State = St::State;
+    }
+    ///State transition - sets the `job_id` field to Set
+    pub struct SetJobId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetJobId<St> {}
+    impl<St: State> State for SetJobId<St> {
+        type Did = St::Did;
+        type JobId = Set<members::job_id>;
+        type State = St::State;
     }
     ///State transition - sets the `state` field to Set
-    pub struct SetState<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetState<S> {}
-    impl<S: State> State for SetState<S> {
-        type JobId = S::JobId;
-        type Did = S::Did;
+    pub struct SetState<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetState<St> {}
+    impl<St: State> State for SetState<St> {
+        type Did = St::Did;
+        type JobId = St::JobId;
         type State = Set<members::state>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `job_id` field
-        pub struct job_id(());
         ///Marker type for the `did` field
         pub struct did(());
+        ///Marker type for the `job_id` field
+        pub struct job_id(());
         ///Marker type for the `state` field
         pub struct state(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct JobStatusBuilder<'a, S: job_status_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::blob::BlobRef<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct JobStatusBuilder<
+    St: job_status_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::blob::BlobRef<S>>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<S>,
+        core::option::Option<S>,
+        core::option::Option<S>,
+        core::option::Option<i64>,
+        core::option::Option<JobStatusState<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> JobStatus<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> JobStatusBuilder<'a, job_status_state::Empty> {
+impl JobStatus<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> JobStatusBuilder<job_status_state::Empty, jacquard_common::DefaultStr> {
         JobStatusBuilder::new()
     }
 }
 
-impl<'a> JobStatusBuilder<'a, job_status_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> JobStatus<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> JobStatusBuilder<job_status_state::Empty, S> {
+        JobStatusBuilder::builder()
+    }
+}
+
+impl JobStatusBuilder<job_status_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         JobStatusBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: job_status_state::State> JobStatusBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> JobStatusBuilder<job_status_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        JobStatusBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: job_status_state::State, S: jacquard_common::BosStr> JobStatusBuilder<St, S> {
     /// Set the `blob` field (optional)
     pub fn blob(
         mut self,
-        value: impl Into<Option<jacquard_common::types::blob::BlobRef<'a>>>,
+        value: impl Into<Option<jacquard_common::types::blob::BlobRef<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+        self._fields.0 = value.into();
         self
     }
     /// Set the `blob` field to an Option value (optional)
-    pub fn maybe_blob(mut self, value: Option<jacquard_common::types::blob::BlobRef<'a>>) -> Self {
-        self.__unsafe_private_named.0 = value;
+    pub fn maybe_blob(mut self, value: Option<jacquard_common::types::blob::BlobRef<S>>) -> Self {
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S> JobStatusBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> JobStatusBuilder<St, S>
 where
-    S: job_status_state::State,
-    S::Did: job_status_state::IsUnset,
+    St: job_status_state::State,
+    St::Did: job_status_state::IsUnset,
 {
     /// Set the `did` field (required)
     pub fn did(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> JobStatusBuilder<'a, job_status_state::SetDid<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> JobStatusBuilder<job_status_state::SetDid<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         JobStatusBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: job_status_state::State> JobStatusBuilder<'a, S> {
+impl<St: job_status_state::State, S: jacquard_common::BosStr> JobStatusBuilder<St, S> {
     /// Set the `error` field (optional)
-    pub fn error(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.2 = value.into();
+    pub fn error(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.2 = value.into();
         self
     }
     /// Set the `error` field to an Option value (optional)
-    pub fn maybe_error(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.2 = value;
+    pub fn maybe_error(mut self, value: Option<S>) -> Self {
+        self._fields.2 = value;
         self
     }
 }
 
-impl<'a, S> JobStatusBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> JobStatusBuilder<St, S>
 where
-    S: job_status_state::State,
-    S::JobId: job_status_state::IsUnset,
+    St: job_status_state::State,
+    St::JobId: job_status_state::IsUnset,
 {
     /// Set the `jobId` field (required)
     pub fn job_id(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> JobStatusBuilder<'a, job_status_state::SetJobId<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> JobStatusBuilder<job_status_state::SetJobId<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
         JobStatusBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: job_status_state::State> JobStatusBuilder<'a, S> {
+impl<St: job_status_state::State, S: jacquard_common::BosStr> JobStatusBuilder<St, S> {
     /// Set the `message` field (optional)
-    pub fn message(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.4 = value.into();
+    pub fn message(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.4 = value.into();
         self
     }
     /// Set the `message` field to an Option value (optional)
-    pub fn maybe_message(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.4 = value;
+    pub fn maybe_message(mut self, value: Option<S>) -> Self {
+        self._fields.4 = value;
         self
     }
 }
 
-impl<'a, S: job_status_state::State> JobStatusBuilder<'a, S> {
+impl<St: job_status_state::State, S: jacquard_common::BosStr> JobStatusBuilder<St, S> {
     /// Set the `progress` field (optional)
     pub fn progress(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.5 = value.into();
+        self._fields.5 = value.into();
         self
     }
     /// Set the `progress` field to an Option value (optional)
     pub fn maybe_progress(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.5 = value;
+        self._fields.5 = value;
         self
     }
 }
 
-impl<'a, S> JobStatusBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> JobStatusBuilder<St, S>
 where
-    S: job_status_state::State,
-    S::State: job_status_state::IsUnset,
+    St: job_status_state::State,
+    St::State: job_status_state::IsUnset,
 {
     /// Set the `state` field (required)
     pub fn state(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> JobStatusBuilder<'a, job_status_state::SetState<S>> {
-        self.__unsafe_private_named.6 = ::core::option::Option::Some(value.into());
+        value: impl Into<JobStatusState<S>>,
+    ) -> JobStatusBuilder<job_status_state::SetState<St>, S> {
+        self._fields.6 = ::core::option::Option::Some(value.into());
         JobStatusBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> JobStatusBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> JobStatusBuilder<St, S>
 where
-    S: job_status_state::State,
-    S::JobId: job_status_state::IsSet,
-    S::Did: job_status_state::IsSet,
-    S::State: job_status_state::IsSet,
+    St: job_status_state::State,
+    St::Did: job_status_state::IsSet,
+    St::JobId: job_status_state::IsSet,
+    St::State: job_status_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> JobStatus<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> JobStatus<S> {
         JobStatus {
-            blob: self.__unsafe_private_named.0,
-            did: self.__unsafe_private_named.1.unwrap(),
-            error: self.__unsafe_private_named.2,
-            job_id: self.__unsafe_private_named.3.unwrap(),
-            message: self.__unsafe_private_named.4,
-            progress: self.__unsafe_private_named.5,
-            state: self.__unsafe_private_named.6.unwrap(),
+            blob: self._fields.0,
+            did: self._fields.1.unwrap(),
+            error: self._fields.2,
+            job_id: self._fields.3.unwrap(),
+            message: self._fields.4,
+            progress: self._fields.5,
+            state: self._fields.6.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> JobStatus<'a> {
+    ) -> JobStatus<S> {
         JobStatus {
-            blob: self.__unsafe_private_named.0,
-            did: self.__unsafe_private_named.1.unwrap(),
-            error: self.__unsafe_private_named.2,
-            job_id: self.__unsafe_private_named.3.unwrap(),
-            message: self.__unsafe_private_named.4,
-            progress: self.__unsafe_private_named.5,
-            state: self.__unsafe_private_named.6.unwrap(),
+            blob: self._fields.0,
+            did: self._fields.1.unwrap(),
+            error: self._fields.2,
+            job_id: self._fields.3.unwrap(),
+            message: self._fields.4,
+            progress: self._fields.5,
+            state: self._fields.6.unwrap(),
             extra_data: Some(extra_data),
         }
     }
 }
 
-fn lexicon_doc_app_bsky_video_defs() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_app_bsky_video_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("app.bsky.video.defs"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("jobStatus"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("jobStatus"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
-                    description: None,
                     required: Some(
                         vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("jobId"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("did"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("state")
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("jobId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("state")
                         ],
                     ),
-                    nullable: None,
                     properties: {
                         #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
+                        let mut map = ::alloc::collections::BTreeMap::new();
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("blob"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "blob",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Blob(::jacquard_lexicon::lexicon::LexBlob {
-                                description: None,
-                                accept: None,
-                                max_size: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("did"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "did",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("error"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "error",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("jobId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "jobId",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("message"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "message",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("progress"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "progress",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                description: None,
-                                default: None,
                                 minimum: Some(0i64),
                                 maximum: Some(100i64),
-                                r#enum: None,
-                                r#const: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("state"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "state",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
                                         "The state of the video processing job. All values not listed as a known value indicate that the job is in process.",
                                     ),
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map
                     },
+                    ..Default::default()
                 }),
             );
             map
         },
-    }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for JobStatus<'a> {
-    fn nsid() -> &'static str {
-        "app.bsky.video.defs"
-    }
-    fn def_name() -> &'static str {
-        "jobStatus"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_app_bsky_video_defs()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        if let Some(ref value) = self.progress {
-            if *value > 100i64 {
-                return Err(::jacquard_lexicon::validation::ConstraintError::Maximum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("progress"),
-                    max: 100i64,
-                    actual: *value,
-                });
-            }
-        }
-        if let Some(ref value) = self.progress {
-            if *value < 0i64 {
-                return Err(::jacquard_lexicon::validation::ConstraintError::Minimum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("progress"),
-                    min: 0i64,
-                    actual: *value,
-                });
-            }
-        }
-        Ok(())
+        ..Default::default()
     }
 }

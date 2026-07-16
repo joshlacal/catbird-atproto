@@ -10,24 +10,39 @@
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GetServerTime;
-#[jacquard_derive::lexicon]
+
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetServerTimeOutput<'a> {
-    /// Current server time in RFC3339 format
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetServerTimeOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Current server time in RFC3339 format
     pub server_time: jacquard_common::types::string::Datetime,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-/// Response type for
-///place.stream.server.getServerTime
+/** Response marker for the `place.stream.server.getServerTime` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetServerTimeOutput<S>` for this endpoint.*/
 pub struct GetServerTimeResponse;
 impl jacquard_common::xrpc::XrpcResp for GetServerTimeResponse {
     const NSID: &'static str = "place.stream.server.getServerTime";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetServerTimeOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
+    type Output<S: jacquard_common::BosStr> = GetServerTimeOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
 }
 
 impl jacquard_common::xrpc::XrpcRequest for GetServerTime {
@@ -36,12 +51,13 @@ impl jacquard_common::xrpc::XrpcRequest for GetServerTime {
     type Response = GetServerTimeResponse;
 }
 
-/// Endpoint type for
-///place.stream.server.getServerTime
+/** Endpoint marker for the `place.stream.server.getServerTime` query.
+
+Path: `/xrpc/place.stream.server.getServerTime`. The request payload type is `GetServerTime`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct GetServerTimeRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for GetServerTimeRequest {
     const PATH: &'static str = "/xrpc/place.stream.server.getServerTime";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetServerTime;
+    type Request<S: jacquard_common::BosStr> = GetServerTime;
     type Response = GetServerTimeResponse;
 }

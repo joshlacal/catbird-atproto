@@ -8,22 +8,85 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetAssignments<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub dids: std::option::Option<Vec<jacquard_common::types::string::Did<'a>>>,
-    ///(default: 50, min: 1, max: 100)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub limit: std::option::Option<i64>,
-    /// (default: true)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub only_active: std::option::Option<bool>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub report_ids: std::option::Option<Vec<i64>>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetAssignments<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub dids: core::option::Option<Vec<jacquard_common::types::string::Did<S>>>,
+    /// Defaults to `50`. Min: 1. Max: 100.
+    #[serde(default = "_default_limit")]
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub limit: core::option::Option<i64>,
+    ///  Defaults to `true`.
+    #[serde(default = "_default_only_active")]
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub only_active: core::option::Option<bool>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub report_ids: core::option::Option<Vec<i64>>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetAssignmentsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub assignments: Vec<crate::generated::tools_ozone::report::AssignmentView<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `tools.ozone.report.getAssignments` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetAssignmentsOutput<S>` for this endpoint.*/
+pub struct GetAssignmentsResponse;
+impl jacquard_common::xrpc::XrpcResp for GetAssignmentsResponse {
+    const NSID: &'static str = "tools.ozone.report.getAssignments";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = GetAssignmentsOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetAssignments<S> {
+    const NSID: &'static str = "tools.ozone.report.getAssignments";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = GetAssignmentsResponse;
+}
+
+/** Endpoint marker for the `tools.ozone.report.getAssignments` query.
+
+Path: `/xrpc/tools.ozone.report.getAssignments`. The request payload type is `GetAssignments<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct GetAssignmentsRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for GetAssignmentsRequest {
+    const PATH: &'static str = "/xrpc/tools.ozone.report.getAssignments";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = GetAssignments<S>;
+    type Response = GetAssignmentsResponse;
+}
+
+fn _default_limit() -> core::option::Option<i64> {
+    Some(50i64)
+}
+
+fn _default_only_active() -> core::option::Option<bool> {
+    Some(true)
 }
 
 pub mod get_assignments_state {
@@ -45,159 +108,142 @@ pub mod get_assignments_state {
     pub mod members {}
 }
 
-/// Builder for constructing an instance of this type
-pub struct GetAssignmentsBuilder<'a, S: get_assignments_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<Vec<jacquard_common::types::string::Did<'a>>>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<bool>,
-        ::core::option::Option<Vec<i64>>,
+/// Builder for constructing an instance of this type.
+pub struct GetAssignmentsBuilder<
+    St: get_assignments_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<Vec<jacquard_common::types::string::Did<S>>>,
+        core::option::Option<i64>,
+        core::option::Option<bool>,
+        core::option::Option<Vec<i64>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> GetAssignments<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> GetAssignmentsBuilder<'a, get_assignments_state::Empty> {
+impl GetAssignments<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> GetAssignmentsBuilder<get_assignments_state::Empty, jacquard_common::DefaultStr>
+    {
         GetAssignmentsBuilder::new()
     }
 }
 
-impl<'a> GetAssignmentsBuilder<'a, get_assignments_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> GetAssignments<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> GetAssignmentsBuilder<get_assignments_state::Empty, S> {
+        GetAssignmentsBuilder::builder()
+    }
+}
+
+impl GetAssignmentsBuilder<get_assignments_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetAssignmentsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: get_assignments_state::State> GetAssignmentsBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> GetAssignmentsBuilder<get_assignments_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GetAssignmentsBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: get_assignments_state::State, S: jacquard_common::BosStr> GetAssignmentsBuilder<St, S> {
     /// Set the `cursor` field (optional)
-    pub fn cursor(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+    pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.0 = value.into();
         self
     }
     /// Set the `cursor` field to an Option value (optional)
-    pub fn maybe_cursor(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.0 = value;
+    pub fn maybe_cursor(mut self, value: Option<S>) -> Self {
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S: get_assignments_state::State> GetAssignmentsBuilder<'a, S> {
+impl<St: get_assignments_state::State, S: jacquard_common::BosStr> GetAssignmentsBuilder<St, S> {
     /// Set the `dids` field (optional)
     pub fn dids(
         mut self,
-        value: impl Into<Option<Vec<jacquard_common::types::string::Did<'a>>>>,
+        value: impl Into<Option<Vec<jacquard_common::types::string::Did<S>>>>,
     ) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self._fields.1 = value.into();
         self
     }
     /// Set the `dids` field to an Option value (optional)
     pub fn maybe_dids(
         mut self,
-        value: Option<Vec<jacquard_common::types::string::Did<'a>>>,
+        value: Option<Vec<jacquard_common::types::string::Did<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.1 = value;
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S: get_assignments_state::State> GetAssignmentsBuilder<'a, S> {
+impl<St: get_assignments_state::State, S: jacquard_common::BosStr> GetAssignmentsBuilder<St, S> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.2 = value.into();
+        self._fields.2 = value.into();
         self
     }
     /// Set the `limit` field to an Option value (optional)
     pub fn maybe_limit(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.2 = value;
+        self._fields.2 = value;
         self
     }
 }
 
-impl<'a, S: get_assignments_state::State> GetAssignmentsBuilder<'a, S> {
+impl<St: get_assignments_state::State, S: jacquard_common::BosStr> GetAssignmentsBuilder<St, S> {
     /// Set the `onlyActive` field (optional)
     pub fn only_active(mut self, value: impl Into<Option<bool>>) -> Self {
-        self.__unsafe_private_named.3 = value.into();
+        self._fields.3 = value.into();
         self
     }
     /// Set the `onlyActive` field to an Option value (optional)
     pub fn maybe_only_active(mut self, value: Option<bool>) -> Self {
-        self.__unsafe_private_named.3 = value;
+        self._fields.3 = value;
         self
     }
 }
 
-impl<'a, S: get_assignments_state::State> GetAssignmentsBuilder<'a, S> {
+impl<St: get_assignments_state::State, S: jacquard_common::BosStr> GetAssignmentsBuilder<St, S> {
     /// Set the `reportIds` field (optional)
     pub fn report_ids(mut self, value: impl Into<Option<Vec<i64>>>) -> Self {
-        self.__unsafe_private_named.4 = value.into();
+        self._fields.4 = value.into();
         self
     }
     /// Set the `reportIds` field to an Option value (optional)
     pub fn maybe_report_ids(mut self, value: Option<Vec<i64>>) -> Self {
-        self.__unsafe_private_named.4 = value;
+        self._fields.4 = value;
         self
     }
 }
 
-impl<'a, S> GetAssignmentsBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GetAssignmentsBuilder<St, S>
 where
-    S: get_assignments_state::State,
+    St: get_assignments_state::State,
 {
-    /// Build the final struct
-    pub fn build(self) -> GetAssignments<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> GetAssignments<S> {
         GetAssignments {
-            cursor: self.__unsafe_private_named.0,
-            dids: self.__unsafe_private_named.1,
-            limit: self.__unsafe_private_named.2,
-            only_active: self.__unsafe_private_named.3,
-            report_ids: self.__unsafe_private_named.4,
+            cursor: self._fields.0,
+            dids: self._fields.1,
+            limit: self._fields.2,
+            only_active: self._fields.3,
+            report_ids: self._fields.4,
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GetAssignmentsOutput<'a> {
-    #[serde(borrow)]
-    pub assignments: Vec<crate::generated::tools_ozone::report::AssignmentView<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-}
-
-/// Response type for
-///tools.ozone.report.getAssignments
-pub struct GetAssignmentsResponse;
-impl jacquard_common::xrpc::XrpcResp for GetAssignmentsResponse {
-    const NSID: &'static str = "tools.ozone.report.getAssignments";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetAssignmentsOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for GetAssignments<'a> {
-    const NSID: &'static str = "tools.ozone.report.getAssignments";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = GetAssignmentsResponse;
-}
-
-/// Endpoint type for
-///tools.ozone.report.getAssignments
-pub struct GetAssignmentsRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for GetAssignmentsRequest {
-    const PATH: &'static str = "/xrpc/tools.ozone.report.getAssignments";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetAssignments<'de>;
-    type Response = GetAssignmentsResponse;
 }

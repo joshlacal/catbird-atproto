@@ -5,7 +5,6 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -16,172 +15,247 @@
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct BrandingAsset<'a> {
-    /// Inline data for text assets
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub data: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// Image height in pixels (optional, for images only)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub height: std::option::Option<i64>,
-    /// Asset key identifier
-    #[serde(borrow)]
-    pub key: jacquard_common::CowStr<'a>,
-    /// MIME type of the asset
-    #[serde(borrow)]
-    pub mime_type: jacquard_common::CowStr<'a>,
-    /// URL to fetch the asset blob (for images)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub url: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// Image width in pixels (optional, for images only)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub width: std::option::Option<i64>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct BrandingAsset<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Inline data for text assets
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub data: core::option::Option<S>,
+    ///Image height in pixels (optional, for images only)
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub height: core::option::Option<i64>,
+    ///Asset key identifier
+    pub key: S,
+    ///MIME type of the asset
+    pub mime_type: S,
+    ///URL to fetch the asset blob (for images)
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub url: core::option::Option<S>,
+    ///Image width in pixels (optional, for images only)
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub width: core::option::Option<i64>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-fn lexicon_doc_place_stream_branding_getBranding(
-) -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetBranding<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub broadcaster: core::option::Option<jacquard_common::types::string::Did<S>>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetBrandingOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///List of available branding assets
+    pub assets: Vec<crate::generated::place_stream::branding::get_branding::BrandingAsset<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    thiserror::Error,
+    miette::Diagnostic,
+)]
+#[serde(tag = "error", content = "message")]
+pub enum GetBrandingError {
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
+}
+
+impl core::fmt::Display for GetBrandingError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for BrandingAsset<S> {
+    fn nsid() -> &'static str {
+        "place.stream.branding.getBranding"
+    }
+    fn def_name() -> &'static str {
+        "brandingAsset"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_place_stream_branding_getBranding()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+/** Response marker for the `place.stream.branding.getBranding` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetBrandingOutput<S>` for this endpoint.*/
+pub struct GetBrandingResponse;
+impl jacquard_common::xrpc::XrpcResp for GetBrandingResponse {
+    const NSID: &'static str = "place.stream.branding.getBranding";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = GetBrandingOutput<S>;
+    type Err = GetBrandingError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetBranding<S> {
+    const NSID: &'static str = "place.stream.branding.getBranding";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = GetBrandingResponse;
+}
+
+/** Endpoint marker for the `place.stream.branding.getBranding` query.
+
+Path: `/xrpc/place.stream.branding.getBranding`. The request payload type is `GetBranding<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct GetBrandingRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for GetBrandingRequest {
+    const PATH: &'static str = "/xrpc/place.stream.branding.getBranding";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = GetBranding<S>;
+    type Response = GetBrandingResponse;
+}
+
+fn lexicon_doc_place_stream_branding_getBranding() -> jacquard_lexicon::lexicon::LexiconDoc<'static>
+{
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("place.stream.branding.getBranding"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("brandingAsset"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("brandingAsset"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("key"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("mimeType"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("key"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("mimeType"),
                         ]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("data"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("data"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
                                             "Inline data for text assets",
                                         )),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("height"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("height"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
                                     ::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
-                                        minimum: None,
-                                        maximum: None,
-                                        r#enum: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("key"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("key"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
                                             "Asset key identifier",
                                         )),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("mimeType"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("mimeType"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
                                             "MIME type of the asset",
                                         )),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("url"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("url"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
                                             "URL to fetch the asset blob (for images)",
                                         )),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("width"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("width"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
                                     ::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
-                                        minimum: None,
-                                        maximum: None,
-                                        r#enum: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
                 ::jacquard_lexicon::lexicon::LexUserType::XrpcQuery(::jacquard_lexicon::lexicon::LexXrpcQuery {
-                    description: None,
                     parameters: Some(
                         ::jacquard_lexicon::lexicon::LexXrpcQueryParameter::Params(::jacquard_lexicon::lexicon::LexXrpcParameters {
-                            description: None,
                             required: Some(vec![]),
                             properties: {
                                 #[allow(unused_mut)]
-                                let mut map = ::std::collections::BTreeMap::new();
+                                let mut map = ::alloc::collections::BTreeMap::new();
                                 map.insert(
-                                    ::jacquard_common::smol_str::SmolStr::new_static(
+                                    ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                         "broadcaster",
                                     ),
                                     ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -193,54 +267,21 @@ fn lexicon_doc_place_stream_branding_getBranding(
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     }),
                                 );
                                 map
                             },
+                            ..Default::default()
                         }),
                     ),
-                    output: None,
-                    errors: None,
+                    ..Default::default()
                 }),
             );
             map
         },
+        ..Default::default()
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for BrandingAsset<'a> {
-    fn nsid() -> &'static str {
-        "place.stream.branding.getBranding"
-    }
-    fn def_name() -> &'static str {
-        "brandingAsset"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_place_stream_branding_getBranding()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GetBranding<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub broadcaster: std::option::Option<jacquard_common::types::string::Did<'a>>,
 }
 
 pub mod get_branding_state {
@@ -262,118 +303,79 @@ pub mod get_branding_state {
     pub mod members {}
 }
 
-/// Builder for constructing an instance of this type
-pub struct GetBrandingBuilder<'a, S: get_branding_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<jacquard_common::types::string::Did<'a>>,),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct GetBrandingBuilder<
+    St: get_branding_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<jacquard_common::types::string::Did<S>>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> GetBranding<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> GetBrandingBuilder<'a, get_branding_state::Empty> {
+impl GetBranding<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> GetBrandingBuilder<get_branding_state::Empty, jacquard_common::DefaultStr> {
         GetBrandingBuilder::new()
     }
 }
 
-impl<'a> GetBrandingBuilder<'a, get_branding_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> GetBranding<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> GetBrandingBuilder<get_branding_state::Empty, S> {
+        GetBrandingBuilder::builder()
+    }
+}
+
+impl GetBrandingBuilder<get_branding_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetBrandingBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: get_branding_state::State> GetBrandingBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> GetBrandingBuilder<get_branding_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GetBrandingBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: get_branding_state::State, S: jacquard_common::BosStr> GetBrandingBuilder<St, S> {
     /// Set the `broadcaster` field (optional)
     pub fn broadcaster(
         mut self,
-        value: impl Into<Option<jacquard_common::types::string::Did<'a>>>,
+        value: impl Into<Option<jacquard_common::types::string::Did<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+        self._fields.0 = value.into();
         self
     }
     /// Set the `broadcaster` field to an Option value (optional)
     pub fn maybe_broadcaster(
         mut self,
-        value: Option<jacquard_common::types::string::Did<'a>>,
+        value: Option<jacquard_common::types::string::Did<S>>,
     ) -> Self {
-        self.__unsafe_private_named.0 = value;
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S> GetBrandingBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GetBrandingBuilder<St, S>
 where
-    S: get_branding_state::State,
+    St: get_branding_state::State,
 {
-    /// Build the final struct
-    pub fn build(self) -> GetBranding<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> GetBranding<S> {
         GetBranding {
-            broadcaster: self.__unsafe_private_named.0,
+            broadcaster: self._fields.0,
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GetBrandingOutput<'a> {
-    /// List of available branding assets
-    #[serde(borrow)]
-    pub assets: Vec<crate::generated::place_stream::branding::get_branding::BrandingAsset<'a>>,
-}
-
-#[jacquard_derive::open_union]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    thiserror::Error,
-    miette::Diagnostic,
-    jacquard_derive::IntoStatic,
-)]
-#[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum GetBrandingError<'a> {}
-impl std::fmt::Display for GetBrandingError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
-        }
-    }
-}
-
-/// Response type for
-///place.stream.branding.getBranding
-pub struct GetBrandingResponse;
-impl jacquard_common::xrpc::XrpcResp for GetBrandingResponse {
-    const NSID: &'static str = "place.stream.branding.getBranding";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetBrandingOutput<'de>;
-    type Err<'de> = GetBrandingError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for GetBranding<'a> {
-    const NSID: &'static str = "place.stream.branding.getBranding";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = GetBrandingResponse;
-}
-
-/// Endpoint type for
-///place.stream.branding.getBranding
-pub struct GetBrandingRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for GetBrandingRequest {
-    const PATH: &'static str = "/xrpc/place.stream.branding.getBranding";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetBranding<'de>;
-    type Response = GetBrandingResponse;
 }

@@ -5,16 +5,121 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct AccountCodes<'a> {
-    #[serde(borrow)]
-    pub account: jacquard_common::CowStr<'a>,
-    #[serde(borrow)]
-    pub codes: Vec<jacquard_common::CowStr<'a>>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct AccountCodes<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub account: S,
+    pub codes: Vec<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct CreateInviteCodes<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    /// Defaults to `1`.
+    #[serde(default = "_default_create_invite_codes_code_count")]
+    pub code_count: i64,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub for_accounts: core::option::Option<Vec<jacquard_common::types::string::Did<S>>>,
+    pub use_count: i64,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct CreateInviteCodesOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub codes: Vec<crate::generated::com_atproto::server::create_invite_codes::AccountCodes<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for AccountCodes<S> {
+    fn nsid() -> &'static str {
+        "com.atproto.server.createInviteCodes"
+    }
+    fn def_name() -> &'static str {
+        "accountCodes"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_com_atproto_server_createInviteCodes()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+/** Response marker for the `com.atproto.server.createInviteCodes` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `CreateInviteCodesOutput<S>` for this endpoint.*/
+pub struct CreateInviteCodesResponse;
+impl jacquard_common::xrpc::XrpcResp for CreateInviteCodesResponse {
+    const NSID: &'static str = "com.atproto.server.createInviteCodes";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = CreateInviteCodesOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for CreateInviteCodes<S> {
+    const NSID: &'static str = "com.atproto.server.createInviteCodes";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Response = CreateInviteCodesResponse;
+}
+
+/** Endpoint marker for the `com.atproto.server.createInviteCodes` procedure.
+
+Path: `/xrpc/com.atproto.server.createInviteCodes`. The request payload type is `CreateInviteCodes<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct CreateInviteCodesRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for CreateInviteCodesRequest {
+    const PATH: &'static str = "/xrpc/com.atproto.server.createInviteCodes";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Request<S: jacquard_common::BosStr> = CreateInviteCodes<S>;
+    type Response = CreateInviteCodesResponse;
 }
 
 pub mod account_codes_state {
@@ -38,17 +143,17 @@ pub mod account_codes_state {
         type Codes = Unset;
     }
     ///State transition - sets the `account` field to Set
-    pub struct SetAccount<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetAccount<S> {}
-    impl<S: State> State for SetAccount<S> {
+    pub struct SetAccount<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetAccount<St> {}
+    impl<St: State> State for SetAccount<St> {
         type Account = Set<members::account>;
-        type Codes = S::Codes;
+        type Codes = St::Codes;
     }
     ///State transition - sets the `codes` field to Set
-    pub struct SetCodes<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCodes<S> {}
-    impl<S: State> State for SetCodes<S> {
-        type Account = S::Account;
+    pub struct SetCodes<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCodes<St> {}
+    impl<St: State> State for SetCodes<St> {
+        type Account = St::Account;
         type Codes = Set<members::codes>;
     }
     /// Marker types for field names
@@ -61,285 +166,231 @@ pub mod account_codes_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct AccountCodesBuilder<'a, S: account_codes_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<Vec<jacquard_common::CowStr<'a>>>,
-    ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct AccountCodesBuilder<
+    St: account_codes_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<S>, core::option::Option<Vec<S>>),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> AccountCodes<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> AccountCodesBuilder<'a, account_codes_state::Empty> {
+impl AccountCodes<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> AccountCodesBuilder<account_codes_state::Empty, jacquard_common::DefaultStr> {
         AccountCodesBuilder::new()
     }
 }
 
-impl<'a> AccountCodesBuilder<'a, account_codes_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> AccountCodes<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> AccountCodesBuilder<account_codes_state::Empty, S> {
+        AccountCodesBuilder::builder()
+    }
+}
+
+impl AccountCodesBuilder<account_codes_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         AccountCodesBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> AccountCodesBuilder<'a, S>
+impl<S: jacquard_common::BosStr> AccountCodesBuilder<account_codes_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        AccountCodesBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> AccountCodesBuilder<St, S>
 where
-    S: account_codes_state::State,
-    S::Account: account_codes_state::IsUnset,
+    St: account_codes_state::State,
+    St::Account: account_codes_state::IsUnset,
 {
     /// Set the `account` field (required)
     pub fn account(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> AccountCodesBuilder<'a, account_codes_state::SetAccount<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> AccountCodesBuilder<account_codes_state::SetAccount<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         AccountCodesBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> AccountCodesBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> AccountCodesBuilder<St, S>
 where
-    S: account_codes_state::State,
-    S::Codes: account_codes_state::IsUnset,
+    St: account_codes_state::State,
+    St::Codes: account_codes_state::IsUnset,
 {
     /// Set the `codes` field (required)
     pub fn codes(
         mut self,
-        value: impl Into<Vec<jacquard_common::CowStr<'a>>>,
-    ) -> AccountCodesBuilder<'a, account_codes_state::SetCodes<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<Vec<S>>,
+    ) -> AccountCodesBuilder<account_codes_state::SetCodes<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         AccountCodesBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> AccountCodesBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> AccountCodesBuilder<St, S>
 where
-    S: account_codes_state::State,
-    S::Account: account_codes_state::IsSet,
-    S::Codes: account_codes_state::IsSet,
+    St: account_codes_state::State,
+    St::Account: account_codes_state::IsSet,
+    St::Codes: account_codes_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> AccountCodes<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> AccountCodes<S> {
         AccountCodes {
-            account: self.__unsafe_private_named.0.unwrap(),
-            codes: self.__unsafe_private_named.1.unwrap(),
+            account: self._fields.0.unwrap(),
+            codes: self._fields.1.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> AccountCodes<'a> {
+    ) -> AccountCodes<S> {
         AccountCodes {
-            account: self.__unsafe_private_named.0.unwrap(),
-            codes: self.__unsafe_private_named.1.unwrap(),
+            account: self._fields.0.unwrap(),
+            codes: self._fields.1.unwrap(),
             extra_data: Some(extra_data),
         }
     }
 }
 
 fn lexicon_doc_com_atproto_server_createInviteCodes(
-) -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+) -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("com.atproto.server.createInviteCodes"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("accountCodes"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("accountCodes"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("account"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("codes"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("account"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("codes"),
                         ]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("account"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("account"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("codes"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("codes"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Array(
                                     ::jacquard_lexicon::lexicon::LexArray {
-                                        description: None,
                                         items: ::jacquard_lexicon::lexicon::LexArrayItem::String(
                                             ::jacquard_lexicon::lexicon::LexString {
-                                                description: None,
-                                                format: None,
-                                                default: None,
-                                                min_length: None,
-                                                max_length: None,
-                                                min_graphemes: None,
-                                                max_graphemes: None,
-                                                r#enum: None,
-                                                r#const: None,
-                                                known_values: None,
+                                                ..Default::default()
                                             },
                                         ),
-                                        min_length: None,
-                                        max_length: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
                 ::jacquard_lexicon::lexicon::LexUserType::XrpcProcedure(::jacquard_lexicon::lexicon::LexXrpcProcedure {
-                    description: None,
-                    parameters: None,
                     input: Some(::jacquard_lexicon::lexicon::LexXrpcBody {
-                        description: None,
                         encoding: ::jacquard_common::CowStr::new_static(
                             "application/json",
                         ),
                         schema: Some(
                             ::jacquard_lexicon::lexicon::LexXrpcBodySchema::Object(::jacquard_lexicon::lexicon::LexObject {
-                                description: None,
                                 required: Some(
                                     vec![
-                                        ::jacquard_common::smol_str::SmolStr::new_static("codeCount"),
-                                        ::jacquard_common::smol_str::SmolStr::new_static("useCount")
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static("codeCount"),
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static("useCount")
                                     ],
                                 ),
-                                nullable: None,
                                 properties: {
                                     #[allow(unused_mut)]
-                                    let mut map = ::std::collections::BTreeMap::new();
+                                    let mut map = ::alloc::collections::BTreeMap::new();
                                     map.insert(
-                                        ::jacquard_common::smol_str::SmolStr::new_static(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                             "codeCount",
                                         ),
                                         ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                            description: None,
-                                            default: None,
-                                            minimum: None,
-                                            maximum: None,
-                                            r#enum: None,
-                                            r#const: None,
+                                            ..Default::default()
                                         }),
                                     );
                                     map.insert(
-                                        ::jacquard_common::smol_str::SmolStr::new_static(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                             "forAccounts",
                                         ),
                                         ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
-                                            description: None,
                                             items: ::jacquard_lexicon::lexicon::LexArrayItem::String(::jacquard_lexicon::lexicon::LexString {
-                                                description: None,
                                                 format: Some(
                                                     ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                                 ),
-                                                default: None,
-                                                min_length: None,
-                                                max_length: None,
-                                                min_graphemes: None,
-                                                max_graphemes: None,
-                                                r#enum: None,
-                                                r#const: None,
-                                                known_values: None,
+                                                ..Default::default()
                                             }),
-                                            min_length: None,
-                                            max_length: None,
+                                            ..Default::default()
                                         }),
                                     );
                                     map.insert(
-                                        ::jacquard_common::smol_str::SmolStr::new_static(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                             "useCount",
                                         ),
                                         ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                            description: None,
-                                            default: None,
-                                            minimum: None,
-                                            maximum: None,
-                                            r#enum: None,
-                                            r#const: None,
+                                            ..Default::default()
                                         }),
                                     );
                                     map
                                 },
+                                ..Default::default()
                             }),
                         ),
+                        ..Default::default()
                     }),
-                    output: None,
-                    errors: None,
+                    ..Default::default()
                 }),
             );
             map
         },
+        ..Default::default()
     }
 }
 
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for AccountCodes<'a> {
-    fn nsid() -> &'static str {
-        "com.atproto.server.createInviteCodes"
-    }
-    fn def_name() -> &'static str {
-        "accountCodes"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_com_atproto_server_createInviteCodes()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct CreateInviteCodes<'a> {
-    pub code_count: i64,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub for_accounts: std::option::Option<Vec<jacquard_common::types::string::Did<'a>>>,
-    pub use_count: i64,
+fn _default_create_invite_codes_code_count() -> i64 {
+    1i64
 }
 
 pub mod create_invite_codes_state {
@@ -363,17 +414,17 @@ pub mod create_invite_codes_state {
         type UseCount = Unset;
     }
     ///State transition - sets the `code_count` field to Set
-    pub struct SetCodeCount<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCodeCount<S> {}
-    impl<S: State> State for SetCodeCount<S> {
+    pub struct SetCodeCount<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCodeCount<St> {}
+    impl<St: State> State for SetCodeCount<St> {
         type CodeCount = Set<members::code_count>;
-        type UseCount = S::UseCount;
+        type UseCount = St::UseCount;
     }
     ///State transition - sets the `use_count` field to Set
-    pub struct SetUseCount<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUseCount<S> {}
-    impl<S: State> State for SetUseCount<S> {
-        type CodeCount = S::CodeCount;
+    pub struct SetUseCount<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetUseCount<St> {}
+    impl<St: State> State for SetUseCount<St> {
+        type CodeCount = St::CodeCount;
         type UseCount = Set<members::use_count>;
     }
     /// Marker types for field names
@@ -386,158 +437,145 @@ pub mod create_invite_codes_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct CreateInviteCodesBuilder<'a, S: create_invite_codes_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<i64>,
-        ::core::option::Option<Vec<jacquard_common::types::string::Did<'a>>>,
-        ::core::option::Option<i64>,
+/// Builder for constructing an instance of this type.
+pub struct CreateInviteCodesBuilder<
+    St: create_invite_codes_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<i64>,
+        core::option::Option<Vec<jacquard_common::types::string::Did<S>>>,
+        core::option::Option<i64>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> CreateInviteCodes<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> CreateInviteCodesBuilder<'a, create_invite_codes_state::Empty> {
+impl CreateInviteCodes<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> CreateInviteCodesBuilder<create_invite_codes_state::Empty, jacquard_common::DefaultStr>
+    {
         CreateInviteCodesBuilder::new()
     }
 }
 
-impl<'a> CreateInviteCodesBuilder<'a, create_invite_codes_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> CreateInviteCodes<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> CreateInviteCodesBuilder<create_invite_codes_state::Empty, S> {
+        CreateInviteCodesBuilder::builder()
+    }
+}
+
+impl CreateInviteCodesBuilder<create_invite_codes_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         CreateInviteCodesBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> CreateInviteCodesBuilder<'a, S>
+impl<S: jacquard_common::BosStr> CreateInviteCodesBuilder<create_invite_codes_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        CreateInviteCodesBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> CreateInviteCodesBuilder<St, S>
 where
-    S: create_invite_codes_state::State,
-    S::CodeCount: create_invite_codes_state::IsUnset,
+    St: create_invite_codes_state::State,
+    St::CodeCount: create_invite_codes_state::IsUnset,
 {
     /// Set the `codeCount` field (required)
     pub fn code_count(
         mut self,
         value: impl Into<i64>,
-    ) -> CreateInviteCodesBuilder<'a, create_invite_codes_state::SetCodeCount<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+    ) -> CreateInviteCodesBuilder<create_invite_codes_state::SetCodeCount<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         CreateInviteCodesBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: create_invite_codes_state::State> CreateInviteCodesBuilder<'a, S> {
+impl<St: create_invite_codes_state::State, S: jacquard_common::BosStr>
+    CreateInviteCodesBuilder<St, S>
+{
     /// Set the `forAccounts` field (optional)
     pub fn for_accounts(
         mut self,
-        value: impl Into<Option<Vec<jacquard_common::types::string::Did<'a>>>>,
+        value: impl Into<Option<Vec<jacquard_common::types::string::Did<S>>>>,
     ) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self._fields.1 = value.into();
         self
     }
     /// Set the `forAccounts` field to an Option value (optional)
     pub fn maybe_for_accounts(
         mut self,
-        value: Option<Vec<jacquard_common::types::string::Did<'a>>>,
+        value: Option<Vec<jacquard_common::types::string::Did<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.1 = value;
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S> CreateInviteCodesBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> CreateInviteCodesBuilder<St, S>
 where
-    S: create_invite_codes_state::State,
-    S::UseCount: create_invite_codes_state::IsUnset,
+    St: create_invite_codes_state::State,
+    St::UseCount: create_invite_codes_state::IsUnset,
 {
     /// Set the `useCount` field (required)
     pub fn use_count(
         mut self,
         value: impl Into<i64>,
-    ) -> CreateInviteCodesBuilder<'a, create_invite_codes_state::SetUseCount<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+    ) -> CreateInviteCodesBuilder<create_invite_codes_state::SetUseCount<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         CreateInviteCodesBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> CreateInviteCodesBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> CreateInviteCodesBuilder<St, S>
 where
-    S: create_invite_codes_state::State,
-    S::CodeCount: create_invite_codes_state::IsSet,
-    S::UseCount: create_invite_codes_state::IsSet,
+    St: create_invite_codes_state::State,
+    St::CodeCount: create_invite_codes_state::IsSet,
+    St::UseCount: create_invite_codes_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> CreateInviteCodes<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> CreateInviteCodes<S> {
         CreateInviteCodes {
-            code_count: self.__unsafe_private_named.0.unwrap(),
-            for_accounts: self.__unsafe_private_named.1,
-            use_count: self.__unsafe_private_named.2.unwrap(),
+            code_count: self._fields.0.unwrap(),
+            for_accounts: self._fields.1,
+            use_count: self._fields.2.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> CreateInviteCodes<'a> {
+    ) -> CreateInviteCodes<S> {
         CreateInviteCodes {
-            code_count: self.__unsafe_private_named.0.unwrap(),
-            for_accounts: self.__unsafe_private_named.1,
-            use_count: self.__unsafe_private_named.2.unwrap(),
+            code_count: self._fields.0.unwrap(),
+            for_accounts: self._fields.1,
+            use_count: self._fields.2.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct CreateInviteCodesOutput<'a> {
-    #[serde(borrow)]
-    pub codes: Vec<crate::generated::com_atproto::server::create_invite_codes::AccountCodes<'a>>,
-}
-
-/// Response type for
-///com.atproto.server.createInviteCodes
-pub struct CreateInviteCodesResponse;
-impl jacquard_common::xrpc::XrpcResp for CreateInviteCodesResponse {
-    const NSID: &'static str = "com.atproto.server.createInviteCodes";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = CreateInviteCodesOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for CreateInviteCodes<'a> {
-    const NSID: &'static str = "com.atproto.server.createInviteCodes";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Response = CreateInviteCodesResponse;
-}
-
-/// Endpoint type for
-///com.atproto.server.createInviteCodes
-pub struct CreateInviteCodesRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for CreateInviteCodesRequest {
-    const PATH: &'static str = "/xrpc/com.atproto.server.createInviteCodes";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = CreateInviteCodes<'de>;
-    type Response = CreateInviteCodesResponse;
 }

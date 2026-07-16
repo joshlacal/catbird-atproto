@@ -6,7 +6,7 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 /// Signed delivery acknowledgment
-#[jacquard_derive::lexicon]
+
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -17,832 +17,106 @@
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct DeliveryAck<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub convo_id: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub epoch: std::option::Option<i64>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub msg_id: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// Signed acknowledgment token
-    #[serde(borrow)]
-    pub sig: jacquard_common::CowStr<'a>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub term: std::option::Option<i64>,
-}
-
-fn lexicon_doc_blue_catbird_mlsDS_deliverMessage(
-) -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-    ::jacquard_lexicon::lexicon::LexiconDoc {
-        lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
-        id: ::jacquard_common::CowStr::new_static("blue.catbird.mlsDS.deliverMessage"),
-        revision: None,
-        description: None,
-        defs: {
-            let mut map = ::std::collections::BTreeMap::new();
-            map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("deliveryAck"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: Some(::jacquard_common::CowStr::new_static(
-                            "Signed delivery acknowledgment",
-                        )),
-                        required: Some(vec![::jacquard_common::smol_str::SmolStr::new_static(
-                            "sig",
-                        )]),
-                        nullable: None,
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("epoch"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                    ::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
-                                        minimum: None,
-                                        maximum: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("msgId"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("sig"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: Some(::jacquard_common::CowStr::new_static(
-                                            "Signed acknowledgment token",
-                                        )),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("term"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                    ::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
-                                        minimum: None,
-                                        maximum: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                    },
-                ),
-            );
-            map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
-                ::jacquard_lexicon::lexicon::LexUserType::XrpcProcedure(
-                    ::jacquard_lexicon::lexicon::LexXrpcProcedure {
-                        description: None,
-                        parameters: None,
-                        input: Some(::jacquard_lexicon::lexicon::LexXrpcBody {
-                            description: None,
-                            encoding: ::jacquard_common::CowStr::new_static("application/json"),
-                            schema: Some(::jacquard_lexicon::lexicon::LexXrpcBodySchema::Object(
-                                ::jacquard_lexicon::lexicon::LexObject {
-                                    description: None,
-                                    required: Some(vec![
-                                        ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
-                                        ::jacquard_common::smol_str::SmolStr::new_static("msgId"),
-                                        ::jacquard_common::smol_str::SmolStr::new_static("epoch"),
-                                        ::jacquard_common::smol_str::SmolStr::new_static(
-                                            "senderDsDid",
-                                        ),
-                                        ::jacquard_common::smol_str::SmolStr::new_static(
-                                            "ciphertext",
-                                        ),
-                                        ::jacquard_common::smol_str::SmolStr::new_static(
-                                            "paddedSize",
-                                        ),
-                                        ::jacquard_common::smol_str::SmolStr::new_static(
-                                            "deliveryId",
-                                        ),
-                                        ::jacquard_common::smol_str::SmolStr::new_static(
-                                            "sequencerTerm",
-                                        ),
-                                    ]),
-                                    nullable: None,
-                                    properties: {
-                                        #[allow(unused_mut)]
-                                        let mut map = ::std::collections::BTreeMap::new();
-                                        map.insert(
-                                            ::jacquard_common::smol_str::SmolStr::new_static(
-                                                "ciphertext",
-                                            ),
-                                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
-                                                ::jacquard_lexicon::lexicon::LexBytes {
-                                                    description: None,
-                                                    max_length: None,
-                                                    min_length: None,
-                                                },
-                                            ),
-                                        );
-                                        map.insert(
-                                            ::jacquard_common::smol_str::SmolStr::new_static(
-                                                "convoId",
-                                            ),
-                                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                                ::jacquard_lexicon::lexicon::LexString {
-                                                    description: Some(
-                                                        ::jacquard_common::CowStr::new_static(
-                                                            "Conversation ID",
-                                                        ),
-                                                    ),
-                                                    format: None,
-                                                    default: None,
-                                                    min_length: None,
-                                                    max_length: None,
-                                                    min_graphemes: None,
-                                                    max_graphemes: None,
-                                                    r#enum: None,
-                                                    r#const: None,
-                                                    known_values: None,
-                                                },
-                                            ),
-                                        );
-                                        map.insert(
-                                            ::jacquard_common::smol_str::SmolStr::new_static(
-                                                "deliveryId",
-                                            ),
-                                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                                ::jacquard_lexicon::lexicon::LexString {
-                                                    description: Some(
-                                                        ::jacquard_common::CowStr::new_static(
-                                                            "Delivery tracking ID (ULID)",
-                                                        ),
-                                                    ),
-                                                    format: None,
-                                                    default: None,
-                                                    min_length: None,
-                                                    max_length: None,
-                                                    min_graphemes: None,
-                                                    max_graphemes: None,
-                                                    r#enum: None,
-                                                    r#const: None,
-                                                    known_values: None,
-                                                },
-                                            ),
-                                        );
-                                        map.insert(
-                                            ::jacquard_common::smol_str::SmolStr::new_static(
-                                                "epoch",
-                                            ),
-                                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                                ::jacquard_lexicon::lexicon::LexInteger {
-                                                    description: None,
-                                                    default: None,
-                                                    minimum: None,
-                                                    maximum: None,
-                                                    r#enum: None,
-                                                    r#const: None,
-                                                },
-                                            ),
-                                        );
-                                        map.insert(
-                                            ::jacquard_common::smol_str::SmolStr::new_static(
-                                                "messageType",
-                                            ),
-                                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                                ::jacquard_lexicon::lexicon::LexString {
-                                                    description: Some(
-                                                        ::jacquard_common::CowStr::new_static(
-                                                            "Message type (default: 'app')",
-                                                        ),
-                                                    ),
-                                                    format: None,
-                                                    default: None,
-                                                    min_length: None,
-                                                    max_length: None,
-                                                    min_graphemes: None,
-                                                    max_graphemes: None,
-                                                    r#enum: None,
-                                                    r#const: None,
-                                                    known_values: None,
-                                                },
-                                            ),
-                                        );
-                                        map.insert(
-                                            ::jacquard_common::smol_str::SmolStr::new_static(
-                                                "msgId",
-                                            ),
-                                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                                ::jacquard_lexicon::lexicon::LexString {
-                                                    description: Some(
-                                                        ::jacquard_common::CowStr::new_static(
-                                                            "Unique message ID (ULID)",
-                                                        ),
-                                                    ),
-                                                    format: None,
-                                                    default: None,
-                                                    min_length: None,
-                                                    max_length: None,
-                                                    min_graphemes: None,
-                                                    max_graphemes: None,
-                                                    r#enum: None,
-                                                    r#const: None,
-                                                    known_values: None,
-                                                },
-                                            ),
-                                        );
-                                        map.insert(
-                                            ::jacquard_common::smol_str::SmolStr::new_static(
-                                                "paddedSize",
-                                            ),
-                                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                                ::jacquard_lexicon::lexicon::LexInteger {
-                                                    description: None,
-                                                    default: None,
-                                                    minimum: None,
-                                                    maximum: None,
-                                                    r#enum: None,
-                                                    r#const: None,
-                                                },
-                                            ),
-                                        );
-                                        map.insert(
-                                            ::jacquard_common::smol_str::SmolStr::new_static(
-                                                "senderDsDid",
-                                            ),
-                                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                                ::jacquard_lexicon::lexicon::LexString {
-                                                    description: Some(
-                                                        ::jacquard_common::CowStr::new_static(
-                                                            "DID of the sending delivery service",
-                                                        ),
-                                                    ),
-                                                    format: None,
-                                                    default: None,
-                                                    min_length: None,
-                                                    max_length: None,
-                                                    min_graphemes: None,
-                                                    max_graphemes: None,
-                                                    r#enum: None,
-                                                    r#const: None,
-                                                    known_values: None,
-                                                },
-                                            ),
-                                        );
-                                        map.insert(
-                                            ::jacquard_common::smol_str::SmolStr::new_static(
-                                                "sequencerTerm",
-                                            ),
-                                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                                ::jacquard_lexicon::lexicon::LexInteger {
-                                                    description: None,
-                                                    default: None,
-                                                    minimum: None,
-                                                    maximum: None,
-                                                    r#enum: None,
-                                                    r#const: None,
-                                                },
-                                            ),
-                                        );
-                                        map
-                                    },
-                                },
-                            )),
-                        }),
-                        output: None,
-                        errors: None,
-                    },
-                ),
-            );
-            map
-        },
-    }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for DeliveryAck<'a> {
-    fn nsid() -> &'static str {
-        "blue.catbird.mlsDS.deliverMessage"
-    }
-    fn def_name() -> &'static str {
-        "deliveryAck"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_blue_catbird_mlsDS_deliverMessage()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-#[serde(rename_all = "camelCase")]
-pub struct DeliverMessage<'a> {
-    /// Encrypted MLS message payload
-    #[serde(with = "jacquard_common::serde_bytes_helper")]
-    pub ciphertext: bytes::Bytes,
-    /// Conversation ID
-    #[serde(borrow)]
-    pub convo_id: jacquard_common::CowStr<'a>,
-    /// Delivery tracking ID (ULID)
-    #[serde(borrow)]
-    pub delivery_id: jacquard_common::CowStr<'a>,
-    /// MLS epoch of the message
-    pub epoch: i64,
-    /// Message type (default: 'app')
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub message_type: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// Unique message ID (ULID)
-    #[serde(borrow)]
-    pub msg_id: jacquard_common::CowStr<'a>,
-    /// Padded size of the plaintext for uniform message lengths
-    pub padded_size: i64,
-    /// DID of the sending delivery service
-    #[serde(borrow)]
-    pub sender_ds_did: jacquard_common::CowStr<'a>,
-    /// Current sequencer term for CAS validation
-    pub sequencer_term: i64,
-}
-
-pub mod deliver_message_state {
-
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
-    #[allow(unused)]
-    use core::marker::PhantomData;
-    mod sealed {
-        pub trait Sealed {}
-    }
-    /// State trait tracking which required fields have been set
-    pub trait State: sealed::Sealed {
-        type ConvoId;
-        type MsgId;
-        type Epoch;
-        type SenderDsDid;
-        type Ciphertext;
-        type PaddedSize;
-        type DeliveryId;
-        type SequencerTerm;
-    }
-    /// Empty state - all required fields are unset
-    pub struct Empty(());
-    impl sealed::Sealed for Empty {}
-    impl State for Empty {
-        type ConvoId = Unset;
-        type MsgId = Unset;
-        type Epoch = Unset;
-        type SenderDsDid = Unset;
-        type Ciphertext = Unset;
-        type PaddedSize = Unset;
-        type DeliveryId = Unset;
-        type SequencerTerm = Unset;
-    }
-    ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type ConvoId = Set<members::convo_id>;
-        type MsgId = S::MsgId;
-        type Epoch = S::Epoch;
-        type SenderDsDid = S::SenderDsDid;
-        type Ciphertext = S::Ciphertext;
-        type PaddedSize = S::PaddedSize;
-        type DeliveryId = S::DeliveryId;
-        type SequencerTerm = S::SequencerTerm;
-    }
-    ///State transition - sets the `msg_id` field to Set
-    pub struct SetMsgId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetMsgId<S> {}
-    impl<S: State> State for SetMsgId<S> {
-        type ConvoId = S::ConvoId;
-        type MsgId = Set<members::msg_id>;
-        type Epoch = S::Epoch;
-        type SenderDsDid = S::SenderDsDid;
-        type Ciphertext = S::Ciphertext;
-        type PaddedSize = S::PaddedSize;
-        type DeliveryId = S::DeliveryId;
-        type SequencerTerm = S::SequencerTerm;
-    }
-    ///State transition - sets the `epoch` field to Set
-    pub struct SetEpoch<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetEpoch<S> {}
-    impl<S: State> State for SetEpoch<S> {
-        type ConvoId = S::ConvoId;
-        type MsgId = S::MsgId;
-        type Epoch = Set<members::epoch>;
-        type SenderDsDid = S::SenderDsDid;
-        type Ciphertext = S::Ciphertext;
-        type PaddedSize = S::PaddedSize;
-        type DeliveryId = S::DeliveryId;
-        type SequencerTerm = S::SequencerTerm;
-    }
-    ///State transition - sets the `sender_ds_did` field to Set
-    pub struct SetSenderDsDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetSenderDsDid<S> {}
-    impl<S: State> State for SetSenderDsDid<S> {
-        type ConvoId = S::ConvoId;
-        type MsgId = S::MsgId;
-        type Epoch = S::Epoch;
-        type SenderDsDid = Set<members::sender_ds_did>;
-        type Ciphertext = S::Ciphertext;
-        type PaddedSize = S::PaddedSize;
-        type DeliveryId = S::DeliveryId;
-        type SequencerTerm = S::SequencerTerm;
-    }
-    ///State transition - sets the `ciphertext` field to Set
-    pub struct SetCiphertext<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCiphertext<S> {}
-    impl<S: State> State for SetCiphertext<S> {
-        type ConvoId = S::ConvoId;
-        type MsgId = S::MsgId;
-        type Epoch = S::Epoch;
-        type SenderDsDid = S::SenderDsDid;
-        type Ciphertext = Set<members::ciphertext>;
-        type PaddedSize = S::PaddedSize;
-        type DeliveryId = S::DeliveryId;
-        type SequencerTerm = S::SequencerTerm;
-    }
-    ///State transition - sets the `padded_size` field to Set
-    pub struct SetPaddedSize<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetPaddedSize<S> {}
-    impl<S: State> State for SetPaddedSize<S> {
-        type ConvoId = S::ConvoId;
-        type MsgId = S::MsgId;
-        type Epoch = S::Epoch;
-        type SenderDsDid = S::SenderDsDid;
-        type Ciphertext = S::Ciphertext;
-        type PaddedSize = Set<members::padded_size>;
-        type DeliveryId = S::DeliveryId;
-        type SequencerTerm = S::SequencerTerm;
-    }
-    ///State transition - sets the `delivery_id` field to Set
-    pub struct SetDeliveryId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDeliveryId<S> {}
-    impl<S: State> State for SetDeliveryId<S> {
-        type ConvoId = S::ConvoId;
-        type MsgId = S::MsgId;
-        type Epoch = S::Epoch;
-        type SenderDsDid = S::SenderDsDid;
-        type Ciphertext = S::Ciphertext;
-        type PaddedSize = S::PaddedSize;
-        type DeliveryId = Set<members::delivery_id>;
-        type SequencerTerm = S::SequencerTerm;
-    }
-    ///State transition - sets the `sequencer_term` field to Set
-    pub struct SetSequencerTerm<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetSequencerTerm<S> {}
-    impl<S: State> State for SetSequencerTerm<S> {
-        type ConvoId = S::ConvoId;
-        type MsgId = S::MsgId;
-        type Epoch = S::Epoch;
-        type SenderDsDid = S::SenderDsDid;
-        type Ciphertext = S::Ciphertext;
-        type PaddedSize = S::PaddedSize;
-        type DeliveryId = S::DeliveryId;
-        type SequencerTerm = Set<members::sequencer_term>;
-    }
-    /// Marker types for field names
-    #[allow(non_camel_case_types)]
-    pub mod members {
-        ///Marker type for the `convo_id` field
-        pub struct convo_id(());
-        ///Marker type for the `msg_id` field
-        pub struct msg_id(());
-        ///Marker type for the `epoch` field
-        pub struct epoch(());
-        ///Marker type for the `sender_ds_did` field
-        pub struct sender_ds_did(());
-        ///Marker type for the `ciphertext` field
-        pub struct ciphertext(());
-        ///Marker type for the `padded_size` field
-        pub struct padded_size(());
-        ///Marker type for the `delivery_id` field
-        pub struct delivery_id(());
-        ///Marker type for the `sequencer_term` field
-        pub struct sequencer_term(());
-    }
-}
-
-/// Builder for constructing an instance of this type
-pub struct DeliverMessageBuilder<'a, S: deliver_message_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<bytes::Bytes>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<i64>,
-    ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
-}
-
-impl<'a> DeliverMessage<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> DeliverMessageBuilder<'a, deliver_message_state::Empty> {
-        DeliverMessageBuilder::new()
-    }
-}
-
-impl<'a> DeliverMessageBuilder<'a, deliver_message_state::Empty> {
-    /// Create a new builder with all fields unset
-    pub fn new() -> Self {
-        DeliverMessageBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> DeliverMessageBuilder<'a, S>
-where
-    S: deliver_message_state::State,
-    S::Ciphertext: deliver_message_state::IsUnset,
-{
-    /// Set the `ciphertext` field (required)
-    pub fn ciphertext(
-        mut self,
-        value: impl Into<bytes::Bytes>,
-    ) -> DeliverMessageBuilder<'a, deliver_message_state::SetCiphertext<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
-        DeliverMessageBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> DeliverMessageBuilder<'a, S>
-where
-    S: deliver_message_state::State,
-    S::ConvoId: deliver_message_state::IsUnset,
-{
-    /// Set the `convoId` field (required)
-    pub fn convo_id(
-        mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> DeliverMessageBuilder<'a, deliver_message_state::SetConvoId<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
-        DeliverMessageBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> DeliverMessageBuilder<'a, S>
-where
-    S: deliver_message_state::State,
-    S::DeliveryId: deliver_message_state::IsUnset,
-{
-    /// Set the `deliveryId` field (required)
-    pub fn delivery_id(
-        mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> DeliverMessageBuilder<'a, deliver_message_state::SetDeliveryId<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
-        DeliverMessageBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> DeliverMessageBuilder<'a, S>
-where
-    S: deliver_message_state::State,
-    S::Epoch: deliver_message_state::IsUnset,
-{
-    /// Set the `epoch` field (required)
-    pub fn epoch(
-        mut self,
-        value: impl Into<i64>,
-    ) -> DeliverMessageBuilder<'a, deliver_message_state::SetEpoch<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
-        DeliverMessageBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S: deliver_message_state::State> DeliverMessageBuilder<'a, S> {
-    /// Set the `messageType` field (optional)
-    pub fn message_type(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.4 = value.into();
-        self
-    }
-    /// Set the `messageType` field to an Option value (optional)
-    pub fn maybe_message_type(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.4 = value;
-        self
-    }
-}
-
-impl<'a, S> DeliverMessageBuilder<'a, S>
-where
-    S: deliver_message_state::State,
-    S::MsgId: deliver_message_state::IsUnset,
-{
-    /// Set the `msgId` field (required)
-    pub fn msg_id(
-        mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> DeliverMessageBuilder<'a, deliver_message_state::SetMsgId<S>> {
-        self.__unsafe_private_named.5 = ::core::option::Option::Some(value.into());
-        DeliverMessageBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> DeliverMessageBuilder<'a, S>
-where
-    S: deliver_message_state::State,
-    S::PaddedSize: deliver_message_state::IsUnset,
-{
-    /// Set the `paddedSize` field (required)
-    pub fn padded_size(
-        mut self,
-        value: impl Into<i64>,
-    ) -> DeliverMessageBuilder<'a, deliver_message_state::SetPaddedSize<S>> {
-        self.__unsafe_private_named.6 = ::core::option::Option::Some(value.into());
-        DeliverMessageBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> DeliverMessageBuilder<'a, S>
-where
-    S: deliver_message_state::State,
-    S::SenderDsDid: deliver_message_state::IsUnset,
-{
-    /// Set the `senderDsDid` field (required)
-    pub fn sender_ds_did(
-        mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> DeliverMessageBuilder<'a, deliver_message_state::SetSenderDsDid<S>> {
-        self.__unsafe_private_named.7 = ::core::option::Option::Some(value.into());
-        DeliverMessageBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> DeliverMessageBuilder<'a, S>
-where
-    S: deliver_message_state::State,
-    S::SequencerTerm: deliver_message_state::IsUnset,
-{
-    /// Set the `sequencerTerm` field (required)
-    pub fn sequencer_term(
-        mut self,
-        value: impl Into<i64>,
-    ) -> DeliverMessageBuilder<'a, deliver_message_state::SetSequencerTerm<S>> {
-        self.__unsafe_private_named.8 = ::core::option::Option::Some(value.into());
-        DeliverMessageBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S> DeliverMessageBuilder<'a, S>
-where
-    S: deliver_message_state::State,
-    S::ConvoId: deliver_message_state::IsSet,
-    S::MsgId: deliver_message_state::IsSet,
-    S::Epoch: deliver_message_state::IsSet,
-    S::SenderDsDid: deliver_message_state::IsSet,
-    S::Ciphertext: deliver_message_state::IsSet,
-    S::PaddedSize: deliver_message_state::IsSet,
-    S::DeliveryId: deliver_message_state::IsSet,
-    S::SequencerTerm: deliver_message_state::IsSet,
-{
-    /// Build the final struct
-    pub fn build(self) -> DeliverMessage<'a> {
-        DeliverMessage {
-            ciphertext: self.__unsafe_private_named.0.unwrap(),
-            convo_id: self.__unsafe_private_named.1.unwrap(),
-            delivery_id: self.__unsafe_private_named.2.unwrap(),
-            epoch: self.__unsafe_private_named.3.unwrap(),
-            message_type: self.__unsafe_private_named.4,
-            msg_id: self.__unsafe_private_named.5.unwrap(),
-            padded_size: self.__unsafe_private_named.6.unwrap(),
-            sender_ds_did: self.__unsafe_private_named.7.unwrap(),
-            sequencer_term: self.__unsafe_private_named.8.unwrap(),
-            extra_data: Default::default(),
-        }
-    }
-    /// Build the final struct with custom extra_data
-    pub fn build_with_data(
-        self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+pub struct DeliveryAck<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub convo_id: core::option::Option<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub epoch: core::option::Option<i64>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub msg_id: core::option::Option<S>,
+    ///Signed acknowledgment token
+    pub sig: S,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub term: core::option::Option<i64>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> DeliverMessage<'a> {
-        DeliverMessage {
-            ciphertext: self.__unsafe_private_named.0.unwrap(),
-            convo_id: self.__unsafe_private_named.1.unwrap(),
-            delivery_id: self.__unsafe_private_named.2.unwrap(),
-            epoch: self.__unsafe_private_named.3.unwrap(),
-            message_type: self.__unsafe_private_named.4,
-            msg_id: self.__unsafe_private_named.5.unwrap(),
-            padded_size: self.__unsafe_private_named.6.unwrap(),
-            sender_ds_did: self.__unsafe_private_named.7.unwrap(),
-            sequencer_term: self.__unsafe_private_named.8.unwrap(),
-            extra_data: Some(extra_data),
-        }
-    }
+    >,
 }
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct DeliverMessageOutput<'a> {
-    /// Whether the message was accepted
-    pub accepted: bool,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub ack: std::option::Option<
-        crate::generated::blue_catbird::mlsDS::deliver_message::DeliveryAck<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct DeliverMessage<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Encrypted MLS message payload
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub ciphertext: jacquard_common::deps::bytes::Bytes,
+    ///Conversation ID
+    pub convo_id: S,
+    ///Delivery tracking ID (ULID)
+    pub delivery_id: S,
+    ///MLS epoch of the message
+    pub epoch: i64,
+    ///Message type (default: 'app')
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub message_type: core::option::Option<S>,
+    ///Unique message ID (ULID)
+    pub msg_id: S,
+    ///Padded size of the plaintext for uniform message lengths
+    pub padded_size: i64,
+    ///DID of the sending delivery service
+    pub sender_ds_did: S,
+    ///Current sequencer term for CAS validation
+    pub sequencer_term: i64,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
     >,
-    /// Echo of the delivery ID
-    #[serde(borrow)]
-    pub delivery_id: jacquard_common::CowStr<'a>,
-    /// Assigned sequence number
-    pub seq: i64,
 }
 
-#[jacquard_derive::open_union]
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct DeliverMessageOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Whether the message was accepted
+    pub accepted: bool,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub ack: core::option::Option<
+        crate::generated::blue_catbird::mlsDS::deliver_message::DeliveryAck<S>,
+    >,
+    ///Echo of the delivery ID
+    pub delivery_id: S,
+    ///Assigned sequence number
+    pub seq: i64,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -852,21 +126,25 @@ pub struct DeliverMessageOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum DeliverMessageError<'a> {
+pub enum DeliverMessageError {
     #[serde(rename = "ConversationNotFound")]
-    ConversationNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
+    ConversationNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "NotSequencer")]
-    NotSequencer(std::option::Option<jacquard_common::CowStr<'a>>),
+    NotSequencer(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "TermStale")]
-    TermStale(std::option::Option<jacquard_common::CowStr<'a>>),
+    TermStale(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
 }
 
-impl std::fmt::Display for DeliverMessageError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for DeliverMessageError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             Self::ConversationNotFound(msg) => {
                 write!(f, "ConversationNotFound")?;
@@ -889,35 +167,726 @@ impl std::fmt::Display for DeliverMessageError<'_> {
                 }
                 Ok(())
             }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
         }
     }
 }
 
-/// Response type for
-///blue.catbird.mlsDS.deliverMessage
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for DeliveryAck<S> {
+    fn nsid() -> &'static str {
+        "blue.catbird.mlsDS.deliverMessage"
+    }
+    fn def_name() -> &'static str {
+        "deliveryAck"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_blue_catbird_mlsDS_deliverMessage()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+/** Response marker for the `blue.catbird.mlsDS.deliverMessage` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `DeliverMessageOutput<S>` for this endpoint.*/
 pub struct DeliverMessageResponse;
 impl jacquard_common::xrpc::XrpcResp for DeliverMessageResponse {
     const NSID: &'static str = "blue.catbird.mlsDS.deliverMessage";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = DeliverMessageOutput<'de>;
-    type Err<'de> = DeliverMessageError<'de>;
+    type Output<S: jacquard_common::BosStr> = DeliverMessageOutput<S>;
+    type Err = DeliverMessageError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for DeliverMessage<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for DeliverMessage<S> {
     const NSID: &'static str = "blue.catbird.mlsDS.deliverMessage";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = DeliverMessageResponse;
 }
 
-/// Endpoint type for
-///blue.catbird.mlsDS.deliverMessage
+/** Endpoint marker for the `blue.catbird.mlsDS.deliverMessage` procedure.
+
+Path: `/xrpc/blue.catbird.mlsDS.deliverMessage`. The request payload type is `DeliverMessage<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct DeliverMessageRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for DeliverMessageRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.mlsDS.deliverMessage";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = DeliverMessage<'de>;
+    type Request<S: jacquard_common::BosStr> = DeliverMessage<S>;
     type Response = DeliverMessageResponse;
+}
+
+fn lexicon_doc_blue_catbird_mlsDS_deliverMessage() -> jacquard_lexicon::lexicon::LexiconDoc<'static>
+{
+    ::jacquard_lexicon::lexicon::LexiconDoc {
+        lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
+        id: ::jacquard_common::CowStr::new_static("blue.catbird.mlsDS.deliverMessage"),
+        defs: {
+            let mut map = ::alloc::collections::BTreeMap::new();
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("deliveryAck"),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(
+                    ::jacquard_lexicon::lexicon::LexObject {
+                        description: Some(::jacquard_common::CowStr::new_static(
+                            "Signed delivery acknowledgment",
+                        )),
+                        required: Some(vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("sig"),
+                        ]),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("epoch"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("msgId"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("sig"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        description: Some(::jacquard_common::CowStr::new_static(
+                                            "Signed acknowledgment token",
+                                        )),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("term"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map
+                        },
+                        ..Default::default()
+                    },
+                ),
+            );
+            map.insert(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
+                ::jacquard_lexicon::lexicon::LexUserType::XrpcProcedure(
+                    ::jacquard_lexicon::lexicon::LexXrpcProcedure {
+                        input: Some(::jacquard_lexicon::lexicon::LexXrpcBody {
+                            encoding: ::jacquard_common::CowStr::new_static("application/json"),
+                            schema: Some(::jacquard_lexicon::lexicon::LexXrpcBodySchema::Object(
+                                ::jacquard_lexicon::lexicon::LexObject {
+                                    required: Some(vec![
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "convoId",
+                                        ),
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "msgId",
+                                        ),
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "epoch",
+                                        ),
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "senderDsDid",
+                                        ),
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "ciphertext",
+                                        ),
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "paddedSize",
+                                        ),
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "deliveryId",
+                                        ),
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "sequencerTerm",
+                                        ),
+                                    ]),
+                                    properties: {
+                                        #[allow(unused_mut)]
+                                        let mut map = ::alloc::collections::BTreeMap::new();
+                                        map.insert(
+                                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                                "ciphertext",
+                                            ),
+                                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                                ::jacquard_lexicon::lexicon::LexBytes {
+                                                    ..Default::default()
+                                                },
+                                            ),
+                                        );
+                                        map.insert(
+                                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                                "convoId",
+                                            ),
+                                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                                ::jacquard_lexicon::lexicon::LexString {
+                                                    description: Some(
+                                                        ::jacquard_common::CowStr::new_static(
+                                                            "Conversation ID",
+                                                        ),
+                                                    ),
+                                                    ..Default::default()
+                                                },
+                                            ),
+                                        );
+                                        map.insert(
+                                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                                "deliveryId",
+                                            ),
+                                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                                ::jacquard_lexicon::lexicon::LexString {
+                                                    description: Some(
+                                                        ::jacquard_common::CowStr::new_static(
+                                                            "Delivery tracking ID (ULID)",
+                                                        ),
+                                                    ),
+                                                    ..Default::default()
+                                                },
+                                            ),
+                                        );
+                                        map.insert(
+                                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                                "epoch",
+                                            ),
+                                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                                ::jacquard_lexicon::lexicon::LexInteger {
+                                                    ..Default::default()
+                                                },
+                                            ),
+                                        );
+                                        map.insert(
+                                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                                "messageType",
+                                            ),
+                                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                                ::jacquard_lexicon::lexicon::LexString {
+                                                    description: Some(
+                                                        ::jacquard_common::CowStr::new_static(
+                                                            "Message type (default: 'app')",
+                                                        ),
+                                                    ),
+                                                    ..Default::default()
+                                                },
+                                            ),
+                                        );
+                                        map.insert(
+                                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                                "msgId",
+                                            ),
+                                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                                ::jacquard_lexicon::lexicon::LexString {
+                                                    description: Some(
+                                                        ::jacquard_common::CowStr::new_static(
+                                                            "Unique message ID (ULID)",
+                                                        ),
+                                                    ),
+                                                    ..Default::default()
+                                                },
+                                            ),
+                                        );
+                                        map.insert(
+                                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                                "paddedSize",
+                                            ),
+                                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                                ::jacquard_lexicon::lexicon::LexInteger {
+                                                    ..Default::default()
+                                                },
+                                            ),
+                                        );
+                                        map.insert(
+                                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                                "senderDsDid",
+                                            ),
+                                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                                ::jacquard_lexicon::lexicon::LexString {
+                                                    description: Some(
+                                                        ::jacquard_common::CowStr::new_static(
+                                                            "DID of the sending delivery service",
+                                                        ),
+                                                    ),
+                                                    ..Default::default()
+                                                },
+                                            ),
+                                        );
+                                        map.insert(
+                                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                                "sequencerTerm",
+                                            ),
+                                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                                ::jacquard_lexicon::lexicon::LexInteger {
+                                                    ..Default::default()
+                                                },
+                                            ),
+                                        );
+                                        map
+                                    },
+                                    ..Default::default()
+                                },
+                            )),
+                            ..Default::default()
+                        }),
+                        ..Default::default()
+                    },
+                ),
+            );
+            map
+        },
+        ..Default::default()
+    }
+}
+
+pub mod deliver_message_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type Ciphertext;
+        type ConvoId;
+        type DeliveryId;
+        type Epoch;
+        type MsgId;
+        type PaddedSize;
+        type SenderDsDid;
+        type SequencerTerm;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type Ciphertext = Unset;
+        type ConvoId = Unset;
+        type DeliveryId = Unset;
+        type Epoch = Unset;
+        type MsgId = Unset;
+        type PaddedSize = Unset;
+        type SenderDsDid = Unset;
+        type SequencerTerm = Unset;
+    }
+    ///State transition - sets the `ciphertext` field to Set
+    pub struct SetCiphertext<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCiphertext<St> {}
+    impl<St: State> State for SetCiphertext<St> {
+        type Ciphertext = Set<members::ciphertext>;
+        type ConvoId = St::ConvoId;
+        type DeliveryId = St::DeliveryId;
+        type Epoch = St::Epoch;
+        type MsgId = St::MsgId;
+        type PaddedSize = St::PaddedSize;
+        type SenderDsDid = St::SenderDsDid;
+        type SequencerTerm = St::SequencerTerm;
+    }
+    ///State transition - sets the `convo_id` field to Set
+    pub struct SetConvoId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetConvoId<St> {}
+    impl<St: State> State for SetConvoId<St> {
+        type Ciphertext = St::Ciphertext;
+        type ConvoId = Set<members::convo_id>;
+        type DeliveryId = St::DeliveryId;
+        type Epoch = St::Epoch;
+        type MsgId = St::MsgId;
+        type PaddedSize = St::PaddedSize;
+        type SenderDsDid = St::SenderDsDid;
+        type SequencerTerm = St::SequencerTerm;
+    }
+    ///State transition - sets the `delivery_id` field to Set
+    pub struct SetDeliveryId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetDeliveryId<St> {}
+    impl<St: State> State for SetDeliveryId<St> {
+        type Ciphertext = St::Ciphertext;
+        type ConvoId = St::ConvoId;
+        type DeliveryId = Set<members::delivery_id>;
+        type Epoch = St::Epoch;
+        type MsgId = St::MsgId;
+        type PaddedSize = St::PaddedSize;
+        type SenderDsDid = St::SenderDsDid;
+        type SequencerTerm = St::SequencerTerm;
+    }
+    ///State transition - sets the `epoch` field to Set
+    pub struct SetEpoch<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetEpoch<St> {}
+    impl<St: State> State for SetEpoch<St> {
+        type Ciphertext = St::Ciphertext;
+        type ConvoId = St::ConvoId;
+        type DeliveryId = St::DeliveryId;
+        type Epoch = Set<members::epoch>;
+        type MsgId = St::MsgId;
+        type PaddedSize = St::PaddedSize;
+        type SenderDsDid = St::SenderDsDid;
+        type SequencerTerm = St::SequencerTerm;
+    }
+    ///State transition - sets the `msg_id` field to Set
+    pub struct SetMsgId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetMsgId<St> {}
+    impl<St: State> State for SetMsgId<St> {
+        type Ciphertext = St::Ciphertext;
+        type ConvoId = St::ConvoId;
+        type DeliveryId = St::DeliveryId;
+        type Epoch = St::Epoch;
+        type MsgId = Set<members::msg_id>;
+        type PaddedSize = St::PaddedSize;
+        type SenderDsDid = St::SenderDsDid;
+        type SequencerTerm = St::SequencerTerm;
+    }
+    ///State transition - sets the `padded_size` field to Set
+    pub struct SetPaddedSize<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetPaddedSize<St> {}
+    impl<St: State> State for SetPaddedSize<St> {
+        type Ciphertext = St::Ciphertext;
+        type ConvoId = St::ConvoId;
+        type DeliveryId = St::DeliveryId;
+        type Epoch = St::Epoch;
+        type MsgId = St::MsgId;
+        type PaddedSize = Set<members::padded_size>;
+        type SenderDsDid = St::SenderDsDid;
+        type SequencerTerm = St::SequencerTerm;
+    }
+    ///State transition - sets the `sender_ds_did` field to Set
+    pub struct SetSenderDsDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSenderDsDid<St> {}
+    impl<St: State> State for SetSenderDsDid<St> {
+        type Ciphertext = St::Ciphertext;
+        type ConvoId = St::ConvoId;
+        type DeliveryId = St::DeliveryId;
+        type Epoch = St::Epoch;
+        type MsgId = St::MsgId;
+        type PaddedSize = St::PaddedSize;
+        type SenderDsDid = Set<members::sender_ds_did>;
+        type SequencerTerm = St::SequencerTerm;
+    }
+    ///State transition - sets the `sequencer_term` field to Set
+    pub struct SetSequencerTerm<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSequencerTerm<St> {}
+    impl<St: State> State for SetSequencerTerm<St> {
+        type Ciphertext = St::Ciphertext;
+        type ConvoId = St::ConvoId;
+        type DeliveryId = St::DeliveryId;
+        type Epoch = St::Epoch;
+        type MsgId = St::MsgId;
+        type PaddedSize = St::PaddedSize;
+        type SenderDsDid = St::SenderDsDid;
+        type SequencerTerm = Set<members::sequencer_term>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `ciphertext` field
+        pub struct ciphertext(());
+        ///Marker type for the `convo_id` field
+        pub struct convo_id(());
+        ///Marker type for the `delivery_id` field
+        pub struct delivery_id(());
+        ///Marker type for the `epoch` field
+        pub struct epoch(());
+        ///Marker type for the `msg_id` field
+        pub struct msg_id(());
+        ///Marker type for the `padded_size` field
+        pub struct padded_size(());
+        ///Marker type for the `sender_ds_did` field
+        pub struct sender_ds_did(());
+        ///Marker type for the `sequencer_term` field
+        pub struct sequencer_term(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct DeliverMessageBuilder<
+    St: deliver_message_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
+        core::option::Option<S>,
+        core::option::Option<S>,
+        core::option::Option<i64>,
+        core::option::Option<S>,
+        core::option::Option<S>,
+        core::option::Option<i64>,
+        core::option::Option<S>,
+        core::option::Option<i64>,
+    ),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl DeliverMessage<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> DeliverMessageBuilder<deliver_message_state::Empty, jacquard_common::DefaultStr>
+    {
+        DeliverMessageBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> DeliverMessage<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> DeliverMessageBuilder<deliver_message_state::Empty, S> {
+        DeliverMessageBuilder::builder()
+    }
+}
+
+impl DeliverMessageBuilder<deliver_message_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        DeliverMessageBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> DeliverMessageBuilder<deliver_message_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        DeliverMessageBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeliverMessageBuilder<St, S>
+where
+    St: deliver_message_state::State,
+    St::Ciphertext: deliver_message_state::IsUnset,
+{
+    /// Set the `ciphertext` field (required)
+    pub fn ciphertext(
+        mut self,
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
+    ) -> DeliverMessageBuilder<deliver_message_state::SetCiphertext<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        DeliverMessageBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeliverMessageBuilder<St, S>
+where
+    St: deliver_message_state::State,
+    St::ConvoId: deliver_message_state::IsUnset,
+{
+    /// Set the `convoId` field (required)
+    pub fn convo_id(
+        mut self,
+        value: impl Into<S>,
+    ) -> DeliverMessageBuilder<deliver_message_state::SetConvoId<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
+        DeliverMessageBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeliverMessageBuilder<St, S>
+where
+    St: deliver_message_state::State,
+    St::DeliveryId: deliver_message_state::IsUnset,
+{
+    /// Set the `deliveryId` field (required)
+    pub fn delivery_id(
+        mut self,
+        value: impl Into<S>,
+    ) -> DeliverMessageBuilder<deliver_message_state::SetDeliveryId<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
+        DeliverMessageBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeliverMessageBuilder<St, S>
+where
+    St: deliver_message_state::State,
+    St::Epoch: deliver_message_state::IsUnset,
+{
+    /// Set the `epoch` field (required)
+    pub fn epoch(
+        mut self,
+        value: impl Into<i64>,
+    ) -> DeliverMessageBuilder<deliver_message_state::SetEpoch<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
+        DeliverMessageBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: deliver_message_state::State, S: jacquard_common::BosStr> DeliverMessageBuilder<St, S> {
+    /// Set the `messageType` field (optional)
+    pub fn message_type(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.4 = value.into();
+        self
+    }
+    /// Set the `messageType` field to an Option value (optional)
+    pub fn maybe_message_type(mut self, value: Option<S>) -> Self {
+        self._fields.4 = value;
+        self
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeliverMessageBuilder<St, S>
+where
+    St: deliver_message_state::State,
+    St::MsgId: deliver_message_state::IsUnset,
+{
+    /// Set the `msgId` field (required)
+    pub fn msg_id(
+        mut self,
+        value: impl Into<S>,
+    ) -> DeliverMessageBuilder<deliver_message_state::SetMsgId<St>, S> {
+        self._fields.5 = ::core::option::Option::Some(value.into());
+        DeliverMessageBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeliverMessageBuilder<St, S>
+where
+    St: deliver_message_state::State,
+    St::PaddedSize: deliver_message_state::IsUnset,
+{
+    /// Set the `paddedSize` field (required)
+    pub fn padded_size(
+        mut self,
+        value: impl Into<i64>,
+    ) -> DeliverMessageBuilder<deliver_message_state::SetPaddedSize<St>, S> {
+        self._fields.6 = ::core::option::Option::Some(value.into());
+        DeliverMessageBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeliverMessageBuilder<St, S>
+where
+    St: deliver_message_state::State,
+    St::SenderDsDid: deliver_message_state::IsUnset,
+{
+    /// Set the `senderDsDid` field (required)
+    pub fn sender_ds_did(
+        mut self,
+        value: impl Into<S>,
+    ) -> DeliverMessageBuilder<deliver_message_state::SetSenderDsDid<St>, S> {
+        self._fields.7 = ::core::option::Option::Some(value.into());
+        DeliverMessageBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeliverMessageBuilder<St, S>
+where
+    St: deliver_message_state::State,
+    St::SequencerTerm: deliver_message_state::IsUnset,
+{
+    /// Set the `sequencerTerm` field (required)
+    pub fn sequencer_term(
+        mut self,
+        value: impl Into<i64>,
+    ) -> DeliverMessageBuilder<deliver_message_state::SetSequencerTerm<St>, S> {
+        self._fields.8 = ::core::option::Option::Some(value.into());
+        DeliverMessageBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeliverMessageBuilder<St, S>
+where
+    St: deliver_message_state::State,
+    St::Ciphertext: deliver_message_state::IsSet,
+    St::ConvoId: deliver_message_state::IsSet,
+    St::DeliveryId: deliver_message_state::IsSet,
+    St::Epoch: deliver_message_state::IsSet,
+    St::MsgId: deliver_message_state::IsSet,
+    St::PaddedSize: deliver_message_state::IsSet,
+    St::SenderDsDid: deliver_message_state::IsSet,
+    St::SequencerTerm: deliver_message_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> DeliverMessage<S> {
+        DeliverMessage {
+            ciphertext: self._fields.0.unwrap(),
+            convo_id: self._fields.1.unwrap(),
+            delivery_id: self._fields.2.unwrap(),
+            epoch: self._fields.3.unwrap(),
+            message_type: self._fields.4,
+            msg_id: self._fields.5.unwrap(),
+            padded_size: self._fields.6.unwrap(),
+            sender_ds_did: self._fields.7.unwrap(),
+            sequencer_term: self._fields.8.unwrap(),
+            extra_data: Default::default(),
+        }
+    }
+    /// Build the final struct with custom extra_data.
+    pub fn build_with_data(
+        self,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    ) -> DeliverMessage<S> {
+        DeliverMessage {
+            ciphertext: self._fields.0.unwrap(),
+            convo_id: self._fields.1.unwrap(),
+            delivery_id: self._fields.2.unwrap(),
+            epoch: self._fields.3.unwrap(),
+            message_type: self._fields.4,
+            msg_id: self._fields.5.unwrap(),
+            padded_size: self._fields.6.unwrap(),
+            sender_ds_did: self._fields.7.unwrap(),
+            sequencer_term: self._fields.8.unwrap(),
+            extra_data: Some(extra_data),
+        }
+    }
 }

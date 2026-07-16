@@ -6,16 +6,99 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 /// Record declaring a recommendation of a document.
-#[jacquard_derive::lexicon]
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    rename = "site.standard.graph.recommend",
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct Recommend<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub created_at: jacquard_common::types::string::Datetime,
+    ///AT-URI reference to the document record being recommended (ex: at://did:plc:abc123/site.standard.document/xyz789).
+    pub document: jacquard_common::types::string::AtUri<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// Typed wrapper for GetRecord response with this collection's record type.
+
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
-pub struct Recommend<'a> {
-    pub created_at: jacquard_common::types::string::Datetime,
-    /// AT-URI reference to the document record being recommended (ex: at://did:plc:abc123/site.standard.document/xyz789).
-    #[serde(borrow)]
-    pub document: jacquard_common::types::string::AtUri<'a>,
+pub struct RecommendGetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
+    pub uri: jacquard_common::types::string::AtUri<S>,
+    pub value: Recommend<S>,
+}
+
+impl<S: jacquard_common::BosStr> Recommend<S> {
+    pub fn uri(
+        uri: S,
+    ) -> Result<
+        jacquard_common::types::uri::RecordUri<S, RecommendRecord>,
+        jacquard_common::types::uri::UriError,
+    > {
+        jacquard_common::types::uri::RecordUri::try_from_uri(
+            jacquard_common::types::string::AtUri::new(uri)?,
+        )
+    }
+}
+
+/// Marker type for deserializing records from this collection.
+
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+pub struct RecommendRecord;
+impl jacquard_common::xrpc::XrpcResp for RecommendRecord {
+    const NSID: &'static str = "site.standard.graph.recommend";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = RecommendGetRecordOutput<S>;
+    type Err = jacquard_common::types::collection::RecordError;
+}
+
+impl<S: jacquard_common::BosStr> From<RecommendGetRecordOutput<S>> for Recommend<S> {
+    fn from(output: RecommendGetRecordOutput<S>) -> Self {
+        output.value
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection for Recommend<S> {
+    const NSID: &'static str = "site.standard.graph.recommend";
+    type Record = RecommendRecord;
+}
+
+impl jacquard_common::types::collection::Collection for RecommendRecord {
+    const NSID: &'static str = "site.standard.graph.recommend";
+    type Record = RecommendRecord;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Recommend<S> {
+    fn nsid() -> &'static str {
+        "site.standard.graph.recommend"
+    }
+    fn def_name() -> &'static str {
+        "main"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_site_standard_graph_recommend()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
 }
 
 pub mod recommend_state {
@@ -28,218 +111,165 @@ pub mod recommend_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Document;
         type CreatedAt;
+        type Document;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Document = Unset;
         type CreatedAt = Unset;
-    }
-    ///State transition - sets the `document` field to Set
-    pub struct SetDocument<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDocument<S> {}
-    impl<S: State> State for SetDocument<S> {
-        type Document = Set<members::document>;
-        type CreatedAt = S::CreatedAt;
+        type Document = Unset;
     }
     ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type Document = S::Document;
+    pub struct SetCreatedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCreatedAt<St> {}
+    impl<St: State> State for SetCreatedAt<St> {
         type CreatedAt = Set<members::created_at>;
+        type Document = St::Document;
+    }
+    ///State transition - sets the `document` field to Set
+    pub struct SetDocument<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetDocument<St> {}
+    impl<St: State> State for SetDocument<St> {
+        type CreatedAt = St::CreatedAt;
+        type Document = Set<members::document>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `document` field
-        pub struct document(());
         ///Marker type for the `created_at` field
         pub struct created_at(());
+        ///Marker type for the `document` field
+        pub struct document(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct RecommendBuilder<'a, S: recommend_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct RecommendBuilder<
+    St: recommend_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<jacquard_common::types::string::AtUri<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> Recommend<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> RecommendBuilder<'a, recommend_state::Empty> {
+impl Recommend<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> RecommendBuilder<recommend_state::Empty, jacquard_common::DefaultStr> {
         RecommendBuilder::new()
     }
 }
 
-impl<'a> RecommendBuilder<'a, recommend_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> Recommend<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> RecommendBuilder<recommend_state::Empty, S> {
+        RecommendBuilder::builder()
+    }
+}
+
+impl RecommendBuilder<recommend_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         RecommendBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> RecommendBuilder<'a, S>
+impl<S: jacquard_common::BosStr> RecommendBuilder<recommend_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        RecommendBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> RecommendBuilder<St, S>
 where
-    S: recommend_state::State,
-    S::CreatedAt: recommend_state::IsUnset,
+    St: recommend_state::State,
+    St::CreatedAt: recommend_state::IsUnset,
 {
     /// Set the `createdAt` field (required)
     pub fn created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> RecommendBuilder<'a, recommend_state::SetCreatedAt<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+    ) -> RecommendBuilder<recommend_state::SetCreatedAt<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         RecommendBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> RecommendBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> RecommendBuilder<St, S>
 where
-    S: recommend_state::State,
-    S::Document: recommend_state::IsUnset,
+    St: recommend_state::State,
+    St::Document: recommend_state::IsUnset,
 {
     /// Set the `document` field (required)
     pub fn document(
         mut self,
-        value: impl Into<jacquard_common::types::string::AtUri<'a>>,
-    ) -> RecommendBuilder<'a, recommend_state::SetDocument<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::AtUri<S>>,
+    ) -> RecommendBuilder<recommend_state::SetDocument<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         RecommendBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> RecommendBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> RecommendBuilder<St, S>
 where
-    S: recommend_state::State,
-    S::Document: recommend_state::IsSet,
-    S::CreatedAt: recommend_state::IsSet,
+    St: recommend_state::State,
+    St::CreatedAt: recommend_state::IsSet,
+    St::Document: recommend_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> Recommend<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> Recommend<S> {
         Recommend {
-            created_at: self.__unsafe_private_named.0.unwrap(),
-            document: self.__unsafe_private_named.1.unwrap(),
+            created_at: self._fields.0.unwrap(),
+            document: self._fields.1.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> Recommend<'a> {
+    ) -> Recommend<S> {
         Recommend {
-            created_at: self.__unsafe_private_named.0.unwrap(),
-            document: self.__unsafe_private_named.1.unwrap(),
+            created_at: self._fields.0.unwrap(),
+            document: self._fields.1.unwrap(),
             extra_data: Some(extra_data),
         }
     }
 }
 
-impl<'a> Recommend<'a> {
-    pub fn uri(
-        uri: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> Result<
-        jacquard_common::types::uri::RecordUri<'a, RecommendRecord>,
-        jacquard_common::types::uri::UriError,
-    > {
-        jacquard_common::types::uri::RecordUri::try_from_uri(
-            jacquard_common::types::string::AtUri::new_cow(uri.into())?,
-        )
-    }
-}
-
-/// Typed wrapper for GetRecord response with this collection's record type.
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct RecommendGetRecordOutput<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cid: std::option::Option<jacquard_common::types::string::Cid<'a>>,
-    #[serde(borrow)]
-    pub uri: jacquard_common::types::string::AtUri<'a>,
-    #[serde(borrow)]
-    pub value: Recommend<'a>,
-}
-
-impl From<RecommendGetRecordOutput<'_>> for Recommend<'_> {
-    fn from(output: RecommendGetRecordOutput<'_>) -> Self {
-        use jacquard_common::IntoStatic;
-        output.value.into_static()
-    }
-}
-
-impl jacquard_common::types::collection::Collection for Recommend<'_> {
-    const NSID: &'static str = "site.standard.graph.recommend";
-    type Record = RecommendRecord;
-}
-
-/// Marker type for deserializing records from this collection.
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
-pub struct RecommendRecord;
-impl jacquard_common::xrpc::XrpcResp for RecommendRecord {
-    const NSID: &'static str = "site.standard.graph.recommend";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = RecommendGetRecordOutput<'de>;
-    type Err<'de> = jacquard_common::types::collection::RecordError<'de>;
-}
-
-impl jacquard_common::types::collection::Collection for RecommendRecord {
-    const NSID: &'static str = "site.standard.graph.recommend";
-    type Record = RecommendRecord;
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Recommend<'a> {
-    fn nsid() -> &'static str {
-        "site.standard.graph.recommend"
-    }
-    fn def_name() -> &'static str {
-        "main"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_site_standard_graph_recommend()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-fn lexicon_doc_site_standard_graph_recommend() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_site_standard_graph_recommend() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("site.standard.graph.recommend"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
                 ::jacquard_lexicon::lexicon::LexUserType::Record(::jacquard_lexicon::lexicon::LexRecord {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
@@ -248,38 +278,28 @@ fn lexicon_doc_site_standard_graph_recommend() -> ::jacquard_lexicon::lexicon::L
                     ),
                     key: Some(::jacquard_common::CowStr::new_static("tid")),
                     record: ::jacquard_lexicon::lexicon::LexRecordRecord::Object(::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(
                             vec![
-                                ::jacquard_common::smol_str::SmolStr::new_static("document"),
-                                ::jacquard_common::smol_str::SmolStr::new_static("createdAt")
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("document"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt")
                             ],
                         ),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "createdAt",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                    description: None,
                                     format: Some(
                                         ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                     ),
-                                    default: None,
-                                    min_length: None,
-                                    max_length: None,
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "document",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -291,22 +311,18 @@ fn lexicon_doc_site_standard_graph_recommend() -> ::jacquard_lexicon::lexicon::L
                                     format: Some(
                                         ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
                                     ),
-                                    default: None,
-                                    min_length: None,
-                                    max_length: None,
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
                             );
                             map
                         },
+                        ..Default::default()
                     }),
+                    ..Default::default()
                 }),
             );
             map
         },
+        ..Default::default()
     }
 }

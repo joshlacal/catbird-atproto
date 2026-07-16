@@ -8,14 +8,111 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct ListMissingBlobs<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    ///(default: 500, min: 1, max: 1000)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub limit: std::option::Option<i64>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ListMissingBlobs<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    /// Defaults to `500`. Min: 1. Max: 1000.
+    #[serde(default = "_default_limit")]
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub limit: core::option::Option<i64>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ListMissingBlobsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub blobs: Vec<crate::generated::com_atproto::repo::list_missing_blobs::RecordBlob<S>>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct RecordBlob<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub cid: jacquard_common::types::string::Cid<S>,
+    pub record_uri: jacquard_common::types::string::AtUri<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `com.atproto.repo.listMissingBlobs` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `ListMissingBlobsOutput<S>` for this endpoint.*/
+pub struct ListMissingBlobsResponse;
+impl jacquard_common::xrpc::XrpcResp for ListMissingBlobsResponse {
+    const NSID: &'static str = "com.atproto.repo.listMissingBlobs";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = ListMissingBlobsOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for ListMissingBlobs<S> {
+    const NSID: &'static str = "com.atproto.repo.listMissingBlobs";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = ListMissingBlobsResponse;
+}
+
+/** Endpoint marker for the `com.atproto.repo.listMissingBlobs` query.
+
+Path: `/xrpc/com.atproto.repo.listMissingBlobs`. The request payload type is `ListMissingBlobs<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct ListMissingBlobsRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for ListMissingBlobsRequest {
+    const PATH: &'static str = "/xrpc/com.atproto.repo.listMissingBlobs";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = ListMissingBlobs<S>;
+    type Response = ListMissingBlobsResponse;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for RecordBlob<S> {
+    fn nsid() -> &'static str {
+        "com.atproto.repo.listMissingBlobs"
+    }
+    fn def_name() -> &'static str {
+        "recordBlob"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_com_atproto_repo_listMissingBlobs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+fn _default_limit() -> core::option::Option<i64> {
+    Some(500i64)
 }
 
 pub mod list_missing_blobs_state {
@@ -37,122 +134,94 @@ pub mod list_missing_blobs_state {
     pub mod members {}
 }
 
-/// Builder for constructing an instance of this type
-pub struct ListMissingBlobsBuilder<'a, S: list_missing_blobs_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<i64>,
-    ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct ListMissingBlobsBuilder<
+    St: list_missing_blobs_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<S>, core::option::Option<i64>),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> ListMissingBlobs<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> ListMissingBlobsBuilder<'a, list_missing_blobs_state::Empty> {
+impl ListMissingBlobs<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> ListMissingBlobsBuilder<list_missing_blobs_state::Empty, jacquard_common::DefaultStr> {
         ListMissingBlobsBuilder::new()
     }
 }
 
-impl<'a> ListMissingBlobsBuilder<'a, list_missing_blobs_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> ListMissingBlobs<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> ListMissingBlobsBuilder<list_missing_blobs_state::Empty, S> {
+        ListMissingBlobsBuilder::builder()
+    }
+}
+
+impl ListMissingBlobsBuilder<list_missing_blobs_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ListMissingBlobsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: list_missing_blobs_state::State> ListMissingBlobsBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> ListMissingBlobsBuilder<list_missing_blobs_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        ListMissingBlobsBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: list_missing_blobs_state::State, S: jacquard_common::BosStr>
+    ListMissingBlobsBuilder<St, S>
+{
     /// Set the `cursor` field (optional)
-    pub fn cursor(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+    pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.0 = value.into();
         self
     }
     /// Set the `cursor` field to an Option value (optional)
-    pub fn maybe_cursor(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.0 = value;
+    pub fn maybe_cursor(mut self, value: Option<S>) -> Self {
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S: list_missing_blobs_state::State> ListMissingBlobsBuilder<'a, S> {
+impl<St: list_missing_blobs_state::State, S: jacquard_common::BosStr>
+    ListMissingBlobsBuilder<St, S>
+{
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self._fields.1 = value.into();
         self
     }
     /// Set the `limit` field to an Option value (optional)
     pub fn maybe_limit(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.1 = value;
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S> ListMissingBlobsBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ListMissingBlobsBuilder<St, S>
 where
-    S: list_missing_blobs_state::State,
+    St: list_missing_blobs_state::State,
 {
-    /// Build the final struct
-    pub fn build(self) -> ListMissingBlobs<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> ListMissingBlobs<S> {
         ListMissingBlobs {
-            cursor: self.__unsafe_private_named.0,
-            limit: self.__unsafe_private_named.1,
+            cursor: self._fields.0,
+            limit: self._fields.1,
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct ListMissingBlobsOutput<'a> {
-    #[serde(borrow)]
-    pub blobs: Vec<crate::generated::com_atproto::repo::list_missing_blobs::RecordBlob<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-}
-
-/// Response type for
-///com.atproto.repo.listMissingBlobs
-pub struct ListMissingBlobsResponse;
-impl jacquard_common::xrpc::XrpcResp for ListMissingBlobsResponse {
-    const NSID: &'static str = "com.atproto.repo.listMissingBlobs";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = ListMissingBlobsOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for ListMissingBlobs<'a> {
-    const NSID: &'static str = "com.atproto.repo.listMissingBlobs";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = ListMissingBlobsResponse;
-}
-
-/// Endpoint type for
-///com.atproto.repo.listMissingBlobs
-pub struct ListMissingBlobsRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for ListMissingBlobsRequest {
-    const PATH: &'static str = "/xrpc/com.atproto.repo.listMissingBlobs";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = ListMissingBlobs<'de>;
-    type Response = ListMissingBlobsResponse;
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct RecordBlob<'a> {
-    #[serde(borrow)]
-    pub cid: jacquard_common::types::string::Cid<'a>,
-    #[serde(borrow)]
-    pub record_uri: jacquard_common::types::string::AtUri<'a>,
 }
 
 pub mod record_blob_state {
@@ -176,17 +245,17 @@ pub mod record_blob_state {
         type RecordUri = Unset;
     }
     ///State transition - sets the `cid` field to Set
-    pub struct SetCid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCid<S> {}
-    impl<S: State> State for SetCid<S> {
+    pub struct SetCid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCid<St> {}
+    impl<St: State> State for SetCid<St> {
         type Cid = Set<members::cid>;
-        type RecordUri = S::RecordUri;
+        type RecordUri = St::RecordUri;
     }
     ///State transition - sets the `record_uri` field to Set
-    pub struct SetRecordUri<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRecordUri<S> {}
-    impl<S: State> State for SetRecordUri<S> {
-        type Cid = S::Cid;
+    pub struct SetRecordUri<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRecordUri<St> {}
+    impl<St: State> State for SetRecordUri<St> {
+        type Cid = St::Cid;
         type RecordUri = Set<members::record_uri>;
     }
     /// Marker types for field names
@@ -199,230 +268,203 @@ pub mod record_blob_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct RecordBlobBuilder<'a, S: record_blob_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Cid<'a>>,
-        ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct RecordBlobBuilder<
+    St: record_blob_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Cid<S>>,
+        core::option::Option<jacquard_common::types::string::AtUri<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> RecordBlob<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> RecordBlobBuilder<'a, record_blob_state::Empty> {
+impl RecordBlob<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> RecordBlobBuilder<record_blob_state::Empty, jacquard_common::DefaultStr> {
         RecordBlobBuilder::new()
     }
 }
 
-impl<'a> RecordBlobBuilder<'a, record_blob_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> RecordBlob<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> RecordBlobBuilder<record_blob_state::Empty, S> {
+        RecordBlobBuilder::builder()
+    }
+}
+
+impl RecordBlobBuilder<record_blob_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         RecordBlobBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> RecordBlobBuilder<'a, S>
+impl<S: jacquard_common::BosStr> RecordBlobBuilder<record_blob_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        RecordBlobBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> RecordBlobBuilder<St, S>
 where
-    S: record_blob_state::State,
-    S::Cid: record_blob_state::IsUnset,
+    St: record_blob_state::State,
+    St::Cid: record_blob_state::IsUnset,
 {
     /// Set the `cid` field (required)
     pub fn cid(
         mut self,
-        value: impl Into<jacquard_common::types::string::Cid<'a>>,
-    ) -> RecordBlobBuilder<'a, record_blob_state::SetCid<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Cid<S>>,
+    ) -> RecordBlobBuilder<record_blob_state::SetCid<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         RecordBlobBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> RecordBlobBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> RecordBlobBuilder<St, S>
 where
-    S: record_blob_state::State,
-    S::RecordUri: record_blob_state::IsUnset,
+    St: record_blob_state::State,
+    St::RecordUri: record_blob_state::IsUnset,
 {
     /// Set the `recordUri` field (required)
     pub fn record_uri(
         mut self,
-        value: impl Into<jacquard_common::types::string::AtUri<'a>>,
-    ) -> RecordBlobBuilder<'a, record_blob_state::SetRecordUri<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::AtUri<S>>,
+    ) -> RecordBlobBuilder<record_blob_state::SetRecordUri<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         RecordBlobBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> RecordBlobBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> RecordBlobBuilder<St, S>
 where
-    S: record_blob_state::State,
-    S::Cid: record_blob_state::IsSet,
-    S::RecordUri: record_blob_state::IsSet,
+    St: record_blob_state::State,
+    St::Cid: record_blob_state::IsSet,
+    St::RecordUri: record_blob_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> RecordBlob<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> RecordBlob<S> {
         RecordBlob {
-            cid: self.__unsafe_private_named.0.unwrap(),
-            record_uri: self.__unsafe_private_named.1.unwrap(),
+            cid: self._fields.0.unwrap(),
+            record_uri: self._fields.1.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> RecordBlob<'a> {
+    ) -> RecordBlob<S> {
         RecordBlob {
-            cid: self.__unsafe_private_named.0.unwrap(),
-            record_uri: self.__unsafe_private_named.1.unwrap(),
+            cid: self._fields.0.unwrap(),
+            record_uri: self._fields.1.unwrap(),
             extra_data: Some(extra_data),
         }
     }
 }
 
-fn lexicon_doc_com_atproto_repo_listMissingBlobs(
-) -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_com_atproto_repo_listMissingBlobs() -> jacquard_lexicon::lexicon::LexiconDoc<'static>
+{
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("com.atproto.repo.listMissingBlobs"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
                 ::jacquard_lexicon::lexicon::LexUserType::XrpcQuery(::jacquard_lexicon::lexicon::LexXrpcQuery {
-                    description: None,
                     parameters: Some(
                         ::jacquard_lexicon::lexicon::LexXrpcQueryParameter::Params(::jacquard_lexicon::lexicon::LexXrpcParameters {
-                            description: None,
-                            required: None,
                             properties: {
                                 #[allow(unused_mut)]
-                                let mut map = ::std::collections::BTreeMap::new();
+                                let mut map = ::alloc::collections::BTreeMap::new();
                                 map.insert(
-                                    ::jacquard_common::smol_str::SmolStr::new_static("cursor"),
+                                    ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                        "cursor",
+                                    ),
                                     ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     }),
                                 );
                                 map.insert(
-                                    ::jacquard_common::smol_str::SmolStr::new_static("limit"),
+                                    ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                        "limit",
+                                    ),
                                     ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
-                                        minimum: None,
-                                        maximum: None,
-                                        r#enum: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     }),
                                 );
                                 map
                             },
+                            ..Default::default()
                         }),
                     ),
-                    output: None,
-                    errors: None,
+                    ..Default::default()
                 }),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("recordBlob"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("recordBlob"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("cid"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("recordUri"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("cid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("recordUri"),
                         ]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("cid"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("cid"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Cid,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("recordUri"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("recordUri"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map
         },
-    }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for RecordBlob<'a> {
-    fn nsid() -> &'static str {
-        "com.atproto.repo.listMissingBlobs"
-    }
-    fn def_name() -> &'static str {
-        "recordBlob"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_com_atproto_repo_listMissingBlobs()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
+        ..Default::default()
     }
 }

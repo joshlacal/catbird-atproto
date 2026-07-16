@@ -8,10 +8,63 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetProfile<'a> {
-    #[serde(borrow)]
-    pub actor: jacquard_common::types::ident::AtIdentifier<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetProfile<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub actor: jacquard_common::types::ident::AtIdentifier<S>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetProfileOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(flatten)]
+    pub value: crate::generated::app_bsky::actor::ProfileViewDetailed<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `app.bsky.actor.getProfile` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetProfileOutput<S>` for this endpoint.*/
+pub struct GetProfileResponse;
+impl jacquard_common::xrpc::XrpcResp for GetProfileResponse {
+    const NSID: &'static str = "app.bsky.actor.getProfile";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = GetProfileOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetProfile<S> {
+    const NSID: &'static str = "app.bsky.actor.getProfile";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = GetProfileResponse;
+}
+
+/** Endpoint marker for the `app.bsky.actor.getProfile` query.
+
+Path: `/xrpc/app.bsky.actor.getProfile`. The request payload type is `GetProfile<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct GetProfileRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for GetProfileRequest {
+    const PATH: &'static str = "/xrpc/app.bsky.actor.getProfile";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = GetProfile<S>;
+    type Response = GetProfileResponse;
 }
 
 pub mod get_profile_state {
@@ -33,9 +86,9 @@ pub mod get_profile_state {
         type Actor = Unset;
     }
     ///State transition - sets the `actor` field to Set
-    pub struct SetActor<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetActor<S> {}
-    impl<S: State> State for SetActor<S> {
+    pub struct SetActor<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetActor<St> {}
+    impl<St: State> State for SetActor<St> {
         type Actor = Set<members::actor>;
     }
     /// Marker types for field names
@@ -46,97 +99,80 @@ pub mod get_profile_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct GetProfileBuilder<'a, S: get_profile_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named:
-        (::core::option::Option<jacquard_common::types::ident::AtIdentifier<'a>>,),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct GetProfileBuilder<
+    St: get_profile_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<jacquard_common::types::ident::AtIdentifier<S>>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> GetProfile<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> GetProfileBuilder<'a, get_profile_state::Empty> {
+impl GetProfile<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> GetProfileBuilder<get_profile_state::Empty, jacquard_common::DefaultStr> {
         GetProfileBuilder::new()
     }
 }
 
-impl<'a> GetProfileBuilder<'a, get_profile_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> GetProfile<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> GetProfileBuilder<get_profile_state::Empty, S> {
+        GetProfileBuilder::builder()
+    }
+}
+
+impl GetProfileBuilder<get_profile_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetProfileBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GetProfileBuilder<'a, S>
+impl<S: jacquard_common::BosStr> GetProfileBuilder<get_profile_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GetProfileBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> GetProfileBuilder<St, S>
 where
-    S: get_profile_state::State,
-    S::Actor: get_profile_state::IsUnset,
+    St: get_profile_state::State,
+    St::Actor: get_profile_state::IsUnset,
 {
     /// Set the `actor` field (required)
     pub fn actor(
         mut self,
-        value: impl Into<jacquard_common::types::ident::AtIdentifier<'a>>,
-    ) -> GetProfileBuilder<'a, get_profile_state::SetActor<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::ident::AtIdentifier<S>>,
+    ) -> GetProfileBuilder<get_profile_state::SetActor<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         GetProfileBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GetProfileBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GetProfileBuilder<St, S>
 where
-    S: get_profile_state::State,
-    S::Actor: get_profile_state::IsSet,
+    St: get_profile_state::State,
+    St::Actor: get_profile_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> GetProfile<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> GetProfile<S> {
         GetProfile {
-            actor: self.__unsafe_private_named.0.unwrap(),
+            actor: self._fields.0.unwrap(),
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GetProfileOutput<'a> {
-    #[serde(flatten)]
-    #[serde(borrow)]
-    pub value: crate::generated::app_bsky::actor::ProfileViewDetailed<'a>,
-}
-
-/// Response type for
-///app.bsky.actor.getProfile
-pub struct GetProfileResponse;
-impl jacquard_common::xrpc::XrpcResp for GetProfileResponse {
-    const NSID: &'static str = "app.bsky.actor.getProfile";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetProfileOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for GetProfile<'a> {
-    const NSID: &'static str = "app.bsky.actor.getProfile";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = GetProfileResponse;
-}
-
-/// Endpoint type for
-///app.bsky.actor.getProfile
-pub struct GetProfileRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for GetProfileRequest {
-    const PATH: &'static str = "/xrpc/app.bsky.actor.getProfile";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetProfile<'de>;
-    type Response = GetProfileResponse;
 }

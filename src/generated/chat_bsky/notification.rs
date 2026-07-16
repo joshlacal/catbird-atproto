@@ -5,18 +5,163 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
+//! Generated bindings for the `chat.bsky.notification` Lexicon namespace/module.
 pub mod get_preferences;
 pub mod put_preferences;
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct ChatPreference<'a> {
-    #[serde(borrow)]
-    pub include: jacquard_common::CowStr<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct ChatPreference<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub include: ChatPreferenceInclude<S>,
     pub push: bool,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum ChatPreferenceInclude<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    All,
+    Follows,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> ChatPreferenceInclude<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::All => "all",
+            Self::Follows => "follows",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "all" => Self::All,
+            "follows" => Self::Follows,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for ChatPreferenceInclude<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for ChatPreferenceInclude<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for ChatPreferenceInclude<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for ChatPreferenceInclude<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for ChatPreferenceInclude<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for ChatPreferenceInclude<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = ChatPreferenceInclude<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            ChatPreferenceInclude::All => ChatPreferenceInclude::All,
+            ChatPreferenceInclude::Follows => ChatPreferenceInclude::Follows,
+            ChatPreferenceInclude::Other(v) => ChatPreferenceInclude::Other(v.into_static()),
+        }
+    }
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct Preferences<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub chat: crate::generated::chat_bsky::notification::ChatPreference<S>,
+    pub chat_request: crate::generated::chat_bsky::notification::ChatPreference<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ChatPreference<S> {
+    fn nsid() -> &'static str {
+        "chat.bsky.notification.defs"
+    }
+    fn def_name() -> &'static str {
+        "chatPreference"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_chat_bsky_notification_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Preferences<S> {
+    fn nsid() -> &'static str {
+        "chat.bsky.notification.defs"
+    }
+    fn def_name() -> &'static str {
+        "preferences"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_chat_bsky_notification_defs()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
 }
 
 pub mod chat_preference_state {
@@ -40,17 +185,17 @@ pub mod chat_preference_state {
         type Push = Unset;
     }
     ///State transition - sets the `include` field to Set
-    pub struct SetInclude<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetInclude<S> {}
-    impl<S: State> State for SetInclude<S> {
+    pub struct SetInclude<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetInclude<St> {}
+    impl<St: State> State for SetInclude<St> {
         type Include = Set<members::include>;
-        type Push = S::Push;
+        type Push = St::Push;
     }
     ///State transition - sets the `push` field to Set
-    pub struct SetPush<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetPush<S> {}
-    impl<S: State> State for SetPush<S> {
-        type Include = S::Include;
+    pub struct SetPush<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetPush<St> {}
+    impl<St: State> State for SetPush<St> {
+        type Include = St::Include;
         type Push = Set<members::push>;
     }
     /// Marker types for field names
@@ -63,227 +208,208 @@ pub mod chat_preference_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct ChatPreferenceBuilder<'a, S: chat_preference_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<bool>,
+/// Builder for constructing an instance of this type.
+pub struct ChatPreferenceBuilder<
+    St: chat_preference_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<ChatPreferenceInclude<S>>,
+        core::option::Option<bool>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> ChatPreference<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> ChatPreferenceBuilder<'a, chat_preference_state::Empty> {
+impl ChatPreference<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> ChatPreferenceBuilder<chat_preference_state::Empty, jacquard_common::DefaultStr>
+    {
         ChatPreferenceBuilder::new()
     }
 }
 
-impl<'a> ChatPreferenceBuilder<'a, chat_preference_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> ChatPreference<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> ChatPreferenceBuilder<chat_preference_state::Empty, S> {
+        ChatPreferenceBuilder::builder()
+    }
+}
+
+impl ChatPreferenceBuilder<chat_preference_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ChatPreferenceBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ChatPreferenceBuilder<'a, S>
+impl<S: jacquard_common::BosStr> ChatPreferenceBuilder<chat_preference_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        ChatPreferenceBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ChatPreferenceBuilder<St, S>
 where
-    S: chat_preference_state::State,
-    S::Include: chat_preference_state::IsUnset,
+    St: chat_preference_state::State,
+    St::Include: chat_preference_state::IsUnset,
 {
     /// Set the `include` field (required)
     pub fn include(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> ChatPreferenceBuilder<'a, chat_preference_state::SetInclude<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<ChatPreferenceInclude<S>>,
+    ) -> ChatPreferenceBuilder<chat_preference_state::SetInclude<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         ChatPreferenceBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ChatPreferenceBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ChatPreferenceBuilder<St, S>
 where
-    S: chat_preference_state::State,
-    S::Push: chat_preference_state::IsUnset,
+    St: chat_preference_state::State,
+    St::Push: chat_preference_state::IsUnset,
 {
     /// Set the `push` field (required)
     pub fn push(
         mut self,
         value: impl Into<bool>,
-    ) -> ChatPreferenceBuilder<'a, chat_preference_state::SetPush<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+    ) -> ChatPreferenceBuilder<chat_preference_state::SetPush<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         ChatPreferenceBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ChatPreferenceBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ChatPreferenceBuilder<St, S>
 where
-    S: chat_preference_state::State,
-    S::Include: chat_preference_state::IsSet,
-    S::Push: chat_preference_state::IsSet,
+    St: chat_preference_state::State,
+    St::Include: chat_preference_state::IsSet,
+    St::Push: chat_preference_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> ChatPreference<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> ChatPreference<S> {
         ChatPreference {
-            include: self.__unsafe_private_named.0.unwrap(),
-            push: self.__unsafe_private_named.1.unwrap(),
+            include: self._fields.0.unwrap(),
+            push: self._fields.1.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> ChatPreference<'a> {
+    ) -> ChatPreference<S> {
         ChatPreference {
-            include: self.__unsafe_private_named.0.unwrap(),
-            push: self.__unsafe_private_named.1.unwrap(),
+            include: self._fields.0.unwrap(),
+            push: self._fields.1.unwrap(),
             extra_data: Some(extra_data),
         }
     }
 }
 
-fn lexicon_doc_chat_bsky_notification_defs() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_chat_bsky_notification_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("chat.bsky.notification.defs"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("chatPreference"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("chatPreference"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("include"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("push"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("include"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("push"),
                         ]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("include"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("include"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("push"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("push"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(
                                     ::jacquard_lexicon::lexicon::LexBoolean {
-                                        description: None,
-                                        default: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("preferences"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("preferences"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("chat"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("chatRequest"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("chat"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("chatRequest"),
                         ]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("chat"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("chat"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
                                     ::jacquard_lexicon::lexicon::LexRef {
-                                        description: None,
                                         r#ref: ::jacquard_common::CowStr::new_static(
                                             "#chatPreference",
                                         ),
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("chatRequest"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "chatRequest",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
                                     ::jacquard_lexicon::lexicon::LexRef {
-                                        description: None,
                                         r#ref: ::jacquard_common::CowStr::new_static(
                                             "#chatPreference",
                                         ),
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map
         },
+        ..Default::default()
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for ChatPreference<'a> {
-    fn nsid() -> &'static str {
-        "chat.bsky.notification.defs"
-    }
-    fn def_name() -> &'static str {
-        "chatPreference"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_chat_bsky_notification_defs()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct Preferences<'a> {
-    #[serde(borrow)]
-    pub chat: crate::generated::chat_bsky::notification::ChatPreference<'a>,
-    #[serde(borrow)]
-    pub chat_request: crate::generated::chat_bsky::notification::ChatPreference<'a>,
 }
 
 pub mod preferences_state {
@@ -307,17 +433,17 @@ pub mod preferences_state {
         type ChatRequest = Unset;
     }
     ///State transition - sets the `chat` field to Set
-    pub struct SetChat<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetChat<S> {}
-    impl<S: State> State for SetChat<S> {
+    pub struct SetChat<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetChat<St> {}
+    impl<St: State> State for SetChat<St> {
         type Chat = Set<members::chat>;
-        type ChatRequest = S::ChatRequest;
+        type ChatRequest = St::ChatRequest;
     }
     ///State transition - sets the `chat_request` field to Set
-    pub struct SetChatRequest<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetChatRequest<S> {}
-    impl<S: State> State for SetChatRequest<S> {
-        type Chat = S::Chat;
+    pub struct SetChatRequest<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetChatRequest<St> {}
+    impl<St: State> State for SetChatRequest<St> {
+        type Chat = St::Chat;
         type ChatRequest = Set<members::chat_request>;
     }
     /// Marker types for field names
@@ -330,115 +456,119 @@ pub mod preferences_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct PreferencesBuilder<'a, S: preferences_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<crate::generated::chat_bsky::notification::ChatPreference<'a>>,
-        ::core::option::Option<crate::generated::chat_bsky::notification::ChatPreference<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct PreferencesBuilder<
+    St: preferences_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<crate::generated::chat_bsky::notification::ChatPreference<S>>,
+        core::option::Option<crate::generated::chat_bsky::notification::ChatPreference<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> Preferences<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> PreferencesBuilder<'a, preferences_state::Empty> {
+impl Preferences<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> PreferencesBuilder<preferences_state::Empty, jacquard_common::DefaultStr> {
         PreferencesBuilder::new()
     }
 }
 
-impl<'a> PreferencesBuilder<'a, preferences_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> Preferences<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> PreferencesBuilder<preferences_state::Empty, S> {
+        PreferencesBuilder::builder()
+    }
+}
+
+impl PreferencesBuilder<preferences_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         PreferencesBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> PreferencesBuilder<'a, S>
+impl<S: jacquard_common::BosStr> PreferencesBuilder<preferences_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        PreferencesBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> PreferencesBuilder<St, S>
 where
-    S: preferences_state::State,
-    S::Chat: preferences_state::IsUnset,
+    St: preferences_state::State,
+    St::Chat: preferences_state::IsUnset,
 {
     /// Set the `chat` field (required)
     pub fn chat(
         mut self,
-        value: impl Into<crate::generated::chat_bsky::notification::ChatPreference<'a>>,
-    ) -> PreferencesBuilder<'a, preferences_state::SetChat<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<crate::generated::chat_bsky::notification::ChatPreference<S>>,
+    ) -> PreferencesBuilder<preferences_state::SetChat<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         PreferencesBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> PreferencesBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> PreferencesBuilder<St, S>
 where
-    S: preferences_state::State,
-    S::ChatRequest: preferences_state::IsUnset,
+    St: preferences_state::State,
+    St::ChatRequest: preferences_state::IsUnset,
 {
     /// Set the `chatRequest` field (required)
     pub fn chat_request(
         mut self,
-        value: impl Into<crate::generated::chat_bsky::notification::ChatPreference<'a>>,
-    ) -> PreferencesBuilder<'a, preferences_state::SetChatRequest<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<crate::generated::chat_bsky::notification::ChatPreference<S>>,
+    ) -> PreferencesBuilder<preferences_state::SetChatRequest<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         PreferencesBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> PreferencesBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> PreferencesBuilder<St, S>
 where
-    S: preferences_state::State,
-    S::Chat: preferences_state::IsSet,
-    S::ChatRequest: preferences_state::IsSet,
+    St: preferences_state::State,
+    St::Chat: preferences_state::IsSet,
+    St::ChatRequest: preferences_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> Preferences<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> Preferences<S> {
         Preferences {
-            chat: self.__unsafe_private_named.0.unwrap(),
-            chat_request: self.__unsafe_private_named.1.unwrap(),
+            chat: self._fields.0.unwrap(),
+            chat_request: self._fields.1.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> Preferences<'a> {
+    ) -> Preferences<S> {
         Preferences {
-            chat: self.__unsafe_private_named.0.unwrap(),
-            chat_request: self.__unsafe_private_named.1.unwrap(),
+            chat: self._fields.0.unwrap(),
+            chat_request: self._fields.1.unwrap(),
             extra_data: Some(extra_data),
         }
-    }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Preferences<'a> {
-    fn nsid() -> &'static str {
-        "chat.bsky.notification.defs"
-    }
-    fn def_name() -> &'static str {
-        "preferences"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_chat_bsky_notification_defs()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
     }
 }

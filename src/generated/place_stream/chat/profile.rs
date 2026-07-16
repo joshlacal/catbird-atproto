@@ -6,15 +6,199 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 /// Customizations for the color of a user's name in chat
-#[jacquard_derive::lexicon]
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct Color<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub blue: i64,
+    pub green: i64,
+    pub red: i64,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// Record containing customizations for a user's chat profile.
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    rename = "place.stream.chat.profile",
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct Profile<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub color: core::option::Option<crate::generated::place_stream::chat::profile::Color<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// Typed wrapper for GetRecord response with this collection's record type.
+
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
-pub struct Color<'a> {
-    pub blue: i64,
-    pub green: i64,
-    pub red: i64,
+pub struct ProfileGetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
+    pub uri: jacquard_common::types::string::AtUri<S>,
+    pub value: Profile<S>,
+}
+
+impl<S: jacquard_common::BosStr> Profile<S> {
+    pub fn uri(
+        uri: S,
+    ) -> Result<
+        jacquard_common::types::uri::RecordUri<S, ProfileRecord>,
+        jacquard_common::types::uri::UriError,
+    > {
+        jacquard_common::types::uri::RecordUri::try_from_uri(
+            jacquard_common::types::string::AtUri::new(uri)?,
+        )
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Color<S> {
+    fn nsid() -> &'static str {
+        "place.stream.chat.profile"
+    }
+    fn def_name() -> &'static str {
+        "color"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_place_stream_chat_profile()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.blue;
+            if *value > 255i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("blue"),
+                    max: 255i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.blue;
+            if *value < 0i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("blue"),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.green;
+            if *value > 255i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("green"),
+                    max: 255i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.green;
+            if *value < 0i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("green"),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.red;
+            if *value > 255i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("red"),
+                    max: 255i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.red;
+            if *value < 0i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("red"),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
+        Ok(())
+    }
+}
+
+/// Marker type for deserializing records from this collection.
+
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+pub struct ProfileRecord;
+impl jacquard_common::xrpc::XrpcResp for ProfileRecord {
+    const NSID: &'static str = "place.stream.chat.profile";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = ProfileGetRecordOutput<S>;
+    type Err = jacquard_common::types::collection::RecordError;
+}
+
+impl<S: jacquard_common::BosStr> From<ProfileGetRecordOutput<S>> for Profile<S> {
+    fn from(output: ProfileGetRecordOutput<S>) -> Self {
+        output.value
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection for Profile<S> {
+    const NSID: &'static str = "place.stream.chat.profile";
+    type Record = ProfileRecord;
+}
+
+impl jacquard_common::types::collection::Collection for ProfileRecord {
+    const NSID: &'static str = "place.stream.chat.profile";
+    type Record = ProfileRecord;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Profile<S> {
+    fn nsid() -> &'static str {
+        "place.stream.chat.profile"
+    }
+    fn def_name() -> &'static str {
+        "main"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_place_stream_chat_profile()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
 }
 
 pub mod color_state {
@@ -27,234 +211,244 @@ pub mod color_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Red;
-        type Green;
         type Blue;
+        type Green;
+        type Red;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Red = Unset;
-        type Green = Unset;
         type Blue = Unset;
-    }
-    ///State transition - sets the `red` field to Set
-    pub struct SetRed<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRed<S> {}
-    impl<S: State> State for SetRed<S> {
-        type Red = Set<members::red>;
-        type Green = S::Green;
-        type Blue = S::Blue;
-    }
-    ///State transition - sets the `green` field to Set
-    pub struct SetGreen<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetGreen<S> {}
-    impl<S: State> State for SetGreen<S> {
-        type Red = S::Red;
-        type Green = Set<members::green>;
-        type Blue = S::Blue;
+        type Green = Unset;
+        type Red = Unset;
     }
     ///State transition - sets the `blue` field to Set
-    pub struct SetBlue<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetBlue<S> {}
-    impl<S: State> State for SetBlue<S> {
-        type Red = S::Red;
-        type Green = S::Green;
+    pub struct SetBlue<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetBlue<St> {}
+    impl<St: State> State for SetBlue<St> {
         type Blue = Set<members::blue>;
+        type Green = St::Green;
+        type Red = St::Red;
+    }
+    ///State transition - sets the `green` field to Set
+    pub struct SetGreen<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetGreen<St> {}
+    impl<St: State> State for SetGreen<St> {
+        type Blue = St::Blue;
+        type Green = Set<members::green>;
+        type Red = St::Red;
+    }
+    ///State transition - sets the `red` field to Set
+    pub struct SetRed<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRed<St> {}
+    impl<St: State> State for SetRed<St> {
+        type Blue = St::Blue;
+        type Green = St::Green;
+        type Red = Set<members::red>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `red` field
-        pub struct red(());
-        ///Marker type for the `green` field
-        pub struct green(());
         ///Marker type for the `blue` field
         pub struct blue(());
+        ///Marker type for the `green` field
+        pub struct green(());
+        ///Marker type for the `red` field
+        pub struct red(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct ColorBuilder<'a, S: color_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<i64>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<i64>,
+/// Builder for constructing an instance of this type.
+pub struct ColorBuilder<
+    St: color_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<i64>,
+        core::option::Option<i64>,
+        core::option::Option<i64>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> Color<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> ColorBuilder<'a, color_state::Empty> {
+impl Color<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> ColorBuilder<color_state::Empty, jacquard_common::DefaultStr> {
         ColorBuilder::new()
     }
 }
 
-impl<'a> ColorBuilder<'a, color_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> Color<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> ColorBuilder<color_state::Empty, S> {
+        ColorBuilder::builder()
+    }
+}
+
+impl ColorBuilder<color_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ColorBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ColorBuilder<'a, S>
+impl<S: jacquard_common::BosStr> ColorBuilder<color_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        ColorBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ColorBuilder<St, S>
 where
-    S: color_state::State,
-    S::Blue: color_state::IsUnset,
+    St: color_state::State,
+    St::Blue: color_state::IsUnset,
 {
     /// Set the `blue` field (required)
-    pub fn blue(mut self, value: impl Into<i64>) -> ColorBuilder<'a, color_state::SetBlue<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+    pub fn blue(mut self, value: impl Into<i64>) -> ColorBuilder<color_state::SetBlue<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         ColorBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ColorBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ColorBuilder<St, S>
 where
-    S: color_state::State,
-    S::Green: color_state::IsUnset,
+    St: color_state::State,
+    St::Green: color_state::IsUnset,
 {
     /// Set the `green` field (required)
-    pub fn green(mut self, value: impl Into<i64>) -> ColorBuilder<'a, color_state::SetGreen<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+    pub fn green(mut self, value: impl Into<i64>) -> ColorBuilder<color_state::SetGreen<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         ColorBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ColorBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ColorBuilder<St, S>
 where
-    S: color_state::State,
-    S::Red: color_state::IsUnset,
+    St: color_state::State,
+    St::Red: color_state::IsUnset,
 {
     /// Set the `red` field (required)
-    pub fn red(mut self, value: impl Into<i64>) -> ColorBuilder<'a, color_state::SetRed<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+    pub fn red(mut self, value: impl Into<i64>) -> ColorBuilder<color_state::SetRed<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         ColorBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ColorBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ColorBuilder<St, S>
 where
-    S: color_state::State,
-    S::Red: color_state::IsSet,
-    S::Green: color_state::IsSet,
-    S::Blue: color_state::IsSet,
+    St: color_state::State,
+    St::Blue: color_state::IsSet,
+    St::Green: color_state::IsSet,
+    St::Red: color_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> Color<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> Color<S> {
         Color {
-            blue: self.__unsafe_private_named.0.unwrap(),
-            green: self.__unsafe_private_named.1.unwrap(),
-            red: self.__unsafe_private_named.2.unwrap(),
+            blue: self._fields.0.unwrap(),
+            green: self._fields.1.unwrap(),
+            red: self._fields.2.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> Color<'a> {
+    ) -> Color<S> {
         Color {
-            blue: self.__unsafe_private_named.0.unwrap(),
-            green: self.__unsafe_private_named.1.unwrap(),
-            red: self.__unsafe_private_named.2.unwrap(),
+            blue: self._fields.0.unwrap(),
+            green: self._fields.1.unwrap(),
+            red: self._fields.2.unwrap(),
             extra_data: Some(extra_data),
         }
     }
 }
 
-fn lexicon_doc_place_stream_chat_profile() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_place_stream_chat_profile() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("place.stream.chat.profile"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("color"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("color"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
                         description: Some(::jacquard_common::CowStr::new_static(
                             "Customizations for the color of a user's name in chat",
                         )),
                         required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("red"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("green"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("blue"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("red"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("green"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("blue"),
                         ]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("blue"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("blue"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
                                     ::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
                                         minimum: Some(0i64),
                                         maximum: Some(255i64),
-                                        r#enum: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("green"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("green"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
                                     ::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
                                         minimum: Some(0i64),
                                         maximum: Some(255i64),
-                                        r#enum: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("red"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("red"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
                                     ::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
                                         minimum: Some(0i64),
                                         maximum: Some(255i64),
-                                        r#enum: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
                 ::jacquard_lexicon::lexicon::LexUserType::Record(
                     ::jacquard_lexicon::lexicon::LexRecord {
                         description: Some(::jacquard_common::CowStr::new_static(
@@ -263,122 +457,36 @@ fn lexicon_doc_place_stream_chat_profile() -> ::jacquard_lexicon::lexicon::Lexic
                         key: Some(::jacquard_common::CowStr::new_static("literal:self")),
                         record: ::jacquard_lexicon::lexicon::LexRecordRecord::Object(
                             ::jacquard_lexicon::lexicon::LexObject {
-                                description: None,
                                 required: Some(vec![]),
-                                nullable: None,
                                 properties: {
                                     #[allow(unused_mut)]
-                                    let mut map = ::std::collections::BTreeMap::new();
+                                    let mut map = ::alloc::collections::BTreeMap::new();
                                     map.insert(
-                                        ::jacquard_common::smol_str::SmolStr::new_static("color"),
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "color",
+                                        ),
                                         ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
                                             ::jacquard_lexicon::lexicon::LexRef {
-                                                description: None,
                                                 r#ref: ::jacquard_common::CowStr::new_static(
                                                     "#color",
                                                 ),
+                                                ..Default::default()
                                             },
                                         ),
                                     );
                                     map
                                 },
+                                ..Default::default()
                             },
                         ),
+                        ..Default::default()
                     },
                 ),
             );
             map
         },
+        ..Default::default()
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Color<'a> {
-    fn nsid() -> &'static str {
-        "place.stream.chat.profile"
-    }
-    fn def_name() -> &'static str {
-        "color"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_place_stream_chat_profile()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        {
-            let value = &self.blue;
-            if *value > 255i64 {
-                return Err(::jacquard_lexicon::validation::ConstraintError::Maximum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("blue"),
-                    max: 255i64,
-                    actual: *value,
-                });
-            }
-        }
-        {
-            let value = &self.blue;
-            if *value < 0i64 {
-                return Err(::jacquard_lexicon::validation::ConstraintError::Minimum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("blue"),
-                    min: 0i64,
-                    actual: *value,
-                });
-            }
-        }
-        {
-            let value = &self.green;
-            if *value > 255i64 {
-                return Err(::jacquard_lexicon::validation::ConstraintError::Maximum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("green"),
-                    max: 255i64,
-                    actual: *value,
-                });
-            }
-        }
-        {
-            let value = &self.green;
-            if *value < 0i64 {
-                return Err(::jacquard_lexicon::validation::ConstraintError::Minimum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("green"),
-                    min: 0i64,
-                    actual: *value,
-                });
-            }
-        }
-        {
-            let value = &self.red;
-            if *value > 255i64 {
-                return Err(::jacquard_lexicon::validation::ConstraintError::Maximum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("red"),
-                    max: 255i64,
-                    actual: *value,
-                });
-            }
-        }
-        {
-            let value = &self.red;
-            if *value < 0i64 {
-                return Err(::jacquard_lexicon::validation::ConstraintError::Minimum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("red"),
-                    min: 0i64,
-                    actual: *value,
-                });
-            }
-        }
-        Ok(())
-    }
-}
-
-/// Record containing customizations for a user's chat profile.
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct Profile<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub color: std::option::Option<crate::generated::place_stream::chat::profile::Color<'a>>,
 }
 
 pub mod profile_state {
@@ -400,145 +508,93 @@ pub mod profile_state {
     pub mod members {}
 }
 
-/// Builder for constructing an instance of this type
-pub struct ProfileBuilder<'a, S: profile_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named:
-        (::core::option::Option<crate::generated::place_stream::chat::profile::Color<'a>>,),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct ProfileBuilder<
+    St: profile_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<crate::generated::place_stream::chat::profile::Color<S>>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> Profile<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> ProfileBuilder<'a, profile_state::Empty> {
+impl Profile<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> ProfileBuilder<profile_state::Empty, jacquard_common::DefaultStr> {
         ProfileBuilder::new()
     }
 }
 
-impl<'a> ProfileBuilder<'a, profile_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> Profile<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> ProfileBuilder<profile_state::Empty, S> {
+        ProfileBuilder::builder()
+    }
+}
+
+impl ProfileBuilder<profile_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ProfileBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: profile_state::State> ProfileBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> ProfileBuilder<profile_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        ProfileBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: profile_state::State, S: jacquard_common::BosStr> ProfileBuilder<St, S> {
     /// Set the `color` field (optional)
     pub fn color(
         mut self,
-        value: impl Into<Option<crate::generated::place_stream::chat::profile::Color<'a>>>,
+        value: impl Into<Option<crate::generated::place_stream::chat::profile::Color<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+        self._fields.0 = value.into();
         self
     }
     /// Set the `color` field to an Option value (optional)
     pub fn maybe_color(
         mut self,
-        value: Option<crate::generated::place_stream::chat::profile::Color<'a>>,
+        value: Option<crate::generated::place_stream::chat::profile::Color<S>>,
     ) -> Self {
-        self.__unsafe_private_named.0 = value;
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S> ProfileBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ProfileBuilder<St, S>
 where
-    S: profile_state::State,
+    St: profile_state::State,
 {
-    /// Build the final struct
-    pub fn build(self) -> Profile<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> Profile<S> {
         Profile {
-            color: self.__unsafe_private_named.0,
+            color: self._fields.0,
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> Profile<'a> {
+    ) -> Profile<S> {
         Profile {
-            color: self.__unsafe_private_named.0,
+            color: self._fields.0,
             extra_data: Some(extra_data),
         }
-    }
-}
-
-impl<'a> Profile<'a> {
-    pub fn uri(
-        uri: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> Result<
-        jacquard_common::types::uri::RecordUri<'a, ProfileRecord>,
-        jacquard_common::types::uri::UriError,
-    > {
-        jacquard_common::types::uri::RecordUri::try_from_uri(
-            jacquard_common::types::string::AtUri::new_cow(uri.into())?,
-        )
-    }
-}
-
-/// Typed wrapper for GetRecord response with this collection's record type.
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct ProfileGetRecordOutput<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cid: std::option::Option<jacquard_common::types::string::Cid<'a>>,
-    #[serde(borrow)]
-    pub uri: jacquard_common::types::string::AtUri<'a>,
-    #[serde(borrow)]
-    pub value: Profile<'a>,
-}
-
-impl From<ProfileGetRecordOutput<'_>> for Profile<'_> {
-    fn from(output: ProfileGetRecordOutput<'_>) -> Self {
-        use jacquard_common::IntoStatic;
-        output.value.into_static()
-    }
-}
-
-impl jacquard_common::types::collection::Collection for Profile<'_> {
-    const NSID: &'static str = "place.stream.chat.profile";
-    type Record = ProfileRecord;
-}
-
-/// Marker type for deserializing records from this collection.
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
-pub struct ProfileRecord;
-impl jacquard_common::xrpc::XrpcResp for ProfileRecord {
-    const NSID: &'static str = "place.stream.chat.profile";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = ProfileGetRecordOutput<'de>;
-    type Err<'de> = jacquard_common::types::collection::RecordError<'de>;
-}
-
-impl jacquard_common::types::collection::Collection for ProfileRecord {
-    const NSID: &'static str = "place.stream.chat.profile";
-    type Record = ProfileRecord;
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Profile<'a> {
-    fn nsid() -> &'static str {
-        "place.stream.chat.profile"
-    }
-    fn def_name() -> &'static str {
-        "main"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_place_stream_chat_profile()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
     }
 }

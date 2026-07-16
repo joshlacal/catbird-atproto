@@ -8,116 +8,43 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetMatches<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    ///(default: 50, min: 1, max: 100)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub limit: std::option::Option<i64>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetMatches<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    /// Defaults to `50`. Min: 1. Max: 100.
+    #[serde(default = "_default_limit")]
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub limit: core::option::Option<i64>,
 }
 
-pub mod get_matches_state {
-
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
-    #[allow(unused)]
-    use core::marker::PhantomData;
-    mod sealed {
-        pub trait Sealed {}
-    }
-    /// State trait tracking which required fields have been set
-    pub trait State: sealed::Sealed {}
-    /// Empty state - all required fields are unset
-    pub struct Empty(());
-    impl sealed::Sealed for Empty {}
-    impl State for Empty {}
-    /// Marker types for field names
-    #[allow(non_camel_case_types)]
-    pub mod members {}
-}
-
-/// Builder for constructing an instance of this type
-pub struct GetMatchesBuilder<'a, S: get_matches_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<i64>,
-    ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
-}
-
-impl<'a> GetMatches<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> GetMatchesBuilder<'a, get_matches_state::Empty> {
-        GetMatchesBuilder::new()
-    }
-}
-
-impl<'a> GetMatchesBuilder<'a, get_matches_state::Empty> {
-    /// Create a new builder with all fields unset
-    pub fn new() -> Self {
-        GetMatchesBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, S: get_matches_state::State> GetMatchesBuilder<'a, S> {
-    /// Set the `cursor` field (optional)
-    pub fn cursor(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.0 = value.into();
-        self
-    }
-    /// Set the `cursor` field to an Option value (optional)
-    pub fn maybe_cursor(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.0 = value;
-        self
-    }
-}
-
-impl<'a, S: get_matches_state::State> GetMatchesBuilder<'a, S> {
-    /// Set the `limit` field (optional)
-    pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.1 = value.into();
-        self
-    }
-    /// Set the `limit` field to an Option value (optional)
-    pub fn maybe_limit(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.1 = value;
-        self
-    }
-}
-
-impl<'a, S> GetMatchesBuilder<'a, S>
-where
-    S: get_matches_state::State,
-{
-    /// Build the final struct
-    pub fn build(self) -> GetMatches<'a> {
-        GetMatches {
-            cursor: self.__unsafe_private_named.0,
-            limit: self.__unsafe_private_named.1,
-        }
-    }
-}
-
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetMatchesOutput<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(borrow)]
-    pub matches: Vec<crate::generated::app_bsky::actor::ProfileView<'a>>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetMatchesOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    pub matches: Vec<crate::generated::app_bsky::actor::ProfileView<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::open_union]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -127,23 +54,27 @@ pub struct GetMatchesOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum GetMatchesError<'a> {
+pub enum GetMatchesError {
     #[serde(rename = "InvalidDid")]
-    InvalidDid(std::option::Option<jacquard_common::CowStr<'a>>),
+    InvalidDid(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "InvalidLimit")]
-    InvalidLimit(std::option::Option<jacquard_common::CowStr<'a>>),
+    InvalidLimit(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "InvalidCursor")]
-    InvalidCursor(std::option::Option<jacquard_common::CowStr<'a>>),
+    InvalidCursor(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "InternalError")]
-    InternalError(std::option::Option<jacquard_common::CowStr<'a>>),
+    InternalError(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
 }
 
-impl std::fmt::Display for GetMatchesError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for GetMatchesError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             Self::InvalidDid(msg) => {
                 write!(f, "InvalidDid")?;
@@ -173,33 +104,149 @@ impl std::fmt::Display for GetMatchesError<'_> {
                 }
                 Ok(())
             }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
         }
     }
 }
 
-/// Response type for
-///app.bsky.contact.getMatches
+/** Response marker for the `app.bsky.contact.getMatches` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetMatchesOutput<S>` for this endpoint.*/
 pub struct GetMatchesResponse;
 impl jacquard_common::xrpc::XrpcResp for GetMatchesResponse {
     const NSID: &'static str = "app.bsky.contact.getMatches";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetMatchesOutput<'de>;
-    type Err<'de> = GetMatchesError<'de>;
+    type Output<S: jacquard_common::BosStr> = GetMatchesOutput<S>;
+    type Err = GetMatchesError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for GetMatches<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetMatches<S> {
     const NSID: &'static str = "app.bsky.contact.getMatches";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = GetMatchesResponse;
 }
 
-/// Endpoint type for
-///app.bsky.contact.getMatches
+/** Endpoint marker for the `app.bsky.contact.getMatches` query.
+
+Path: `/xrpc/app.bsky.contact.getMatches`. The request payload type is `GetMatches<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct GetMatchesRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for GetMatchesRequest {
     const PATH: &'static str = "/xrpc/app.bsky.contact.getMatches";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetMatches<'de>;
+    type Request<S: jacquard_common::BosStr> = GetMatches<S>;
     type Response = GetMatchesResponse;
+}
+
+fn _default_limit() -> core::option::Option<i64> {
+    Some(50i64)
+}
+
+pub mod get_matches_state {
+
+    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    #[allow(unused)]
+    use core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {}
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {}
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {}
+}
+
+/// Builder for constructing an instance of this type.
+pub struct GetMatchesBuilder<
+    St: get_matches_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<S>, core::option::Option<i64>),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl GetMatches<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> GetMatchesBuilder<get_matches_state::Empty, jacquard_common::DefaultStr> {
+        GetMatchesBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> GetMatches<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> GetMatchesBuilder<get_matches_state::Empty, S> {
+        GetMatchesBuilder::builder()
+    }
+}
+
+impl GetMatchesBuilder<get_matches_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        GetMatchesBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> GetMatchesBuilder<get_matches_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GetMatchesBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: get_matches_state::State, S: jacquard_common::BosStr> GetMatchesBuilder<St, S> {
+    /// Set the `cursor` field (optional)
+    pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.0 = value.into();
+        self
+    }
+    /// Set the `cursor` field to an Option value (optional)
+    pub fn maybe_cursor(mut self, value: Option<S>) -> Self {
+        self._fields.0 = value;
+        self
+    }
+}
+
+impl<St: get_matches_state::State, S: jacquard_common::BosStr> GetMatchesBuilder<St, S> {
+    /// Set the `limit` field (optional)
+    pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
+        self._fields.1 = value.into();
+        self
+    }
+    /// Set the `limit` field to an Option value (optional)
+    pub fn maybe_limit(mut self, value: Option<i64>) -> Self {
+        self._fields.1 = value;
+        self
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> GetMatchesBuilder<St, S>
+where
+    St: get_matches_state::State,
+{
+    /// Build the final struct.
+    pub fn build(self) -> GetMatches<S> {
+        GetMatches {
+            cursor: self._fields.0,
+            limit: self._fields.1,
+        }
+    }
 }

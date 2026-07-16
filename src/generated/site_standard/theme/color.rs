@@ -5,15 +5,223 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct Rgb<'a> {
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct Rgb<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub b: i64,
     pub g: i64,
     pub r: i64,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct Rgba<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub a: i64,
+    pub b: i64,
+    pub g: i64,
+    pub r: i64,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Rgb<S> {
+    fn nsid() -> &'static str {
+        "site.standard.theme.color"
+    }
+    fn def_name() -> &'static str {
+        "rgb"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_site_standard_theme_color()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.b;
+            if *value > 255i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("b"),
+                    max: 255i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.b;
+            if *value < 0i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("b"),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.g;
+            if *value > 255i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("g"),
+                    max: 255i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.g;
+            if *value < 0i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("g"),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.r;
+            if *value > 255i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("r"),
+                    max: 255i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.r;
+            if *value < 0i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("r"),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Rgba<S> {
+    fn nsid() -> &'static str {
+        "site.standard.theme.color"
+    }
+    fn def_name() -> &'static str {
+        "rgba"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_site_standard_theme_color()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        {
+            let value = &self.a;
+            if *value > 100i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("a"),
+                    max: 100i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.a;
+            if *value < 0i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("a"),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.b;
+            if *value > 255i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("b"),
+                    max: 255i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.b;
+            if *value < 0i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("b"),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.g;
+            if *value > 255i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("g"),
+                    max: 255i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.g;
+            if *value < 0i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("g"),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.r;
+            if *value > 255i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("r"),
+                    max: 255i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.r;
+            if *value < 0i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("r"),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
+        Ok(())
+    }
 }
 
 pub mod rgb_state {
@@ -26,394 +234,302 @@ pub mod rgb_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type R;
-        type G;
         type B;
+        type G;
+        type R;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type R = Unset;
-        type G = Unset;
         type B = Unset;
-    }
-    ///State transition - sets the `r` field to Set
-    pub struct SetR<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetR<S> {}
-    impl<S: State> State for SetR<S> {
-        type R = Set<members::r>;
-        type G = S::G;
-        type B = S::B;
-    }
-    ///State transition - sets the `g` field to Set
-    pub struct SetG<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetG<S> {}
-    impl<S: State> State for SetG<S> {
-        type R = S::R;
-        type G = Set<members::g>;
-        type B = S::B;
+        type G = Unset;
+        type R = Unset;
     }
     ///State transition - sets the `b` field to Set
-    pub struct SetB<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetB<S> {}
-    impl<S: State> State for SetB<S> {
-        type R = S::R;
-        type G = S::G;
+    pub struct SetB<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetB<St> {}
+    impl<St: State> State for SetB<St> {
         type B = Set<members::b>;
+        type G = St::G;
+        type R = St::R;
+    }
+    ///State transition - sets the `g` field to Set
+    pub struct SetG<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetG<St> {}
+    impl<St: State> State for SetG<St> {
+        type B = St::B;
+        type G = Set<members::g>;
+        type R = St::R;
+    }
+    ///State transition - sets the `r` field to Set
+    pub struct SetR<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetR<St> {}
+    impl<St: State> State for SetR<St> {
+        type B = St::B;
+        type G = St::G;
+        type R = Set<members::r>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `r` field
-        pub struct r(());
-        ///Marker type for the `g` field
-        pub struct g(());
         ///Marker type for the `b` field
         pub struct b(());
+        ///Marker type for the `g` field
+        pub struct g(());
+        ///Marker type for the `r` field
+        pub struct r(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct RgbBuilder<'a, S: rgb_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<i64>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<i64>,
+/// Builder for constructing an instance of this type.
+pub struct RgbBuilder<
+    St: rgb_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<i64>,
+        core::option::Option<i64>,
+        core::option::Option<i64>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> Rgb<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> RgbBuilder<'a, rgb_state::Empty> {
+impl Rgb<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> RgbBuilder<rgb_state::Empty, jacquard_common::DefaultStr> {
         RgbBuilder::new()
     }
 }
 
-impl<'a> RgbBuilder<'a, rgb_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> Rgb<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> RgbBuilder<rgb_state::Empty, S> {
+        RgbBuilder::builder()
+    }
+}
+
+impl RgbBuilder<rgb_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         RgbBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> RgbBuilder<'a, S>
+impl<S: jacquard_common::BosStr> RgbBuilder<rgb_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        RgbBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> RgbBuilder<St, S>
 where
-    S: rgb_state::State,
-    S::B: rgb_state::IsUnset,
+    St: rgb_state::State,
+    St::B: rgb_state::IsUnset,
 {
     /// Set the `b` field (required)
-    pub fn b(mut self, value: impl Into<i64>) -> RgbBuilder<'a, rgb_state::SetB<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+    pub fn b(mut self, value: impl Into<i64>) -> RgbBuilder<rgb_state::SetB<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         RgbBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> RgbBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> RgbBuilder<St, S>
 where
-    S: rgb_state::State,
-    S::G: rgb_state::IsUnset,
+    St: rgb_state::State,
+    St::G: rgb_state::IsUnset,
 {
     /// Set the `g` field (required)
-    pub fn g(mut self, value: impl Into<i64>) -> RgbBuilder<'a, rgb_state::SetG<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+    pub fn g(mut self, value: impl Into<i64>) -> RgbBuilder<rgb_state::SetG<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         RgbBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> RgbBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> RgbBuilder<St, S>
 where
-    S: rgb_state::State,
-    S::R: rgb_state::IsUnset,
+    St: rgb_state::State,
+    St::R: rgb_state::IsUnset,
 {
     /// Set the `r` field (required)
-    pub fn r(mut self, value: impl Into<i64>) -> RgbBuilder<'a, rgb_state::SetR<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+    pub fn r(mut self, value: impl Into<i64>) -> RgbBuilder<rgb_state::SetR<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         RgbBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> RgbBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> RgbBuilder<St, S>
 where
-    S: rgb_state::State,
-    S::R: rgb_state::IsSet,
-    S::G: rgb_state::IsSet,
-    S::B: rgb_state::IsSet,
+    St: rgb_state::State,
+    St::B: rgb_state::IsSet,
+    St::G: rgb_state::IsSet,
+    St::R: rgb_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> Rgb<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> Rgb<S> {
         Rgb {
-            b: self.__unsafe_private_named.0.unwrap(),
-            g: self.__unsafe_private_named.1.unwrap(),
-            r: self.__unsafe_private_named.2.unwrap(),
+            b: self._fields.0.unwrap(),
+            g: self._fields.1.unwrap(),
+            r: self._fields.2.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> Rgb<'a> {
+    ) -> Rgb<S> {
         Rgb {
-            b: self.__unsafe_private_named.0.unwrap(),
-            g: self.__unsafe_private_named.1.unwrap(),
-            r: self.__unsafe_private_named.2.unwrap(),
+            b: self._fields.0.unwrap(),
+            g: self._fields.1.unwrap(),
+            r: self._fields.2.unwrap(),
             extra_data: Some(extra_data),
         }
     }
 }
 
-fn lexicon_doc_site_standard_theme_color() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_site_standard_theme_color() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("site.standard.theme.color"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("rgb"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("rgb"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("r"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("g"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("b"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("r"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("g"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("b"),
                         ]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("b"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("b"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
                                     ::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
                                         minimum: Some(0i64),
                                         maximum: Some(255i64),
-                                        r#enum: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("g"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("g"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
                                     ::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
                                         minimum: Some(0i64),
                                         maximum: Some(255i64),
-                                        r#enum: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("r"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("r"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
                                     ::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
                                         minimum: Some(0i64),
                                         maximum: Some(255i64),
-                                        r#enum: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("rgba"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("rgba"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("r"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("g"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("b"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("a"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("r"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("g"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("b"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("a"),
                         ]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("a"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("a"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
                                     ::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
                                         minimum: Some(0i64),
                                         maximum: Some(100i64),
-                                        r#enum: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("b"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("b"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
                                     ::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
                                         minimum: Some(0i64),
                                         maximum: Some(255i64),
-                                        r#enum: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("g"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("g"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
                                     ::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
                                         minimum: Some(0i64),
                                         maximum: Some(255i64),
-                                        r#enum: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("r"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("r"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
                                     ::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
                                         minimum: Some(0i64),
                                         maximum: Some(255i64),
-                                        r#enum: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map
         },
+        ..Default::default()
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Rgb<'a> {
-    fn nsid() -> &'static str {
-        "site.standard.theme.color"
-    }
-    fn def_name() -> &'static str {
-        "rgb"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_site_standard_theme_color()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        {
-            let value = &self.b;
-            if *value > 255i64 {
-                return Err(::jacquard_lexicon::validation::ConstraintError::Maximum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("b"),
-                    max: 255i64,
-                    actual: *value,
-                });
-            }
-        }
-        {
-            let value = &self.b;
-            if *value < 0i64 {
-                return Err(::jacquard_lexicon::validation::ConstraintError::Minimum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("b"),
-                    min: 0i64,
-                    actual: *value,
-                });
-            }
-        }
-        {
-            let value = &self.g;
-            if *value > 255i64 {
-                return Err(::jacquard_lexicon::validation::ConstraintError::Maximum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("g"),
-                    max: 255i64,
-                    actual: *value,
-                });
-            }
-        }
-        {
-            let value = &self.g;
-            if *value < 0i64 {
-                return Err(::jacquard_lexicon::validation::ConstraintError::Minimum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("g"),
-                    min: 0i64,
-                    actual: *value,
-                });
-            }
-        }
-        {
-            let value = &self.r;
-            if *value > 255i64 {
-                return Err(::jacquard_lexicon::validation::ConstraintError::Maximum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("r"),
-                    max: 255i64,
-                    actual: *value,
-                });
-            }
-        }
-        {
-            let value = &self.r;
-            if *value < 0i64 {
-                return Err(::jacquard_lexicon::validation::ConstraintError::Minimum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("r"),
-                    min: 0i64,
-                    actual: *value,
-                });
-            }
-        }
-        Ok(())
-    }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct Rgba<'a> {
-    pub a: i64,
-    pub b: i64,
-    pub g: i64,
-    pub r: i64,
 }
 
 pub mod rgba_state {
@@ -426,293 +542,217 @@ pub mod rgba_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type R;
-        type G;
-        type B;
         type A;
+        type B;
+        type G;
+        type R;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type R = Unset;
-        type G = Unset;
-        type B = Unset;
         type A = Unset;
-    }
-    ///State transition - sets the `r` field to Set
-    pub struct SetR<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetR<S> {}
-    impl<S: State> State for SetR<S> {
-        type R = Set<members::r>;
-        type G = S::G;
-        type B = S::B;
-        type A = S::A;
-    }
-    ///State transition - sets the `g` field to Set
-    pub struct SetG<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetG<S> {}
-    impl<S: State> State for SetG<S> {
-        type R = S::R;
-        type G = Set<members::g>;
-        type B = S::B;
-        type A = S::A;
-    }
-    ///State transition - sets the `b` field to Set
-    pub struct SetB<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetB<S> {}
-    impl<S: State> State for SetB<S> {
-        type R = S::R;
-        type G = S::G;
-        type B = Set<members::b>;
-        type A = S::A;
+        type B = Unset;
+        type G = Unset;
+        type R = Unset;
     }
     ///State transition - sets the `a` field to Set
-    pub struct SetA<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetA<S> {}
-    impl<S: State> State for SetA<S> {
-        type R = S::R;
-        type G = S::G;
-        type B = S::B;
+    pub struct SetA<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetA<St> {}
+    impl<St: State> State for SetA<St> {
         type A = Set<members::a>;
+        type B = St::B;
+        type G = St::G;
+        type R = St::R;
+    }
+    ///State transition - sets the `b` field to Set
+    pub struct SetB<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetB<St> {}
+    impl<St: State> State for SetB<St> {
+        type A = St::A;
+        type B = Set<members::b>;
+        type G = St::G;
+        type R = St::R;
+    }
+    ///State transition - sets the `g` field to Set
+    pub struct SetG<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetG<St> {}
+    impl<St: State> State for SetG<St> {
+        type A = St::A;
+        type B = St::B;
+        type G = Set<members::g>;
+        type R = St::R;
+    }
+    ///State transition - sets the `r` field to Set
+    pub struct SetR<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetR<St> {}
+    impl<St: State> State for SetR<St> {
+        type A = St::A;
+        type B = St::B;
+        type G = St::G;
+        type R = Set<members::r>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `r` field
-        pub struct r(());
-        ///Marker type for the `g` field
-        pub struct g(());
-        ///Marker type for the `b` field
-        pub struct b(());
         ///Marker type for the `a` field
         pub struct a(());
+        ///Marker type for the `b` field
+        pub struct b(());
+        ///Marker type for the `g` field
+        pub struct g(());
+        ///Marker type for the `r` field
+        pub struct r(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct RgbaBuilder<'a, S: rgba_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<i64>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<i64>,
+/// Builder for constructing an instance of this type.
+pub struct RgbaBuilder<
+    St: rgba_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<i64>,
+        core::option::Option<i64>,
+        core::option::Option<i64>,
+        core::option::Option<i64>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> Rgba<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> RgbaBuilder<'a, rgba_state::Empty> {
+impl Rgba<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> RgbaBuilder<rgba_state::Empty, jacquard_common::DefaultStr> {
         RgbaBuilder::new()
     }
 }
 
-impl<'a> RgbaBuilder<'a, rgba_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> Rgba<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> RgbaBuilder<rgba_state::Empty, S> {
+        RgbaBuilder::builder()
+    }
+}
+
+impl RgbaBuilder<rgba_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         RgbaBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> RgbaBuilder<'a, S>
+impl<S: jacquard_common::BosStr> RgbaBuilder<rgba_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        RgbaBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> RgbaBuilder<St, S>
 where
-    S: rgba_state::State,
-    S::A: rgba_state::IsUnset,
+    St: rgba_state::State,
+    St::A: rgba_state::IsUnset,
 {
     /// Set the `a` field (required)
-    pub fn a(mut self, value: impl Into<i64>) -> RgbaBuilder<'a, rgba_state::SetA<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+    pub fn a(mut self, value: impl Into<i64>) -> RgbaBuilder<rgba_state::SetA<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         RgbaBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> RgbaBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> RgbaBuilder<St, S>
 where
-    S: rgba_state::State,
-    S::B: rgba_state::IsUnset,
+    St: rgba_state::State,
+    St::B: rgba_state::IsUnset,
 {
     /// Set the `b` field (required)
-    pub fn b(mut self, value: impl Into<i64>) -> RgbaBuilder<'a, rgba_state::SetB<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+    pub fn b(mut self, value: impl Into<i64>) -> RgbaBuilder<rgba_state::SetB<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         RgbaBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> RgbaBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> RgbaBuilder<St, S>
 where
-    S: rgba_state::State,
-    S::G: rgba_state::IsUnset,
+    St: rgba_state::State,
+    St::G: rgba_state::IsUnset,
 {
     /// Set the `g` field (required)
-    pub fn g(mut self, value: impl Into<i64>) -> RgbaBuilder<'a, rgba_state::SetG<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+    pub fn g(mut self, value: impl Into<i64>) -> RgbaBuilder<rgba_state::SetG<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         RgbaBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> RgbaBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> RgbaBuilder<St, S>
 where
-    S: rgba_state::State,
-    S::R: rgba_state::IsUnset,
+    St: rgba_state::State,
+    St::R: rgba_state::IsUnset,
 {
     /// Set the `r` field (required)
-    pub fn r(mut self, value: impl Into<i64>) -> RgbaBuilder<'a, rgba_state::SetR<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+    pub fn r(mut self, value: impl Into<i64>) -> RgbaBuilder<rgba_state::SetR<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
         RgbaBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> RgbaBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> RgbaBuilder<St, S>
 where
-    S: rgba_state::State,
-    S::R: rgba_state::IsSet,
-    S::G: rgba_state::IsSet,
-    S::B: rgba_state::IsSet,
-    S::A: rgba_state::IsSet,
+    St: rgba_state::State,
+    St::A: rgba_state::IsSet,
+    St::B: rgba_state::IsSet,
+    St::G: rgba_state::IsSet,
+    St::R: rgba_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> Rgba<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> Rgba<S> {
         Rgba {
-            a: self.__unsafe_private_named.0.unwrap(),
-            b: self.__unsafe_private_named.1.unwrap(),
-            g: self.__unsafe_private_named.2.unwrap(),
-            r: self.__unsafe_private_named.3.unwrap(),
+            a: self._fields.0.unwrap(),
+            b: self._fields.1.unwrap(),
+            g: self._fields.2.unwrap(),
+            r: self._fields.3.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> Rgba<'a> {
+    ) -> Rgba<S> {
         Rgba {
-            a: self.__unsafe_private_named.0.unwrap(),
-            b: self.__unsafe_private_named.1.unwrap(),
-            g: self.__unsafe_private_named.2.unwrap(),
-            r: self.__unsafe_private_named.3.unwrap(),
+            a: self._fields.0.unwrap(),
+            b: self._fields.1.unwrap(),
+            g: self._fields.2.unwrap(),
+            r: self._fields.3.unwrap(),
             extra_data: Some(extra_data),
         }
-    }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Rgba<'a> {
-    fn nsid() -> &'static str {
-        "site.standard.theme.color"
-    }
-    fn def_name() -> &'static str {
-        "rgba"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_site_standard_theme_color()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        {
-            let value = &self.a;
-            if *value > 100i64 {
-                return Err(::jacquard_lexicon::validation::ConstraintError::Maximum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("a"),
-                    max: 100i64,
-                    actual: *value,
-                });
-            }
-        }
-        {
-            let value = &self.a;
-            if *value < 0i64 {
-                return Err(::jacquard_lexicon::validation::ConstraintError::Minimum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("a"),
-                    min: 0i64,
-                    actual: *value,
-                });
-            }
-        }
-        {
-            let value = &self.b;
-            if *value > 255i64 {
-                return Err(::jacquard_lexicon::validation::ConstraintError::Maximum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("b"),
-                    max: 255i64,
-                    actual: *value,
-                });
-            }
-        }
-        {
-            let value = &self.b;
-            if *value < 0i64 {
-                return Err(::jacquard_lexicon::validation::ConstraintError::Minimum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("b"),
-                    min: 0i64,
-                    actual: *value,
-                });
-            }
-        }
-        {
-            let value = &self.g;
-            if *value > 255i64 {
-                return Err(::jacquard_lexicon::validation::ConstraintError::Maximum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("g"),
-                    max: 255i64,
-                    actual: *value,
-                });
-            }
-        }
-        {
-            let value = &self.g;
-            if *value < 0i64 {
-                return Err(::jacquard_lexicon::validation::ConstraintError::Minimum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("g"),
-                    min: 0i64,
-                    actual: *value,
-                });
-            }
-        }
-        {
-            let value = &self.r;
-            if *value > 255i64 {
-                return Err(::jacquard_lexicon::validation::ConstraintError::Maximum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("r"),
-                    max: 255i64,
-                    actual: *value,
-                });
-            }
-        }
-        {
-            let value = &self.r;
-            if *value < 0i64 {
-                return Err(::jacquard_lexicon::validation::ConstraintError::Minimum {
-                    path: ::jacquard_lexicon::validation::ValidationPath::from_field("r"),
-                    min: 0i64,
-                    actual: *value,
-                });
-            }
-        }
-        Ok(())
     }
 }

@@ -5,7 +5,6 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -16,34 +15,58 @@
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct LeaveConvo<'a> {
-    /// Optional MLS Commit message for the removal
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct LeaveConvo<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Optional MLS Commit message for the removal
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
     #[serde(default, with = "jacquard_common::opt_serde_bytes_helper")]
-    pub commit: std::option::Option<bytes::Bytes>,
-    /// Conversation identifier
-    #[serde(borrow)]
-    pub convo_id: jacquard_common::CowStr<'a>,
-    /// DID of member to remove (defaults to caller's DID). Admin privileges required to remove others.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub target_did: std::option::Option<jacquard_common::types::string::Did<'a>>,
+    pub commit: core::option::Option<jacquard_common::deps::bytes::Bytes>,
+    ///Conversation identifier
+    pub convo_id: S,
+    ///DID of member to remove (defaults to caller's DID). Admin privileges required to remove others.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub target_did: core::option::Option<jacquard_common::types::string::Did<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct LeaveConvoOutput<'a> {
-    /// New epoch number after member removal
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct LeaveConvoOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///New epoch number after member removal
     pub new_epoch: i64,
-    /// Whether the operation succeeded
+    ///Whether the operation succeeded
     pub success: bool,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::open_union]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -53,30 +76,34 @@ pub struct LeaveConvoOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum LeaveConvoError<'a> {
+pub enum LeaveConvoError {
     /// Conversation not found
     #[serde(rename = "ConvoNotFound")]
-    ConvoNotFound(std::option::Option<jacquard_common::CowStr<'a>>),
+    ConvoNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// Caller is not a member of the conversation
     #[serde(rename = "NotMember")]
-    NotMember(std::option::Option<jacquard_common::CowStr<'a>>),
+    NotMember(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// Admin privileges required to remove other members
     #[serde(rename = "Unauthorized")]
-    Unauthorized(std::option::Option<jacquard_common::CowStr<'a>>),
+    Unauthorized(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// Target DID is not a member of the conversation
     #[serde(rename = "TargetNotMember")]
-    TargetNotMember(std::option::Option<jacquard_common::CowStr<'a>>),
+    TargetNotMember(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// Cannot leave as the last member (delete the conversation instead)
     #[serde(rename = "LastMember")]
-    LastMember(std::option::Option<jacquard_common::CowStr<'a>>),
+    LastMember(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
 }
 
-impl std::fmt::Display for LeaveConvoError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for LeaveConvoError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             Self::ConvoNotFound(msg) => {
                 write!(f, "ConvoNotFound")?;
@@ -113,35 +140,43 @@ impl std::fmt::Display for LeaveConvoError<'_> {
                 }
                 Ok(())
             }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
         }
     }
 }
 
-/// Response type for
-///blue.catbird.mlsChat.leaveConvo
+/** Response marker for the `blue.catbird.mlsChat.leaveConvo` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `LeaveConvoOutput<S>` for this endpoint.*/
 pub struct LeaveConvoResponse;
 impl jacquard_common::xrpc::XrpcResp for LeaveConvoResponse {
     const NSID: &'static str = "blue.catbird.mlsChat.leaveConvo";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = LeaveConvoOutput<'de>;
-    type Err<'de> = LeaveConvoError<'de>;
+    type Output<S: jacquard_common::BosStr> = LeaveConvoOutput<S>;
+    type Err = LeaveConvoError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for LeaveConvo<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for LeaveConvo<S> {
     const NSID: &'static str = "blue.catbird.mlsChat.leaveConvo";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = LeaveConvoResponse;
 }
 
-/// Endpoint type for
-///blue.catbird.mlsChat.leaveConvo
+/** Endpoint marker for the `blue.catbird.mlsChat.leaveConvo` procedure.
+
+Path: `/xrpc/blue.catbird.mlsChat.leaveConvo`. The request payload type is `LeaveConvo<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct LeaveConvoRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for LeaveConvoRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.mlsChat.leaveConvo";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = LeaveConvo<'de>;
+    type Request<S: jacquard_common::BosStr> = LeaveConvo<S>;
     type Response = LeaveConvoResponse;
 }

@@ -5,18 +5,110 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct Actor<'a> {
-    /// The actor's DID
-    #[serde(borrow)]
-    pub did: jacquard_common::types::string::Did<'a>,
-    /// The actor's handle
-    #[serde(borrow)]
-    pub handle: jacquard_common::types::string::Handle<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct Actor<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///The actor's DID
+    pub did: jacquard_common::types::string::Did<S>,
+    ///The actor's handle
+    pub handle: jacquard_common::types::string::Handle<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct SearchActorsTypeahead<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    /// Defaults to `10`. Min: 1. Max: 100.
+    #[serde(default = "_default_limit")]
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub limit: core::option::Option<i64>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub q: core::option::Option<S>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct SearchActorsTypeaheadOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub actors: Vec<crate::generated::place_stream::live::search_actors_typeahead::Actor<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Actor<S> {
+    fn nsid() -> &'static str {
+        "place.stream.live.searchActorsTypeahead"
+    }
+    fn def_name() -> &'static str {
+        "actor"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_place_stream_live_searchActorsTypeahead()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+/** Response marker for the `place.stream.live.searchActorsTypeahead` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `SearchActorsTypeaheadOutput<S>` for this endpoint.*/
+pub struct SearchActorsTypeaheadResponse;
+impl jacquard_common::xrpc::XrpcResp for SearchActorsTypeaheadResponse {
+    const NSID: &'static str = "place.stream.live.searchActorsTypeahead";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = SearchActorsTypeaheadOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for SearchActorsTypeahead<S> {
+    const NSID: &'static str = "place.stream.live.searchActorsTypeahead";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = SearchActorsTypeaheadResponse;
+}
+
+/** Endpoint marker for the `place.stream.live.searchActorsTypeahead` query.
+
+Path: `/xrpc/place.stream.live.searchActorsTypeahead`. The request payload type is `SearchActorsTypeahead<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct SearchActorsTypeaheadRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for SearchActorsTypeaheadRequest {
+    const PATH: &'static str = "/xrpc/place.stream.live.searchActorsTypeahead";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = SearchActorsTypeahead<S>;
+    type Response = SearchActorsTypeaheadResponse;
 }
 
 pub mod actor_state {
@@ -40,17 +132,17 @@ pub mod actor_state {
         type Handle = Unset;
     }
     ///State transition - sets the `did` field to Set
-    pub struct SetDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetDid<S> {}
-    impl<S: State> State for SetDid<S> {
+    pub struct SetDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetDid<St> {}
+    impl<St: State> State for SetDid<St> {
         type Did = Set<members::did>;
-        type Handle = S::Handle;
+        type Handle = St::Handle;
     }
     ///State transition - sets the `handle` field to Set
-    pub struct SetHandle<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetHandle<S> {}
-    impl<S: State> State for SetHandle<S> {
-        type Did = S::Did;
+    pub struct SetHandle<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetHandle<St> {}
+    impl<St: State> State for SetHandle<St> {
+        type Did = St::Did;
         type Handle = Set<members::handle>;
     }
     /// Marker types for field names
@@ -63,126 +155,143 @@ pub mod actor_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct ActorBuilder<'a, S: actor_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Handle<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct ActorBuilder<
+    St: actor_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<jacquard_common::types::string::Handle<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> Actor<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> ActorBuilder<'a, actor_state::Empty> {
+impl Actor<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> ActorBuilder<actor_state::Empty, jacquard_common::DefaultStr> {
         ActorBuilder::new()
     }
 }
 
-impl<'a> ActorBuilder<'a, actor_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> Actor<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> ActorBuilder<actor_state::Empty, S> {
+        ActorBuilder::builder()
+    }
+}
+
+impl ActorBuilder<actor_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ActorBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ActorBuilder<'a, S>
+impl<S: jacquard_common::BosStr> ActorBuilder<actor_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        ActorBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ActorBuilder<St, S>
 where
-    S: actor_state::State,
-    S::Did: actor_state::IsUnset,
+    St: actor_state::State,
+    St::Did: actor_state::IsUnset,
 {
     /// Set the `did` field (required)
     pub fn did(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> ActorBuilder<'a, actor_state::SetDid<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> ActorBuilder<actor_state::SetDid<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         ActorBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ActorBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ActorBuilder<St, S>
 where
-    S: actor_state::State,
-    S::Handle: actor_state::IsUnset,
+    St: actor_state::State,
+    St::Handle: actor_state::IsUnset,
 {
     /// Set the `handle` field (required)
     pub fn handle(
         mut self,
-        value: impl Into<jacquard_common::types::string::Handle<'a>>,
-    ) -> ActorBuilder<'a, actor_state::SetHandle<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Handle<S>>,
+    ) -> ActorBuilder<actor_state::SetHandle<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         ActorBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ActorBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ActorBuilder<St, S>
 where
-    S: actor_state::State,
-    S::Did: actor_state::IsSet,
-    S::Handle: actor_state::IsSet,
+    St: actor_state::State,
+    St::Did: actor_state::IsSet,
+    St::Handle: actor_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> Actor<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> Actor<S> {
         Actor {
-            did: self.__unsafe_private_named.0.unwrap(),
-            handle: self.__unsafe_private_named.1.unwrap(),
+            did: self._fields.0.unwrap(),
+            handle: self._fields.1.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> Actor<'a> {
+    ) -> Actor<S> {
         Actor {
-            did: self.__unsafe_private_named.0.unwrap(),
-            handle: self.__unsafe_private_named.1.unwrap(),
+            did: self._fields.0.unwrap(),
+            handle: self._fields.1.unwrap(),
             extra_data: Some(extra_data),
         }
     }
 }
 
 fn lexicon_doc_place_stream_live_searchActorsTypeahead(
-) -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+) -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("place.stream.live.searchActorsTypeahead"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("actor"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("actor"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("did"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("handle"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("handle"),
                         ]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("did"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
@@ -191,19 +300,12 @@ fn lexicon_doc_place_stream_live_searchActorsTypeahead(
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("handle"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("handle"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
@@ -212,104 +314,59 @@ fn lexicon_doc_place_stream_live_searchActorsTypeahead(
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Handle,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
                 ::jacquard_lexicon::lexicon::LexUserType::XrpcQuery(::jacquard_lexicon::lexicon::LexXrpcQuery {
-                    description: None,
                     parameters: Some(
                         ::jacquard_lexicon::lexicon::LexXrpcQueryParameter::Params(::jacquard_lexicon::lexicon::LexXrpcParameters {
-                            description: None,
-                            required: None,
                             properties: {
                                 #[allow(unused_mut)]
-                                let mut map = ::std::collections::BTreeMap::new();
+                                let mut map = ::alloc::collections::BTreeMap::new();
                                 map.insert(
-                                    ::jacquard_common::smol_str::SmolStr::new_static("limit"),
+                                    ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                        "limit",
+                                    ),
                                     ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
-                                        minimum: None,
-                                        maximum: None,
-                                        r#enum: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     }),
                                 );
                                 map.insert(
-                                    ::jacquard_common::smol_str::SmolStr::new_static("q"),
+                                    ::jacquard_common::deps::smol_str::SmolStr::new_static("q"),
                                     ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::String(::jacquard_lexicon::lexicon::LexString {
                                         description: Some(
                                             ::jacquard_common::CowStr::new_static(
                                                 "Search query prefix; not a full query string.",
                                             ),
                                         ),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     }),
                                 );
                                 map
                             },
+                            ..Default::default()
                         }),
                     ),
-                    output: None,
-                    errors: None,
+                    ..Default::default()
                 }),
             );
             map
         },
+        ..Default::default()
     }
 }
 
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Actor<'a> {
-    fn nsid() -> &'static str {
-        "place.stream.live.searchActorsTypeahead"
-    }
-    fn def_name() -> &'static str {
-        "actor"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_place_stream_live_searchActorsTypeahead()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct SearchActorsTypeahead<'a> {
-    ///(default: 10, min: 1, max: 100)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub limit: std::option::Option<i64>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub q: std::option::Option<jacquard_common::CowStr<'a>>,
+fn _default_limit() -> core::option::Option<i64> {
+    Some(10i64)
 }
 
 pub mod search_actors_typeahead_state {
@@ -331,105 +388,98 @@ pub mod search_actors_typeahead_state {
     pub mod members {}
 }
 
-/// Builder for constructing an instance of this type
-pub struct SearchActorsTypeaheadBuilder<'a, S: search_actors_typeahead_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<i64>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-    ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct SearchActorsTypeaheadBuilder<
+    St: search_actors_typeahead_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<i64>, core::option::Option<S>),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> SearchActorsTypeahead<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> SearchActorsTypeaheadBuilder<'a, search_actors_typeahead_state::Empty> {
+impl SearchActorsTypeahead<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> SearchActorsTypeaheadBuilder<
+        search_actors_typeahead_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         SearchActorsTypeaheadBuilder::new()
     }
 }
 
-impl<'a> SearchActorsTypeaheadBuilder<'a, search_actors_typeahead_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> SearchActorsTypeahead<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> SearchActorsTypeaheadBuilder<search_actors_typeahead_state::Empty, S> {
+        SearchActorsTypeaheadBuilder::builder()
+    }
+}
+
+impl
+    SearchActorsTypeaheadBuilder<search_actors_typeahead_state::Empty, jacquard_common::DefaultStr>
+{
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         SearchActorsTypeaheadBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: search_actors_typeahead_state::State> SearchActorsTypeaheadBuilder<'a, S> {
+impl<S: jacquard_common::BosStr>
+    SearchActorsTypeaheadBuilder<search_actors_typeahead_state::Empty, S>
+{
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        SearchActorsTypeaheadBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: search_actors_typeahead_state::State, S: jacquard_common::BosStr>
+    SearchActorsTypeaheadBuilder<St, S>
+{
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+        self._fields.0 = value.into();
         self
     }
     /// Set the `limit` field to an Option value (optional)
     pub fn maybe_limit(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.0 = value;
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S: search_actors_typeahead_state::State> SearchActorsTypeaheadBuilder<'a, S> {
+impl<St: search_actors_typeahead_state::State, S: jacquard_common::BosStr>
+    SearchActorsTypeaheadBuilder<St, S>
+{
     /// Set the `q` field (optional)
-    pub fn q(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+    pub fn q(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.1 = value.into();
         self
     }
     /// Set the `q` field to an Option value (optional)
-    pub fn maybe_q(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.1 = value;
+    pub fn maybe_q(mut self, value: Option<S>) -> Self {
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S> SearchActorsTypeaheadBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> SearchActorsTypeaheadBuilder<St, S>
 where
-    S: search_actors_typeahead_state::State,
+    St: search_actors_typeahead_state::State,
 {
-    /// Build the final struct
-    pub fn build(self) -> SearchActorsTypeahead<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> SearchActorsTypeahead<S> {
         SearchActorsTypeahead {
-            limit: self.__unsafe_private_named.0,
-            q: self.__unsafe_private_named.1,
+            limit: self._fields.0,
+            q: self._fields.1,
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct SearchActorsTypeaheadOutput<'a> {
-    #[serde(borrow)]
-    pub actors: Vec<crate::generated::place_stream::live::search_actors_typeahead::Actor<'a>>,
-}
-
-/// Response type for
-///place.stream.live.searchActorsTypeahead
-pub struct SearchActorsTypeaheadResponse;
-impl jacquard_common::xrpc::XrpcResp for SearchActorsTypeaheadResponse {
-    const NSID: &'static str = "place.stream.live.searchActorsTypeahead";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = SearchActorsTypeaheadOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for SearchActorsTypeahead<'a> {
-    const NSID: &'static str = "place.stream.live.searchActorsTypeahead";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = SearchActorsTypeaheadResponse;
-}
-
-/// Endpoint type for
-///place.stream.live.searchActorsTypeahead
-pub struct SearchActorsTypeaheadRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for SearchActorsTypeaheadRequest {
-    const PATH: &'static str = "/xrpc/place.stream.live.searchActorsTypeahead";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = SearchActorsTypeahead<'de>;
-    type Response = SearchActorsTypeaheadResponse;
 }

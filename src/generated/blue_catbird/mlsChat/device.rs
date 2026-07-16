@@ -6,19 +6,102 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 /// Per-device MLS signature key published to the user's repo. Used to verify that key packages served by the delivery service belong to an authorized device.
-#[jacquard_derive::lexicon]
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    rename = "blue.catbird.mlsChat.device",
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct Device<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Signature algorithm: 'ed25519' or 'p256'
+    pub algorithm: S,
+    pub created_at: jacquard_common::types::string::Datetime,
+    ///The MLS credential signature public key for this device
+    #[serde(with = "jacquard_common::serde_bytes_helper")]
+    pub mls_signature_public_key: jacquard_common::deps::bytes::Bytes,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// Typed wrapper for GetRecord response with this collection's record type.
+
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
 #[serde(rename_all = "camelCase")]
-pub struct Device<'a> {
-    /// Signature algorithm: 'ed25519' or 'p256'
-    #[serde(borrow)]
-    pub algorithm: jacquard_common::CowStr<'a>,
-    pub created_at: jacquard_common::types::string::Datetime,
-    /// The MLS credential signature public key for this device
-    #[serde(with = "jacquard_common::serde_bytes_helper")]
-    pub mls_signature_public_key: bytes::Bytes,
+pub struct DeviceGetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
+    pub uri: jacquard_common::types::string::AtUri<S>,
+    pub value: Device<S>,
+}
+
+impl<S: jacquard_common::BosStr> Device<S> {
+    pub fn uri(
+        uri: S,
+    ) -> Result<
+        jacquard_common::types::uri::RecordUri<S, DeviceRecord>,
+        jacquard_common::types::uri::UriError,
+    > {
+        jacquard_common::types::uri::RecordUri::try_from_uri(
+            jacquard_common::types::string::AtUri::new(uri)?,
+        )
+    }
+}
+
+/// Marker type for deserializing records from this collection.
+
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+pub struct DeviceRecord;
+impl jacquard_common::xrpc::XrpcResp for DeviceRecord {
+    const NSID: &'static str = "blue.catbird.mlsChat.device";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = DeviceGetRecordOutput<S>;
+    type Err = jacquard_common::types::collection::RecordError;
+}
+
+impl<S: jacquard_common::BosStr> From<DeviceGetRecordOutput<S>> for Device<S> {
+    fn from(output: DeviceGetRecordOutput<S>) -> Self {
+        output.value
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection for Device<S> {
+    const NSID: &'static str = "blue.catbird.mlsChat.device";
+    type Record = DeviceRecord;
+}
+
+impl jacquard_common::types::collection::Collection for DeviceRecord {
+    const NSID: &'static str = "blue.catbird.mlsChat.device";
+    type Record = DeviceRecord;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Device<S> {
+    fn nsid() -> &'static str {
+        "blue.catbird.mlsChat.device"
+    }
+    fn def_name() -> &'static str {
+        "main"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_blue_catbird_mlsChat_device()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
 }
 
 pub mod device_state {
@@ -31,255 +114,202 @@ pub mod device_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type MlsSignaturePublicKey;
         type Algorithm;
         type CreatedAt;
+        type MlsSignaturePublicKey;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type MlsSignaturePublicKey = Unset;
         type Algorithm = Unset;
         type CreatedAt = Unset;
-    }
-    ///State transition - sets the `mls_signature_public_key` field to Set
-    pub struct SetMlsSignaturePublicKey<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetMlsSignaturePublicKey<S> {}
-    impl<S: State> State for SetMlsSignaturePublicKey<S> {
-        type MlsSignaturePublicKey = Set<members::mls_signature_public_key>;
-        type Algorithm = S::Algorithm;
-        type CreatedAt = S::CreatedAt;
+        type MlsSignaturePublicKey = Unset;
     }
     ///State transition - sets the `algorithm` field to Set
-    pub struct SetAlgorithm<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetAlgorithm<S> {}
-    impl<S: State> State for SetAlgorithm<S> {
-        type MlsSignaturePublicKey = S::MlsSignaturePublicKey;
+    pub struct SetAlgorithm<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetAlgorithm<St> {}
+    impl<St: State> State for SetAlgorithm<St> {
         type Algorithm = Set<members::algorithm>;
-        type CreatedAt = S::CreatedAt;
+        type CreatedAt = St::CreatedAt;
+        type MlsSignaturePublicKey = St::MlsSignaturePublicKey;
     }
     ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type MlsSignaturePublicKey = S::MlsSignaturePublicKey;
-        type Algorithm = S::Algorithm;
+    pub struct SetCreatedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCreatedAt<St> {}
+    impl<St: State> State for SetCreatedAt<St> {
+        type Algorithm = St::Algorithm;
         type CreatedAt = Set<members::created_at>;
+        type MlsSignaturePublicKey = St::MlsSignaturePublicKey;
+    }
+    ///State transition - sets the `mls_signature_public_key` field to Set
+    pub struct SetMlsSignaturePublicKey<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetMlsSignaturePublicKey<St> {}
+    impl<St: State> State for SetMlsSignaturePublicKey<St> {
+        type Algorithm = St::Algorithm;
+        type CreatedAt = St::CreatedAt;
+        type MlsSignaturePublicKey = Set<members::mls_signature_public_key>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `mls_signature_public_key` field
-        pub struct mls_signature_public_key(());
         ///Marker type for the `algorithm` field
         pub struct algorithm(());
         ///Marker type for the `created_at` field
         pub struct created_at(());
+        ///Marker type for the `mls_signature_public_key` field
+        pub struct mls_signature_public_key(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct DeviceBuilder<'a, S: device_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<bytes::Bytes>,
+/// Builder for constructing an instance of this type.
+pub struct DeviceBuilder<
+    St: device_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> Device<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> DeviceBuilder<'a, device_state::Empty> {
+impl Device<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> DeviceBuilder<device_state::Empty, jacquard_common::DefaultStr> {
         DeviceBuilder::new()
     }
 }
 
-impl<'a> DeviceBuilder<'a, device_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> Device<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> DeviceBuilder<device_state::Empty, S> {
+        DeviceBuilder::builder()
+    }
+}
+
+impl DeviceBuilder<device_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         DeviceBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> DeviceBuilder<'a, S>
+impl<S: jacquard_common::BosStr> DeviceBuilder<device_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        DeviceBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> DeviceBuilder<St, S>
 where
-    S: device_state::State,
-    S::Algorithm: device_state::IsUnset,
+    St: device_state::State,
+    St::Algorithm: device_state::IsUnset,
 {
     /// Set the `algorithm` field (required)
     pub fn algorithm(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> DeviceBuilder<'a, device_state::SetAlgorithm<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> DeviceBuilder<device_state::SetAlgorithm<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         DeviceBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> DeviceBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> DeviceBuilder<St, S>
 where
-    S: device_state::State,
-    S::CreatedAt: device_state::IsUnset,
+    St: device_state::State,
+    St::CreatedAt: device_state::IsUnset,
 {
     /// Set the `createdAt` field (required)
     pub fn created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> DeviceBuilder<'a, device_state::SetCreatedAt<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+    ) -> DeviceBuilder<device_state::SetCreatedAt<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         DeviceBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> DeviceBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> DeviceBuilder<St, S>
 where
-    S: device_state::State,
-    S::MlsSignaturePublicKey: device_state::IsUnset,
+    St: device_state::State,
+    St::MlsSignaturePublicKey: device_state::IsUnset,
 {
     /// Set the `mlsSignaturePublicKey` field (required)
     pub fn mls_signature_public_key(
         mut self,
-        value: impl Into<bytes::Bytes>,
-    ) -> DeviceBuilder<'a, device_state::SetMlsSignaturePublicKey<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::deps::bytes::Bytes>,
+    ) -> DeviceBuilder<device_state::SetMlsSignaturePublicKey<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         DeviceBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> DeviceBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> DeviceBuilder<St, S>
 where
-    S: device_state::State,
-    S::MlsSignaturePublicKey: device_state::IsSet,
-    S::Algorithm: device_state::IsSet,
-    S::CreatedAt: device_state::IsSet,
+    St: device_state::State,
+    St::Algorithm: device_state::IsSet,
+    St::CreatedAt: device_state::IsSet,
+    St::MlsSignaturePublicKey: device_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> Device<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> Device<S> {
         Device {
-            algorithm: self.__unsafe_private_named.0.unwrap(),
-            created_at: self.__unsafe_private_named.1.unwrap(),
-            mls_signature_public_key: self.__unsafe_private_named.2.unwrap(),
+            algorithm: self._fields.0.unwrap(),
+            created_at: self._fields.1.unwrap(),
+            mls_signature_public_key: self._fields.2.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> Device<'a> {
+    ) -> Device<S> {
         Device {
-            algorithm: self.__unsafe_private_named.0.unwrap(),
-            created_at: self.__unsafe_private_named.1.unwrap(),
-            mls_signature_public_key: self.__unsafe_private_named.2.unwrap(),
+            algorithm: self._fields.0.unwrap(),
+            created_at: self._fields.1.unwrap(),
+            mls_signature_public_key: self._fields.2.unwrap(),
             extra_data: Some(extra_data),
         }
     }
 }
 
-impl<'a> Device<'a> {
-    pub fn uri(
-        uri: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> Result<
-        jacquard_common::types::uri::RecordUri<'a, DeviceRecord>,
-        jacquard_common::types::uri::UriError,
-    > {
-        jacquard_common::types::uri::RecordUri::try_from_uri(
-            jacquard_common::types::string::AtUri::new_cow(uri.into())?,
-        )
-    }
-}
-
-/// Typed wrapper for GetRecord response with this collection's record type.
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct DeviceGetRecordOutput<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cid: std::option::Option<jacquard_common::types::string::Cid<'a>>,
-    #[serde(borrow)]
-    pub uri: jacquard_common::types::string::AtUri<'a>,
-    #[serde(borrow)]
-    pub value: Device<'a>,
-}
-
-impl From<DeviceGetRecordOutput<'_>> for Device<'_> {
-    fn from(output: DeviceGetRecordOutput<'_>) -> Self {
-        use jacquard_common::IntoStatic;
-        output.value.into_static()
-    }
-}
-
-impl jacquard_common::types::collection::Collection for Device<'_> {
-    const NSID: &'static str = "blue.catbird.mlsChat.device";
-    type Record = DeviceRecord;
-}
-
-/// Marker type for deserializing records from this collection.
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
-pub struct DeviceRecord;
-impl jacquard_common::xrpc::XrpcResp for DeviceRecord {
-    const NSID: &'static str = "blue.catbird.mlsChat.device";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = DeviceGetRecordOutput<'de>;
-    type Err<'de> = jacquard_common::types::collection::RecordError<'de>;
-}
-
-impl jacquard_common::types::collection::Collection for DeviceRecord {
-    const NSID: &'static str = "blue.catbird.mlsChat.device";
-    type Record = DeviceRecord;
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for Device<'a> {
-    fn nsid() -> &'static str {
-        "blue.catbird.mlsChat.device"
-    }
-    fn def_name() -> &'static str {
-        "main"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_blue_catbird_mlsChat_device()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-fn lexicon_doc_blue_catbird_mlsChat_device() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_blue_catbird_mlsChat_device() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("blue.catbird.mlsChat.device"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
                 ::jacquard_lexicon::lexicon::LexUserType::Record(::jacquard_lexicon::lexicon::LexRecord {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
@@ -288,20 +318,18 @@ fn lexicon_doc_blue_catbird_mlsChat_device() -> ::jacquard_lexicon::lexicon::Lex
                     ),
                     key: Some(::jacquard_common::CowStr::new_static("tid")),
                     record: ::jacquard_lexicon::lexicon::LexRecordRecord::Object(::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(
                             vec![
-                                ::jacquard_common::smol_str::SmolStr::new_static("mlsSignaturePublicKey"),
-                                ::jacquard_common::smol_str::SmolStr::new_static("algorithm"),
-                                ::jacquard_common::smol_str::SmolStr::new_static("createdAt")
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("mlsSignaturePublicKey"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("algorithm"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt")
                             ],
                         ),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "algorithm",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -310,52 +338,37 @@ fn lexicon_doc_blue_catbird_mlsChat_device() -> ::jacquard_lexicon::lexicon::Lex
                                             "Signature algorithm: 'ed25519' or 'p256'",
                                         ),
                                     ),
-                                    format: None,
-                                    default: None,
-                                    min_length: None,
-                                    max_length: None,
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "createdAt",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                    description: None,
                                     format: Some(
                                         ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                     ),
-                                    default: None,
-                                    min_length: None,
-                                    max_length: None,
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "mlsSignaturePublicKey",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
-                                    description: None,
-                                    max_length: None,
-                                    min_length: None,
+                                    ..Default::default()
                                 }),
                             );
                             map
                         },
+                        ..Default::default()
                     }),
+                    ..Default::default()
                 }),
             );
             map
         },
+        ..Default::default()
     }
 }

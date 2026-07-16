@@ -5,16 +5,118 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct RecordWithMedia<'a> {
-    #[serde(borrow)]
-    pub media: RecordWithMediaMedia<'a>,
-    #[serde(borrow)]
-    pub record: crate::generated::app_bsky::embed::record::Record<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct RecordWithMedia<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub media: RecordWithMediaMedia<S>,
+    pub record: crate::generated::app_bsky::embed::record::Record<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[jacquard_derive::open_union]
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub enum RecordWithMediaMedia<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(rename = "app.bsky.embed.images")]
+    Images(Box<crate::generated::app_bsky::embed::images::Images<S>>),
+    #[serde(rename = "app.bsky.embed.video")]
+    Video(Box<crate::generated::app_bsky::embed::video::Video<S>>),
+    #[serde(rename = "app.bsky.embed.gallery")]
+    Gallery(Box<crate::generated::app_bsky::embed::gallery::Gallery<S>>),
+    #[serde(rename = "app.bsky.embed.external")]
+    External(Box<crate::generated::app_bsky::embed::external::ExternalRecord<S>>),
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct View<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub media: ViewMedia<S>,
+    pub record: crate::generated::app_bsky::embed::record::View<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[jacquard_derive::open_union]
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub enum ViewMedia<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(rename = "app.bsky.embed.images#view")]
+    ImagesView(Box<crate::generated::app_bsky::embed::images::View<S>>),
+    #[serde(rename = "app.bsky.embed.video#view")]
+    VideoView(Box<crate::generated::app_bsky::embed::video::View<S>>),
+    #[serde(rename = "app.bsky.embed.gallery#view")]
+    GalleryView(Box<crate::generated::app_bsky::embed::gallery::View<S>>),
+    #[serde(rename = "app.bsky.embed.external#view")]
+    ExternalView(Box<crate::generated::app_bsky::embed::external::View<S>>),
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for RecordWithMedia<S> {
+    fn nsid() -> &'static str {
+        "app.bsky.embed.recordWithMedia"
+    }
+    fn def_name() -> &'static str {
+        "main"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_app_bsky_embed_recordWithMedia()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for View<S> {
+    fn nsid() -> &'static str {
+        "app.bsky.embed.recordWithMedia"
+    }
+    fn def_name() -> &'static str {
+        "view"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_app_bsky_embed_recordWithMedia()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
 }
 
 pub mod record_with_media_state {
@@ -27,180 +129,179 @@ pub mod record_with_media_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Record;
         type Media;
+        type Record;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Record = Unset;
         type Media = Unset;
-    }
-    ///State transition - sets the `record` field to Set
-    pub struct SetRecord<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRecord<S> {}
-    impl<S: State> State for SetRecord<S> {
-        type Record = Set<members::record>;
-        type Media = S::Media;
+        type Record = Unset;
     }
     ///State transition - sets the `media` field to Set
-    pub struct SetMedia<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetMedia<S> {}
-    impl<S: State> State for SetMedia<S> {
-        type Record = S::Record;
+    pub struct SetMedia<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetMedia<St> {}
+    impl<St: State> State for SetMedia<St> {
         type Media = Set<members::media>;
+        type Record = St::Record;
+    }
+    ///State transition - sets the `record` field to Set
+    pub struct SetRecord<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRecord<St> {}
+    impl<St: State> State for SetRecord<St> {
+        type Media = St::Media;
+        type Record = Set<members::record>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `record` field
-        pub struct record(());
         ///Marker type for the `media` field
         pub struct media(());
+        ///Marker type for the `record` field
+        pub struct record(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct RecordWithMediaBuilder<'a, S: record_with_media_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<RecordWithMediaMedia<'a>>,
-        ::core::option::Option<crate::generated::app_bsky::embed::record::Record<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct RecordWithMediaBuilder<
+    St: record_with_media_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<RecordWithMediaMedia<S>>,
+        core::option::Option<crate::generated::app_bsky::embed::record::Record<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> RecordWithMedia<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> RecordWithMediaBuilder<'a, record_with_media_state::Empty> {
+impl RecordWithMedia<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> RecordWithMediaBuilder<record_with_media_state::Empty, jacquard_common::DefaultStr> {
         RecordWithMediaBuilder::new()
     }
 }
 
-impl<'a> RecordWithMediaBuilder<'a, record_with_media_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> RecordWithMedia<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> RecordWithMediaBuilder<record_with_media_state::Empty, S> {
+        RecordWithMediaBuilder::builder()
+    }
+}
+
+impl RecordWithMediaBuilder<record_with_media_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         RecordWithMediaBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> RecordWithMediaBuilder<'a, S>
+impl<S: jacquard_common::BosStr> RecordWithMediaBuilder<record_with_media_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        RecordWithMediaBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> RecordWithMediaBuilder<St, S>
 where
-    S: record_with_media_state::State,
-    S::Media: record_with_media_state::IsUnset,
+    St: record_with_media_state::State,
+    St::Media: record_with_media_state::IsUnset,
 {
     /// Set the `media` field (required)
     pub fn media(
         mut self,
-        value: impl Into<RecordWithMediaMedia<'a>>,
-    ) -> RecordWithMediaBuilder<'a, record_with_media_state::SetMedia<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<RecordWithMediaMedia<S>>,
+    ) -> RecordWithMediaBuilder<record_with_media_state::SetMedia<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         RecordWithMediaBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> RecordWithMediaBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> RecordWithMediaBuilder<St, S>
 where
-    S: record_with_media_state::State,
-    S::Record: record_with_media_state::IsUnset,
+    St: record_with_media_state::State,
+    St::Record: record_with_media_state::IsUnset,
 {
     /// Set the `record` field (required)
     pub fn record(
         mut self,
-        value: impl Into<crate::generated::app_bsky::embed::record::Record<'a>>,
-    ) -> RecordWithMediaBuilder<'a, record_with_media_state::SetRecord<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<crate::generated::app_bsky::embed::record::Record<S>>,
+    ) -> RecordWithMediaBuilder<record_with_media_state::SetRecord<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         RecordWithMediaBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> RecordWithMediaBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> RecordWithMediaBuilder<St, S>
 where
-    S: record_with_media_state::State,
-    S::Record: record_with_media_state::IsSet,
-    S::Media: record_with_media_state::IsSet,
+    St: record_with_media_state::State,
+    St::Media: record_with_media_state::IsSet,
+    St::Record: record_with_media_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> RecordWithMedia<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> RecordWithMedia<S> {
         RecordWithMedia {
-            media: self.__unsafe_private_named.0.unwrap(),
-            record: self.__unsafe_private_named.1.unwrap(),
+            media: self._fields.0.unwrap(),
+            record: self._fields.1.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> RecordWithMedia<'a> {
+    ) -> RecordWithMedia<S> {
         RecordWithMedia {
-            media: self.__unsafe_private_named.0.unwrap(),
-            record: self.__unsafe_private_named.1.unwrap(),
+            media: self._fields.0.unwrap(),
+            record: self._fields.1.unwrap(),
             extra_data: Some(extra_data),
         }
     }
 }
 
-#[jacquard_derive::open_union]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(tag = "$type")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum RecordWithMediaMedia<'a> {
-    #[serde(rename = "app.bsky.embed.images")]
-    Images(Box<crate::generated::app_bsky::embed::images::Images<'a>>),
-    #[serde(rename = "app.bsky.embed.video")]
-    Video(Box<crate::generated::app_bsky::embed::video::Video<'a>>),
-    #[serde(rename = "app.bsky.embed.gallery")]
-    Gallery(Box<crate::generated::app_bsky::embed::gallery::Gallery<'a>>),
-    #[serde(rename = "app.bsky.embed.external")]
-    External(Box<crate::generated::app_bsky::embed::external::ExternalRecord<'a>>),
-}
-
-fn lexicon_doc_app_bsky_embed_recordWithMedia() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static>
-{
+fn lexicon_doc_app_bsky_embed_recordWithMedia() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("app.bsky.embed.recordWithMedia"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("record"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("media"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("record"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("media"),
                         ]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("media"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("media"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Union(
                                     ::jacquard_lexicon::lexicon::LexRefUnion {
-                                        description: None,
                                         refs: vec![
                                             ::jacquard_common::CowStr::new_static(
                                                 "app.bsky.embed.images",
@@ -215,44 +316,42 @@ fn lexicon_doc_app_bsky_embed_recordWithMedia() -> ::jacquard_lexicon::lexicon::
                                                 "app.bsky.embed.external",
                                             ),
                                         ],
-                                        closed: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("record"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("record"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
                                     ::jacquard_lexicon::lexicon::LexRef {
-                                        description: None,
                                         r#ref: ::jacquard_common::CowStr::new_static(
                                             "app.bsky.embed.record",
                                         ),
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("view"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("view"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
-                        description: None,
                         required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("record"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("media"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("record"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("media"),
                         ]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("media"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("media"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Union(
                                     ::jacquard_lexicon::lexicon::LexRefUnion {
-                                        description: None,
                                         refs: vec![
                                             ::jacquard_common::CowStr::new_static(
                                                 "app.bsky.embed.images#view",
@@ -267,58 +366,31 @@ fn lexicon_doc_app_bsky_embed_recordWithMedia() -> ::jacquard_lexicon::lexicon::
                                                 "app.bsky.embed.external#view",
                                             ),
                                         ],
-                                        closed: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("record"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("record"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
                                     ::jacquard_lexicon::lexicon::LexRef {
-                                        description: None,
                                         r#ref: ::jacquard_common::CowStr::new_static(
                                             "app.bsky.embed.record#view",
                                         ),
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map
         },
+        ..Default::default()
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for RecordWithMedia<'a> {
-    fn nsid() -> &'static str {
-        "app.bsky.embed.recordWithMedia"
-    }
-    fn def_name() -> &'static str {
-        "main"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_app_bsky_embed_recordWithMedia()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct View<'a> {
-    #[serde(borrow)]
-    pub media: ViewMedia<'a>,
-    #[serde(borrow)]
-    pub record: crate::generated::app_bsky::embed::record::View<'a>,
 }
 
 pub mod view_state {
@@ -331,166 +403,153 @@ pub mod view_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type Record;
         type Media;
+        type Record;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type Record = Unset;
         type Media = Unset;
-    }
-    ///State transition - sets the `record` field to Set
-    pub struct SetRecord<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRecord<S> {}
-    impl<S: State> State for SetRecord<S> {
-        type Record = Set<members::record>;
-        type Media = S::Media;
+        type Record = Unset;
     }
     ///State transition - sets the `media` field to Set
-    pub struct SetMedia<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetMedia<S> {}
-    impl<S: State> State for SetMedia<S> {
-        type Record = S::Record;
+    pub struct SetMedia<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetMedia<St> {}
+    impl<St: State> State for SetMedia<St> {
         type Media = Set<members::media>;
+        type Record = St::Record;
+    }
+    ///State transition - sets the `record` field to Set
+    pub struct SetRecord<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRecord<St> {}
+    impl<St: State> State for SetRecord<St> {
+        type Media = St::Media;
+        type Record = Set<members::record>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `record` field
-        pub struct record(());
         ///Marker type for the `media` field
         pub struct media(());
+        ///Marker type for the `record` field
+        pub struct record(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct ViewBuilder<'a, S: view_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<ViewMedia<'a>>,
-        ::core::option::Option<crate::generated::app_bsky::embed::record::View<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct ViewBuilder<
+    St: view_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<ViewMedia<S>>,
+        core::option::Option<crate::generated::app_bsky::embed::record::View<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> View<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> ViewBuilder<'a, view_state::Empty> {
+impl View<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> ViewBuilder<view_state::Empty, jacquard_common::DefaultStr> {
         ViewBuilder::new()
     }
 }
 
-impl<'a> ViewBuilder<'a, view_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> View<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> ViewBuilder<view_state::Empty, S> {
+        ViewBuilder::builder()
+    }
+}
+
+impl ViewBuilder<view_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ViewBuilder<'a, S>
+impl<S: jacquard_common::BosStr> ViewBuilder<view_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        ViewBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> ViewBuilder<St, S>
 where
-    S: view_state::State,
-    S::Media: view_state::IsUnset,
+    St: view_state::State,
+    St::Media: view_state::IsUnset,
 {
     /// Set the `media` field (required)
     pub fn media(
         mut self,
-        value: impl Into<ViewMedia<'a>>,
-    ) -> ViewBuilder<'a, view_state::SetMedia<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<ViewMedia<S>>,
+    ) -> ViewBuilder<view_state::SetMedia<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         ViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ViewBuilder<St, S>
 where
-    S: view_state::State,
-    S::Record: view_state::IsUnset,
+    St: view_state::State,
+    St::Record: view_state::IsUnset,
 {
     /// Set the `record` field (required)
     pub fn record(
         mut self,
-        value: impl Into<crate::generated::app_bsky::embed::record::View<'a>>,
-    ) -> ViewBuilder<'a, view_state::SetRecord<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<crate::generated::app_bsky::embed::record::View<S>>,
+    ) -> ViewBuilder<view_state::SetRecord<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         ViewBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> ViewBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> ViewBuilder<St, S>
 where
-    S: view_state::State,
-    S::Record: view_state::IsSet,
-    S::Media: view_state::IsSet,
+    St: view_state::State,
+    St::Media: view_state::IsSet,
+    St::Record: view_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> View<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> View<S> {
         View {
-            media: self.__unsafe_private_named.0.unwrap(),
-            record: self.__unsafe_private_named.1.unwrap(),
+            media: self._fields.0.unwrap(),
+            record: self._fields.1.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> View<'a> {
+    ) -> View<S> {
         View {
-            media: self.__unsafe_private_named.0.unwrap(),
-            record: self.__unsafe_private_named.1.unwrap(),
+            media: self._fields.0.unwrap(),
+            record: self._fields.1.unwrap(),
             extra_data: Some(extra_data),
         }
-    }
-}
-
-#[jacquard_derive::open_union]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(tag = "$type")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum ViewMedia<'a> {
-    #[serde(rename = "app.bsky.embed.images#view")]
-    ImagesView(Box<crate::generated::app_bsky::embed::images::View<'a>>),
-    #[serde(rename = "app.bsky.embed.video#view")]
-    VideoView(Box<crate::generated::app_bsky::embed::video::View<'a>>),
-    #[serde(rename = "app.bsky.embed.gallery#view")]
-    GalleryView(Box<crate::generated::app_bsky::embed::gallery::View<'a>>),
-    #[serde(rename = "app.bsky.embed.external#view")]
-    ExternalView(Box<crate::generated::app_bsky::embed::external::View<'a>>),
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for View<'a> {
-    fn nsid() -> &'static str {
-        "app.bsky.embed.recordWithMedia"
-    }
-    fn def_name() -> &'static str {
-        "view"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_app_bsky_embed_recordWithMedia()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
     }
 }

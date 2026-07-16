@@ -8,15 +8,81 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetSegments<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub before: std::option::Option<jacquard_common::types::string::Datetime>,
-    ///(default: 50, min: 1, max: 100)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub limit: std::option::Option<i64>,
-    #[serde(borrow)]
-    pub user_did: jacquard_common::types::string::Did<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetSegments<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub before: core::option::Option<jacquard_common::types::string::Datetime>,
+    /// Defaults to `50`. Min: 1. Max: 100.
+    #[serde(default = "_default_limit")]
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub limit: core::option::Option<i64>,
+    pub user_did: jacquard_common::types::string::Did<S>,
+}
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic,
+    Default,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetSegmentsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub segments:
+        core::option::Option<Vec<crate::generated::place_stream::segment::SegmentView<S>>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `place.stream.live.getSegments` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetSegmentsOutput<S>` for this endpoint.*/
+pub struct GetSegmentsResponse;
+impl jacquard_common::xrpc::XrpcResp for GetSegmentsResponse {
+    const NSID: &'static str = "place.stream.live.getSegments";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = GetSegmentsOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetSegments<S> {
+    const NSID: &'static str = "place.stream.live.getSegments";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = GetSegmentsResponse;
+}
+
+/** Endpoint marker for the `place.stream.live.getSegments` query.
+
+Path: `/xrpc/place.stream.live.getSegments`. The request payload type is `GetSegments<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct GetSegmentsRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for GetSegmentsRequest {
+    const PATH: &'static str = "/xrpc/place.stream.live.getSegments";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = GetSegments<S>;
+    type Response = GetSegmentsResponse;
+}
+
+fn _default_limit() -> core::option::Option<i64> {
+    Some(50i64)
 }
 
 pub mod get_segments_state {
@@ -38,9 +104,9 @@ pub mod get_segments_state {
         type UserDid = Unset;
     }
     ///State transition - sets the `user_did` field to Set
-    pub struct SetUserDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUserDid<S> {}
-    impl<S: State> State for SetUserDid<S> {
+    pub struct SetUserDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetUserDid<St> {}
+    impl<St: State> State for SetUserDid<St> {
         type UserDid = Set<members::user_did>;
     }
     /// Marker types for field names
@@ -51,139 +117,115 @@ pub mod get_segments_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct GetSegmentsBuilder<'a, S: get_segments_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct GetSegmentsBuilder<
+    St: get_segments_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<i64>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> GetSegments<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> GetSegmentsBuilder<'a, get_segments_state::Empty> {
+impl GetSegments<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> GetSegmentsBuilder<get_segments_state::Empty, jacquard_common::DefaultStr> {
         GetSegmentsBuilder::new()
     }
 }
 
-impl<'a> GetSegmentsBuilder<'a, get_segments_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> GetSegments<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> GetSegmentsBuilder<get_segments_state::Empty, S> {
+        GetSegmentsBuilder::builder()
+    }
+}
+
+impl GetSegmentsBuilder<get_segments_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetSegmentsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: get_segments_state::State> GetSegmentsBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> GetSegmentsBuilder<get_segments_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GetSegmentsBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: get_segments_state::State, S: jacquard_common::BosStr> GetSegmentsBuilder<St, S> {
     /// Set the `before` field (optional)
     pub fn before(
         mut self,
         value: impl Into<Option<jacquard_common::types::string::Datetime>>,
     ) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+        self._fields.0 = value.into();
         self
     }
     /// Set the `before` field to an Option value (optional)
     pub fn maybe_before(mut self, value: Option<jacquard_common::types::string::Datetime>) -> Self {
-        self.__unsafe_private_named.0 = value;
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S: get_segments_state::State> GetSegmentsBuilder<'a, S> {
+impl<St: get_segments_state::State, S: jacquard_common::BosStr> GetSegmentsBuilder<St, S> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self._fields.1 = value.into();
         self
     }
     /// Set the `limit` field to an Option value (optional)
     pub fn maybe_limit(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.1 = value;
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S> GetSegmentsBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GetSegmentsBuilder<St, S>
 where
-    S: get_segments_state::State,
-    S::UserDid: get_segments_state::IsUnset,
+    St: get_segments_state::State,
+    St::UserDid: get_segments_state::IsUnset,
 {
     /// Set the `userDID` field (required)
     pub fn user_did(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> GetSegmentsBuilder<'a, get_segments_state::SetUserDid<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> GetSegmentsBuilder<get_segments_state::SetUserDid<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         GetSegmentsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GetSegmentsBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GetSegmentsBuilder<St, S>
 where
-    S: get_segments_state::State,
-    S::UserDid: get_segments_state::IsSet,
+    St: get_segments_state::State,
+    St::UserDid: get_segments_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> GetSegments<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> GetSegments<S> {
         GetSegments {
-            before: self.__unsafe_private_named.0,
-            limit: self.__unsafe_private_named.1,
-            user_did: self.__unsafe_private_named.2.unwrap(),
+            before: self._fields.0,
+            limit: self._fields.1,
+            user_did: self._fields.2.unwrap(),
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic,
-    Default,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GetSegmentsOutput<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub segments:
-        std::option::Option<Vec<crate::generated::place_stream::segment::SegmentView<'a>>>,
-}
-
-/// Response type for
-///place.stream.live.getSegments
-pub struct GetSegmentsResponse;
-impl jacquard_common::xrpc::XrpcResp for GetSegmentsResponse {
-    const NSID: &'static str = "place.stream.live.getSegments";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetSegmentsOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for GetSegments<'a> {
-    const NSID: &'static str = "place.stream.live.getSegments";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = GetSegmentsResponse;
-}
-
-/// Endpoint type for
-///place.stream.live.getSegments
-pub struct GetSegmentsRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for GetSegmentsRequest {
-    const PATH: &'static str = "/xrpc/place.stream.live.getSegments";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetSegments<'de>;
-    type Response = GetSegmentsResponse;
 }

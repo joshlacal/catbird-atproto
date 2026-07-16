@@ -8,15 +8,117 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetServiceAuth<'a> {
-    #[serde(borrow)]
-    pub aud: jacquard_common::CowStr<'a>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub exp: std::option::Option<i64>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub lxm: std::option::Option<jacquard_common::types::string::Nsid<'a>>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetServiceAuth<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub aud: S,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub exp: core::option::Option<i64>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub lxm: core::option::Option<jacquard_common::types::string::Nsid<S>>,
+}
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic,
+    Default,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetServiceAuthOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub token: S,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    thiserror::Error,
+    miette::Diagnostic,
+)]
+#[serde(tag = "error", content = "message")]
+pub enum GetServiceAuthError {
+    /// Indicates that the requested expiration date is not a valid. May be in the past or may be reliant on the requested scopes.
+    #[serde(rename = "BadExpiration")]
+    BadExpiration(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
+}
+
+impl core::fmt::Display for GetServiceAuthError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+            Self::BadExpiration(msg) => {
+                write!(f, "BadExpiration")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+        }
+    }
+}
+
+/** Response marker for the `com.atproto.server.getServiceAuth` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetServiceAuthOutput<S>` for this endpoint.*/
+pub struct GetServiceAuthResponse;
+impl jacquard_common::xrpc::XrpcResp for GetServiceAuthResponse {
+    const NSID: &'static str = "com.atproto.server.getServiceAuth";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = GetServiceAuthOutput<S>;
+    type Err = GetServiceAuthError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetServiceAuth<S> {
+    const NSID: &'static str = "com.atproto.server.getServiceAuth";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = GetServiceAuthResponse;
+}
+
+/** Endpoint marker for the `com.atproto.server.getServiceAuth` query.
+
+Path: `/xrpc/com.atproto.server.getServiceAuth`. The request payload type is `GetServiceAuth<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct GetServiceAuthRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for GetServiceAuthRequest {
+    const PATH: &'static str = "/xrpc/com.atproto.server.getServiceAuth";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = GetServiceAuth<S>;
+    type Response = GetServiceAuthResponse;
 }
 
 pub mod get_service_auth_state {
@@ -38,9 +140,9 @@ pub mod get_service_auth_state {
         type Aud = Unset;
     }
     ///State transition - sets the `aud` field to Set
-    pub struct SetAud<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetAud<S> {}
-    impl<S: State> State for SetAud<S> {
+    pub struct SetAud<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetAud<St> {}
+    impl<St: State> State for SetAud<St> {
         type Aud = Set<members::aud>;
     }
     /// Marker types for field names
@@ -51,172 +153,116 @@ pub mod get_service_auth_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct GetServiceAuthBuilder<'a, S: get_service_auth_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<jacquard_common::types::string::Nsid<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct GetServiceAuthBuilder<
+    St: get_service_auth_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<i64>,
+        core::option::Option<jacquard_common::types::string::Nsid<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> GetServiceAuth<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> GetServiceAuthBuilder<'a, get_service_auth_state::Empty> {
+impl GetServiceAuth<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> GetServiceAuthBuilder<get_service_auth_state::Empty, jacquard_common::DefaultStr>
+    {
         GetServiceAuthBuilder::new()
     }
 }
 
-impl<'a> GetServiceAuthBuilder<'a, get_service_auth_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> GetServiceAuth<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> GetServiceAuthBuilder<get_service_auth_state::Empty, S> {
+        GetServiceAuthBuilder::builder()
+    }
+}
+
+impl GetServiceAuthBuilder<get_service_auth_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetServiceAuthBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> GetServiceAuthBuilder<'a, S>
+impl<S: jacquard_common::BosStr> GetServiceAuthBuilder<get_service_auth_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GetServiceAuthBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> GetServiceAuthBuilder<St, S>
 where
-    S: get_service_auth_state::State,
-    S::Aud: get_service_auth_state::IsUnset,
+    St: get_service_auth_state::State,
+    St::Aud: get_service_auth_state::IsUnset,
 {
     /// Set the `aud` field (required)
     pub fn aud(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> GetServiceAuthBuilder<'a, get_service_auth_state::SetAud<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> GetServiceAuthBuilder<get_service_auth_state::SetAud<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         GetServiceAuthBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: get_service_auth_state::State> GetServiceAuthBuilder<'a, S> {
+impl<St: get_service_auth_state::State, S: jacquard_common::BosStr> GetServiceAuthBuilder<St, S> {
     /// Set the `exp` field (optional)
     pub fn exp(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self._fields.1 = value.into();
         self
     }
     /// Set the `exp` field to an Option value (optional)
     pub fn maybe_exp(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.1 = value;
+        self._fields.1 = value;
         self
     }
 }
 
-impl<'a, S: get_service_auth_state::State> GetServiceAuthBuilder<'a, S> {
+impl<St: get_service_auth_state::State, S: jacquard_common::BosStr> GetServiceAuthBuilder<St, S> {
     /// Set the `lxm` field (optional)
     pub fn lxm(
         mut self,
-        value: impl Into<Option<jacquard_common::types::string::Nsid<'a>>>,
+        value: impl Into<Option<jacquard_common::types::string::Nsid<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.2 = value.into();
+        self._fields.2 = value.into();
         self
     }
     /// Set the `lxm` field to an Option value (optional)
-    pub fn maybe_lxm(mut self, value: Option<jacquard_common::types::string::Nsid<'a>>) -> Self {
-        self.__unsafe_private_named.2 = value;
+    pub fn maybe_lxm(mut self, value: Option<jacquard_common::types::string::Nsid<S>>) -> Self {
+        self._fields.2 = value;
         self
     }
 }
 
-impl<'a, S> GetServiceAuthBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GetServiceAuthBuilder<St, S>
 where
-    S: get_service_auth_state::State,
-    S::Aud: get_service_auth_state::IsSet,
+    St: get_service_auth_state::State,
+    St::Aud: get_service_auth_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> GetServiceAuth<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> GetServiceAuth<S> {
         GetServiceAuth {
-            aud: self.__unsafe_private_named.0.unwrap(),
-            exp: self.__unsafe_private_named.1,
-            lxm: self.__unsafe_private_named.2,
+            aud: self._fields.0.unwrap(),
+            exp: self._fields.1,
+            lxm: self._fields.2,
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    jacquard_derive::IntoStatic,
-    Default,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GetServiceAuthOutput<'a> {
-    #[serde(borrow)]
-    pub token: jacquard_common::CowStr<'a>,
-}
-
-#[jacquard_derive::open_union]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    thiserror::Error,
-    miette::Diagnostic,
-    jacquard_derive::IntoStatic,
-)]
-#[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum GetServiceAuthError<'a> {
-    /// Indicates that the requested expiration date is not a valid. May be in the past or may be reliant on the requested scopes.
-    #[serde(rename = "BadExpiration")]
-    BadExpiration(std::option::Option<jacquard_common::CowStr<'a>>),
-}
-
-impl std::fmt::Display for GetServiceAuthError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::BadExpiration(msg) => {
-                write!(f, "BadExpiration")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
-        }
-    }
-}
-
-/// Response type for
-///com.atproto.server.getServiceAuth
-pub struct GetServiceAuthResponse;
-impl jacquard_common::xrpc::XrpcResp for GetServiceAuthResponse {
-    const NSID: &'static str = "com.atproto.server.getServiceAuth";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetServiceAuthOutput<'de>;
-    type Err<'de> = GetServiceAuthError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for GetServiceAuth<'a> {
-    const NSID: &'static str = "com.atproto.server.getServiceAuth";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = GetServiceAuthResponse;
-}
-
-/// Endpoint type for
-///com.atproto.server.getServiceAuth
-pub struct GetServiceAuthRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for GetServiceAuthRequest {
-    const PATH: &'static str = "/xrpc/com.atproto.server.getServiceAuth";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetServiceAuth<'de>;
-    type Response = GetServiceAuthResponse;
 }

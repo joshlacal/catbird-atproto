@@ -5,7 +5,6 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -16,23 +15,47 @@
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct MuteConvo<'a> {
-    #[serde(borrow)]
-    pub convo_id: jacquard_common::CowStr<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct MuteConvo<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub convo_id: S,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct MuteConvoOutput<'a> {
-    #[serde(borrow)]
-    pub convo: crate::generated::chat_bsky::convo::ConvoView<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct MuteConvoOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub convo: crate::generated::chat_bsky::convo::ConvoView<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::open_union]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -42,17 +65,21 @@ pub struct MuteConvoOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum MuteConvoError<'a> {
+pub enum MuteConvoError {
     #[serde(rename = "InvalidConvo")]
-    InvalidConvo(std::option::Option<jacquard_common::CowStr<'a>>),
+    InvalidConvo(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
 }
 
-impl std::fmt::Display for MuteConvoError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for MuteConvoError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             Self::InvalidConvo(msg) => {
                 write!(f, "InvalidConvo")?;
@@ -61,35 +88,43 @@ impl std::fmt::Display for MuteConvoError<'_> {
                 }
                 Ok(())
             }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
         }
     }
 }
 
-/// Response type for
-///chat.bsky.convo.muteConvo
+/** Response marker for the `chat.bsky.convo.muteConvo` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `MuteConvoOutput<S>` for this endpoint.*/
 pub struct MuteConvoResponse;
 impl jacquard_common::xrpc::XrpcResp for MuteConvoResponse {
     const NSID: &'static str = "chat.bsky.convo.muteConvo";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = MuteConvoOutput<'de>;
-    type Err<'de> = MuteConvoError<'de>;
+    type Output<S: jacquard_common::BosStr> = MuteConvoOutput<S>;
+    type Err = MuteConvoError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for MuteConvo<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for MuteConvo<S> {
     const NSID: &'static str = "chat.bsky.convo.muteConvo";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = MuteConvoResponse;
 }
 
-/// Endpoint type for
-///chat.bsky.convo.muteConvo
+/** Endpoint marker for the `chat.bsky.convo.muteConvo` procedure.
+
+Path: `/xrpc/chat.bsky.convo.muteConvo`. The request payload type is `MuteConvo<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct MuteConvoRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for MuteConvoRequest {
     const PATH: &'static str = "/xrpc/chat.bsky.convo.muteConvo";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = MuteConvo<'de>;
+    type Request<S: jacquard_common::BosStr> = MuteConvo<S>;
     type Response = MuteConvoResponse;
 }

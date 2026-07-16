@@ -6,36 +6,1279 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 /// Fired when a user accepts a chat convo, either explicitly or by sending a message.
-#[jacquard_derive::lexicon]
+
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct EventChatAccepted<'a> {
-    /// The DID of the person accepting the convo.
-    #[serde(borrow)]
-    pub actor_did: jacquard_common::types::string::Did<'a>,
-    /// When the convo was originally created.
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct EventChatAccepted<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///The DID of the person accepting the convo.
+    pub actor_did: jacquard_common::types::string::Did<S>,
+    ///When the convo was originally created.
     pub convo_created_at: jacquard_common::types::string::Datetime,
-    #[serde(borrow)]
-    pub convo_id: jacquard_common::CowStr<'a>,
+    pub convo_id: S,
     pub created_at: jacquard_common::types::string::Datetime,
-    /// Current member count at the time of the event. Only present for group convos.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub group_member_count: std::option::Option<i64>,
-    /// The name of the group chat. Only present for group convos.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub group_name: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// How the convo was accepted.
-    #[serde(borrow)]
-    pub method: jacquard_common::CowStr<'a>,
-    /// The DID of the group chat owner. Only present for group convos.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub owner_did: std::option::Option<jacquard_common::types::string::Did<'a>>,
-    #[serde(borrow)]
-    pub rev: jacquard_common::CowStr<'a>,
+    ///Current member count at the time of the event. Only present for group convos.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub group_member_count: core::option::Option<i64>,
+    ///The name of the group chat. Only present for group convos.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub group_name: core::option::Option<S>,
+    ///How the convo was accepted.
+    pub method: EventChatAcceptedMethod<S>,
+    ///The DID of the group chat owner. Only present for group convos.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub owner_did: core::option::Option<jacquard_common::types::string::Did<S>>,
+    pub rev: S,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// How the convo was accepted.
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum EventChatAcceptedMethod<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    Explicit,
+    Message,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> EventChatAcceptedMethod<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Explicit => "explicit",
+            Self::Message => "message",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "explicit" => Self::Explicit,
+            "message" => Self::Message,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for EventChatAcceptedMethod<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for EventChatAcceptedMethod<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for EventChatAcceptedMethod<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for EventChatAcceptedMethod<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for EventChatAcceptedMethod<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for EventChatAcceptedMethod<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = EventChatAcceptedMethod<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            EventChatAcceptedMethod::Explicit => EventChatAcceptedMethod::Explicit,
+            EventChatAcceptedMethod::Message => EventChatAcceptedMethod::Message,
+            EventChatAcceptedMethod::Other(v) => EventChatAcceptedMethod::Other(v.into_static()),
+        }
+    }
+}
+
+/// Fired when the first message was sent on a convo.
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct EventConvoFirstMessage<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub convo_id: S,
+    pub created_at: jacquard_common::types::string::Datetime,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub message_id: core::option::Option<S>,
+    ///The list of DIDs message recipients. Does not include the sender, which is in the `user` field
+    pub recipients: Vec<jacquard_common::types::string::Did<S>>,
+    pub rev: S,
+    ///The DID of the message author.
+    pub user: jacquard_common::types::string::Did<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// Fire when a group chat is created.
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct EventGroupChatCreated<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///The DID of the actor performing the action. For this event, same as ownerDid.
+    pub actor_did: jacquard_common::types::string::Did<S>,
+    ///When the group was originally created.
+    pub convo_created_at: jacquard_common::types::string::Datetime,
+    pub convo_id: S,
+    pub created_at: jacquard_common::types::string::Datetime,
+    ///Current member count at the time of the event.
+    pub group_member_count: i64,
+    ///The name set at creation time.
+    pub group_name: S,
+    ///DIDs of everyone added at creation time.
+    pub initial_member_dids: Vec<jacquard_common::types::string::Did<S>>,
+    ///The DID of the group chat owner.
+    pub owner_did: jacquard_common::types::string::Did<S>,
+    pub rev: S,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// Fired when a user requests to join a group chat via an join link that requires approval.
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct EventGroupChatJoinRequest<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///The DID of the person requesting to join.
+    pub actor_did: jacquard_common::types::string::Did<S>,
+    ///When the group was originally created.
+    pub convo_created_at: jacquard_common::types::string::Datetime,
+    pub convo_id: S,
+    pub created_at: jacquard_common::types::string::Datetime,
+    ///Current member count at the time of the event.
+    pub group_member_count: i64,
+    pub group_name: S,
+    ///The code of the join link used to request joining.
+    pub join_link_code: S,
+    ///The DID of the group chat owner.
+    pub owner_did: jacquard_common::types::string::Did<S>,
+    pub rev: S,
+    ///Whether the requesting member follows the group owner.
+    pub subject_follows_owner: bool,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// Fired when a join request is approved by the group owner.
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct EventGroupChatJoinRequestApproved<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    ///The DID of the owner approving the request.
+    pub actor_did: jacquard_common::types::string::Did<S>,
+    ///When the group was originally created.
+    pub convo_created_at: jacquard_common::types::string::Datetime,
+    pub convo_id: S,
+    pub created_at: jacquard_common::types::string::Datetime,
+    ///Current member count at the time of the event.
+    pub group_member_count: i64,
+    pub group_name: S,
+    ///The DID of the group chat owner.
+    pub owner_did: jacquard_common::types::string::Did<S>,
+    pub rev: S,
+    ///The DID of the member whose request was approved.
+    pub subject_did: jacquard_common::types::string::Did<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// Fired when a join request is rejected by the group owner.
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct EventGroupChatJoinRequestRejected<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    ///The DID of the owner rejecting the request.
+    pub actor_did: jacquard_common::types::string::Did<S>,
+    ///When the group was originally created.
+    pub convo_created_at: jacquard_common::types::string::Datetime,
+    pub convo_id: S,
+    pub created_at: jacquard_common::types::string::Datetime,
+    ///Current member count at the time of the event.
+    pub group_member_count: i64,
+    pub group_name: S,
+    ///The DID of the group chat owner.
+    pub owner_did: jacquard_common::types::string::Did<S>,
+    pub rev: S,
+    ///The DID of the member whose request was rejected.
+    pub subject_did: jacquard_common::types::string::Did<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// Fired when a member is added to a group chat. Note that members are added in the 'request' state.
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct EventGroupChatMemberAdded<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///The DID of the actor performing the action. For this event, same as ownerDid.
+    pub actor_did: jacquard_common::types::string::Did<S>,
+    ///When the group was originally created.
+    pub convo_created_at: jacquard_common::types::string::Datetime,
+    pub convo_id: S,
+    pub created_at: jacquard_common::types::string::Datetime,
+    ///Current member count at the time of the event.
+    pub group_member_count: i64,
+    pub group_name: S,
+    ///The DID of the group chat owner.
+    pub owner_did: jacquard_common::types::string::Did<S>,
+    ///The number of members who have not yet accepted the convo.
+    pub request_members_count: i64,
+    pub rev: S,
+    ///The DID of the member who was added.
+    pub subject_did: jacquard_common::types::string::Did<S>,
+    ///Whether the added member follows the group owner.
+    pub subject_follows_owner: bool,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// Fired when a member joins a group chat via an join link that does not require approval.
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct EventGroupChatMemberJoined<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///The DID of the person joining.
+    pub actor_did: jacquard_common::types::string::Did<S>,
+    ///When the group was originally created.
+    pub convo_created_at: jacquard_common::types::string::Datetime,
+    pub convo_id: S,
+    pub created_at: jacquard_common::types::string::Datetime,
+    ///Current member count at the time of the event.
+    pub group_member_count: i64,
+    pub group_name: S,
+    ///The code of the join link used to join.
+    pub join_link_code: S,
+    ///The DID of the group chat owner.
+    pub owner_did: jacquard_common::types::string::Did<S>,
+    pub rev: S,
+    ///Whether the joining member follows the group owner.
+    pub subject_follows_owner: bool,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// Fired when a member leaves or is removed from a group chat.
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct EventGroupChatMemberLeft<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///The DID of the actor. For voluntary: the person leaving. For kicked: the owner.
+    pub actor_did: jacquard_common::types::string::Did<S>,
+    ///When the group was originally created.
+    pub convo_created_at: jacquard_common::types::string::Datetime,
+    pub convo_id: S,
+    pub created_at: jacquard_common::types::string::Datetime,
+    ///Current member count at the time of the event.
+    pub group_member_count: i64,
+    pub group_name: S,
+    ///How the member left.
+    pub leave_method: EventGroupChatMemberLeftLeaveMethod<S>,
+    ///The DID of the group chat owner.
+    pub owner_did: jacquard_common::types::string::Did<S>,
+    pub rev: S,
+    ///The DID of the member who left or was removed.
+    pub subject_did: jacquard_common::types::string::Did<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// How the member left.
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum EventGroupChatMemberLeftLeaveMethod<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    Voluntary,
+    Kicked,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> EventGroupChatMemberLeftLeaveMethod<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Voluntary => "voluntary",
+            Self::Kicked => "kicked",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "voluntary" => Self::Voluntary,
+            "kicked" => Self::Kicked,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for EventGroupChatMemberLeftLeaveMethod<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for EventGroupChatMemberLeftLeaveMethod<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for EventGroupChatMemberLeftLeaveMethod<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for EventGroupChatMemberLeftLeaveMethod<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for EventGroupChatMemberLeftLeaveMethod<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic
+    for EventGroupChatMemberLeftLeaveMethod<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = EventGroupChatMemberLeftLeaveMethod<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            EventGroupChatMemberLeftLeaveMethod::Voluntary => {
+                EventGroupChatMemberLeftLeaveMethod::Voluntary
+            }
+            EventGroupChatMemberLeftLeaveMethod::Kicked => {
+                EventGroupChatMemberLeftLeaveMethod::Kicked
+            }
+            EventGroupChatMemberLeftLeaveMethod::Other(v) => {
+                EventGroupChatMemberLeftLeaveMethod::Other(v.into_static())
+            }
+        }
+    }
+}
+
+/// Fired when a group chat's metadata or status changes.
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct EventGroupChatUpdated<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///The DID of the actor performing the action (the owner).
+    pub actor_did: jacquard_common::types::string::Did<S>,
+    ///When the group was originally created.
+    pub convo_created_at: jacquard_common::types::string::Datetime,
+    pub convo_id: S,
+    pub created_at: jacquard_common::types::string::Datetime,
+    ///Current member count at the time of the event.
+    pub group_member_count: i64,
+    ///Current group name.
+    pub group_name: S,
+    ///The code of the join link. Only present when updateType is join-link-related.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub join_link_code: core::option::Option<S>,
+    ///Whether the join link is restricted to followers of the owner. Only present when updateType is join-link-related.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub join_link_followers_only: core::option::Option<bool>,
+    ///Whether the join link requires owner approval to join. Only present when updateType is join-link-related.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub join_link_requires_approval: core::option::Option<bool>,
+    ///Why the group was locked. Only present when updateType is 'locked'.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub lock_reason: core::option::Option<EventGroupChatUpdatedLockReason<S>>,
+    ///The new group name. Only present when updateType is 'name_changed'.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub new_name: core::option::Option<S>,
+    ///The previous group name. Only present when updateType is 'name_changed'.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub old_name: core::option::Option<S>,
+    ///The DID of the group chat owner.
+    pub owner_did: jacquard_common::types::string::Did<S>,
+    pub rev: S,
+    ///What changed.
+    pub update_type: EventGroupChatUpdatedUpdateType<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/// Why the group was locked. Only present when updateType is 'locked'.
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum EventGroupChatUpdatedLockReason<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    OwnerAction,
+    OwnerLeft,
+    OwnerDeactivated,
+    OwnerDeleted,
+    OwnerSuspended,
+    OwnerTakenDown,
+    LabelApplied,
+    ConvoTakenDown,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> EventGroupChatUpdatedLockReason<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::OwnerAction => "owner_action",
+            Self::OwnerLeft => "owner_left",
+            Self::OwnerDeactivated => "owner_deactivated",
+            Self::OwnerDeleted => "owner_deleted",
+            Self::OwnerSuspended => "owner_suspended",
+            Self::OwnerTakenDown => "owner_taken_down",
+            Self::LabelApplied => "label_applied",
+            Self::ConvoTakenDown => "convo_taken_down",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "owner_action" => Self::OwnerAction,
+            "owner_left" => Self::OwnerLeft,
+            "owner_deactivated" => Self::OwnerDeactivated,
+            "owner_deleted" => Self::OwnerDeleted,
+            "owner_suspended" => Self::OwnerSuspended,
+            "owner_taken_down" => Self::OwnerTakenDown,
+            "label_applied" => Self::LabelApplied,
+            "convo_taken_down" => Self::ConvoTakenDown,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for EventGroupChatUpdatedLockReason<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for EventGroupChatUpdatedLockReason<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for EventGroupChatUpdatedLockReason<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for EventGroupChatUpdatedLockReason<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for EventGroupChatUpdatedLockReason<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for EventGroupChatUpdatedLockReason<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = EventGroupChatUpdatedLockReason<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            EventGroupChatUpdatedLockReason::OwnerAction => {
+                EventGroupChatUpdatedLockReason::OwnerAction
+            }
+            EventGroupChatUpdatedLockReason::OwnerLeft => {
+                EventGroupChatUpdatedLockReason::OwnerLeft
+            }
+            EventGroupChatUpdatedLockReason::OwnerDeactivated => {
+                EventGroupChatUpdatedLockReason::OwnerDeactivated
+            }
+            EventGroupChatUpdatedLockReason::OwnerDeleted => {
+                EventGroupChatUpdatedLockReason::OwnerDeleted
+            }
+            EventGroupChatUpdatedLockReason::OwnerSuspended => {
+                EventGroupChatUpdatedLockReason::OwnerSuspended
+            }
+            EventGroupChatUpdatedLockReason::OwnerTakenDown => {
+                EventGroupChatUpdatedLockReason::OwnerTakenDown
+            }
+            EventGroupChatUpdatedLockReason::LabelApplied => {
+                EventGroupChatUpdatedLockReason::LabelApplied
+            }
+            EventGroupChatUpdatedLockReason::ConvoTakenDown => {
+                EventGroupChatUpdatedLockReason::ConvoTakenDown
+            }
+            EventGroupChatUpdatedLockReason::Other(v) => {
+                EventGroupChatUpdatedLockReason::Other(v.into_static())
+            }
+        }
+    }
+}
+
+/// What changed.
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub enum EventGroupChatUpdatedUpdateType<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    NameChanged,
+    Locked,
+    LockedPermanently,
+    Unlocked,
+    JoinLinkCreated,
+    JoinLinkDisabled,
+    JoinLinkSettingsChanged,
+    Other(S),
+}
+
+impl<S: jacquard_common::BosStr> EventGroupChatUpdatedUpdateType<S> {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::NameChanged => "name_changed",
+            Self::Locked => "locked",
+            Self::LockedPermanently => "locked_permanently",
+            Self::Unlocked => "unlocked",
+            Self::JoinLinkCreated => "join_link_created",
+            Self::JoinLinkDisabled => "join_link_disabled",
+            Self::JoinLinkSettingsChanged => "join_link_settings_changed",
+            Self::Other(s) => s.as_ref(),
+        }
+    }
+    /// Construct from a string-like value, matching known values.
+    pub fn from_value(s: S) -> Self {
+        match s.as_ref() {
+            "name_changed" => Self::NameChanged,
+            "locked" => Self::Locked,
+            "locked_permanently" => Self::LockedPermanently,
+            "unlocked" => Self::Unlocked,
+            "join_link_created" => Self::JoinLinkCreated,
+            "join_link_disabled" => Self::JoinLinkDisabled,
+            "join_link_settings_changed" => Self::JoinLinkSettingsChanged,
+            _ => Self::Other(s),
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> core::fmt::Display for EventGroupChatUpdatedUpdateType<S> {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{}", self.as_str())
+    }
+}
+
+impl<S: jacquard_common::BosStr> AsRef<str> for EventGroupChatUpdatedUpdateType<S> {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<S: jacquard_common::BosStr> serde::Serialize for EventGroupChatUpdatedUpdateType<S> {
+    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
+    where
+        Ser: serde::Serializer,
+    {
+        serializer.serialize_str(self.as_str())
+    }
+}
+
+impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
+    for EventGroupChatUpdatedUpdateType<S>
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = S::deserialize(deserializer)?;
+        Ok(Self::from_value(s))
+    }
+}
+
+impl<S: jacquard_common::BosStr + Default> Default for EventGroupChatUpdatedUpdateType<S> {
+    fn default() -> Self {
+        Self::Other(Default::default())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for EventGroupChatUpdatedUpdateType<S>
+where
+    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
+    S::Output: jacquard_common::BosStr,
+{
+    type Output = EventGroupChatUpdatedUpdateType<S::Output>;
+    fn into_static(self) -> Self::Output {
+        match self {
+            EventGroupChatUpdatedUpdateType::NameChanged => {
+                EventGroupChatUpdatedUpdateType::NameChanged
+            }
+            EventGroupChatUpdatedUpdateType::Locked => EventGroupChatUpdatedUpdateType::Locked,
+            EventGroupChatUpdatedUpdateType::LockedPermanently => {
+                EventGroupChatUpdatedUpdateType::LockedPermanently
+            }
+            EventGroupChatUpdatedUpdateType::Unlocked => EventGroupChatUpdatedUpdateType::Unlocked,
+            EventGroupChatUpdatedUpdateType::JoinLinkCreated => {
+                EventGroupChatUpdatedUpdateType::JoinLinkCreated
+            }
+            EventGroupChatUpdatedUpdateType::JoinLinkDisabled => {
+                EventGroupChatUpdatedUpdateType::JoinLinkDisabled
+            }
+            EventGroupChatUpdatedUpdateType::JoinLinkSettingsChanged => {
+                EventGroupChatUpdatedUpdateType::JoinLinkSettingsChanged
+            }
+            EventGroupChatUpdatedUpdateType::Other(v) => {
+                EventGroupChatUpdatedUpdateType::Other(v.into_static())
+            }
+        }
+    }
+}
+
+/// Fired when a user exceeds a rate limit.
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct EventRateLimitExceeded<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///The DID of the user who hit the rate limit.
+    pub actor_did: jacquard_common::types::string::Did<S>,
+    pub created_at: jacquard_common::types::string::Datetime,
+    ///The NSID of the endpoint that was rate limited.
+    pub endpoint: S,
+    pub rev: S,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct SubscribeModEvents<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+}
+
+#[jacquard_derive::open_union]
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    tag = "$type",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub enum SubscribeModEventsMessage<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(rename = "#eventConvoFirstMessage")]
+    EventConvoFirstMessage(
+        Box<
+            crate::generated::chat_bsky::moderation::subscribe_mod_events::EventConvoFirstMessage<
+                S,
+            >,
+        >,
+    ),
+    #[serde(rename = "#eventGroupChatCreated")]
+    EventGroupChatCreated(
+        Box<
+            crate::generated::chat_bsky::moderation::subscribe_mod_events::EventGroupChatCreated<
+                S,
+            >,
+        >,
+    ),
+    #[serde(rename = "#eventGroupChatMemberAdded")]
+    EventGroupChatMemberAdded(
+        Box<
+            crate::generated::chat_bsky::moderation::subscribe_mod_events::EventGroupChatMemberAdded<
+                S,
+            >,
+        >,
+    ),
+    #[serde(rename = "#eventGroupChatMemberJoined")]
+    EventGroupChatMemberJoined(
+        Box<
+            crate::generated::chat_bsky::moderation::subscribe_mod_events::EventGroupChatMemberJoined<
+                S,
+            >,
+        >,
+    ),
+    #[serde(rename = "#eventGroupChatJoinRequest")]
+    EventGroupChatJoinRequest(
+        Box<
+            crate::generated::chat_bsky::moderation::subscribe_mod_events::EventGroupChatJoinRequest<
+                S,
+            >,
+        >,
+    ),
+    #[serde(rename = "#eventGroupChatJoinRequestApproved")]
+    EventGroupChatJoinRequestApproved(
+        Box<
+            crate::generated::chat_bsky::moderation::subscribe_mod_events::EventGroupChatJoinRequestApproved<
+                S,
+            >,
+        >,
+    ),
+    #[serde(rename = "#eventGroupChatJoinRequestRejected")]
+    EventGroupChatJoinRequestRejected(
+        Box<
+            crate::generated::chat_bsky::moderation::subscribe_mod_events::EventGroupChatJoinRequestRejected<
+                S,
+            >,
+        >,
+    ),
+    #[serde(rename = "#eventChatAccepted")]
+    EventChatAccepted(
+        Box<
+            crate::generated::chat_bsky::moderation::subscribe_mod_events::EventChatAccepted<
+                S,
+            >,
+        >,
+    ),
+    #[serde(rename = "#eventGroupChatMemberLeft")]
+    EventGroupChatMemberLeft(
+        Box<
+            crate::generated::chat_bsky::moderation::subscribe_mod_events::EventGroupChatMemberLeft<
+                S,
+            >,
+        >,
+    ),
+    #[serde(rename = "#eventGroupChatUpdated")]
+    EventGroupChatUpdated(
+        Box<
+            crate::generated::chat_bsky::moderation::subscribe_mod_events::EventGroupChatUpdated<
+                S,
+            >,
+        >,
+    ),
+    #[serde(rename = "#eventRateLimitExceeded")]
+    EventRateLimitExceeded(
+        Box<
+            crate::generated::chat_bsky::moderation::subscribe_mod_events::EventRateLimitExceeded<
+                S,
+            >,
+        >,
+    ),
+}
+
+impl<S: jacquard_common::BosStr> SubscribeModEventsMessage<S> {
+    /// Decode a framed DAG-CBOR message (header + body).
+    pub fn decode_framed<'de>(
+        bytes: &'de [u8],
+    ) -> Result<SubscribeModEventsMessage<S>, jacquard_common::error::DecodeError>
+    where
+        S: serde::Deserialize<'de>,
+    {
+        let (header, body) = jacquard_common::xrpc::subscription::parse_event_header(bytes)?;
+        match header.t.as_str() {
+            "#eventConvoFirstMessage" => {
+                let variant = jacquard_common::deps::codegen::serde_ipld_dagcbor::from_slice(body)?;
+                Ok(Self::EventConvoFirstMessage(Box::new(variant)))
+            }
+            "#eventGroupChatCreated" => {
+                let variant = jacquard_common::deps::codegen::serde_ipld_dagcbor::from_slice(body)?;
+                Ok(Self::EventGroupChatCreated(Box::new(variant)))
+            }
+            "#eventGroupChatMemberAdded" => {
+                let variant = jacquard_common::deps::codegen::serde_ipld_dagcbor::from_slice(body)?;
+                Ok(Self::EventGroupChatMemberAdded(Box::new(variant)))
+            }
+            "#eventGroupChatMemberJoined" => {
+                let variant = jacquard_common::deps::codegen::serde_ipld_dagcbor::from_slice(body)?;
+                Ok(Self::EventGroupChatMemberJoined(Box::new(variant)))
+            }
+            "#eventGroupChatJoinRequest" => {
+                let variant = jacquard_common::deps::codegen::serde_ipld_dagcbor::from_slice(body)?;
+                Ok(Self::EventGroupChatJoinRequest(Box::new(variant)))
+            }
+            "#eventGroupChatJoinRequestApproved" => {
+                let variant = jacquard_common::deps::codegen::serde_ipld_dagcbor::from_slice(body)?;
+                Ok(Self::EventGroupChatJoinRequestApproved(Box::new(variant)))
+            }
+            "#eventGroupChatJoinRequestRejected" => {
+                let variant = jacquard_common::deps::codegen::serde_ipld_dagcbor::from_slice(body)?;
+                Ok(Self::EventGroupChatJoinRequestRejected(Box::new(variant)))
+            }
+            "#eventChatAccepted" => {
+                let variant = jacquard_common::deps::codegen::serde_ipld_dagcbor::from_slice(body)?;
+                Ok(Self::EventChatAccepted(Box::new(variant)))
+            }
+            "#eventGroupChatMemberLeft" => {
+                let variant = jacquard_common::deps::codegen::serde_ipld_dagcbor::from_slice(body)?;
+                Ok(Self::EventGroupChatMemberLeft(Box::new(variant)))
+            }
+            "#eventGroupChatUpdated" => {
+                let variant = jacquard_common::deps::codegen::serde_ipld_dagcbor::from_slice(body)?;
+                Ok(Self::EventGroupChatUpdated(Box::new(variant)))
+            }
+            "#eventRateLimitExceeded" => {
+                let variant = jacquard_common::deps::codegen::serde_ipld_dagcbor::from_slice(body)?;
+                Ok(Self::EventRateLimitExceeded(Box::new(variant)))
+            }
+            unknown => Err(jacquard_common::error::DecodeError::UnknownEventType(
+                unknown.into(),
+            )),
+        }
+    }
+}
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    thiserror::Error,
+    miette::Diagnostic,
+)]
+#[serde(tag = "error", content = "message")]
+pub enum SubscribeModEventsError {
+    #[serde(rename = "FutureCursor")]
+    FutureCursor(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// If the consumer of the stream can not keep up with events, and a backlog gets too large, the server will drop the connection.
+    #[serde(rename = "ConsumerTooSlow")]
+    ConsumerTooSlow(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
+}
+
+impl core::fmt::Display for SubscribeModEventsError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+            Self::FutureCursor(msg) => {
+                write!(f, "FutureCursor")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::ConsumerTooSlow(msg) => {
+                write!(f, "ConsumerTooSlow")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for EventChatAccepted<S> {
+    fn nsid() -> &'static str {
+        "chat.bsky.moderation.subscribeModEvents"
+    }
+    fn def_name() -> &'static str {
+        "eventChatAccepted"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_chat_bsky_moderation_subscribeModEvents()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+    for EventConvoFirstMessage<S>
+{
+    fn nsid() -> &'static str {
+        "chat.bsky.moderation.subscribeModEvents"
+    }
+    fn def_name() -> &'static str {
+        "eventConvoFirstMessage"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_chat_bsky_moderation_subscribeModEvents()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+    for EventGroupChatCreated<S>
+{
+    fn nsid() -> &'static str {
+        "chat.bsky.moderation.subscribeModEvents"
+    }
+    fn def_name() -> &'static str {
+        "eventGroupChatCreated"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_chat_bsky_moderation_subscribeModEvents()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+    for EventGroupChatJoinRequest<S>
+{
+    fn nsid() -> &'static str {
+        "chat.bsky.moderation.subscribeModEvents"
+    }
+    fn def_name() -> &'static str {
+        "eventGroupChatJoinRequest"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_chat_bsky_moderation_subscribeModEvents()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+    for EventGroupChatJoinRequestApproved<S>
+{
+    fn nsid() -> &'static str {
+        "chat.bsky.moderation.subscribeModEvents"
+    }
+    fn def_name() -> &'static str {
+        "eventGroupChatJoinRequestApproved"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_chat_bsky_moderation_subscribeModEvents()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+    for EventGroupChatJoinRequestRejected<S>
+{
+    fn nsid() -> &'static str {
+        "chat.bsky.moderation.subscribeModEvents"
+    }
+    fn def_name() -> &'static str {
+        "eventGroupChatJoinRequestRejected"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_chat_bsky_moderation_subscribeModEvents()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+    for EventGroupChatMemberAdded<S>
+{
+    fn nsid() -> &'static str {
+        "chat.bsky.moderation.subscribeModEvents"
+    }
+    fn def_name() -> &'static str {
+        "eventGroupChatMemberAdded"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_chat_bsky_moderation_subscribeModEvents()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+    for EventGroupChatMemberJoined<S>
+{
+    fn nsid() -> &'static str {
+        "chat.bsky.moderation.subscribeModEvents"
+    }
+    fn def_name() -> &'static str {
+        "eventGroupChatMemberJoined"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_chat_bsky_moderation_subscribeModEvents()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+    for EventGroupChatMemberLeft<S>
+{
+    fn nsid() -> &'static str {
+        "chat.bsky.moderation.subscribeModEvents"
+    }
+    fn def_name() -> &'static str {
+        "eventGroupChatMemberLeft"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_chat_bsky_moderation_subscribeModEvents()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+    for EventGroupChatUpdated<S>
+{
+    fn nsid() -> &'static str {
+        "chat.bsky.moderation.subscribeModEvents"
+    }
+    fn def_name() -> &'static str {
+        "eventGroupChatUpdated"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_chat_bsky_moderation_subscribeModEvents()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+    for EventRateLimitExceeded<S>
+{
+    fn nsid() -> &'static str {
+        "chat.bsky.moderation.subscribeModEvents"
+    }
+    fn def_name() -> &'static str {
+        "eventRateLimitExceeded"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_chat_bsky_moderation_subscribeModEvents()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
+}
+
+///Stream response type for
+///chat.bsky.moderation.subscribeModEvents
+pub struct SubscribeModEventsStream;
+impl jacquard_common::xrpc::SubscriptionResp for SubscribeModEventsStream {
+    const NSID: &'static str = "chat.bsky.moderation.subscribeModEvents";
+    const ENCODING: jacquard_common::xrpc::MessageEncoding =
+        jacquard_common::xrpc::MessageEncoding::Json;
+    type Message<S: jacquard_common::BosStr> = SubscribeModEventsMessage<S>;
+    type Error = SubscribeModEventsError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcSubscription for SubscribeModEvents<S> {
+    const NSID: &'static str = "chat.bsky.moderation.subscribeModEvents";
+    const ENCODING: jacquard_common::xrpc::MessageEncoding =
+        jacquard_common::xrpc::MessageEncoding::Json;
+    type Stream = SubscribeModEventsStream;
+}
+
+pub struct SubscribeModEventsEndpoint;
+impl jacquard_common::xrpc::SubscriptionEndpoint for SubscribeModEventsEndpoint {
+    const PATH: &'static str = "/xrpc/chat.bsky.moderation.subscribeModEvents";
+    const ENCODING: jacquard_common::xrpc::MessageEncoding =
+        jacquard_common::xrpc::MessageEncoding::Json;
+    type Params<S: jacquard_common::BosStr> = SubscribeModEvents<S>;
+    type Stream = SubscribeModEventsStream;
 }
 
 pub mod event_chat_accepted_state {
@@ -67,69 +1310,69 @@ pub mod event_chat_accepted_state {
         type Rev = Unset;
     }
     ///State transition - sets the `actor_did` field to Set
-    pub struct SetActorDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetActorDid<S> {}
-    impl<S: State> State for SetActorDid<S> {
+    pub struct SetActorDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetActorDid<St> {}
+    impl<St: State> State for SetActorDid<St> {
         type ActorDid = Set<members::actor_did>;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type Method = S::Method;
-        type Rev = S::Rev;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type Method = St::Method;
+        type Rev = St::Rev;
     }
     ///State transition - sets the `convo_created_at` field to Set
-    pub struct SetConvoCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoCreatedAt<S> {}
-    impl<S: State> State for SetConvoCreatedAt<S> {
-        type ActorDid = S::ActorDid;
+    pub struct SetConvoCreatedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetConvoCreatedAt<St> {}
+    impl<St: State> State for SetConvoCreatedAt<St> {
+        type ActorDid = St::ActorDid;
         type ConvoCreatedAt = Set<members::convo_created_at>;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type Method = S::Method;
-        type Rev = S::Rev;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type Method = St::Method;
+        type Rev = St::Rev;
     }
     ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
+    pub struct SetConvoId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetConvoId<St> {}
+    impl<St: State> State for SetConvoId<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
         type ConvoId = Set<members::convo_id>;
-        type CreatedAt = S::CreatedAt;
-        type Method = S::Method;
-        type Rev = S::Rev;
+        type CreatedAt = St::CreatedAt;
+        type Method = St::Method;
+        type Rev = St::Rev;
     }
     ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
+    pub struct SetCreatedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCreatedAt<St> {}
+    impl<St: State> State for SetCreatedAt<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
         type CreatedAt = Set<members::created_at>;
-        type Method = S::Method;
-        type Rev = S::Rev;
+        type Method = St::Method;
+        type Rev = St::Rev;
     }
     ///State transition - sets the `method` field to Set
-    pub struct SetMethod<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetMethod<S> {}
-    impl<S: State> State for SetMethod<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
+    pub struct SetMethod<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetMethod<St> {}
+    impl<St: State> State for SetMethod<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
         type Method = Set<members::method>;
-        type Rev = S::Rev;
+        type Rev = St::Rev;
     }
     ///State transition - sets the `rev` field to Set
-    pub struct SetRev<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRev<S> {}
-    impl<S: State> State for SetRev<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type Method = S::Method;
+    pub struct SetRev<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRev<St> {}
+    impl<St: State> State for SetRev<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type Method = St::Method;
         type Rev = Set<members::rev>;
     }
     /// Marker types for field names
@@ -150,259 +1393,288 @@ pub mod event_chat_accepted_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct EventChatAcceptedBuilder<'a, S: event_chat_accepted_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct EventChatAcceptedBuilder<
+    St: event_chat_accepted_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<i64>,
+        core::option::Option<S>,
+        core::option::Option<EventChatAcceptedMethod<S>>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<S>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> EventChatAccepted<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> EventChatAcceptedBuilder<'a, event_chat_accepted_state::Empty> {
+impl EventChatAccepted<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> EventChatAcceptedBuilder<event_chat_accepted_state::Empty, jacquard_common::DefaultStr>
+    {
         EventChatAcceptedBuilder::new()
     }
 }
 
-impl<'a> EventChatAcceptedBuilder<'a, event_chat_accepted_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> EventChatAccepted<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> EventChatAcceptedBuilder<event_chat_accepted_state::Empty, S> {
+        EventChatAcceptedBuilder::builder()
+    }
+}
+
+impl EventChatAcceptedBuilder<event_chat_accepted_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         EventChatAcceptedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventChatAcceptedBuilder<'a, S>
+impl<S: jacquard_common::BosStr> EventChatAcceptedBuilder<event_chat_accepted_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        EventChatAcceptedBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> EventChatAcceptedBuilder<St, S>
 where
-    S: event_chat_accepted_state::State,
-    S::ActorDid: event_chat_accepted_state::IsUnset,
+    St: event_chat_accepted_state::State,
+    St::ActorDid: event_chat_accepted_state::IsUnset,
 {
     /// Set the `actorDid` field (required)
     pub fn actor_did(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> EventChatAcceptedBuilder<'a, event_chat_accepted_state::SetActorDid<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> EventChatAcceptedBuilder<event_chat_accepted_state::SetActorDid<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         EventChatAcceptedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventChatAcceptedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventChatAcceptedBuilder<St, S>
 where
-    S: event_chat_accepted_state::State,
-    S::ConvoCreatedAt: event_chat_accepted_state::IsUnset,
+    St: event_chat_accepted_state::State,
+    St::ConvoCreatedAt: event_chat_accepted_state::IsUnset,
 {
     /// Set the `convoCreatedAt` field (required)
     pub fn convo_created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> EventChatAcceptedBuilder<'a, event_chat_accepted_state::SetConvoCreatedAt<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+    ) -> EventChatAcceptedBuilder<event_chat_accepted_state::SetConvoCreatedAt<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         EventChatAcceptedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventChatAcceptedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventChatAcceptedBuilder<St, S>
 where
-    S: event_chat_accepted_state::State,
-    S::ConvoId: event_chat_accepted_state::IsUnset,
+    St: event_chat_accepted_state::State,
+    St::ConvoId: event_chat_accepted_state::IsUnset,
 {
     /// Set the `convoId` field (required)
     pub fn convo_id(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> EventChatAcceptedBuilder<'a, event_chat_accepted_state::SetConvoId<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> EventChatAcceptedBuilder<event_chat_accepted_state::SetConvoId<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         EventChatAcceptedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventChatAcceptedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventChatAcceptedBuilder<St, S>
 where
-    S: event_chat_accepted_state::State,
-    S::CreatedAt: event_chat_accepted_state::IsUnset,
+    St: event_chat_accepted_state::State,
+    St::CreatedAt: event_chat_accepted_state::IsUnset,
 {
     /// Set the `createdAt` field (required)
     pub fn created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> EventChatAcceptedBuilder<'a, event_chat_accepted_state::SetCreatedAt<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+    ) -> EventChatAcceptedBuilder<event_chat_accepted_state::SetCreatedAt<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
         EventChatAcceptedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: event_chat_accepted_state::State> EventChatAcceptedBuilder<'a, S> {
+impl<St: event_chat_accepted_state::State, S: jacquard_common::BosStr>
+    EventChatAcceptedBuilder<St, S>
+{
     /// Set the `groupMemberCount` field (optional)
     pub fn group_member_count(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.4 = value.into();
+        self._fields.4 = value.into();
         self
     }
     /// Set the `groupMemberCount` field to an Option value (optional)
     pub fn maybe_group_member_count(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.4 = value;
+        self._fields.4 = value;
         self
     }
 }
 
-impl<'a, S: event_chat_accepted_state::State> EventChatAcceptedBuilder<'a, S> {
+impl<St: event_chat_accepted_state::State, S: jacquard_common::BosStr>
+    EventChatAcceptedBuilder<St, S>
+{
     /// Set the `groupName` field (optional)
-    pub fn group_name(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.5 = value.into();
+    pub fn group_name(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.5 = value.into();
         self
     }
     /// Set the `groupName` field to an Option value (optional)
-    pub fn maybe_group_name(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.5 = value;
+    pub fn maybe_group_name(mut self, value: Option<S>) -> Self {
+        self._fields.5 = value;
         self
     }
 }
 
-impl<'a, S> EventChatAcceptedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventChatAcceptedBuilder<St, S>
 where
-    S: event_chat_accepted_state::State,
-    S::Method: event_chat_accepted_state::IsUnset,
+    St: event_chat_accepted_state::State,
+    St::Method: event_chat_accepted_state::IsUnset,
 {
     /// Set the `method` field (required)
     pub fn method(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> EventChatAcceptedBuilder<'a, event_chat_accepted_state::SetMethod<S>> {
-        self.__unsafe_private_named.6 = ::core::option::Option::Some(value.into());
+        value: impl Into<EventChatAcceptedMethod<S>>,
+    ) -> EventChatAcceptedBuilder<event_chat_accepted_state::SetMethod<St>, S> {
+        self._fields.6 = ::core::option::Option::Some(value.into());
         EventChatAcceptedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: event_chat_accepted_state::State> EventChatAcceptedBuilder<'a, S> {
+impl<St: event_chat_accepted_state::State, S: jacquard_common::BosStr>
+    EventChatAcceptedBuilder<St, S>
+{
     /// Set the `ownerDid` field (optional)
     pub fn owner_did(
         mut self,
-        value: impl Into<Option<jacquard_common::types::string::Did<'a>>>,
+        value: impl Into<Option<jacquard_common::types::string::Did<S>>>,
     ) -> Self {
-        self.__unsafe_private_named.7 = value.into();
+        self._fields.7 = value.into();
         self
     }
     /// Set the `ownerDid` field to an Option value (optional)
     pub fn maybe_owner_did(
         mut self,
-        value: Option<jacquard_common::types::string::Did<'a>>,
+        value: Option<jacquard_common::types::string::Did<S>>,
     ) -> Self {
-        self.__unsafe_private_named.7 = value;
+        self._fields.7 = value;
         self
     }
 }
 
-impl<'a, S> EventChatAcceptedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventChatAcceptedBuilder<St, S>
 where
-    S: event_chat_accepted_state::State,
-    S::Rev: event_chat_accepted_state::IsUnset,
+    St: event_chat_accepted_state::State,
+    St::Rev: event_chat_accepted_state::IsUnset,
 {
     /// Set the `rev` field (required)
     pub fn rev(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> EventChatAcceptedBuilder<'a, event_chat_accepted_state::SetRev<S>> {
-        self.__unsafe_private_named.8 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> EventChatAcceptedBuilder<event_chat_accepted_state::SetRev<St>, S> {
+        self._fields.8 = ::core::option::Option::Some(value.into());
         EventChatAcceptedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventChatAcceptedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventChatAcceptedBuilder<St, S>
 where
-    S: event_chat_accepted_state::State,
-    S::ActorDid: event_chat_accepted_state::IsSet,
-    S::ConvoCreatedAt: event_chat_accepted_state::IsSet,
-    S::ConvoId: event_chat_accepted_state::IsSet,
-    S::CreatedAt: event_chat_accepted_state::IsSet,
-    S::Method: event_chat_accepted_state::IsSet,
-    S::Rev: event_chat_accepted_state::IsSet,
+    St: event_chat_accepted_state::State,
+    St::ActorDid: event_chat_accepted_state::IsSet,
+    St::ConvoCreatedAt: event_chat_accepted_state::IsSet,
+    St::ConvoId: event_chat_accepted_state::IsSet,
+    St::CreatedAt: event_chat_accepted_state::IsSet,
+    St::Method: event_chat_accepted_state::IsSet,
+    St::Rev: event_chat_accepted_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> EventChatAccepted<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> EventChatAccepted<S> {
         EventChatAccepted {
-            actor_did: self.__unsafe_private_named.0.unwrap(),
-            convo_created_at: self.__unsafe_private_named.1.unwrap(),
-            convo_id: self.__unsafe_private_named.2.unwrap(),
-            created_at: self.__unsafe_private_named.3.unwrap(),
-            group_member_count: self.__unsafe_private_named.4,
-            group_name: self.__unsafe_private_named.5,
-            method: self.__unsafe_private_named.6.unwrap(),
-            owner_did: self.__unsafe_private_named.7,
-            rev: self.__unsafe_private_named.8.unwrap(),
+            actor_did: self._fields.0.unwrap(),
+            convo_created_at: self._fields.1.unwrap(),
+            convo_id: self._fields.2.unwrap(),
+            created_at: self._fields.3.unwrap(),
+            group_member_count: self._fields.4,
+            group_name: self._fields.5,
+            method: self._fields.6.unwrap(),
+            owner_did: self._fields.7,
+            rev: self._fields.8.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> EventChatAccepted<'a> {
+    ) -> EventChatAccepted<S> {
         EventChatAccepted {
-            actor_did: self.__unsafe_private_named.0.unwrap(),
-            convo_created_at: self.__unsafe_private_named.1.unwrap(),
-            convo_id: self.__unsafe_private_named.2.unwrap(),
-            created_at: self.__unsafe_private_named.3.unwrap(),
-            group_member_count: self.__unsafe_private_named.4,
-            group_name: self.__unsafe_private_named.5,
-            method: self.__unsafe_private_named.6.unwrap(),
-            owner_did: self.__unsafe_private_named.7,
-            rev: self.__unsafe_private_named.8.unwrap(),
+            actor_did: self._fields.0.unwrap(),
+            convo_created_at: self._fields.1.unwrap(),
+            convo_id: self._fields.2.unwrap(),
+            created_at: self._fields.3.unwrap(),
+            group_member_count: self._fields.4,
+            group_name: self._fields.5,
+            method: self._fields.6.unwrap(),
+            owner_did: self._fields.7,
+            rev: self._fields.8.unwrap(),
             extra_data: Some(extra_data),
         }
     }
 }
 
 fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
-) -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+) -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("chat.bsky.moderation.subscribeModEvents"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("eventChatAccepted"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "eventChatAccepted",
+                ),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
@@ -411,20 +1683,21 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                     ),
                     required: Some(
                         vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("actorDid"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoCreatedAt"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("createdAt"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("method"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("rev")
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("actorDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convoCreatedAt"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("method"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("rev")
                         ],
                     ),
-                    nullable: None,
                     properties: {
                         #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
+                        let mut map = ::alloc::collections::BTreeMap::new();
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("actorDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "actorDid",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
@@ -434,18 +1707,11 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "convoCreatedAt",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -457,65 +1723,38 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "convoId",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "createdAt",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "groupMemberCount",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                description: None,
-                                default: None,
-                                minimum: None,
-                                maximum: None,
-                                r#enum: None,
-                                r#const: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "groupName",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -524,38 +1763,26 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                                         "The name of the group chat. Only present for group convos.",
                                     ),
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("method"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "method",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
                                         "How the convo was accepted.",
                                     ),
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("ownerDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "ownerDid",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
@@ -565,37 +1792,24 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("rev"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "rev",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map
                     },
+                    ..Default::default()
                 }),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                     "eventConvoFirstMessage",
                 ),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
@@ -606,70 +1820,45 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                     ),
                     required: Some(
                         vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("createdAt"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("rev"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("user"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("recipients")
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("rev"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("user"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("recipients")
                         ],
                     ),
-                    nullable: None,
                     properties: {
                         #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
+                        let mut map = ::alloc::collections::BTreeMap::new();
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "convoId",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "createdAt",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "messageId",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "recipients",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
@@ -679,40 +1868,26 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                                     ),
                                 ),
                                 items: ::jacquard_lexicon::lexicon::LexArrayItem::String(::jacquard_lexicon::lexicon::LexString {
-                                    description: None,
                                     format: Some(
                                         ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                     ),
-                                    default: None,
-                                    min_length: None,
-                                    max_length: None,
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
-                                min_length: None,
-                                max_length: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("rev"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "rev",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("user"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "user",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
@@ -722,22 +1897,16 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map
                     },
+                    ..Default::default()
                 }),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                     "eventGroupChatCreated",
                 ),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
@@ -748,23 +1917,24 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                     ),
                     required: Some(
                         vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("actorDid"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoCreatedAt"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("createdAt"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("groupMemberCount"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("groupName"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("initialMemberDids"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("ownerDid"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("rev")
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("actorDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convoCreatedAt"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("groupMemberCount"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("groupName"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("initialMemberDids"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("ownerDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("rev")
                         ],
                     ),
-                    nullable: None,
                     properties: {
                         #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
+                        let mut map = ::alloc::collections::BTreeMap::new();
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("actorDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "actorDid",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
@@ -774,18 +1944,11 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "convoCreatedAt",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -797,65 +1960,38 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "convoId",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "createdAt",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "groupMemberCount",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                description: None,
-                                default: None,
-                                minimum: None,
-                                maximum: None,
-                                r#enum: None,
-                                r#const: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "groupName",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -864,19 +2000,11 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                                         "The name set at creation time.",
                                     ),
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "initialMemberDids",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
@@ -886,25 +2014,18 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                                     ),
                                 ),
                                 items: ::jacquard_lexicon::lexicon::LexArrayItem::String(::jacquard_lexicon::lexicon::LexString {
-                                    description: None,
                                     format: Some(
                                         ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                     ),
-                                    default: None,
-                                    min_length: None,
-                                    max_length: None,
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
-                                min_length: None,
-                                max_length: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("ownerDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "ownerDid",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
@@ -914,37 +2035,24 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("rev"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "rev",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map
                     },
+                    ..Default::default()
                 }),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                     "eventGroupChatJoinRequest",
                 ),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
@@ -955,24 +2063,25 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                     ),
                     required: Some(
                         vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("actorDid"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoCreatedAt"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("createdAt"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("groupMemberCount"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("groupName"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("joinLinkCode"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("ownerDid"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("rev"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("subjectFollowsOwner")
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("actorDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convoCreatedAt"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("groupMemberCount"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("groupName"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("joinLinkCode"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("ownerDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("rev"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("subjectFollowsOwner")
                         ],
                     ),
-                    nullable: None,
                     properties: {
                         #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
+                        let mut map = ::alloc::collections::BTreeMap::new();
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("actorDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "actorDid",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
@@ -982,18 +2091,11 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "convoCreatedAt",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -1005,82 +2107,46 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "convoId",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "createdAt",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "groupMemberCount",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                description: None,
-                                default: None,
-                                minimum: None,
-                                maximum: None,
-                                r#enum: None,
-                                r#const: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "groupName",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "joinLinkCode",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -1089,19 +2155,13 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                                         "The code of the join link used to request joining.",
                                     ),
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("ownerDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "ownerDid",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
@@ -1111,47 +2171,32 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("rev"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "rev",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "subjectFollowsOwner",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
-                                description: None,
-                                default: None,
-                                r#const: None,
+                                ..Default::default()
                             }),
                         );
                         map
                     },
+                    ..Default::default()
                 }),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                     "eventGroupChatJoinRequestApproved",
                 ),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
@@ -1160,22 +2205,25 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                             "Fired when a join request is approved by the group owner.",
                         )),
                         required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("actorDid"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoCreatedAt"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("createdAt"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("groupMemberCount"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("groupName"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("ownerDid"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("rev"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("subjectDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("actorDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "convoCreatedAt",
+                            ),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "groupMemberCount",
+                            ),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("groupName"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("ownerDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("rev"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("subjectDid"),
                         ]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("actorDid"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("actorDid"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
@@ -1184,19 +2232,14 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("convoCreatedAt"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "convoCreatedAt",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
@@ -1205,87 +2248,49 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("createdAt"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "groupMemberCount",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
                                     ::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
-                                        minimum: None,
-                                        maximum: None,
-                                        r#enum: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("groupName"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("groupName"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("ownerDid"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("ownerDid"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
@@ -1294,36 +2299,22 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("rev"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("rev"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("subjectDid"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "subjectDid",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
@@ -1332,24 +2323,18 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                     "eventGroupChatJoinRequestRejected",
                 ),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
@@ -1358,22 +2343,25 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                             "Fired when a join request is rejected by the group owner.",
                         )),
                         required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("actorDid"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoCreatedAt"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("createdAt"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("groupMemberCount"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("groupName"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("ownerDid"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("rev"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("subjectDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("actorDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "convoCreatedAt",
+                            ),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "groupMemberCount",
+                            ),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("groupName"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("ownerDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("rev"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("subjectDid"),
                         ]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("actorDid"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("actorDid"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
@@ -1382,19 +2370,14 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("convoCreatedAt"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "convoCreatedAt",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
@@ -1403,87 +2386,49 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("createdAt"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                     "groupMemberCount",
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
                                     ::jacquard_lexicon::lexicon::LexInteger {
-                                        description: None,
-                                        default: None,
-                                        minimum: None,
-                                        maximum: None,
-                                        r#enum: None,
-                                        r#const: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("groupName"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("groupName"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("ownerDid"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("ownerDid"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
@@ -1492,36 +2437,22 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("rev"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("rev"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("subjectDid"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "subjectDid",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
@@ -1530,24 +2461,18 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                     "eventGroupChatMemberAdded",
                 ),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
@@ -1558,25 +2483,26 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                     ),
                     required: Some(
                         vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("actorDid"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoCreatedAt"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("createdAt"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("groupMemberCount"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("groupName"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("ownerDid"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("requestMembersCount"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("rev"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("subjectDid"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("subjectFollowsOwner")
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("actorDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convoCreatedAt"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("groupMemberCount"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("groupName"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("ownerDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("requestMembersCount"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("rev"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("subjectDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("subjectFollowsOwner")
                         ],
                     ),
-                    nullable: None,
                     properties: {
                         #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
+                        let mut map = ::alloc::collections::BTreeMap::new();
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("actorDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "actorDid",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
@@ -1586,18 +2512,11 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "convoCreatedAt",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -1609,82 +2528,48 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "convoId",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "createdAt",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "groupMemberCount",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                description: None,
-                                default: None,
-                                minimum: None,
-                                maximum: None,
-                                r#enum: None,
-                                r#const: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "groupName",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("ownerDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "ownerDid",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
@@ -1694,46 +2579,27 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "requestMembersCount",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                description: None,
-                                default: None,
-                                minimum: None,
-                                maximum: None,
-                                r#enum: None,
-                                r#const: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("rev"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "rev",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "subjectDid",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -1745,32 +2611,24 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "subjectFollowsOwner",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
-                                description: None,
-                                default: None,
-                                r#const: None,
+                                ..Default::default()
                             }),
                         );
                         map
                     },
+                    ..Default::default()
                 }),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                     "eventGroupChatMemberJoined",
                 ),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
@@ -1781,24 +2639,25 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                     ),
                     required: Some(
                         vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("actorDid"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoCreatedAt"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("createdAt"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("groupMemberCount"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("groupName"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("joinLinkCode"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("ownerDid"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("rev"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("subjectFollowsOwner")
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("actorDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convoCreatedAt"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("groupMemberCount"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("groupName"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("joinLinkCode"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("ownerDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("rev"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("subjectFollowsOwner")
                         ],
                     ),
-                    nullable: None,
                     properties: {
                         #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
+                        let mut map = ::alloc::collections::BTreeMap::new();
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("actorDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "actorDid",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
@@ -1808,18 +2667,11 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "convoCreatedAt",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -1831,82 +2683,46 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "convoId",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "createdAt",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "groupMemberCount",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                description: None,
-                                default: None,
-                                minimum: None,
-                                maximum: None,
-                                r#enum: None,
-                                r#const: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "groupName",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "joinLinkCode",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -1915,19 +2731,13 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                                         "The code of the join link used to join.",
                                     ),
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("ownerDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "ownerDid",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
@@ -1937,47 +2747,32 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("rev"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "rev",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "subjectFollowsOwner",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
-                                description: None,
-                                default: None,
-                                r#const: None,
+                                ..Default::default()
                             }),
                         );
                         map
                     },
+                    ..Default::default()
                 }),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                     "eventGroupChatMemberLeft",
                 ),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
@@ -1988,24 +2783,25 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                     ),
                     required: Some(
                         vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("actorDid"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoCreatedAt"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("createdAt"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("groupMemberCount"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("groupName"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("leaveMethod"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("ownerDid"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("rev"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("subjectDid")
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("actorDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convoCreatedAt"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("groupMemberCount"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("groupName"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("leaveMethod"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("ownerDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("rev"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("subjectDid")
                         ],
                     ),
-                    nullable: None,
                     properties: {
                         #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
+                        let mut map = ::alloc::collections::BTreeMap::new();
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("actorDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "actorDid",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
@@ -2015,18 +2811,11 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "convoCreatedAt",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -2038,82 +2827,46 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "convoId",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "createdAt",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "groupMemberCount",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                description: None,
-                                default: None,
-                                minimum: None,
-                                maximum: None,
-                                r#enum: None,
-                                r#const: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "groupName",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "leaveMethod",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -2122,19 +2875,13 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                                         "How the member left.",
                                     ),
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("ownerDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "ownerDid",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
@@ -2144,33 +2891,19 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("rev"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "rev",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "subjectDid",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -2182,22 +2915,16 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map
                     },
+                    ..Default::default()
                 }),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
                     "eventGroupChatUpdated",
                 ),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
@@ -2208,23 +2935,24 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                     ),
                     required: Some(
                         vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("actorDid"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoCreatedAt"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("createdAt"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("groupMemberCount"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("groupName"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("ownerDid"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("rev"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("updateType")
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("actorDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convoCreatedAt"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("convoId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("groupMemberCount"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("groupName"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("ownerDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("rev"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("updateType")
                         ],
                     ),
-                    nullable: None,
                     properties: {
                         #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
+                        let mut map = ::alloc::collections::BTreeMap::new();
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("actorDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "actorDid",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
@@ -2234,18 +2962,11 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "convoCreatedAt",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -2257,84 +2978,49 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("convoId"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "convoId",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "createdAt",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "groupMemberCount",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                description: None,
-                                default: None,
-                                minimum: None,
-                                maximum: None,
-                                r#enum: None,
-                                r#const: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "groupName",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static("Current group name."),
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "joinLinkCode",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -2343,39 +3029,27 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                                         "The code of the join link. Only present when updateType is join-link-related.",
                                     ),
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "joinLinkFollowersOnly",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
-                                description: None,
-                                default: None,
-                                r#const: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "joinLinkRequiresApproval",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
-                                description: None,
-                                default: None,
-                                r#const: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "lockReason",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -2384,57 +3058,39 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                                         "Why the group was locked. Only present when updateType is 'locked'.",
                                     ),
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("newName"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "newName",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
                                         "The new group name. Only present when updateType is 'name_changed'.",
                                     ),
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("oldName"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "oldName",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
                                         "The previous group name. Only present when updateType is 'name_changed'.",
                                     ),
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("ownerDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "ownerDid",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static(
@@ -2444,73 +3100,51 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                                 format: Some(
                                     ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                 ),
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static("rev"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "rev",
+                            ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: None,
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "updateType",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
                                 description: Some(
                                     ::jacquard_common::CowStr::new_static("What changed."),
                                 ),
-                                format: None,
-                                default: None,
-                                min_length: None,
-                                max_length: None,
-                                min_graphemes: None,
-                                max_graphemes: None,
-                                r#enum: None,
-                                r#const: None,
-                                known_values: None,
+                                ..Default::default()
                             }),
                         );
                         map
                     },
+                    ..Default::default()
                 }),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("eventRateLimitExceeded"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("eventRateLimitExceeded"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(
                     ::jacquard_lexicon::lexicon::LexObject {
                         description: Some(::jacquard_common::CowStr::new_static(
                             "Fired when a user exceeds a rate limit.",
                         )),
                         required: Some(vec![
-                            ::jacquard_common::smol_str::SmolStr::new_static("actorDid"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("createdAt"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("endpoint"),
-                            ::jacquard_common::smol_str::SmolStr::new_static("rev"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("actorDid"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("endpoint"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("rev"),
                         ]),
-                        nullable: None,
                         properties: {
                             #[allow(unused_mut)]
-                            let mut map = ::std::collections::BTreeMap::new();
+                            let mut map = ::alloc::collections::BTreeMap::new();
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("actorDid"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("actorDid"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
@@ -2519,159 +3153,79 @@ fn lexicon_doc_chat_bsky_moderation_subscribeModEvents(
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Did,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("createdAt"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
                                         format: Some(
                                             ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                         ),
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("endpoint"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("endpoint"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         description: Some(::jacquard_common::CowStr::new_static(
                                             "The NSID of the endpoint that was rate limited.",
                                         )),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map.insert(
-                                ::jacquard_common::smol_str::SmolStr::new_static("rev"),
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("rev"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
-                                        description: None,
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     },
                                 ),
                             );
                             map
                         },
+                        ..Default::default()
                     },
                 ),
             );
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
                 ::jacquard_lexicon::lexicon::LexUserType::XrpcSubscription(::jacquard_lexicon::lexicon::LexXrpcSubscription {
-                    description: None,
                     parameters: Some(
                         ::jacquard_lexicon::lexicon::LexXrpcSubscriptionParameter::Params(::jacquard_lexicon::lexicon::LexXrpcParameters {
-                            description: None,
-                            required: None,
                             properties: {
                                 #[allow(unused_mut)]
-                                let mut map = ::std::collections::BTreeMap::new();
+                                let mut map = ::alloc::collections::BTreeMap::new();
                                 map.insert(
-                                    ::jacquard_common::smol_str::SmolStr::new_static("cursor"),
+                                    ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                        "cursor",
+                                    ),
                                     ::jacquard_lexicon::lexicon::LexXrpcParametersProperty::String(::jacquard_lexicon::lexicon::LexString {
                                         description: Some(
                                             ::jacquard_common::CowStr::new_static(
                                                 "The last known event seq number to backfill from. Use '2222222222222' to backfill from the beginning. Don't specify a cursor to listen only for new events.",
                                             ),
                                         ),
-                                        format: None,
-                                        default: None,
-                                        min_length: None,
-                                        max_length: None,
-                                        min_graphemes: None,
-                                        max_graphemes: None,
-                                        r#enum: None,
-                                        r#const: None,
-                                        known_values: None,
+                                        ..Default::default()
                                     }),
                                 );
                                 map
                             },
+                            ..Default::default()
                         }),
                     ),
-                    message: None,
-                    infos: None,
-                    errors: None,
+                    ..Default::default()
                 }),
             );
             map
         },
+        ..Default::default()
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for EventChatAccepted<'a> {
-    fn nsid() -> &'static str {
-        "chat.bsky.moderation.subscribeModEvents"
-    }
-    fn def_name() -> &'static str {
-        "eventChatAccepted"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_chat_bsky_moderation_subscribeModEvents()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-/// Fired when the first message was sent on a convo.
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct EventConvoFirstMessage<'a> {
-    #[serde(borrow)]
-    pub convo_id: jacquard_common::CowStr<'a>,
-    pub created_at: jacquard_common::types::string::Datetime,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub message_id: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// The list of DIDs message recipients. Does not include the sender, which is in the `user` field
-    #[serde(borrow)]
-    pub recipients: Vec<jacquard_common::types::string::Did<'a>>,
-    #[serde(borrow)]
-    pub rev: jacquard_common::CowStr<'a>,
-    /// The DID of the message author.
-    #[serde(borrow)]
-    pub user: jacquard_common::types::string::Did<'a>,
 }
 
 pub mod event_convo_first_message_state {
@@ -2684,314 +3238,300 @@ pub mod event_convo_first_message_state {
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
-        type CreatedAt;
-        type Rev;
         type ConvoId;
-        type User;
+        type CreatedAt;
         type Recipients;
+        type Rev;
+        type User;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
-        type CreatedAt = Unset;
-        type Rev = Unset;
         type ConvoId = Unset;
-        type User = Unset;
+        type CreatedAt = Unset;
         type Recipients = Unset;
-    }
-    ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type CreatedAt = Set<members::created_at>;
-        type Rev = S::Rev;
-        type ConvoId = S::ConvoId;
-        type User = S::User;
-        type Recipients = S::Recipients;
-    }
-    ///State transition - sets the `rev` field to Set
-    pub struct SetRev<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRev<S> {}
-    impl<S: State> State for SetRev<S> {
-        type CreatedAt = S::CreatedAt;
-        type Rev = Set<members::rev>;
-        type ConvoId = S::ConvoId;
-        type User = S::User;
-        type Recipients = S::Recipients;
+        type Rev = Unset;
+        type User = Unset;
     }
     ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type CreatedAt = S::CreatedAt;
-        type Rev = S::Rev;
+    pub struct SetConvoId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetConvoId<St> {}
+    impl<St: State> State for SetConvoId<St> {
         type ConvoId = Set<members::convo_id>;
-        type User = S::User;
-        type Recipients = S::Recipients;
+        type CreatedAt = St::CreatedAt;
+        type Recipients = St::Recipients;
+        type Rev = St::Rev;
+        type User = St::User;
     }
-    ///State transition - sets the `user` field to Set
-    pub struct SetUser<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUser<S> {}
-    impl<S: State> State for SetUser<S> {
-        type CreatedAt = S::CreatedAt;
-        type Rev = S::Rev;
-        type ConvoId = S::ConvoId;
-        type User = Set<members::user>;
-        type Recipients = S::Recipients;
+    ///State transition - sets the `created_at` field to Set
+    pub struct SetCreatedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCreatedAt<St> {}
+    impl<St: State> State for SetCreatedAt<St> {
+        type ConvoId = St::ConvoId;
+        type CreatedAt = Set<members::created_at>;
+        type Recipients = St::Recipients;
+        type Rev = St::Rev;
+        type User = St::User;
     }
     ///State transition - sets the `recipients` field to Set
-    pub struct SetRecipients<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRecipients<S> {}
-    impl<S: State> State for SetRecipients<S> {
-        type CreatedAt = S::CreatedAt;
-        type Rev = S::Rev;
-        type ConvoId = S::ConvoId;
-        type User = S::User;
+    pub struct SetRecipients<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRecipients<St> {}
+    impl<St: State> State for SetRecipients<St> {
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
         type Recipients = Set<members::recipients>;
+        type Rev = St::Rev;
+        type User = St::User;
+    }
+    ///State transition - sets the `rev` field to Set
+    pub struct SetRev<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRev<St> {}
+    impl<St: State> State for SetRev<St> {
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type Recipients = St::Recipients;
+        type Rev = Set<members::rev>;
+        type User = St::User;
+    }
+    ///State transition - sets the `user` field to Set
+    pub struct SetUser<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetUser<St> {}
+    impl<St: State> State for SetUser<St> {
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type Recipients = St::Recipients;
+        type Rev = St::Rev;
+        type User = Set<members::user>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
-        ///Marker type for the `created_at` field
-        pub struct created_at(());
-        ///Marker type for the `rev` field
-        pub struct rev(());
         ///Marker type for the `convo_id` field
         pub struct convo_id(());
-        ///Marker type for the `user` field
-        pub struct user(());
+        ///Marker type for the `created_at` field
+        pub struct created_at(());
         ///Marker type for the `recipients` field
         pub struct recipients(());
+        ///Marker type for the `rev` field
+        pub struct rev(());
+        ///Marker type for the `user` field
+        pub struct user(());
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct EventConvoFirstMessageBuilder<'a, S: event_convo_first_message_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<Vec<jacquard_common::types::string::Did<'a>>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct EventConvoFirstMessageBuilder<
+    St: event_convo_first_message_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<S>,
+        core::option::Option<Vec<jacquard_common::types::string::Did<S>>>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> EventConvoFirstMessage<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> EventConvoFirstMessageBuilder<'a, event_convo_first_message_state::Empty> {
+impl EventConvoFirstMessage<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> EventConvoFirstMessageBuilder<
+        event_convo_first_message_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         EventConvoFirstMessageBuilder::new()
     }
 }
 
-impl<'a> EventConvoFirstMessageBuilder<'a, event_convo_first_message_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> EventConvoFirstMessage<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> EventConvoFirstMessageBuilder<event_convo_first_message_state::Empty, S> {
+        EventConvoFirstMessageBuilder::builder()
+    }
+}
+
+impl
+    EventConvoFirstMessageBuilder<
+        event_convo_first_message_state::Empty,
+        jacquard_common::DefaultStr,
+    >
+{
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         EventConvoFirstMessageBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventConvoFirstMessageBuilder<'a, S>
+impl<S: jacquard_common::BosStr>
+    EventConvoFirstMessageBuilder<event_convo_first_message_state::Empty, S>
+{
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        EventConvoFirstMessageBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> EventConvoFirstMessageBuilder<St, S>
 where
-    S: event_convo_first_message_state::State,
-    S::ConvoId: event_convo_first_message_state::IsUnset,
+    St: event_convo_first_message_state::State,
+    St::ConvoId: event_convo_first_message_state::IsUnset,
 {
     /// Set the `convoId` field (required)
     pub fn convo_id(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> EventConvoFirstMessageBuilder<'a, event_convo_first_message_state::SetConvoId<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> EventConvoFirstMessageBuilder<event_convo_first_message_state::SetConvoId<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         EventConvoFirstMessageBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventConvoFirstMessageBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventConvoFirstMessageBuilder<St, S>
 where
-    S: event_convo_first_message_state::State,
-    S::CreatedAt: event_convo_first_message_state::IsUnset,
+    St: event_convo_first_message_state::State,
+    St::CreatedAt: event_convo_first_message_state::IsUnset,
 {
     /// Set the `createdAt` field (required)
     pub fn created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> EventConvoFirstMessageBuilder<'a, event_convo_first_message_state::SetCreatedAt<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+    ) -> EventConvoFirstMessageBuilder<event_convo_first_message_state::SetCreatedAt<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         EventConvoFirstMessageBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: event_convo_first_message_state::State> EventConvoFirstMessageBuilder<'a, S> {
+impl<St: event_convo_first_message_state::State, S: jacquard_common::BosStr>
+    EventConvoFirstMessageBuilder<St, S>
+{
     /// Set the `messageId` field (optional)
-    pub fn message_id(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.2 = value.into();
+    pub fn message_id(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.2 = value.into();
         self
     }
     /// Set the `messageId` field to an Option value (optional)
-    pub fn maybe_message_id(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.2 = value;
+    pub fn maybe_message_id(mut self, value: Option<S>) -> Self {
+        self._fields.2 = value;
         self
     }
 }
 
-impl<'a, S> EventConvoFirstMessageBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventConvoFirstMessageBuilder<St, S>
 where
-    S: event_convo_first_message_state::State,
-    S::Recipients: event_convo_first_message_state::IsUnset,
+    St: event_convo_first_message_state::State,
+    St::Recipients: event_convo_first_message_state::IsUnset,
 {
     /// Set the `recipients` field (required)
     pub fn recipients(
         mut self,
-        value: impl Into<Vec<jacquard_common::types::string::Did<'a>>>,
-    ) -> EventConvoFirstMessageBuilder<'a, event_convo_first_message_state::SetRecipients<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        value: impl Into<Vec<jacquard_common::types::string::Did<S>>>,
+    ) -> EventConvoFirstMessageBuilder<event_convo_first_message_state::SetRecipients<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
         EventConvoFirstMessageBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventConvoFirstMessageBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventConvoFirstMessageBuilder<St, S>
 where
-    S: event_convo_first_message_state::State,
-    S::Rev: event_convo_first_message_state::IsUnset,
+    St: event_convo_first_message_state::State,
+    St::Rev: event_convo_first_message_state::IsUnset,
 {
     /// Set the `rev` field (required)
     pub fn rev(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> EventConvoFirstMessageBuilder<'a, event_convo_first_message_state::SetRev<S>> {
-        self.__unsafe_private_named.4 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> EventConvoFirstMessageBuilder<event_convo_first_message_state::SetRev<St>, S> {
+        self._fields.4 = ::core::option::Option::Some(value.into());
         EventConvoFirstMessageBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventConvoFirstMessageBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventConvoFirstMessageBuilder<St, S>
 where
-    S: event_convo_first_message_state::State,
-    S::User: event_convo_first_message_state::IsUnset,
+    St: event_convo_first_message_state::State,
+    St::User: event_convo_first_message_state::IsUnset,
 {
     /// Set the `user` field (required)
     pub fn user(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> EventConvoFirstMessageBuilder<'a, event_convo_first_message_state::SetUser<S>> {
-        self.__unsafe_private_named.5 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> EventConvoFirstMessageBuilder<event_convo_first_message_state::SetUser<St>, S> {
+        self._fields.5 = ::core::option::Option::Some(value.into());
         EventConvoFirstMessageBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventConvoFirstMessageBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventConvoFirstMessageBuilder<St, S>
 where
-    S: event_convo_first_message_state::State,
-    S::CreatedAt: event_convo_first_message_state::IsSet,
-    S::Rev: event_convo_first_message_state::IsSet,
-    S::ConvoId: event_convo_first_message_state::IsSet,
-    S::User: event_convo_first_message_state::IsSet,
-    S::Recipients: event_convo_first_message_state::IsSet,
+    St: event_convo_first_message_state::State,
+    St::ConvoId: event_convo_first_message_state::IsSet,
+    St::CreatedAt: event_convo_first_message_state::IsSet,
+    St::Recipients: event_convo_first_message_state::IsSet,
+    St::Rev: event_convo_first_message_state::IsSet,
+    St::User: event_convo_first_message_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> EventConvoFirstMessage<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> EventConvoFirstMessage<S> {
         EventConvoFirstMessage {
-            convo_id: self.__unsafe_private_named.0.unwrap(),
-            created_at: self.__unsafe_private_named.1.unwrap(),
-            message_id: self.__unsafe_private_named.2,
-            recipients: self.__unsafe_private_named.3.unwrap(),
-            rev: self.__unsafe_private_named.4.unwrap(),
-            user: self.__unsafe_private_named.5.unwrap(),
+            convo_id: self._fields.0.unwrap(),
+            created_at: self._fields.1.unwrap(),
+            message_id: self._fields.2,
+            recipients: self._fields.3.unwrap(),
+            rev: self._fields.4.unwrap(),
+            user: self._fields.5.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> EventConvoFirstMessage<'a> {
+    ) -> EventConvoFirstMessage<S> {
         EventConvoFirstMessage {
-            convo_id: self.__unsafe_private_named.0.unwrap(),
-            created_at: self.__unsafe_private_named.1.unwrap(),
-            message_id: self.__unsafe_private_named.2,
-            recipients: self.__unsafe_private_named.3.unwrap(),
-            rev: self.__unsafe_private_named.4.unwrap(),
-            user: self.__unsafe_private_named.5.unwrap(),
+            convo_id: self._fields.0.unwrap(),
+            created_at: self._fields.1.unwrap(),
+            message_id: self._fields.2,
+            recipients: self._fields.3.unwrap(),
+            rev: self._fields.4.unwrap(),
+            user: self._fields.5.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for EventConvoFirstMessage<'a> {
-    fn nsid() -> &'static str {
-        "chat.bsky.moderation.subscribeModEvents"
-    }
-    fn def_name() -> &'static str {
-        "eventConvoFirstMessage"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_chat_bsky_moderation_subscribeModEvents()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-/// Fire when a group chat is created.
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct EventGroupChatCreated<'a> {
-    /// The DID of the actor performing the action. For this event, same as ownerDid.
-    #[serde(borrow)]
-    pub actor_did: jacquard_common::types::string::Did<'a>,
-    /// When the group was originally created.
-    pub convo_created_at: jacquard_common::types::string::Datetime,
-    #[serde(borrow)]
-    pub convo_id: jacquard_common::CowStr<'a>,
-    pub created_at: jacquard_common::types::string::Datetime,
-    /// Current member count at the time of the event.
-    pub group_member_count: i64,
-    /// The name set at creation time.
-    #[serde(borrow)]
-    pub group_name: jacquard_common::CowStr<'a>,
-    /// DIDs of everyone added at creation time.
-    #[serde(borrow)]
-    pub initial_member_dids: Vec<jacquard_common::types::string::Did<'a>>,
-    /// The DID of the group chat owner.
-    #[serde(borrow)]
-    pub owner_did: jacquard_common::types::string::Did<'a>,
-    #[serde(borrow)]
-    pub rev: jacquard_common::CowStr<'a>,
 }
 
 pub mod event_group_chat_created_state {
@@ -3029,129 +3569,129 @@ pub mod event_group_chat_created_state {
         type Rev = Unset;
     }
     ///State transition - sets the `actor_did` field to Set
-    pub struct SetActorDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetActorDid<S> {}
-    impl<S: State> State for SetActorDid<S> {
+    pub struct SetActorDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetActorDid<St> {}
+    impl<St: State> State for SetActorDid<St> {
         type ActorDid = Set<members::actor_did>;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type InitialMemberDids = S::InitialMemberDids;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type InitialMemberDids = St::InitialMemberDids;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
     }
     ///State transition - sets the `convo_created_at` field to Set
-    pub struct SetConvoCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoCreatedAt<S> {}
-    impl<S: State> State for SetConvoCreatedAt<S> {
-        type ActorDid = S::ActorDid;
+    pub struct SetConvoCreatedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetConvoCreatedAt<St> {}
+    impl<St: State> State for SetConvoCreatedAt<St> {
+        type ActorDid = St::ActorDid;
         type ConvoCreatedAt = Set<members::convo_created_at>;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type InitialMemberDids = S::InitialMemberDids;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type InitialMemberDids = St::InitialMemberDids;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
     }
     ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
+    pub struct SetConvoId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetConvoId<St> {}
+    impl<St: State> State for SetConvoId<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
         type ConvoId = Set<members::convo_id>;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type InitialMemberDids = S::InitialMemberDids;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type InitialMemberDids = St::InitialMemberDids;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
     }
     ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
+    pub struct SetCreatedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCreatedAt<St> {}
+    impl<St: State> State for SetCreatedAt<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
         type CreatedAt = Set<members::created_at>;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type InitialMemberDids = S::InitialMemberDids;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type InitialMemberDids = St::InitialMemberDids;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
     }
     ///State transition - sets the `group_member_count` field to Set
-    pub struct SetGroupMemberCount<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetGroupMemberCount<S> {}
-    impl<S: State> State for SetGroupMemberCount<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
+    pub struct SetGroupMemberCount<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetGroupMemberCount<St> {}
+    impl<St: State> State for SetGroupMemberCount<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
         type GroupMemberCount = Set<members::group_member_count>;
-        type GroupName = S::GroupName;
-        type InitialMemberDids = S::InitialMemberDids;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
+        type GroupName = St::GroupName;
+        type InitialMemberDids = St::InitialMemberDids;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
     }
     ///State transition - sets the `group_name` field to Set
-    pub struct SetGroupName<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetGroupName<S> {}
-    impl<S: State> State for SetGroupName<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
+    pub struct SetGroupName<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetGroupName<St> {}
+    impl<St: State> State for SetGroupName<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
         type GroupName = Set<members::group_name>;
-        type InitialMemberDids = S::InitialMemberDids;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
+        type InitialMemberDids = St::InitialMemberDids;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
     }
     ///State transition - sets the `initial_member_dids` field to Set
-    pub struct SetInitialMemberDids<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetInitialMemberDids<S> {}
-    impl<S: State> State for SetInitialMemberDids<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
+    pub struct SetInitialMemberDids<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetInitialMemberDids<St> {}
+    impl<St: State> State for SetInitialMemberDids<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
         type InitialMemberDids = Set<members::initial_member_dids>;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
     }
     ///State transition - sets the `owner_did` field to Set
-    pub struct SetOwnerDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetOwnerDid<S> {}
-    impl<S: State> State for SetOwnerDid<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type InitialMemberDids = S::InitialMemberDids;
+    pub struct SetOwnerDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetOwnerDid<St> {}
+    impl<St: State> State for SetOwnerDid<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type InitialMemberDids = St::InitialMemberDids;
         type OwnerDid = Set<members::owner_did>;
-        type Rev = S::Rev;
+        type Rev = St::Rev;
     }
     ///State transition - sets the `rev` field to Set
-    pub struct SetRev<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRev<S> {}
-    impl<S: State> State for SetRev<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type InitialMemberDids = S::InitialMemberDids;
-        type OwnerDid = S::OwnerDid;
+    pub struct SetRev<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRev<St> {}
+    impl<St: State> State for SetRev<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type InitialMemberDids = St::InitialMemberDids;
+        type OwnerDid = St::OwnerDid;
         type Rev = Set<members::rev>;
     }
     /// Marker types for field names
@@ -3178,312 +3718,292 @@ pub mod event_group_chat_created_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct EventGroupChatCreatedBuilder<'a, S: event_group_chat_created_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<Vec<jacquard_common::types::string::Did<'a>>>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct EventGroupChatCreatedBuilder<
+    St: event_group_chat_created_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<i64>,
+        core::option::Option<S>,
+        core::option::Option<Vec<jacquard_common::types::string::Did<S>>>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<S>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> EventGroupChatCreated<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> EventGroupChatCreatedBuilder<'a, event_group_chat_created_state::Empty> {
+impl EventGroupChatCreated<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> EventGroupChatCreatedBuilder<
+        event_group_chat_created_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         EventGroupChatCreatedBuilder::new()
     }
 }
 
-impl<'a> EventGroupChatCreatedBuilder<'a, event_group_chat_created_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> EventGroupChatCreated<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> EventGroupChatCreatedBuilder<event_group_chat_created_state::Empty, S> {
+        EventGroupChatCreatedBuilder::builder()
+    }
+}
+
+impl
+    EventGroupChatCreatedBuilder<event_group_chat_created_state::Empty, jacquard_common::DefaultStr>
+{
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         EventGroupChatCreatedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatCreatedBuilder<'a, S>
+impl<S: jacquard_common::BosStr>
+    EventGroupChatCreatedBuilder<event_group_chat_created_state::Empty, S>
+{
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        EventGroupChatCreatedBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> EventGroupChatCreatedBuilder<St, S>
 where
-    S: event_group_chat_created_state::State,
-    S::ActorDid: event_group_chat_created_state::IsUnset,
+    St: event_group_chat_created_state::State,
+    St::ActorDid: event_group_chat_created_state::IsUnset,
 {
     /// Set the `actorDid` field (required)
     pub fn actor_did(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> EventGroupChatCreatedBuilder<'a, event_group_chat_created_state::SetActorDid<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> EventGroupChatCreatedBuilder<event_group_chat_created_state::SetActorDid<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         EventGroupChatCreatedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatCreatedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatCreatedBuilder<St, S>
 where
-    S: event_group_chat_created_state::State,
-    S::ConvoCreatedAt: event_group_chat_created_state::IsUnset,
+    St: event_group_chat_created_state::State,
+    St::ConvoCreatedAt: event_group_chat_created_state::IsUnset,
 {
     /// Set the `convoCreatedAt` field (required)
     pub fn convo_created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> EventGroupChatCreatedBuilder<'a, event_group_chat_created_state::SetConvoCreatedAt<S>>
+    ) -> EventGroupChatCreatedBuilder<event_group_chat_created_state::SetConvoCreatedAt<St>, S>
     {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        self._fields.1 = ::core::option::Option::Some(value.into());
         EventGroupChatCreatedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatCreatedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatCreatedBuilder<St, S>
 where
-    S: event_group_chat_created_state::State,
-    S::ConvoId: event_group_chat_created_state::IsUnset,
+    St: event_group_chat_created_state::State,
+    St::ConvoId: event_group_chat_created_state::IsUnset,
 {
     /// Set the `convoId` field (required)
     pub fn convo_id(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> EventGroupChatCreatedBuilder<'a, event_group_chat_created_state::SetConvoId<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> EventGroupChatCreatedBuilder<event_group_chat_created_state::SetConvoId<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         EventGroupChatCreatedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatCreatedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatCreatedBuilder<St, S>
 where
-    S: event_group_chat_created_state::State,
-    S::CreatedAt: event_group_chat_created_state::IsUnset,
+    St: event_group_chat_created_state::State,
+    St::CreatedAt: event_group_chat_created_state::IsUnset,
 {
     /// Set the `createdAt` field (required)
     pub fn created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> EventGroupChatCreatedBuilder<'a, event_group_chat_created_state::SetCreatedAt<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+    ) -> EventGroupChatCreatedBuilder<event_group_chat_created_state::SetCreatedAt<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
         EventGroupChatCreatedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatCreatedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatCreatedBuilder<St, S>
 where
-    S: event_group_chat_created_state::State,
-    S::GroupMemberCount: event_group_chat_created_state::IsUnset,
+    St: event_group_chat_created_state::State,
+    St::GroupMemberCount: event_group_chat_created_state::IsUnset,
 {
     /// Set the `groupMemberCount` field (required)
     pub fn group_member_count(
         mut self,
         value: impl Into<i64>,
-    ) -> EventGroupChatCreatedBuilder<'a, event_group_chat_created_state::SetGroupMemberCount<S>>
+    ) -> EventGroupChatCreatedBuilder<event_group_chat_created_state::SetGroupMemberCount<St>, S>
     {
-        self.__unsafe_private_named.4 = ::core::option::Option::Some(value.into());
+        self._fields.4 = ::core::option::Option::Some(value.into());
         EventGroupChatCreatedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatCreatedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatCreatedBuilder<St, S>
 where
-    S: event_group_chat_created_state::State,
-    S::GroupName: event_group_chat_created_state::IsUnset,
+    St: event_group_chat_created_state::State,
+    St::GroupName: event_group_chat_created_state::IsUnset,
 {
     /// Set the `groupName` field (required)
     pub fn group_name(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> EventGroupChatCreatedBuilder<'a, event_group_chat_created_state::SetGroupName<S>> {
-        self.__unsafe_private_named.5 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> EventGroupChatCreatedBuilder<event_group_chat_created_state::SetGroupName<St>, S> {
+        self._fields.5 = ::core::option::Option::Some(value.into());
         EventGroupChatCreatedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatCreatedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatCreatedBuilder<St, S>
 where
-    S: event_group_chat_created_state::State,
-    S::InitialMemberDids: event_group_chat_created_state::IsUnset,
+    St: event_group_chat_created_state::State,
+    St::InitialMemberDids: event_group_chat_created_state::IsUnset,
 {
     /// Set the `initialMemberDids` field (required)
     pub fn initial_member_dids(
         mut self,
-        value: impl Into<Vec<jacquard_common::types::string::Did<'a>>>,
-    ) -> EventGroupChatCreatedBuilder<'a, event_group_chat_created_state::SetInitialMemberDids<S>>
+        value: impl Into<Vec<jacquard_common::types::string::Did<S>>>,
+    ) -> EventGroupChatCreatedBuilder<event_group_chat_created_state::SetInitialMemberDids<St>, S>
     {
-        self.__unsafe_private_named.6 = ::core::option::Option::Some(value.into());
+        self._fields.6 = ::core::option::Option::Some(value.into());
         EventGroupChatCreatedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatCreatedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatCreatedBuilder<St, S>
 where
-    S: event_group_chat_created_state::State,
-    S::OwnerDid: event_group_chat_created_state::IsUnset,
+    St: event_group_chat_created_state::State,
+    St::OwnerDid: event_group_chat_created_state::IsUnset,
 {
     /// Set the `ownerDid` field (required)
     pub fn owner_did(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> EventGroupChatCreatedBuilder<'a, event_group_chat_created_state::SetOwnerDid<S>> {
-        self.__unsafe_private_named.7 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> EventGroupChatCreatedBuilder<event_group_chat_created_state::SetOwnerDid<St>, S> {
+        self._fields.7 = ::core::option::Option::Some(value.into());
         EventGroupChatCreatedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatCreatedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatCreatedBuilder<St, S>
 where
-    S: event_group_chat_created_state::State,
-    S::Rev: event_group_chat_created_state::IsUnset,
+    St: event_group_chat_created_state::State,
+    St::Rev: event_group_chat_created_state::IsUnset,
 {
     /// Set the `rev` field (required)
     pub fn rev(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> EventGroupChatCreatedBuilder<'a, event_group_chat_created_state::SetRev<S>> {
-        self.__unsafe_private_named.8 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> EventGroupChatCreatedBuilder<event_group_chat_created_state::SetRev<St>, S> {
+        self._fields.8 = ::core::option::Option::Some(value.into());
         EventGroupChatCreatedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatCreatedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatCreatedBuilder<St, S>
 where
-    S: event_group_chat_created_state::State,
-    S::ActorDid: event_group_chat_created_state::IsSet,
-    S::ConvoCreatedAt: event_group_chat_created_state::IsSet,
-    S::ConvoId: event_group_chat_created_state::IsSet,
-    S::CreatedAt: event_group_chat_created_state::IsSet,
-    S::GroupMemberCount: event_group_chat_created_state::IsSet,
-    S::GroupName: event_group_chat_created_state::IsSet,
-    S::InitialMemberDids: event_group_chat_created_state::IsSet,
-    S::OwnerDid: event_group_chat_created_state::IsSet,
-    S::Rev: event_group_chat_created_state::IsSet,
+    St: event_group_chat_created_state::State,
+    St::ActorDid: event_group_chat_created_state::IsSet,
+    St::ConvoCreatedAt: event_group_chat_created_state::IsSet,
+    St::ConvoId: event_group_chat_created_state::IsSet,
+    St::CreatedAt: event_group_chat_created_state::IsSet,
+    St::GroupMemberCount: event_group_chat_created_state::IsSet,
+    St::GroupName: event_group_chat_created_state::IsSet,
+    St::InitialMemberDids: event_group_chat_created_state::IsSet,
+    St::OwnerDid: event_group_chat_created_state::IsSet,
+    St::Rev: event_group_chat_created_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> EventGroupChatCreated<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> EventGroupChatCreated<S> {
         EventGroupChatCreated {
-            actor_did: self.__unsafe_private_named.0.unwrap(),
-            convo_created_at: self.__unsafe_private_named.1.unwrap(),
-            convo_id: self.__unsafe_private_named.2.unwrap(),
-            created_at: self.__unsafe_private_named.3.unwrap(),
-            group_member_count: self.__unsafe_private_named.4.unwrap(),
-            group_name: self.__unsafe_private_named.5.unwrap(),
-            initial_member_dids: self.__unsafe_private_named.6.unwrap(),
-            owner_did: self.__unsafe_private_named.7.unwrap(),
-            rev: self.__unsafe_private_named.8.unwrap(),
+            actor_did: self._fields.0.unwrap(),
+            convo_created_at: self._fields.1.unwrap(),
+            convo_id: self._fields.2.unwrap(),
+            created_at: self._fields.3.unwrap(),
+            group_member_count: self._fields.4.unwrap(),
+            group_name: self._fields.5.unwrap(),
+            initial_member_dids: self._fields.6.unwrap(),
+            owner_did: self._fields.7.unwrap(),
+            rev: self._fields.8.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> EventGroupChatCreated<'a> {
+    ) -> EventGroupChatCreated<S> {
         EventGroupChatCreated {
-            actor_did: self.__unsafe_private_named.0.unwrap(),
-            convo_created_at: self.__unsafe_private_named.1.unwrap(),
-            convo_id: self.__unsafe_private_named.2.unwrap(),
-            created_at: self.__unsafe_private_named.3.unwrap(),
-            group_member_count: self.__unsafe_private_named.4.unwrap(),
-            group_name: self.__unsafe_private_named.5.unwrap(),
-            initial_member_dids: self.__unsafe_private_named.6.unwrap(),
-            owner_did: self.__unsafe_private_named.7.unwrap(),
-            rev: self.__unsafe_private_named.8.unwrap(),
+            actor_did: self._fields.0.unwrap(),
+            convo_created_at: self._fields.1.unwrap(),
+            convo_id: self._fields.2.unwrap(),
+            created_at: self._fields.3.unwrap(),
+            group_member_count: self._fields.4.unwrap(),
+            group_name: self._fields.5.unwrap(),
+            initial_member_dids: self._fields.6.unwrap(),
+            owner_did: self._fields.7.unwrap(),
+            rev: self._fields.8.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for EventGroupChatCreated<'a> {
-    fn nsid() -> &'static str {
-        "chat.bsky.moderation.subscribeModEvents"
-    }
-    fn def_name() -> &'static str {
-        "eventGroupChatCreated"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_chat_bsky_moderation_subscribeModEvents()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-/// Fired when a user requests to join a group chat via an join link that requires approval.
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct EventGroupChatJoinRequest<'a> {
-    /// The DID of the person requesting to join.
-    #[serde(borrow)]
-    pub actor_did: jacquard_common::types::string::Did<'a>,
-    /// When the group was originally created.
-    pub convo_created_at: jacquard_common::types::string::Datetime,
-    #[serde(borrow)]
-    pub convo_id: jacquard_common::CowStr<'a>,
-    pub created_at: jacquard_common::types::string::Datetime,
-    /// Current member count at the time of the event.
-    pub group_member_count: i64,
-    #[serde(borrow)]
-    pub group_name: jacquard_common::CowStr<'a>,
-    /// The code of the join link used to request joining.
-    #[serde(borrow)]
-    pub join_link_code: jacquard_common::CowStr<'a>,
-    /// The DID of the group chat owner.
-    #[serde(borrow)]
-    pub owner_did: jacquard_common::types::string::Did<'a>,
-    #[serde(borrow)]
-    pub rev: jacquard_common::CowStr<'a>,
-    /// Whether the requesting member follows the group owner.
-    pub subject_follows_owner: bool,
 }
 
 pub mod event_group_chat_join_request_state {
@@ -3523,153 +4043,153 @@ pub mod event_group_chat_join_request_state {
         type SubjectFollowsOwner = Unset;
     }
     ///State transition - sets the `actor_did` field to Set
-    pub struct SetActorDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetActorDid<S> {}
-    impl<S: State> State for SetActorDid<S> {
+    pub struct SetActorDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetActorDid<St> {}
+    impl<St: State> State for SetActorDid<St> {
         type ActorDid = Set<members::actor_did>;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type JoinLinkCode = S::JoinLinkCode;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
-        type SubjectFollowsOwner = S::SubjectFollowsOwner;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type JoinLinkCode = St::JoinLinkCode;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
+        type SubjectFollowsOwner = St::SubjectFollowsOwner;
     }
     ///State transition - sets the `convo_created_at` field to Set
-    pub struct SetConvoCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoCreatedAt<S> {}
-    impl<S: State> State for SetConvoCreatedAt<S> {
-        type ActorDid = S::ActorDid;
+    pub struct SetConvoCreatedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetConvoCreatedAt<St> {}
+    impl<St: State> State for SetConvoCreatedAt<St> {
+        type ActorDid = St::ActorDid;
         type ConvoCreatedAt = Set<members::convo_created_at>;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type JoinLinkCode = S::JoinLinkCode;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
-        type SubjectFollowsOwner = S::SubjectFollowsOwner;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type JoinLinkCode = St::JoinLinkCode;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
+        type SubjectFollowsOwner = St::SubjectFollowsOwner;
     }
     ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
+    pub struct SetConvoId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetConvoId<St> {}
+    impl<St: State> State for SetConvoId<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
         type ConvoId = Set<members::convo_id>;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type JoinLinkCode = S::JoinLinkCode;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
-        type SubjectFollowsOwner = S::SubjectFollowsOwner;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type JoinLinkCode = St::JoinLinkCode;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
+        type SubjectFollowsOwner = St::SubjectFollowsOwner;
     }
     ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
+    pub struct SetCreatedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCreatedAt<St> {}
+    impl<St: State> State for SetCreatedAt<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
         type CreatedAt = Set<members::created_at>;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type JoinLinkCode = S::JoinLinkCode;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
-        type SubjectFollowsOwner = S::SubjectFollowsOwner;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type JoinLinkCode = St::JoinLinkCode;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
+        type SubjectFollowsOwner = St::SubjectFollowsOwner;
     }
     ///State transition - sets the `group_member_count` field to Set
-    pub struct SetGroupMemberCount<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetGroupMemberCount<S> {}
-    impl<S: State> State for SetGroupMemberCount<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
+    pub struct SetGroupMemberCount<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetGroupMemberCount<St> {}
+    impl<St: State> State for SetGroupMemberCount<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
         type GroupMemberCount = Set<members::group_member_count>;
-        type GroupName = S::GroupName;
-        type JoinLinkCode = S::JoinLinkCode;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
-        type SubjectFollowsOwner = S::SubjectFollowsOwner;
+        type GroupName = St::GroupName;
+        type JoinLinkCode = St::JoinLinkCode;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
+        type SubjectFollowsOwner = St::SubjectFollowsOwner;
     }
     ///State transition - sets the `group_name` field to Set
-    pub struct SetGroupName<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetGroupName<S> {}
-    impl<S: State> State for SetGroupName<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
+    pub struct SetGroupName<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetGroupName<St> {}
+    impl<St: State> State for SetGroupName<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
         type GroupName = Set<members::group_name>;
-        type JoinLinkCode = S::JoinLinkCode;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
-        type SubjectFollowsOwner = S::SubjectFollowsOwner;
+        type JoinLinkCode = St::JoinLinkCode;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
+        type SubjectFollowsOwner = St::SubjectFollowsOwner;
     }
     ///State transition - sets the `join_link_code` field to Set
-    pub struct SetJoinLinkCode<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetJoinLinkCode<S> {}
-    impl<S: State> State for SetJoinLinkCode<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
+    pub struct SetJoinLinkCode<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetJoinLinkCode<St> {}
+    impl<St: State> State for SetJoinLinkCode<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
         type JoinLinkCode = Set<members::join_link_code>;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
-        type SubjectFollowsOwner = S::SubjectFollowsOwner;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
+        type SubjectFollowsOwner = St::SubjectFollowsOwner;
     }
     ///State transition - sets the `owner_did` field to Set
-    pub struct SetOwnerDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetOwnerDid<S> {}
-    impl<S: State> State for SetOwnerDid<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type JoinLinkCode = S::JoinLinkCode;
+    pub struct SetOwnerDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetOwnerDid<St> {}
+    impl<St: State> State for SetOwnerDid<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type JoinLinkCode = St::JoinLinkCode;
         type OwnerDid = Set<members::owner_did>;
-        type Rev = S::Rev;
-        type SubjectFollowsOwner = S::SubjectFollowsOwner;
+        type Rev = St::Rev;
+        type SubjectFollowsOwner = St::SubjectFollowsOwner;
     }
     ///State transition - sets the `rev` field to Set
-    pub struct SetRev<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRev<S> {}
-    impl<S: State> State for SetRev<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type JoinLinkCode = S::JoinLinkCode;
-        type OwnerDid = S::OwnerDid;
+    pub struct SetRev<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRev<St> {}
+    impl<St: State> State for SetRev<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type JoinLinkCode = St::JoinLinkCode;
+        type OwnerDid = St::OwnerDid;
         type Rev = Set<members::rev>;
-        type SubjectFollowsOwner = S::SubjectFollowsOwner;
+        type SubjectFollowsOwner = St::SubjectFollowsOwner;
     }
     ///State transition - sets the `subject_follows_owner` field to Set
-    pub struct SetSubjectFollowsOwner<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetSubjectFollowsOwner<S> {}
-    impl<S: State> State for SetSubjectFollowsOwner<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type JoinLinkCode = S::JoinLinkCode;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
+    pub struct SetSubjectFollowsOwner<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSubjectFollowsOwner<St> {}
+    impl<St: State> State for SetSubjectFollowsOwner<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type JoinLinkCode = St::JoinLinkCode;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
         type SubjectFollowsOwner = Set<members::subject_follows_owner>;
     }
     /// Marker types for field names
@@ -3698,346 +4218,331 @@ pub mod event_group_chat_join_request_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct EventGroupChatJoinRequestBuilder<'a, S: event_group_chat_join_request_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<bool>,
+/// Builder for constructing an instance of this type.
+pub struct EventGroupChatJoinRequestBuilder<
+    St: event_group_chat_join_request_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<i64>,
+        core::option::Option<S>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<S>,
+        core::option::Option<bool>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> EventGroupChatJoinRequest<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> EventGroupChatJoinRequestBuilder<'a, event_group_chat_join_request_state::Empty>
-    {
+impl EventGroupChatJoinRequest<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> EventGroupChatJoinRequestBuilder<
+        event_group_chat_join_request_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         EventGroupChatJoinRequestBuilder::new()
     }
 }
 
-impl<'a> EventGroupChatJoinRequestBuilder<'a, event_group_chat_join_request_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> EventGroupChatJoinRequest<S> {
+    /// Create a new builder for this type
+    pub fn builder(
+    ) -> EventGroupChatJoinRequestBuilder<event_group_chat_join_request_state::Empty, S> {
+        EventGroupChatJoinRequestBuilder::builder()
+    }
+}
+
+impl
+    EventGroupChatJoinRequestBuilder<
+        event_group_chat_join_request_state::Empty,
+        jacquard_common::DefaultStr,
+    >
+{
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         EventGroupChatJoinRequestBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None, None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatJoinRequestBuilder<'a, S>
+impl<S: jacquard_common::BosStr>
+    EventGroupChatJoinRequestBuilder<event_group_chat_join_request_state::Empty, S>
+{
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        EventGroupChatJoinRequestBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> EventGroupChatJoinRequestBuilder<St, S>
 where
-    S: event_group_chat_join_request_state::State,
-    S::ActorDid: event_group_chat_join_request_state::IsUnset,
+    St: event_group_chat_join_request_state::State,
+    St::ActorDid: event_group_chat_join_request_state::IsUnset,
 {
     /// Set the `actorDid` field (required)
     pub fn actor_did(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> EventGroupChatJoinRequestBuilder<'a, event_group_chat_join_request_state::SetActorDid<S>>
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> EventGroupChatJoinRequestBuilder<event_group_chat_join_request_state::SetActorDid<St>, S>
     {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        self._fields.0 = ::core::option::Option::Some(value.into());
         EventGroupChatJoinRequestBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatJoinRequestBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatJoinRequestBuilder<St, S>
 where
-    S: event_group_chat_join_request_state::State,
-    S::ConvoCreatedAt: event_group_chat_join_request_state::IsUnset,
+    St: event_group_chat_join_request_state::State,
+    St::ConvoCreatedAt: event_group_chat_join_request_state::IsUnset,
 {
     /// Set the `convoCreatedAt` field (required)
     pub fn convo_created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
     ) -> EventGroupChatJoinRequestBuilder<
-        'a,
-        event_group_chat_join_request_state::SetConvoCreatedAt<S>,
+        event_group_chat_join_request_state::SetConvoCreatedAt<St>,
+        S,
     > {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        self._fields.1 = ::core::option::Option::Some(value.into());
         EventGroupChatJoinRequestBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatJoinRequestBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatJoinRequestBuilder<St, S>
 where
-    S: event_group_chat_join_request_state::State,
-    S::ConvoId: event_group_chat_join_request_state::IsUnset,
+    St: event_group_chat_join_request_state::State,
+    St::ConvoId: event_group_chat_join_request_state::IsUnset,
 {
     /// Set the `convoId` field (required)
     pub fn convo_id(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> EventGroupChatJoinRequestBuilder<'a, event_group_chat_join_request_state::SetConvoId<S>>
+        value: impl Into<S>,
+    ) -> EventGroupChatJoinRequestBuilder<event_group_chat_join_request_state::SetConvoId<St>, S>
     {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        self._fields.2 = ::core::option::Option::Some(value.into());
         EventGroupChatJoinRequestBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatJoinRequestBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatJoinRequestBuilder<St, S>
 where
-    S: event_group_chat_join_request_state::State,
-    S::CreatedAt: event_group_chat_join_request_state::IsUnset,
+    St: event_group_chat_join_request_state::State,
+    St::CreatedAt: event_group_chat_join_request_state::IsUnset,
 {
     /// Set the `createdAt` field (required)
     pub fn created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> EventGroupChatJoinRequestBuilder<'a, event_group_chat_join_request_state::SetCreatedAt<S>>
+    ) -> EventGroupChatJoinRequestBuilder<event_group_chat_join_request_state::SetCreatedAt<St>, S>
     {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        self._fields.3 = ::core::option::Option::Some(value.into());
         EventGroupChatJoinRequestBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatJoinRequestBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatJoinRequestBuilder<St, S>
 where
-    S: event_group_chat_join_request_state::State,
-    S::GroupMemberCount: event_group_chat_join_request_state::IsUnset,
+    St: event_group_chat_join_request_state::State,
+    St::GroupMemberCount: event_group_chat_join_request_state::IsUnset,
 {
     /// Set the `groupMemberCount` field (required)
     pub fn group_member_count(
         mut self,
         value: impl Into<i64>,
     ) -> EventGroupChatJoinRequestBuilder<
-        'a,
-        event_group_chat_join_request_state::SetGroupMemberCount<S>,
+        event_group_chat_join_request_state::SetGroupMemberCount<St>,
+        S,
     > {
-        self.__unsafe_private_named.4 = ::core::option::Option::Some(value.into());
+        self._fields.4 = ::core::option::Option::Some(value.into());
         EventGroupChatJoinRequestBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatJoinRequestBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatJoinRequestBuilder<St, S>
 where
-    S: event_group_chat_join_request_state::State,
-    S::GroupName: event_group_chat_join_request_state::IsUnset,
+    St: event_group_chat_join_request_state::State,
+    St::GroupName: event_group_chat_join_request_state::IsUnset,
 {
     /// Set the `groupName` field (required)
     pub fn group_name(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> EventGroupChatJoinRequestBuilder<'a, event_group_chat_join_request_state::SetGroupName<S>>
+        value: impl Into<S>,
+    ) -> EventGroupChatJoinRequestBuilder<event_group_chat_join_request_state::SetGroupName<St>, S>
     {
-        self.__unsafe_private_named.5 = ::core::option::Option::Some(value.into());
+        self._fields.5 = ::core::option::Option::Some(value.into());
         EventGroupChatJoinRequestBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatJoinRequestBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatJoinRequestBuilder<St, S>
 where
-    S: event_group_chat_join_request_state::State,
-    S::JoinLinkCode: event_group_chat_join_request_state::IsUnset,
+    St: event_group_chat_join_request_state::State,
+    St::JoinLinkCode: event_group_chat_join_request_state::IsUnset,
 {
     /// Set the `joinLinkCode` field (required)
     pub fn join_link_code(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> EventGroupChatJoinRequestBuilder<'a, event_group_chat_join_request_state::SetJoinLinkCode<S>>
+        value: impl Into<S>,
+    ) -> EventGroupChatJoinRequestBuilder<event_group_chat_join_request_state::SetJoinLinkCode<St>, S>
     {
-        self.__unsafe_private_named.6 = ::core::option::Option::Some(value.into());
+        self._fields.6 = ::core::option::Option::Some(value.into());
         EventGroupChatJoinRequestBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatJoinRequestBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatJoinRequestBuilder<St, S>
 where
-    S: event_group_chat_join_request_state::State,
-    S::OwnerDid: event_group_chat_join_request_state::IsUnset,
+    St: event_group_chat_join_request_state::State,
+    St::OwnerDid: event_group_chat_join_request_state::IsUnset,
 {
     /// Set the `ownerDid` field (required)
     pub fn owner_did(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> EventGroupChatJoinRequestBuilder<'a, event_group_chat_join_request_state::SetOwnerDid<S>>
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> EventGroupChatJoinRequestBuilder<event_group_chat_join_request_state::SetOwnerDid<St>, S>
     {
-        self.__unsafe_private_named.7 = ::core::option::Option::Some(value.into());
+        self._fields.7 = ::core::option::Option::Some(value.into());
         EventGroupChatJoinRequestBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatJoinRequestBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatJoinRequestBuilder<St, S>
 where
-    S: event_group_chat_join_request_state::State,
-    S::Rev: event_group_chat_join_request_state::IsUnset,
+    St: event_group_chat_join_request_state::State,
+    St::Rev: event_group_chat_join_request_state::IsUnset,
 {
     /// Set the `rev` field (required)
     pub fn rev(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> EventGroupChatJoinRequestBuilder<'a, event_group_chat_join_request_state::SetRev<S>> {
-        self.__unsafe_private_named.8 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> EventGroupChatJoinRequestBuilder<event_group_chat_join_request_state::SetRev<St>, S> {
+        self._fields.8 = ::core::option::Option::Some(value.into());
         EventGroupChatJoinRequestBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatJoinRequestBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatJoinRequestBuilder<St, S>
 where
-    S: event_group_chat_join_request_state::State,
-    S::SubjectFollowsOwner: event_group_chat_join_request_state::IsUnset,
+    St: event_group_chat_join_request_state::State,
+    St::SubjectFollowsOwner: event_group_chat_join_request_state::IsUnset,
 {
     /// Set the `subjectFollowsOwner` field (required)
     pub fn subject_follows_owner(
         mut self,
         value: impl Into<bool>,
     ) -> EventGroupChatJoinRequestBuilder<
-        'a,
-        event_group_chat_join_request_state::SetSubjectFollowsOwner<S>,
+        event_group_chat_join_request_state::SetSubjectFollowsOwner<St>,
+        S,
     > {
-        self.__unsafe_private_named.9 = ::core::option::Option::Some(value.into());
+        self._fields.9 = ::core::option::Option::Some(value.into());
         EventGroupChatJoinRequestBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatJoinRequestBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatJoinRequestBuilder<St, S>
 where
-    S: event_group_chat_join_request_state::State,
-    S::ActorDid: event_group_chat_join_request_state::IsSet,
-    S::ConvoCreatedAt: event_group_chat_join_request_state::IsSet,
-    S::ConvoId: event_group_chat_join_request_state::IsSet,
-    S::CreatedAt: event_group_chat_join_request_state::IsSet,
-    S::GroupMemberCount: event_group_chat_join_request_state::IsSet,
-    S::GroupName: event_group_chat_join_request_state::IsSet,
-    S::JoinLinkCode: event_group_chat_join_request_state::IsSet,
-    S::OwnerDid: event_group_chat_join_request_state::IsSet,
-    S::Rev: event_group_chat_join_request_state::IsSet,
-    S::SubjectFollowsOwner: event_group_chat_join_request_state::IsSet,
+    St: event_group_chat_join_request_state::State,
+    St::ActorDid: event_group_chat_join_request_state::IsSet,
+    St::ConvoCreatedAt: event_group_chat_join_request_state::IsSet,
+    St::ConvoId: event_group_chat_join_request_state::IsSet,
+    St::CreatedAt: event_group_chat_join_request_state::IsSet,
+    St::GroupMemberCount: event_group_chat_join_request_state::IsSet,
+    St::GroupName: event_group_chat_join_request_state::IsSet,
+    St::JoinLinkCode: event_group_chat_join_request_state::IsSet,
+    St::OwnerDid: event_group_chat_join_request_state::IsSet,
+    St::Rev: event_group_chat_join_request_state::IsSet,
+    St::SubjectFollowsOwner: event_group_chat_join_request_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> EventGroupChatJoinRequest<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> EventGroupChatJoinRequest<S> {
         EventGroupChatJoinRequest {
-            actor_did: self.__unsafe_private_named.0.unwrap(),
-            convo_created_at: self.__unsafe_private_named.1.unwrap(),
-            convo_id: self.__unsafe_private_named.2.unwrap(),
-            created_at: self.__unsafe_private_named.3.unwrap(),
-            group_member_count: self.__unsafe_private_named.4.unwrap(),
-            group_name: self.__unsafe_private_named.5.unwrap(),
-            join_link_code: self.__unsafe_private_named.6.unwrap(),
-            owner_did: self.__unsafe_private_named.7.unwrap(),
-            rev: self.__unsafe_private_named.8.unwrap(),
-            subject_follows_owner: self.__unsafe_private_named.9.unwrap(),
+            actor_did: self._fields.0.unwrap(),
+            convo_created_at: self._fields.1.unwrap(),
+            convo_id: self._fields.2.unwrap(),
+            created_at: self._fields.3.unwrap(),
+            group_member_count: self._fields.4.unwrap(),
+            group_name: self._fields.5.unwrap(),
+            join_link_code: self._fields.6.unwrap(),
+            owner_did: self._fields.7.unwrap(),
+            rev: self._fields.8.unwrap(),
+            subject_follows_owner: self._fields.9.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> EventGroupChatJoinRequest<'a> {
+    ) -> EventGroupChatJoinRequest<S> {
         EventGroupChatJoinRequest {
-            actor_did: self.__unsafe_private_named.0.unwrap(),
-            convo_created_at: self.__unsafe_private_named.1.unwrap(),
-            convo_id: self.__unsafe_private_named.2.unwrap(),
-            created_at: self.__unsafe_private_named.3.unwrap(),
-            group_member_count: self.__unsafe_private_named.4.unwrap(),
-            group_name: self.__unsafe_private_named.5.unwrap(),
-            join_link_code: self.__unsafe_private_named.6.unwrap(),
-            owner_did: self.__unsafe_private_named.7.unwrap(),
-            rev: self.__unsafe_private_named.8.unwrap(),
-            subject_follows_owner: self.__unsafe_private_named.9.unwrap(),
+            actor_did: self._fields.0.unwrap(),
+            convo_created_at: self._fields.1.unwrap(),
+            convo_id: self._fields.2.unwrap(),
+            created_at: self._fields.3.unwrap(),
+            group_member_count: self._fields.4.unwrap(),
+            group_name: self._fields.5.unwrap(),
+            join_link_code: self._fields.6.unwrap(),
+            owner_did: self._fields.7.unwrap(),
+            rev: self._fields.8.unwrap(),
+            subject_follows_owner: self._fields.9.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for EventGroupChatJoinRequest<'a> {
-    fn nsid() -> &'static str {
-        "chat.bsky.moderation.subscribeModEvents"
-    }
-    fn def_name() -> &'static str {
-        "eventGroupChatJoinRequest"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_chat_bsky_moderation_subscribeModEvents()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-/// Fired when a join request is approved by the group owner.
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct EventGroupChatJoinRequestApproved<'a> {
-    /// The DID of the owner approving the request.
-    #[serde(borrow)]
-    pub actor_did: jacquard_common::types::string::Did<'a>,
-    /// When the group was originally created.
-    pub convo_created_at: jacquard_common::types::string::Datetime,
-    #[serde(borrow)]
-    pub convo_id: jacquard_common::CowStr<'a>,
-    pub created_at: jacquard_common::types::string::Datetime,
-    /// Current member count at the time of the event.
-    pub group_member_count: i64,
-    #[serde(borrow)]
-    pub group_name: jacquard_common::CowStr<'a>,
-    /// The DID of the group chat owner.
-    #[serde(borrow)]
-    pub owner_did: jacquard_common::types::string::Did<'a>,
-    #[serde(borrow)]
-    pub rev: jacquard_common::CowStr<'a>,
-    /// The DID of the member whose request was approved.
-    #[serde(borrow)]
-    pub subject_did: jacquard_common::types::string::Did<'a>,
 }
 
 pub mod event_group_chat_join_request_approved_state {
@@ -4075,129 +4580,129 @@ pub mod event_group_chat_join_request_approved_state {
         type SubjectDid = Unset;
     }
     ///State transition - sets the `actor_did` field to Set
-    pub struct SetActorDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetActorDid<S> {}
-    impl<S: State> State for SetActorDid<S> {
+    pub struct SetActorDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetActorDid<St> {}
+    impl<St: State> State for SetActorDid<St> {
         type ActorDid = Set<members::actor_did>;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
-        type SubjectDid = S::SubjectDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
+        type SubjectDid = St::SubjectDid;
     }
     ///State transition - sets the `convo_created_at` field to Set
-    pub struct SetConvoCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoCreatedAt<S> {}
-    impl<S: State> State for SetConvoCreatedAt<S> {
-        type ActorDid = S::ActorDid;
+    pub struct SetConvoCreatedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetConvoCreatedAt<St> {}
+    impl<St: State> State for SetConvoCreatedAt<St> {
+        type ActorDid = St::ActorDid;
         type ConvoCreatedAt = Set<members::convo_created_at>;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
-        type SubjectDid = S::SubjectDid;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
+        type SubjectDid = St::SubjectDid;
     }
     ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
+    pub struct SetConvoId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetConvoId<St> {}
+    impl<St: State> State for SetConvoId<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
         type ConvoId = Set<members::convo_id>;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
-        type SubjectDid = S::SubjectDid;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
+        type SubjectDid = St::SubjectDid;
     }
     ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
+    pub struct SetCreatedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCreatedAt<St> {}
+    impl<St: State> State for SetCreatedAt<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
         type CreatedAt = Set<members::created_at>;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
-        type SubjectDid = S::SubjectDid;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
+        type SubjectDid = St::SubjectDid;
     }
     ///State transition - sets the `group_member_count` field to Set
-    pub struct SetGroupMemberCount<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetGroupMemberCount<S> {}
-    impl<S: State> State for SetGroupMemberCount<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
+    pub struct SetGroupMemberCount<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetGroupMemberCount<St> {}
+    impl<St: State> State for SetGroupMemberCount<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
         type GroupMemberCount = Set<members::group_member_count>;
-        type GroupName = S::GroupName;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
-        type SubjectDid = S::SubjectDid;
+        type GroupName = St::GroupName;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
+        type SubjectDid = St::SubjectDid;
     }
     ///State transition - sets the `group_name` field to Set
-    pub struct SetGroupName<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetGroupName<S> {}
-    impl<S: State> State for SetGroupName<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
+    pub struct SetGroupName<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetGroupName<St> {}
+    impl<St: State> State for SetGroupName<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
         type GroupName = Set<members::group_name>;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
-        type SubjectDid = S::SubjectDid;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
+        type SubjectDid = St::SubjectDid;
     }
     ///State transition - sets the `owner_did` field to Set
-    pub struct SetOwnerDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetOwnerDid<S> {}
-    impl<S: State> State for SetOwnerDid<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
+    pub struct SetOwnerDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetOwnerDid<St> {}
+    impl<St: State> State for SetOwnerDid<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
         type OwnerDid = Set<members::owner_did>;
-        type Rev = S::Rev;
-        type SubjectDid = S::SubjectDid;
+        type Rev = St::Rev;
+        type SubjectDid = St::SubjectDid;
     }
     ///State transition - sets the `rev` field to Set
-    pub struct SetRev<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRev<S> {}
-    impl<S: State> State for SetRev<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type OwnerDid = S::OwnerDid;
+    pub struct SetRev<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRev<St> {}
+    impl<St: State> State for SetRev<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type OwnerDid = St::OwnerDid;
         type Rev = Set<members::rev>;
-        type SubjectDid = S::SubjectDid;
+        type SubjectDid = St::SubjectDid;
     }
     ///State transition - sets the `subject_did` field to Set
-    pub struct SetSubjectDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetSubjectDid<S> {}
-    impl<S: State> State for SetSubjectDid<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
+    pub struct SetSubjectDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSubjectDid<St> {}
+    impl<St: State> State for SetSubjectDid<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
         type SubjectDid = Set<members::subject_did>;
     }
     /// Marker types for field names
@@ -4224,345 +4729,322 @@ pub mod event_group_chat_join_request_approved_state {
     }
 }
 
-/// Builder for constructing an instance of this type
+/// Builder for constructing an instance of this type.
 pub struct EventGroupChatJoinRequestApprovedBuilder<
-    'a,
-    S: event_group_chat_join_request_approved_state::State,
+    St: event_group_chat_join_request_approved_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
 > {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<i64>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> EventGroupChatJoinRequestApproved<'a> {
-    /// Create a new builder for this type
+impl EventGroupChatJoinRequestApproved<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
     pub fn new() -> EventGroupChatJoinRequestApprovedBuilder<
-        'a,
         event_group_chat_join_request_approved_state::Empty,
+        jacquard_common::DefaultStr,
     > {
         EventGroupChatJoinRequestApprovedBuilder::new()
     }
 }
 
-impl<'a>
-    EventGroupChatJoinRequestApprovedBuilder<
-        'a,
+impl<S: jacquard_common::BosStr> EventGroupChatJoinRequestApproved<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> EventGroupChatJoinRequestApprovedBuilder<
         event_group_chat_join_request_approved_state::Empty,
+        S,
+    > {
+        EventGroupChatJoinRequestApprovedBuilder::builder()
+    }
+}
+
+impl
+    EventGroupChatJoinRequestApprovedBuilder<
+        event_group_chat_join_request_approved_state::Empty,
+        jacquard_common::DefaultStr,
     >
 {
-    /// Create a new builder with all fields unset
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         EventGroupChatJoinRequestApprovedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatJoinRequestApprovedBuilder<'a, S>
+impl<S: jacquard_common::BosStr>
+    EventGroupChatJoinRequestApprovedBuilder<event_group_chat_join_request_approved_state::Empty, S>
+{
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        EventGroupChatJoinRequestApprovedBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> EventGroupChatJoinRequestApprovedBuilder<St, S>
 where
-    S: event_group_chat_join_request_approved_state::State,
-    S::ActorDid: event_group_chat_join_request_approved_state::IsUnset,
+    St: event_group_chat_join_request_approved_state::State,
+    St::ActorDid: event_group_chat_join_request_approved_state::IsUnset,
 {
     /// Set the `actorDid` field (required)
     pub fn actor_did(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
+        value: impl Into<jacquard_common::types::string::Did<S>>,
     ) -> EventGroupChatJoinRequestApprovedBuilder<
-        'a,
-        event_group_chat_join_request_approved_state::SetActorDid<S>,
+        event_group_chat_join_request_approved_state::SetActorDid<St>,
+        S,
     > {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        self._fields.0 = ::core::option::Option::Some(value.into());
         EventGroupChatJoinRequestApprovedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatJoinRequestApprovedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatJoinRequestApprovedBuilder<St, S>
 where
-    S: event_group_chat_join_request_approved_state::State,
-    S::ConvoCreatedAt: event_group_chat_join_request_approved_state::IsUnset,
+    St: event_group_chat_join_request_approved_state::State,
+    St::ConvoCreatedAt: event_group_chat_join_request_approved_state::IsUnset,
 {
     /// Set the `convoCreatedAt` field (required)
     pub fn convo_created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
     ) -> EventGroupChatJoinRequestApprovedBuilder<
-        'a,
-        event_group_chat_join_request_approved_state::SetConvoCreatedAt<S>,
+        event_group_chat_join_request_approved_state::SetConvoCreatedAt<St>,
+        S,
     > {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        self._fields.1 = ::core::option::Option::Some(value.into());
         EventGroupChatJoinRequestApprovedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatJoinRequestApprovedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatJoinRequestApprovedBuilder<St, S>
 where
-    S: event_group_chat_join_request_approved_state::State,
-    S::ConvoId: event_group_chat_join_request_approved_state::IsUnset,
+    St: event_group_chat_join_request_approved_state::State,
+    St::ConvoId: event_group_chat_join_request_approved_state::IsUnset,
 {
     /// Set the `convoId` field (required)
     pub fn convo_id(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
+        value: impl Into<S>,
     ) -> EventGroupChatJoinRequestApprovedBuilder<
-        'a,
-        event_group_chat_join_request_approved_state::SetConvoId<S>,
+        event_group_chat_join_request_approved_state::SetConvoId<St>,
+        S,
     > {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        self._fields.2 = ::core::option::Option::Some(value.into());
         EventGroupChatJoinRequestApprovedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatJoinRequestApprovedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatJoinRequestApprovedBuilder<St, S>
 where
-    S: event_group_chat_join_request_approved_state::State,
-    S::CreatedAt: event_group_chat_join_request_approved_state::IsUnset,
+    St: event_group_chat_join_request_approved_state::State,
+    St::CreatedAt: event_group_chat_join_request_approved_state::IsUnset,
 {
     /// Set the `createdAt` field (required)
     pub fn created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
     ) -> EventGroupChatJoinRequestApprovedBuilder<
-        'a,
-        event_group_chat_join_request_approved_state::SetCreatedAt<S>,
+        event_group_chat_join_request_approved_state::SetCreatedAt<St>,
+        S,
     > {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        self._fields.3 = ::core::option::Option::Some(value.into());
         EventGroupChatJoinRequestApprovedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatJoinRequestApprovedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatJoinRequestApprovedBuilder<St, S>
 where
-    S: event_group_chat_join_request_approved_state::State,
-    S::GroupMemberCount: event_group_chat_join_request_approved_state::IsUnset,
+    St: event_group_chat_join_request_approved_state::State,
+    St::GroupMemberCount: event_group_chat_join_request_approved_state::IsUnset,
 {
     /// Set the `groupMemberCount` field (required)
     pub fn group_member_count(
         mut self,
         value: impl Into<i64>,
     ) -> EventGroupChatJoinRequestApprovedBuilder<
-        'a,
-        event_group_chat_join_request_approved_state::SetGroupMemberCount<S>,
+        event_group_chat_join_request_approved_state::SetGroupMemberCount<St>,
+        S,
     > {
-        self.__unsafe_private_named.4 = ::core::option::Option::Some(value.into());
+        self._fields.4 = ::core::option::Option::Some(value.into());
         EventGroupChatJoinRequestApprovedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatJoinRequestApprovedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatJoinRequestApprovedBuilder<St, S>
 where
-    S: event_group_chat_join_request_approved_state::State,
-    S::GroupName: event_group_chat_join_request_approved_state::IsUnset,
+    St: event_group_chat_join_request_approved_state::State,
+    St::GroupName: event_group_chat_join_request_approved_state::IsUnset,
 {
     /// Set the `groupName` field (required)
     pub fn group_name(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
+        value: impl Into<S>,
     ) -> EventGroupChatJoinRequestApprovedBuilder<
-        'a,
-        event_group_chat_join_request_approved_state::SetGroupName<S>,
+        event_group_chat_join_request_approved_state::SetGroupName<St>,
+        S,
     > {
-        self.__unsafe_private_named.5 = ::core::option::Option::Some(value.into());
+        self._fields.5 = ::core::option::Option::Some(value.into());
         EventGroupChatJoinRequestApprovedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatJoinRequestApprovedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatJoinRequestApprovedBuilder<St, S>
 where
-    S: event_group_chat_join_request_approved_state::State,
-    S::OwnerDid: event_group_chat_join_request_approved_state::IsUnset,
+    St: event_group_chat_join_request_approved_state::State,
+    St::OwnerDid: event_group_chat_join_request_approved_state::IsUnset,
 {
     /// Set the `ownerDid` field (required)
     pub fn owner_did(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
+        value: impl Into<jacquard_common::types::string::Did<S>>,
     ) -> EventGroupChatJoinRequestApprovedBuilder<
-        'a,
-        event_group_chat_join_request_approved_state::SetOwnerDid<S>,
+        event_group_chat_join_request_approved_state::SetOwnerDid<St>,
+        S,
     > {
-        self.__unsafe_private_named.6 = ::core::option::Option::Some(value.into());
+        self._fields.6 = ::core::option::Option::Some(value.into());
         EventGroupChatJoinRequestApprovedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatJoinRequestApprovedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatJoinRequestApprovedBuilder<St, S>
 where
-    S: event_group_chat_join_request_approved_state::State,
-    S::Rev: event_group_chat_join_request_approved_state::IsUnset,
+    St: event_group_chat_join_request_approved_state::State,
+    St::Rev: event_group_chat_join_request_approved_state::IsUnset,
 {
     /// Set the `rev` field (required)
     pub fn rev(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
+        value: impl Into<S>,
     ) -> EventGroupChatJoinRequestApprovedBuilder<
-        'a,
-        event_group_chat_join_request_approved_state::SetRev<S>,
+        event_group_chat_join_request_approved_state::SetRev<St>,
+        S,
     > {
-        self.__unsafe_private_named.7 = ::core::option::Option::Some(value.into());
+        self._fields.7 = ::core::option::Option::Some(value.into());
         EventGroupChatJoinRequestApprovedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatJoinRequestApprovedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatJoinRequestApprovedBuilder<St, S>
 where
-    S: event_group_chat_join_request_approved_state::State,
-    S::SubjectDid: event_group_chat_join_request_approved_state::IsUnset,
+    St: event_group_chat_join_request_approved_state::State,
+    St::SubjectDid: event_group_chat_join_request_approved_state::IsUnset,
 {
     /// Set the `subjectDid` field (required)
     pub fn subject_did(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
+        value: impl Into<jacquard_common::types::string::Did<S>>,
     ) -> EventGroupChatJoinRequestApprovedBuilder<
-        'a,
-        event_group_chat_join_request_approved_state::SetSubjectDid<S>,
+        event_group_chat_join_request_approved_state::SetSubjectDid<St>,
+        S,
     > {
-        self.__unsafe_private_named.8 = ::core::option::Option::Some(value.into());
+        self._fields.8 = ::core::option::Option::Some(value.into());
         EventGroupChatJoinRequestApprovedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatJoinRequestApprovedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatJoinRequestApprovedBuilder<St, S>
 where
-    S: event_group_chat_join_request_approved_state::State,
-    S::ActorDid: event_group_chat_join_request_approved_state::IsSet,
-    S::ConvoCreatedAt: event_group_chat_join_request_approved_state::IsSet,
-    S::ConvoId: event_group_chat_join_request_approved_state::IsSet,
-    S::CreatedAt: event_group_chat_join_request_approved_state::IsSet,
-    S::GroupMemberCount: event_group_chat_join_request_approved_state::IsSet,
-    S::GroupName: event_group_chat_join_request_approved_state::IsSet,
-    S::OwnerDid: event_group_chat_join_request_approved_state::IsSet,
-    S::Rev: event_group_chat_join_request_approved_state::IsSet,
-    S::SubjectDid: event_group_chat_join_request_approved_state::IsSet,
+    St: event_group_chat_join_request_approved_state::State,
+    St::ActorDid: event_group_chat_join_request_approved_state::IsSet,
+    St::ConvoCreatedAt: event_group_chat_join_request_approved_state::IsSet,
+    St::ConvoId: event_group_chat_join_request_approved_state::IsSet,
+    St::CreatedAt: event_group_chat_join_request_approved_state::IsSet,
+    St::GroupMemberCount: event_group_chat_join_request_approved_state::IsSet,
+    St::GroupName: event_group_chat_join_request_approved_state::IsSet,
+    St::OwnerDid: event_group_chat_join_request_approved_state::IsSet,
+    St::Rev: event_group_chat_join_request_approved_state::IsSet,
+    St::SubjectDid: event_group_chat_join_request_approved_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> EventGroupChatJoinRequestApproved<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> EventGroupChatJoinRequestApproved<S> {
         EventGroupChatJoinRequestApproved {
-            actor_did: self.__unsafe_private_named.0.unwrap(),
-            convo_created_at: self.__unsafe_private_named.1.unwrap(),
-            convo_id: self.__unsafe_private_named.2.unwrap(),
-            created_at: self.__unsafe_private_named.3.unwrap(),
-            group_member_count: self.__unsafe_private_named.4.unwrap(),
-            group_name: self.__unsafe_private_named.5.unwrap(),
-            owner_did: self.__unsafe_private_named.6.unwrap(),
-            rev: self.__unsafe_private_named.7.unwrap(),
-            subject_did: self.__unsafe_private_named.8.unwrap(),
+            actor_did: self._fields.0.unwrap(),
+            convo_created_at: self._fields.1.unwrap(),
+            convo_id: self._fields.2.unwrap(),
+            created_at: self._fields.3.unwrap(),
+            group_member_count: self._fields.4.unwrap(),
+            group_name: self._fields.5.unwrap(),
+            owner_did: self._fields.6.unwrap(),
+            rev: self._fields.7.unwrap(),
+            subject_did: self._fields.8.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> EventGroupChatJoinRequestApproved<'a> {
+    ) -> EventGroupChatJoinRequestApproved<S> {
         EventGroupChatJoinRequestApproved {
-            actor_did: self.__unsafe_private_named.0.unwrap(),
-            convo_created_at: self.__unsafe_private_named.1.unwrap(),
-            convo_id: self.__unsafe_private_named.2.unwrap(),
-            created_at: self.__unsafe_private_named.3.unwrap(),
-            group_member_count: self.__unsafe_private_named.4.unwrap(),
-            group_name: self.__unsafe_private_named.5.unwrap(),
-            owner_did: self.__unsafe_private_named.6.unwrap(),
-            rev: self.__unsafe_private_named.7.unwrap(),
-            subject_did: self.__unsafe_private_named.8.unwrap(),
+            actor_did: self._fields.0.unwrap(),
+            convo_created_at: self._fields.1.unwrap(),
+            convo_id: self._fields.2.unwrap(),
+            created_at: self._fields.3.unwrap(),
+            group_member_count: self._fields.4.unwrap(),
+            group_name: self._fields.5.unwrap(),
+            owner_did: self._fields.6.unwrap(),
+            rev: self._fields.7.unwrap(),
+            subject_did: self._fields.8.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for EventGroupChatJoinRequestApproved<'a> {
-    fn nsid() -> &'static str {
-        "chat.bsky.moderation.subscribeModEvents"
-    }
-    fn def_name() -> &'static str {
-        "eventGroupChatJoinRequestApproved"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_chat_bsky_moderation_subscribeModEvents()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-/// Fired when a join request is rejected by the group owner.
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct EventGroupChatJoinRequestRejected<'a> {
-    /// The DID of the owner rejecting the request.
-    #[serde(borrow)]
-    pub actor_did: jacquard_common::types::string::Did<'a>,
-    /// When the group was originally created.
-    pub convo_created_at: jacquard_common::types::string::Datetime,
-    #[serde(borrow)]
-    pub convo_id: jacquard_common::CowStr<'a>,
-    pub created_at: jacquard_common::types::string::Datetime,
-    /// Current member count at the time of the event.
-    pub group_member_count: i64,
-    #[serde(borrow)]
-    pub group_name: jacquard_common::CowStr<'a>,
-    /// The DID of the group chat owner.
-    #[serde(borrow)]
-    pub owner_did: jacquard_common::types::string::Did<'a>,
-    #[serde(borrow)]
-    pub rev: jacquard_common::CowStr<'a>,
-    /// The DID of the member whose request was rejected.
-    #[serde(borrow)]
-    pub subject_did: jacquard_common::types::string::Did<'a>,
 }
 
 pub mod event_group_chat_join_request_rejected_state {
@@ -4600,129 +5082,129 @@ pub mod event_group_chat_join_request_rejected_state {
         type SubjectDid = Unset;
     }
     ///State transition - sets the `actor_did` field to Set
-    pub struct SetActorDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetActorDid<S> {}
-    impl<S: State> State for SetActorDid<S> {
+    pub struct SetActorDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetActorDid<St> {}
+    impl<St: State> State for SetActorDid<St> {
         type ActorDid = Set<members::actor_did>;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
-        type SubjectDid = S::SubjectDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
+        type SubjectDid = St::SubjectDid;
     }
     ///State transition - sets the `convo_created_at` field to Set
-    pub struct SetConvoCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoCreatedAt<S> {}
-    impl<S: State> State for SetConvoCreatedAt<S> {
-        type ActorDid = S::ActorDid;
+    pub struct SetConvoCreatedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetConvoCreatedAt<St> {}
+    impl<St: State> State for SetConvoCreatedAt<St> {
+        type ActorDid = St::ActorDid;
         type ConvoCreatedAt = Set<members::convo_created_at>;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
-        type SubjectDid = S::SubjectDid;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
+        type SubjectDid = St::SubjectDid;
     }
     ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
+    pub struct SetConvoId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetConvoId<St> {}
+    impl<St: State> State for SetConvoId<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
         type ConvoId = Set<members::convo_id>;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
-        type SubjectDid = S::SubjectDid;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
+        type SubjectDid = St::SubjectDid;
     }
     ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
+    pub struct SetCreatedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCreatedAt<St> {}
+    impl<St: State> State for SetCreatedAt<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
         type CreatedAt = Set<members::created_at>;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
-        type SubjectDid = S::SubjectDid;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
+        type SubjectDid = St::SubjectDid;
     }
     ///State transition - sets the `group_member_count` field to Set
-    pub struct SetGroupMemberCount<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetGroupMemberCount<S> {}
-    impl<S: State> State for SetGroupMemberCount<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
+    pub struct SetGroupMemberCount<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetGroupMemberCount<St> {}
+    impl<St: State> State for SetGroupMemberCount<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
         type GroupMemberCount = Set<members::group_member_count>;
-        type GroupName = S::GroupName;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
-        type SubjectDid = S::SubjectDid;
+        type GroupName = St::GroupName;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
+        type SubjectDid = St::SubjectDid;
     }
     ///State transition - sets the `group_name` field to Set
-    pub struct SetGroupName<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetGroupName<S> {}
-    impl<S: State> State for SetGroupName<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
+    pub struct SetGroupName<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetGroupName<St> {}
+    impl<St: State> State for SetGroupName<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
         type GroupName = Set<members::group_name>;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
-        type SubjectDid = S::SubjectDid;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
+        type SubjectDid = St::SubjectDid;
     }
     ///State transition - sets the `owner_did` field to Set
-    pub struct SetOwnerDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetOwnerDid<S> {}
-    impl<S: State> State for SetOwnerDid<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
+    pub struct SetOwnerDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetOwnerDid<St> {}
+    impl<St: State> State for SetOwnerDid<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
         type OwnerDid = Set<members::owner_did>;
-        type Rev = S::Rev;
-        type SubjectDid = S::SubjectDid;
+        type Rev = St::Rev;
+        type SubjectDid = St::SubjectDid;
     }
     ///State transition - sets the `rev` field to Set
-    pub struct SetRev<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRev<S> {}
-    impl<S: State> State for SetRev<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type OwnerDid = S::OwnerDid;
+    pub struct SetRev<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRev<St> {}
+    impl<St: State> State for SetRev<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type OwnerDid = St::OwnerDid;
         type Rev = Set<members::rev>;
-        type SubjectDid = S::SubjectDid;
+        type SubjectDid = St::SubjectDid;
     }
     ///State transition - sets the `subject_did` field to Set
-    pub struct SetSubjectDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetSubjectDid<S> {}
-    impl<S: State> State for SetSubjectDid<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
+    pub struct SetSubjectDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSubjectDid<St> {}
+    impl<St: State> State for SetSubjectDid<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
         type SubjectDid = Set<members::subject_did>;
     }
     /// Marker types for field names
@@ -4749,349 +5231,322 @@ pub mod event_group_chat_join_request_rejected_state {
     }
 }
 
-/// Builder for constructing an instance of this type
+/// Builder for constructing an instance of this type.
 pub struct EventGroupChatJoinRequestRejectedBuilder<
-    'a,
-    S: event_group_chat_join_request_rejected_state::State,
+    St: event_group_chat_join_request_rejected_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
 > {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<i64>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> EventGroupChatJoinRequestRejected<'a> {
-    /// Create a new builder for this type
+impl EventGroupChatJoinRequestRejected<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
     pub fn new() -> EventGroupChatJoinRequestRejectedBuilder<
-        'a,
         event_group_chat_join_request_rejected_state::Empty,
+        jacquard_common::DefaultStr,
     > {
         EventGroupChatJoinRequestRejectedBuilder::new()
     }
 }
 
-impl<'a>
-    EventGroupChatJoinRequestRejectedBuilder<
-        'a,
+impl<S: jacquard_common::BosStr> EventGroupChatJoinRequestRejected<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> EventGroupChatJoinRequestRejectedBuilder<
         event_group_chat_join_request_rejected_state::Empty,
+        S,
+    > {
+        EventGroupChatJoinRequestRejectedBuilder::builder()
+    }
+}
+
+impl
+    EventGroupChatJoinRequestRejectedBuilder<
+        event_group_chat_join_request_rejected_state::Empty,
+        jacquard_common::DefaultStr,
     >
 {
-    /// Create a new builder with all fields unset
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         EventGroupChatJoinRequestRejectedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatJoinRequestRejectedBuilder<'a, S>
+impl<S: jacquard_common::BosStr>
+    EventGroupChatJoinRequestRejectedBuilder<event_group_chat_join_request_rejected_state::Empty, S>
+{
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        EventGroupChatJoinRequestRejectedBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> EventGroupChatJoinRequestRejectedBuilder<St, S>
 where
-    S: event_group_chat_join_request_rejected_state::State,
-    S::ActorDid: event_group_chat_join_request_rejected_state::IsUnset,
+    St: event_group_chat_join_request_rejected_state::State,
+    St::ActorDid: event_group_chat_join_request_rejected_state::IsUnset,
 {
     /// Set the `actorDid` field (required)
     pub fn actor_did(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
+        value: impl Into<jacquard_common::types::string::Did<S>>,
     ) -> EventGroupChatJoinRequestRejectedBuilder<
-        'a,
-        event_group_chat_join_request_rejected_state::SetActorDid<S>,
+        event_group_chat_join_request_rejected_state::SetActorDid<St>,
+        S,
     > {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        self._fields.0 = ::core::option::Option::Some(value.into());
         EventGroupChatJoinRequestRejectedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatJoinRequestRejectedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatJoinRequestRejectedBuilder<St, S>
 where
-    S: event_group_chat_join_request_rejected_state::State,
-    S::ConvoCreatedAt: event_group_chat_join_request_rejected_state::IsUnset,
+    St: event_group_chat_join_request_rejected_state::State,
+    St::ConvoCreatedAt: event_group_chat_join_request_rejected_state::IsUnset,
 {
     /// Set the `convoCreatedAt` field (required)
     pub fn convo_created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
     ) -> EventGroupChatJoinRequestRejectedBuilder<
-        'a,
-        event_group_chat_join_request_rejected_state::SetConvoCreatedAt<S>,
+        event_group_chat_join_request_rejected_state::SetConvoCreatedAt<St>,
+        S,
     > {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        self._fields.1 = ::core::option::Option::Some(value.into());
         EventGroupChatJoinRequestRejectedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatJoinRequestRejectedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatJoinRequestRejectedBuilder<St, S>
 where
-    S: event_group_chat_join_request_rejected_state::State,
-    S::ConvoId: event_group_chat_join_request_rejected_state::IsUnset,
+    St: event_group_chat_join_request_rejected_state::State,
+    St::ConvoId: event_group_chat_join_request_rejected_state::IsUnset,
 {
     /// Set the `convoId` field (required)
     pub fn convo_id(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
+        value: impl Into<S>,
     ) -> EventGroupChatJoinRequestRejectedBuilder<
-        'a,
-        event_group_chat_join_request_rejected_state::SetConvoId<S>,
+        event_group_chat_join_request_rejected_state::SetConvoId<St>,
+        S,
     > {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        self._fields.2 = ::core::option::Option::Some(value.into());
         EventGroupChatJoinRequestRejectedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatJoinRequestRejectedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatJoinRequestRejectedBuilder<St, S>
 where
-    S: event_group_chat_join_request_rejected_state::State,
-    S::CreatedAt: event_group_chat_join_request_rejected_state::IsUnset,
+    St: event_group_chat_join_request_rejected_state::State,
+    St::CreatedAt: event_group_chat_join_request_rejected_state::IsUnset,
 {
     /// Set the `createdAt` field (required)
     pub fn created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
     ) -> EventGroupChatJoinRequestRejectedBuilder<
-        'a,
-        event_group_chat_join_request_rejected_state::SetCreatedAt<S>,
+        event_group_chat_join_request_rejected_state::SetCreatedAt<St>,
+        S,
     > {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        self._fields.3 = ::core::option::Option::Some(value.into());
         EventGroupChatJoinRequestRejectedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatJoinRequestRejectedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatJoinRequestRejectedBuilder<St, S>
 where
-    S: event_group_chat_join_request_rejected_state::State,
-    S::GroupMemberCount: event_group_chat_join_request_rejected_state::IsUnset,
+    St: event_group_chat_join_request_rejected_state::State,
+    St::GroupMemberCount: event_group_chat_join_request_rejected_state::IsUnset,
 {
     /// Set the `groupMemberCount` field (required)
     pub fn group_member_count(
         mut self,
         value: impl Into<i64>,
     ) -> EventGroupChatJoinRequestRejectedBuilder<
-        'a,
-        event_group_chat_join_request_rejected_state::SetGroupMemberCount<S>,
+        event_group_chat_join_request_rejected_state::SetGroupMemberCount<St>,
+        S,
     > {
-        self.__unsafe_private_named.4 = ::core::option::Option::Some(value.into());
+        self._fields.4 = ::core::option::Option::Some(value.into());
         EventGroupChatJoinRequestRejectedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatJoinRequestRejectedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatJoinRequestRejectedBuilder<St, S>
 where
-    S: event_group_chat_join_request_rejected_state::State,
-    S::GroupName: event_group_chat_join_request_rejected_state::IsUnset,
+    St: event_group_chat_join_request_rejected_state::State,
+    St::GroupName: event_group_chat_join_request_rejected_state::IsUnset,
 {
     /// Set the `groupName` field (required)
     pub fn group_name(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
+        value: impl Into<S>,
     ) -> EventGroupChatJoinRequestRejectedBuilder<
-        'a,
-        event_group_chat_join_request_rejected_state::SetGroupName<S>,
+        event_group_chat_join_request_rejected_state::SetGroupName<St>,
+        S,
     > {
-        self.__unsafe_private_named.5 = ::core::option::Option::Some(value.into());
+        self._fields.5 = ::core::option::Option::Some(value.into());
         EventGroupChatJoinRequestRejectedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatJoinRequestRejectedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatJoinRequestRejectedBuilder<St, S>
 where
-    S: event_group_chat_join_request_rejected_state::State,
-    S::OwnerDid: event_group_chat_join_request_rejected_state::IsUnset,
+    St: event_group_chat_join_request_rejected_state::State,
+    St::OwnerDid: event_group_chat_join_request_rejected_state::IsUnset,
 {
     /// Set the `ownerDid` field (required)
     pub fn owner_did(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
+        value: impl Into<jacquard_common::types::string::Did<S>>,
     ) -> EventGroupChatJoinRequestRejectedBuilder<
-        'a,
-        event_group_chat_join_request_rejected_state::SetOwnerDid<S>,
+        event_group_chat_join_request_rejected_state::SetOwnerDid<St>,
+        S,
     > {
-        self.__unsafe_private_named.6 = ::core::option::Option::Some(value.into());
+        self._fields.6 = ::core::option::Option::Some(value.into());
         EventGroupChatJoinRequestRejectedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatJoinRequestRejectedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatJoinRequestRejectedBuilder<St, S>
 where
-    S: event_group_chat_join_request_rejected_state::State,
-    S::Rev: event_group_chat_join_request_rejected_state::IsUnset,
+    St: event_group_chat_join_request_rejected_state::State,
+    St::Rev: event_group_chat_join_request_rejected_state::IsUnset,
 {
     /// Set the `rev` field (required)
     pub fn rev(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
+        value: impl Into<S>,
     ) -> EventGroupChatJoinRequestRejectedBuilder<
-        'a,
-        event_group_chat_join_request_rejected_state::SetRev<S>,
+        event_group_chat_join_request_rejected_state::SetRev<St>,
+        S,
     > {
-        self.__unsafe_private_named.7 = ::core::option::Option::Some(value.into());
+        self._fields.7 = ::core::option::Option::Some(value.into());
         EventGroupChatJoinRequestRejectedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatJoinRequestRejectedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatJoinRequestRejectedBuilder<St, S>
 where
-    S: event_group_chat_join_request_rejected_state::State,
-    S::SubjectDid: event_group_chat_join_request_rejected_state::IsUnset,
+    St: event_group_chat_join_request_rejected_state::State,
+    St::SubjectDid: event_group_chat_join_request_rejected_state::IsUnset,
 {
     /// Set the `subjectDid` field (required)
     pub fn subject_did(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
+        value: impl Into<jacquard_common::types::string::Did<S>>,
     ) -> EventGroupChatJoinRequestRejectedBuilder<
-        'a,
-        event_group_chat_join_request_rejected_state::SetSubjectDid<S>,
+        event_group_chat_join_request_rejected_state::SetSubjectDid<St>,
+        S,
     > {
-        self.__unsafe_private_named.8 = ::core::option::Option::Some(value.into());
+        self._fields.8 = ::core::option::Option::Some(value.into());
         EventGroupChatJoinRequestRejectedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatJoinRequestRejectedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatJoinRequestRejectedBuilder<St, S>
 where
-    S: event_group_chat_join_request_rejected_state::State,
-    S::ActorDid: event_group_chat_join_request_rejected_state::IsSet,
-    S::ConvoCreatedAt: event_group_chat_join_request_rejected_state::IsSet,
-    S::ConvoId: event_group_chat_join_request_rejected_state::IsSet,
-    S::CreatedAt: event_group_chat_join_request_rejected_state::IsSet,
-    S::GroupMemberCount: event_group_chat_join_request_rejected_state::IsSet,
-    S::GroupName: event_group_chat_join_request_rejected_state::IsSet,
-    S::OwnerDid: event_group_chat_join_request_rejected_state::IsSet,
-    S::Rev: event_group_chat_join_request_rejected_state::IsSet,
-    S::SubjectDid: event_group_chat_join_request_rejected_state::IsSet,
+    St: event_group_chat_join_request_rejected_state::State,
+    St::ActorDid: event_group_chat_join_request_rejected_state::IsSet,
+    St::ConvoCreatedAt: event_group_chat_join_request_rejected_state::IsSet,
+    St::ConvoId: event_group_chat_join_request_rejected_state::IsSet,
+    St::CreatedAt: event_group_chat_join_request_rejected_state::IsSet,
+    St::GroupMemberCount: event_group_chat_join_request_rejected_state::IsSet,
+    St::GroupName: event_group_chat_join_request_rejected_state::IsSet,
+    St::OwnerDid: event_group_chat_join_request_rejected_state::IsSet,
+    St::Rev: event_group_chat_join_request_rejected_state::IsSet,
+    St::SubjectDid: event_group_chat_join_request_rejected_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> EventGroupChatJoinRequestRejected<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> EventGroupChatJoinRequestRejected<S> {
         EventGroupChatJoinRequestRejected {
-            actor_did: self.__unsafe_private_named.0.unwrap(),
-            convo_created_at: self.__unsafe_private_named.1.unwrap(),
-            convo_id: self.__unsafe_private_named.2.unwrap(),
-            created_at: self.__unsafe_private_named.3.unwrap(),
-            group_member_count: self.__unsafe_private_named.4.unwrap(),
-            group_name: self.__unsafe_private_named.5.unwrap(),
-            owner_did: self.__unsafe_private_named.6.unwrap(),
-            rev: self.__unsafe_private_named.7.unwrap(),
-            subject_did: self.__unsafe_private_named.8.unwrap(),
+            actor_did: self._fields.0.unwrap(),
+            convo_created_at: self._fields.1.unwrap(),
+            convo_id: self._fields.2.unwrap(),
+            created_at: self._fields.3.unwrap(),
+            group_member_count: self._fields.4.unwrap(),
+            group_name: self._fields.5.unwrap(),
+            owner_did: self._fields.6.unwrap(),
+            rev: self._fields.7.unwrap(),
+            subject_did: self._fields.8.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> EventGroupChatJoinRequestRejected<'a> {
+    ) -> EventGroupChatJoinRequestRejected<S> {
         EventGroupChatJoinRequestRejected {
-            actor_did: self.__unsafe_private_named.0.unwrap(),
-            convo_created_at: self.__unsafe_private_named.1.unwrap(),
-            convo_id: self.__unsafe_private_named.2.unwrap(),
-            created_at: self.__unsafe_private_named.3.unwrap(),
-            group_member_count: self.__unsafe_private_named.4.unwrap(),
-            group_name: self.__unsafe_private_named.5.unwrap(),
-            owner_did: self.__unsafe_private_named.6.unwrap(),
-            rev: self.__unsafe_private_named.7.unwrap(),
-            subject_did: self.__unsafe_private_named.8.unwrap(),
+            actor_did: self._fields.0.unwrap(),
+            convo_created_at: self._fields.1.unwrap(),
+            convo_id: self._fields.2.unwrap(),
+            created_at: self._fields.3.unwrap(),
+            group_member_count: self._fields.4.unwrap(),
+            group_name: self._fields.5.unwrap(),
+            owner_did: self._fields.6.unwrap(),
+            rev: self._fields.7.unwrap(),
+            subject_did: self._fields.8.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for EventGroupChatJoinRequestRejected<'a> {
-    fn nsid() -> &'static str {
-        "chat.bsky.moderation.subscribeModEvents"
-    }
-    fn def_name() -> &'static str {
-        "eventGroupChatJoinRequestRejected"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_chat_bsky_moderation_subscribeModEvents()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-/// Fired when a member is added to a group chat. Note that members are added in the 'request' state.
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct EventGroupChatMemberAdded<'a> {
-    /// The DID of the actor performing the action. For this event, same as ownerDid.
-    #[serde(borrow)]
-    pub actor_did: jacquard_common::types::string::Did<'a>,
-    /// When the group was originally created.
-    pub convo_created_at: jacquard_common::types::string::Datetime,
-    #[serde(borrow)]
-    pub convo_id: jacquard_common::CowStr<'a>,
-    pub created_at: jacquard_common::types::string::Datetime,
-    /// Current member count at the time of the event.
-    pub group_member_count: i64,
-    #[serde(borrow)]
-    pub group_name: jacquard_common::CowStr<'a>,
-    /// The DID of the group chat owner.
-    #[serde(borrow)]
-    pub owner_did: jacquard_common::types::string::Did<'a>,
-    /// The number of members who have not yet accepted the convo.
-    pub request_members_count: i64,
-    #[serde(borrow)]
-    pub rev: jacquard_common::CowStr<'a>,
-    /// The DID of the member who was added.
-    #[serde(borrow)]
-    pub subject_did: jacquard_common::types::string::Did<'a>,
-    /// Whether the added member follows the group owner.
-    pub subject_follows_owner: bool,
 }
 
 pub mod event_group_chat_member_added_state {
@@ -5133,179 +5588,179 @@ pub mod event_group_chat_member_added_state {
         type SubjectFollowsOwner = Unset;
     }
     ///State transition - sets the `actor_did` field to Set
-    pub struct SetActorDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetActorDid<S> {}
-    impl<S: State> State for SetActorDid<S> {
+    pub struct SetActorDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetActorDid<St> {}
+    impl<St: State> State for SetActorDid<St> {
         type ActorDid = Set<members::actor_did>;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type OwnerDid = S::OwnerDid;
-        type RequestMembersCount = S::RequestMembersCount;
-        type Rev = S::Rev;
-        type SubjectDid = S::SubjectDid;
-        type SubjectFollowsOwner = S::SubjectFollowsOwner;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type OwnerDid = St::OwnerDid;
+        type RequestMembersCount = St::RequestMembersCount;
+        type Rev = St::Rev;
+        type SubjectDid = St::SubjectDid;
+        type SubjectFollowsOwner = St::SubjectFollowsOwner;
     }
     ///State transition - sets the `convo_created_at` field to Set
-    pub struct SetConvoCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoCreatedAt<S> {}
-    impl<S: State> State for SetConvoCreatedAt<S> {
-        type ActorDid = S::ActorDid;
+    pub struct SetConvoCreatedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetConvoCreatedAt<St> {}
+    impl<St: State> State for SetConvoCreatedAt<St> {
+        type ActorDid = St::ActorDid;
         type ConvoCreatedAt = Set<members::convo_created_at>;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type OwnerDid = S::OwnerDid;
-        type RequestMembersCount = S::RequestMembersCount;
-        type Rev = S::Rev;
-        type SubjectDid = S::SubjectDid;
-        type SubjectFollowsOwner = S::SubjectFollowsOwner;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type OwnerDid = St::OwnerDid;
+        type RequestMembersCount = St::RequestMembersCount;
+        type Rev = St::Rev;
+        type SubjectDid = St::SubjectDid;
+        type SubjectFollowsOwner = St::SubjectFollowsOwner;
     }
     ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
+    pub struct SetConvoId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetConvoId<St> {}
+    impl<St: State> State for SetConvoId<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
         type ConvoId = Set<members::convo_id>;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type OwnerDid = S::OwnerDid;
-        type RequestMembersCount = S::RequestMembersCount;
-        type Rev = S::Rev;
-        type SubjectDid = S::SubjectDid;
-        type SubjectFollowsOwner = S::SubjectFollowsOwner;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type OwnerDid = St::OwnerDid;
+        type RequestMembersCount = St::RequestMembersCount;
+        type Rev = St::Rev;
+        type SubjectDid = St::SubjectDid;
+        type SubjectFollowsOwner = St::SubjectFollowsOwner;
     }
     ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
+    pub struct SetCreatedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCreatedAt<St> {}
+    impl<St: State> State for SetCreatedAt<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
         type CreatedAt = Set<members::created_at>;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type OwnerDid = S::OwnerDid;
-        type RequestMembersCount = S::RequestMembersCount;
-        type Rev = S::Rev;
-        type SubjectDid = S::SubjectDid;
-        type SubjectFollowsOwner = S::SubjectFollowsOwner;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type OwnerDid = St::OwnerDid;
+        type RequestMembersCount = St::RequestMembersCount;
+        type Rev = St::Rev;
+        type SubjectDid = St::SubjectDid;
+        type SubjectFollowsOwner = St::SubjectFollowsOwner;
     }
     ///State transition - sets the `group_member_count` field to Set
-    pub struct SetGroupMemberCount<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetGroupMemberCount<S> {}
-    impl<S: State> State for SetGroupMemberCount<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
+    pub struct SetGroupMemberCount<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetGroupMemberCount<St> {}
+    impl<St: State> State for SetGroupMemberCount<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
         type GroupMemberCount = Set<members::group_member_count>;
-        type GroupName = S::GroupName;
-        type OwnerDid = S::OwnerDid;
-        type RequestMembersCount = S::RequestMembersCount;
-        type Rev = S::Rev;
-        type SubjectDid = S::SubjectDid;
-        type SubjectFollowsOwner = S::SubjectFollowsOwner;
+        type GroupName = St::GroupName;
+        type OwnerDid = St::OwnerDid;
+        type RequestMembersCount = St::RequestMembersCount;
+        type Rev = St::Rev;
+        type SubjectDid = St::SubjectDid;
+        type SubjectFollowsOwner = St::SubjectFollowsOwner;
     }
     ///State transition - sets the `group_name` field to Set
-    pub struct SetGroupName<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetGroupName<S> {}
-    impl<S: State> State for SetGroupName<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
+    pub struct SetGroupName<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetGroupName<St> {}
+    impl<St: State> State for SetGroupName<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
         type GroupName = Set<members::group_name>;
-        type OwnerDid = S::OwnerDid;
-        type RequestMembersCount = S::RequestMembersCount;
-        type Rev = S::Rev;
-        type SubjectDid = S::SubjectDid;
-        type SubjectFollowsOwner = S::SubjectFollowsOwner;
+        type OwnerDid = St::OwnerDid;
+        type RequestMembersCount = St::RequestMembersCount;
+        type Rev = St::Rev;
+        type SubjectDid = St::SubjectDid;
+        type SubjectFollowsOwner = St::SubjectFollowsOwner;
     }
     ///State transition - sets the `owner_did` field to Set
-    pub struct SetOwnerDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetOwnerDid<S> {}
-    impl<S: State> State for SetOwnerDid<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
+    pub struct SetOwnerDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetOwnerDid<St> {}
+    impl<St: State> State for SetOwnerDid<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
         type OwnerDid = Set<members::owner_did>;
-        type RequestMembersCount = S::RequestMembersCount;
-        type Rev = S::Rev;
-        type SubjectDid = S::SubjectDid;
-        type SubjectFollowsOwner = S::SubjectFollowsOwner;
+        type RequestMembersCount = St::RequestMembersCount;
+        type Rev = St::Rev;
+        type SubjectDid = St::SubjectDid;
+        type SubjectFollowsOwner = St::SubjectFollowsOwner;
     }
     ///State transition - sets the `request_members_count` field to Set
-    pub struct SetRequestMembersCount<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRequestMembersCount<S> {}
-    impl<S: State> State for SetRequestMembersCount<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type OwnerDid = S::OwnerDid;
+    pub struct SetRequestMembersCount<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRequestMembersCount<St> {}
+    impl<St: State> State for SetRequestMembersCount<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type OwnerDid = St::OwnerDid;
         type RequestMembersCount = Set<members::request_members_count>;
-        type Rev = S::Rev;
-        type SubjectDid = S::SubjectDid;
-        type SubjectFollowsOwner = S::SubjectFollowsOwner;
+        type Rev = St::Rev;
+        type SubjectDid = St::SubjectDid;
+        type SubjectFollowsOwner = St::SubjectFollowsOwner;
     }
     ///State transition - sets the `rev` field to Set
-    pub struct SetRev<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRev<S> {}
-    impl<S: State> State for SetRev<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type OwnerDid = S::OwnerDid;
-        type RequestMembersCount = S::RequestMembersCount;
+    pub struct SetRev<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRev<St> {}
+    impl<St: State> State for SetRev<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type OwnerDid = St::OwnerDid;
+        type RequestMembersCount = St::RequestMembersCount;
         type Rev = Set<members::rev>;
-        type SubjectDid = S::SubjectDid;
-        type SubjectFollowsOwner = S::SubjectFollowsOwner;
+        type SubjectDid = St::SubjectDid;
+        type SubjectFollowsOwner = St::SubjectFollowsOwner;
     }
     ///State transition - sets the `subject_did` field to Set
-    pub struct SetSubjectDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetSubjectDid<S> {}
-    impl<S: State> State for SetSubjectDid<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type OwnerDid = S::OwnerDid;
-        type RequestMembersCount = S::RequestMembersCount;
-        type Rev = S::Rev;
+    pub struct SetSubjectDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSubjectDid<St> {}
+    impl<St: State> State for SetSubjectDid<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type OwnerDid = St::OwnerDid;
+        type RequestMembersCount = St::RequestMembersCount;
+        type Rev = St::Rev;
         type SubjectDid = Set<members::subject_did>;
-        type SubjectFollowsOwner = S::SubjectFollowsOwner;
+        type SubjectFollowsOwner = St::SubjectFollowsOwner;
     }
     ///State transition - sets the `subject_follows_owner` field to Set
-    pub struct SetSubjectFollowsOwner<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetSubjectFollowsOwner<S> {}
-    impl<S: State> State for SetSubjectFollowsOwner<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type OwnerDid = S::OwnerDid;
-        type RequestMembersCount = S::RequestMembersCount;
-        type Rev = S::Rev;
-        type SubjectDid = S::SubjectDid;
+    pub struct SetSubjectFollowsOwner<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSubjectFollowsOwner<St> {}
+    impl<St: State> State for SetSubjectFollowsOwner<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type OwnerDid = St::OwnerDid;
+        type RequestMembersCount = St::RequestMembersCount;
+        type Rev = St::Rev;
+        type SubjectDid = St::SubjectDid;
         type SubjectFollowsOwner = Set<members::subject_follows_owner>;
     }
     /// Marker types for field names
@@ -5336,376 +5791,361 @@ pub mod event_group_chat_member_added_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct EventGroupChatMemberAddedBuilder<'a, S: event_group_chat_member_added_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<bool>,
+/// Builder for constructing an instance of this type.
+pub struct EventGroupChatMemberAddedBuilder<
+    St: event_group_chat_member_added_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<i64>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<i64>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<bool>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> EventGroupChatMemberAdded<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> EventGroupChatMemberAddedBuilder<'a, event_group_chat_member_added_state::Empty>
-    {
+impl EventGroupChatMemberAdded<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> EventGroupChatMemberAddedBuilder<
+        event_group_chat_member_added_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         EventGroupChatMemberAddedBuilder::new()
     }
 }
 
-impl<'a> EventGroupChatMemberAddedBuilder<'a, event_group_chat_member_added_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> EventGroupChatMemberAdded<S> {
+    /// Create a new builder for this type
+    pub fn builder(
+    ) -> EventGroupChatMemberAddedBuilder<event_group_chat_member_added_state::Empty, S> {
+        EventGroupChatMemberAddedBuilder::builder()
+    }
+}
+
+impl
+    EventGroupChatMemberAddedBuilder<
+        event_group_chat_member_added_state::Empty,
+        jacquard_common::DefaultStr,
+    >
+{
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         EventGroupChatMemberAddedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (
+            _state: ::core::marker::PhantomData,
+            _fields: (
                 None, None, None, None, None, None, None, None, None, None, None,
             ),
-            _phantom: ::core::marker::PhantomData,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatMemberAddedBuilder<'a, S>
+impl<S: jacquard_common::BosStr>
+    EventGroupChatMemberAddedBuilder<event_group_chat_member_added_state::Empty, S>
+{
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        EventGroupChatMemberAddedBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (
+                None, None, None, None, None, None, None, None, None, None, None,
+            ),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> EventGroupChatMemberAddedBuilder<St, S>
 where
-    S: event_group_chat_member_added_state::State,
-    S::ActorDid: event_group_chat_member_added_state::IsUnset,
+    St: event_group_chat_member_added_state::State,
+    St::ActorDid: event_group_chat_member_added_state::IsUnset,
 {
     /// Set the `actorDid` field (required)
     pub fn actor_did(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> EventGroupChatMemberAddedBuilder<'a, event_group_chat_member_added_state::SetActorDid<S>>
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> EventGroupChatMemberAddedBuilder<event_group_chat_member_added_state::SetActorDid<St>, S>
     {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        self._fields.0 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberAddedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatMemberAddedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatMemberAddedBuilder<St, S>
 where
-    S: event_group_chat_member_added_state::State,
-    S::ConvoCreatedAt: event_group_chat_member_added_state::IsUnset,
+    St: event_group_chat_member_added_state::State,
+    St::ConvoCreatedAt: event_group_chat_member_added_state::IsUnset,
 {
     /// Set the `convoCreatedAt` field (required)
     pub fn convo_created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
     ) -> EventGroupChatMemberAddedBuilder<
-        'a,
-        event_group_chat_member_added_state::SetConvoCreatedAt<S>,
+        event_group_chat_member_added_state::SetConvoCreatedAt<St>,
+        S,
     > {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        self._fields.1 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberAddedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatMemberAddedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatMemberAddedBuilder<St, S>
 where
-    S: event_group_chat_member_added_state::State,
-    S::ConvoId: event_group_chat_member_added_state::IsUnset,
+    St: event_group_chat_member_added_state::State,
+    St::ConvoId: event_group_chat_member_added_state::IsUnset,
 {
     /// Set the `convoId` field (required)
     pub fn convo_id(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> EventGroupChatMemberAddedBuilder<'a, event_group_chat_member_added_state::SetConvoId<S>>
+        value: impl Into<S>,
+    ) -> EventGroupChatMemberAddedBuilder<event_group_chat_member_added_state::SetConvoId<St>, S>
     {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        self._fields.2 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberAddedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatMemberAddedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatMemberAddedBuilder<St, S>
 where
-    S: event_group_chat_member_added_state::State,
-    S::CreatedAt: event_group_chat_member_added_state::IsUnset,
+    St: event_group_chat_member_added_state::State,
+    St::CreatedAt: event_group_chat_member_added_state::IsUnset,
 {
     /// Set the `createdAt` field (required)
     pub fn created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> EventGroupChatMemberAddedBuilder<'a, event_group_chat_member_added_state::SetCreatedAt<S>>
+    ) -> EventGroupChatMemberAddedBuilder<event_group_chat_member_added_state::SetCreatedAt<St>, S>
     {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        self._fields.3 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberAddedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatMemberAddedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatMemberAddedBuilder<St, S>
 where
-    S: event_group_chat_member_added_state::State,
-    S::GroupMemberCount: event_group_chat_member_added_state::IsUnset,
+    St: event_group_chat_member_added_state::State,
+    St::GroupMemberCount: event_group_chat_member_added_state::IsUnset,
 {
     /// Set the `groupMemberCount` field (required)
     pub fn group_member_count(
         mut self,
         value: impl Into<i64>,
     ) -> EventGroupChatMemberAddedBuilder<
-        'a,
-        event_group_chat_member_added_state::SetGroupMemberCount<S>,
+        event_group_chat_member_added_state::SetGroupMemberCount<St>,
+        S,
     > {
-        self.__unsafe_private_named.4 = ::core::option::Option::Some(value.into());
+        self._fields.4 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberAddedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatMemberAddedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatMemberAddedBuilder<St, S>
 where
-    S: event_group_chat_member_added_state::State,
-    S::GroupName: event_group_chat_member_added_state::IsUnset,
+    St: event_group_chat_member_added_state::State,
+    St::GroupName: event_group_chat_member_added_state::IsUnset,
 {
     /// Set the `groupName` field (required)
     pub fn group_name(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> EventGroupChatMemberAddedBuilder<'a, event_group_chat_member_added_state::SetGroupName<S>>
+        value: impl Into<S>,
+    ) -> EventGroupChatMemberAddedBuilder<event_group_chat_member_added_state::SetGroupName<St>, S>
     {
-        self.__unsafe_private_named.5 = ::core::option::Option::Some(value.into());
+        self._fields.5 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberAddedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatMemberAddedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatMemberAddedBuilder<St, S>
 where
-    S: event_group_chat_member_added_state::State,
-    S::OwnerDid: event_group_chat_member_added_state::IsUnset,
+    St: event_group_chat_member_added_state::State,
+    St::OwnerDid: event_group_chat_member_added_state::IsUnset,
 {
     /// Set the `ownerDid` field (required)
     pub fn owner_did(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> EventGroupChatMemberAddedBuilder<'a, event_group_chat_member_added_state::SetOwnerDid<S>>
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> EventGroupChatMemberAddedBuilder<event_group_chat_member_added_state::SetOwnerDid<St>, S>
     {
-        self.__unsafe_private_named.6 = ::core::option::Option::Some(value.into());
+        self._fields.6 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberAddedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatMemberAddedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatMemberAddedBuilder<St, S>
 where
-    S: event_group_chat_member_added_state::State,
-    S::RequestMembersCount: event_group_chat_member_added_state::IsUnset,
+    St: event_group_chat_member_added_state::State,
+    St::RequestMembersCount: event_group_chat_member_added_state::IsUnset,
 {
     /// Set the `requestMembersCount` field (required)
     pub fn request_members_count(
         mut self,
         value: impl Into<i64>,
     ) -> EventGroupChatMemberAddedBuilder<
-        'a,
-        event_group_chat_member_added_state::SetRequestMembersCount<S>,
+        event_group_chat_member_added_state::SetRequestMembersCount<St>,
+        S,
     > {
-        self.__unsafe_private_named.7 = ::core::option::Option::Some(value.into());
+        self._fields.7 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberAddedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatMemberAddedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatMemberAddedBuilder<St, S>
 where
-    S: event_group_chat_member_added_state::State,
-    S::Rev: event_group_chat_member_added_state::IsUnset,
+    St: event_group_chat_member_added_state::State,
+    St::Rev: event_group_chat_member_added_state::IsUnset,
 {
     /// Set the `rev` field (required)
     pub fn rev(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> EventGroupChatMemberAddedBuilder<'a, event_group_chat_member_added_state::SetRev<S>> {
-        self.__unsafe_private_named.8 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> EventGroupChatMemberAddedBuilder<event_group_chat_member_added_state::SetRev<St>, S> {
+        self._fields.8 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberAddedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatMemberAddedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatMemberAddedBuilder<St, S>
 where
-    S: event_group_chat_member_added_state::State,
-    S::SubjectDid: event_group_chat_member_added_state::IsUnset,
+    St: event_group_chat_member_added_state::State,
+    St::SubjectDid: event_group_chat_member_added_state::IsUnset,
 {
     /// Set the `subjectDid` field (required)
     pub fn subject_did(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> EventGroupChatMemberAddedBuilder<'a, event_group_chat_member_added_state::SetSubjectDid<S>>
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> EventGroupChatMemberAddedBuilder<event_group_chat_member_added_state::SetSubjectDid<St>, S>
     {
-        self.__unsafe_private_named.9 = ::core::option::Option::Some(value.into());
+        self._fields.9 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberAddedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatMemberAddedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatMemberAddedBuilder<St, S>
 where
-    S: event_group_chat_member_added_state::State,
-    S::SubjectFollowsOwner: event_group_chat_member_added_state::IsUnset,
+    St: event_group_chat_member_added_state::State,
+    St::SubjectFollowsOwner: event_group_chat_member_added_state::IsUnset,
 {
     /// Set the `subjectFollowsOwner` field (required)
     pub fn subject_follows_owner(
         mut self,
         value: impl Into<bool>,
     ) -> EventGroupChatMemberAddedBuilder<
-        'a,
-        event_group_chat_member_added_state::SetSubjectFollowsOwner<S>,
+        event_group_chat_member_added_state::SetSubjectFollowsOwner<St>,
+        S,
     > {
-        self.__unsafe_private_named.10 = ::core::option::Option::Some(value.into());
+        self._fields.10 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberAddedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatMemberAddedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatMemberAddedBuilder<St, S>
 where
-    S: event_group_chat_member_added_state::State,
-    S::ActorDid: event_group_chat_member_added_state::IsSet,
-    S::ConvoCreatedAt: event_group_chat_member_added_state::IsSet,
-    S::ConvoId: event_group_chat_member_added_state::IsSet,
-    S::CreatedAt: event_group_chat_member_added_state::IsSet,
-    S::GroupMemberCount: event_group_chat_member_added_state::IsSet,
-    S::GroupName: event_group_chat_member_added_state::IsSet,
-    S::OwnerDid: event_group_chat_member_added_state::IsSet,
-    S::RequestMembersCount: event_group_chat_member_added_state::IsSet,
-    S::Rev: event_group_chat_member_added_state::IsSet,
-    S::SubjectDid: event_group_chat_member_added_state::IsSet,
-    S::SubjectFollowsOwner: event_group_chat_member_added_state::IsSet,
+    St: event_group_chat_member_added_state::State,
+    St::ActorDid: event_group_chat_member_added_state::IsSet,
+    St::ConvoCreatedAt: event_group_chat_member_added_state::IsSet,
+    St::ConvoId: event_group_chat_member_added_state::IsSet,
+    St::CreatedAt: event_group_chat_member_added_state::IsSet,
+    St::GroupMemberCount: event_group_chat_member_added_state::IsSet,
+    St::GroupName: event_group_chat_member_added_state::IsSet,
+    St::OwnerDid: event_group_chat_member_added_state::IsSet,
+    St::RequestMembersCount: event_group_chat_member_added_state::IsSet,
+    St::Rev: event_group_chat_member_added_state::IsSet,
+    St::SubjectDid: event_group_chat_member_added_state::IsSet,
+    St::SubjectFollowsOwner: event_group_chat_member_added_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> EventGroupChatMemberAdded<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> EventGroupChatMemberAdded<S> {
         EventGroupChatMemberAdded {
-            actor_did: self.__unsafe_private_named.0.unwrap(),
-            convo_created_at: self.__unsafe_private_named.1.unwrap(),
-            convo_id: self.__unsafe_private_named.2.unwrap(),
-            created_at: self.__unsafe_private_named.3.unwrap(),
-            group_member_count: self.__unsafe_private_named.4.unwrap(),
-            group_name: self.__unsafe_private_named.5.unwrap(),
-            owner_did: self.__unsafe_private_named.6.unwrap(),
-            request_members_count: self.__unsafe_private_named.7.unwrap(),
-            rev: self.__unsafe_private_named.8.unwrap(),
-            subject_did: self.__unsafe_private_named.9.unwrap(),
-            subject_follows_owner: self.__unsafe_private_named.10.unwrap(),
+            actor_did: self._fields.0.unwrap(),
+            convo_created_at: self._fields.1.unwrap(),
+            convo_id: self._fields.2.unwrap(),
+            created_at: self._fields.3.unwrap(),
+            group_member_count: self._fields.4.unwrap(),
+            group_name: self._fields.5.unwrap(),
+            owner_did: self._fields.6.unwrap(),
+            request_members_count: self._fields.7.unwrap(),
+            rev: self._fields.8.unwrap(),
+            subject_did: self._fields.9.unwrap(),
+            subject_follows_owner: self._fields.10.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> EventGroupChatMemberAdded<'a> {
+    ) -> EventGroupChatMemberAdded<S> {
         EventGroupChatMemberAdded {
-            actor_did: self.__unsafe_private_named.0.unwrap(),
-            convo_created_at: self.__unsafe_private_named.1.unwrap(),
-            convo_id: self.__unsafe_private_named.2.unwrap(),
-            created_at: self.__unsafe_private_named.3.unwrap(),
-            group_member_count: self.__unsafe_private_named.4.unwrap(),
-            group_name: self.__unsafe_private_named.5.unwrap(),
-            owner_did: self.__unsafe_private_named.6.unwrap(),
-            request_members_count: self.__unsafe_private_named.7.unwrap(),
-            rev: self.__unsafe_private_named.8.unwrap(),
-            subject_did: self.__unsafe_private_named.9.unwrap(),
-            subject_follows_owner: self.__unsafe_private_named.10.unwrap(),
+            actor_did: self._fields.0.unwrap(),
+            convo_created_at: self._fields.1.unwrap(),
+            convo_id: self._fields.2.unwrap(),
+            created_at: self._fields.3.unwrap(),
+            group_member_count: self._fields.4.unwrap(),
+            group_name: self._fields.5.unwrap(),
+            owner_did: self._fields.6.unwrap(),
+            request_members_count: self._fields.7.unwrap(),
+            rev: self._fields.8.unwrap(),
+            subject_did: self._fields.9.unwrap(),
+            subject_follows_owner: self._fields.10.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for EventGroupChatMemberAdded<'a> {
-    fn nsid() -> &'static str {
-        "chat.bsky.moderation.subscribeModEvents"
-    }
-    fn def_name() -> &'static str {
-        "eventGroupChatMemberAdded"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_chat_bsky_moderation_subscribeModEvents()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-/// Fired when a member joins a group chat via an join link that does not require approval.
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct EventGroupChatMemberJoined<'a> {
-    /// The DID of the person joining.
-    #[serde(borrow)]
-    pub actor_did: jacquard_common::types::string::Did<'a>,
-    /// When the group was originally created.
-    pub convo_created_at: jacquard_common::types::string::Datetime,
-    #[serde(borrow)]
-    pub convo_id: jacquard_common::CowStr<'a>,
-    pub created_at: jacquard_common::types::string::Datetime,
-    /// Current member count at the time of the event.
-    pub group_member_count: i64,
-    #[serde(borrow)]
-    pub group_name: jacquard_common::CowStr<'a>,
-    /// The code of the join link used to join.
-    #[serde(borrow)]
-    pub join_link_code: jacquard_common::CowStr<'a>,
-    /// The DID of the group chat owner.
-    #[serde(borrow)]
-    pub owner_did: jacquard_common::types::string::Did<'a>,
-    #[serde(borrow)]
-    pub rev: jacquard_common::CowStr<'a>,
-    /// Whether the joining member follows the group owner.
-    pub subject_follows_owner: bool,
 }
 
 pub mod event_group_chat_member_joined_state {
@@ -5745,153 +6185,153 @@ pub mod event_group_chat_member_joined_state {
         type SubjectFollowsOwner = Unset;
     }
     ///State transition - sets the `actor_did` field to Set
-    pub struct SetActorDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetActorDid<S> {}
-    impl<S: State> State for SetActorDid<S> {
+    pub struct SetActorDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetActorDid<St> {}
+    impl<St: State> State for SetActorDid<St> {
         type ActorDid = Set<members::actor_did>;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type JoinLinkCode = S::JoinLinkCode;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
-        type SubjectFollowsOwner = S::SubjectFollowsOwner;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type JoinLinkCode = St::JoinLinkCode;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
+        type SubjectFollowsOwner = St::SubjectFollowsOwner;
     }
     ///State transition - sets the `convo_created_at` field to Set
-    pub struct SetConvoCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoCreatedAt<S> {}
-    impl<S: State> State for SetConvoCreatedAt<S> {
-        type ActorDid = S::ActorDid;
+    pub struct SetConvoCreatedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetConvoCreatedAt<St> {}
+    impl<St: State> State for SetConvoCreatedAt<St> {
+        type ActorDid = St::ActorDid;
         type ConvoCreatedAt = Set<members::convo_created_at>;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type JoinLinkCode = S::JoinLinkCode;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
-        type SubjectFollowsOwner = S::SubjectFollowsOwner;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type JoinLinkCode = St::JoinLinkCode;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
+        type SubjectFollowsOwner = St::SubjectFollowsOwner;
     }
     ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
+    pub struct SetConvoId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetConvoId<St> {}
+    impl<St: State> State for SetConvoId<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
         type ConvoId = Set<members::convo_id>;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type JoinLinkCode = S::JoinLinkCode;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
-        type SubjectFollowsOwner = S::SubjectFollowsOwner;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type JoinLinkCode = St::JoinLinkCode;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
+        type SubjectFollowsOwner = St::SubjectFollowsOwner;
     }
     ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
+    pub struct SetCreatedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCreatedAt<St> {}
+    impl<St: State> State for SetCreatedAt<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
         type CreatedAt = Set<members::created_at>;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type JoinLinkCode = S::JoinLinkCode;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
-        type SubjectFollowsOwner = S::SubjectFollowsOwner;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type JoinLinkCode = St::JoinLinkCode;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
+        type SubjectFollowsOwner = St::SubjectFollowsOwner;
     }
     ///State transition - sets the `group_member_count` field to Set
-    pub struct SetGroupMemberCount<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetGroupMemberCount<S> {}
-    impl<S: State> State for SetGroupMemberCount<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
+    pub struct SetGroupMemberCount<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetGroupMemberCount<St> {}
+    impl<St: State> State for SetGroupMemberCount<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
         type GroupMemberCount = Set<members::group_member_count>;
-        type GroupName = S::GroupName;
-        type JoinLinkCode = S::JoinLinkCode;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
-        type SubjectFollowsOwner = S::SubjectFollowsOwner;
+        type GroupName = St::GroupName;
+        type JoinLinkCode = St::JoinLinkCode;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
+        type SubjectFollowsOwner = St::SubjectFollowsOwner;
     }
     ///State transition - sets the `group_name` field to Set
-    pub struct SetGroupName<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetGroupName<S> {}
-    impl<S: State> State for SetGroupName<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
+    pub struct SetGroupName<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetGroupName<St> {}
+    impl<St: State> State for SetGroupName<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
         type GroupName = Set<members::group_name>;
-        type JoinLinkCode = S::JoinLinkCode;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
-        type SubjectFollowsOwner = S::SubjectFollowsOwner;
+        type JoinLinkCode = St::JoinLinkCode;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
+        type SubjectFollowsOwner = St::SubjectFollowsOwner;
     }
     ///State transition - sets the `join_link_code` field to Set
-    pub struct SetJoinLinkCode<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetJoinLinkCode<S> {}
-    impl<S: State> State for SetJoinLinkCode<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
+    pub struct SetJoinLinkCode<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetJoinLinkCode<St> {}
+    impl<St: State> State for SetJoinLinkCode<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
         type JoinLinkCode = Set<members::join_link_code>;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
-        type SubjectFollowsOwner = S::SubjectFollowsOwner;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
+        type SubjectFollowsOwner = St::SubjectFollowsOwner;
     }
     ///State transition - sets the `owner_did` field to Set
-    pub struct SetOwnerDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetOwnerDid<S> {}
-    impl<S: State> State for SetOwnerDid<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type JoinLinkCode = S::JoinLinkCode;
+    pub struct SetOwnerDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetOwnerDid<St> {}
+    impl<St: State> State for SetOwnerDid<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type JoinLinkCode = St::JoinLinkCode;
         type OwnerDid = Set<members::owner_did>;
-        type Rev = S::Rev;
-        type SubjectFollowsOwner = S::SubjectFollowsOwner;
+        type Rev = St::Rev;
+        type SubjectFollowsOwner = St::SubjectFollowsOwner;
     }
     ///State transition - sets the `rev` field to Set
-    pub struct SetRev<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRev<S> {}
-    impl<S: State> State for SetRev<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type JoinLinkCode = S::JoinLinkCode;
-        type OwnerDid = S::OwnerDid;
+    pub struct SetRev<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRev<St> {}
+    impl<St: State> State for SetRev<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type JoinLinkCode = St::JoinLinkCode;
+        type OwnerDid = St::OwnerDid;
         type Rev = Set<members::rev>;
-        type SubjectFollowsOwner = S::SubjectFollowsOwner;
+        type SubjectFollowsOwner = St::SubjectFollowsOwner;
     }
     ///State transition - sets the `subject_follows_owner` field to Set
-    pub struct SetSubjectFollowsOwner<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetSubjectFollowsOwner<S> {}
-    impl<S: State> State for SetSubjectFollowsOwner<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type JoinLinkCode = S::JoinLinkCode;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
+    pub struct SetSubjectFollowsOwner<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSubjectFollowsOwner<St> {}
+    impl<St: State> State for SetSubjectFollowsOwner<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type JoinLinkCode = St::JoinLinkCode;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
         type SubjectFollowsOwner = Set<members::subject_follows_owner>;
     }
     /// Marker types for field names
@@ -5920,352 +6360,334 @@ pub mod event_group_chat_member_joined_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct EventGroupChatMemberJoinedBuilder<'a, S: event_group_chat_member_joined_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<bool>,
+/// Builder for constructing an instance of this type.
+pub struct EventGroupChatMemberJoinedBuilder<
+    St: event_group_chat_member_joined_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<i64>,
+        core::option::Option<S>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<S>,
+        core::option::Option<bool>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> EventGroupChatMemberJoined<'a> {
-    /// Create a new builder for this type
-    pub fn new(
-    ) -> EventGroupChatMemberJoinedBuilder<'a, event_group_chat_member_joined_state::Empty> {
+impl EventGroupChatMemberJoined<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> EventGroupChatMemberJoinedBuilder<
+        event_group_chat_member_joined_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         EventGroupChatMemberJoinedBuilder::new()
     }
 }
 
-impl<'a> EventGroupChatMemberJoinedBuilder<'a, event_group_chat_member_joined_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> EventGroupChatMemberJoined<S> {
+    /// Create a new builder for this type
+    pub fn builder(
+    ) -> EventGroupChatMemberJoinedBuilder<event_group_chat_member_joined_state::Empty, S> {
+        EventGroupChatMemberJoinedBuilder::builder()
+    }
+}
+
+impl
+    EventGroupChatMemberJoinedBuilder<
+        event_group_chat_member_joined_state::Empty,
+        jacquard_common::DefaultStr,
+    >
+{
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         EventGroupChatMemberJoinedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None, None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatMemberJoinedBuilder<'a, S>
+impl<S: jacquard_common::BosStr>
+    EventGroupChatMemberJoinedBuilder<event_group_chat_member_joined_state::Empty, S>
+{
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        EventGroupChatMemberJoinedBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> EventGroupChatMemberJoinedBuilder<St, S>
 where
-    S: event_group_chat_member_joined_state::State,
-    S::ActorDid: event_group_chat_member_joined_state::IsUnset,
+    St: event_group_chat_member_joined_state::State,
+    St::ActorDid: event_group_chat_member_joined_state::IsUnset,
 {
     /// Set the `actorDid` field (required)
     pub fn actor_did(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> EventGroupChatMemberJoinedBuilder<'a, event_group_chat_member_joined_state::SetActorDid<S>>
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> EventGroupChatMemberJoinedBuilder<event_group_chat_member_joined_state::SetActorDid<St>, S>
     {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        self._fields.0 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberJoinedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatMemberJoinedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatMemberJoinedBuilder<St, S>
 where
-    S: event_group_chat_member_joined_state::State,
-    S::ConvoCreatedAt: event_group_chat_member_joined_state::IsUnset,
+    St: event_group_chat_member_joined_state::State,
+    St::ConvoCreatedAt: event_group_chat_member_joined_state::IsUnset,
 {
     /// Set the `convoCreatedAt` field (required)
     pub fn convo_created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
     ) -> EventGroupChatMemberJoinedBuilder<
-        'a,
-        event_group_chat_member_joined_state::SetConvoCreatedAt<S>,
+        event_group_chat_member_joined_state::SetConvoCreatedAt<St>,
+        S,
     > {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        self._fields.1 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberJoinedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatMemberJoinedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatMemberJoinedBuilder<St, S>
 where
-    S: event_group_chat_member_joined_state::State,
-    S::ConvoId: event_group_chat_member_joined_state::IsUnset,
+    St: event_group_chat_member_joined_state::State,
+    St::ConvoId: event_group_chat_member_joined_state::IsUnset,
 {
     /// Set the `convoId` field (required)
     pub fn convo_id(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> EventGroupChatMemberJoinedBuilder<'a, event_group_chat_member_joined_state::SetConvoId<S>>
+        value: impl Into<S>,
+    ) -> EventGroupChatMemberJoinedBuilder<event_group_chat_member_joined_state::SetConvoId<St>, S>
     {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        self._fields.2 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberJoinedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatMemberJoinedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatMemberJoinedBuilder<St, S>
 where
-    S: event_group_chat_member_joined_state::State,
-    S::CreatedAt: event_group_chat_member_joined_state::IsUnset,
+    St: event_group_chat_member_joined_state::State,
+    St::CreatedAt: event_group_chat_member_joined_state::IsUnset,
 {
     /// Set the `createdAt` field (required)
     pub fn created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> EventGroupChatMemberJoinedBuilder<'a, event_group_chat_member_joined_state::SetCreatedAt<S>>
+    ) -> EventGroupChatMemberJoinedBuilder<event_group_chat_member_joined_state::SetCreatedAt<St>, S>
     {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        self._fields.3 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberJoinedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatMemberJoinedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatMemberJoinedBuilder<St, S>
 where
-    S: event_group_chat_member_joined_state::State,
-    S::GroupMemberCount: event_group_chat_member_joined_state::IsUnset,
+    St: event_group_chat_member_joined_state::State,
+    St::GroupMemberCount: event_group_chat_member_joined_state::IsUnset,
 {
     /// Set the `groupMemberCount` field (required)
     pub fn group_member_count(
         mut self,
         value: impl Into<i64>,
     ) -> EventGroupChatMemberJoinedBuilder<
-        'a,
-        event_group_chat_member_joined_state::SetGroupMemberCount<S>,
+        event_group_chat_member_joined_state::SetGroupMemberCount<St>,
+        S,
     > {
-        self.__unsafe_private_named.4 = ::core::option::Option::Some(value.into());
+        self._fields.4 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberJoinedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatMemberJoinedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatMemberJoinedBuilder<St, S>
 where
-    S: event_group_chat_member_joined_state::State,
-    S::GroupName: event_group_chat_member_joined_state::IsUnset,
+    St: event_group_chat_member_joined_state::State,
+    St::GroupName: event_group_chat_member_joined_state::IsUnset,
 {
     /// Set the `groupName` field (required)
     pub fn group_name(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> EventGroupChatMemberJoinedBuilder<'a, event_group_chat_member_joined_state::SetGroupName<S>>
+        value: impl Into<S>,
+    ) -> EventGroupChatMemberJoinedBuilder<event_group_chat_member_joined_state::SetGroupName<St>, S>
     {
-        self.__unsafe_private_named.5 = ::core::option::Option::Some(value.into());
+        self._fields.5 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberJoinedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatMemberJoinedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatMemberJoinedBuilder<St, S>
 where
-    S: event_group_chat_member_joined_state::State,
-    S::JoinLinkCode: event_group_chat_member_joined_state::IsUnset,
+    St: event_group_chat_member_joined_state::State,
+    St::JoinLinkCode: event_group_chat_member_joined_state::IsUnset,
 {
     /// Set the `joinLinkCode` field (required)
     pub fn join_link_code(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
+        value: impl Into<S>,
     ) -> EventGroupChatMemberJoinedBuilder<
-        'a,
-        event_group_chat_member_joined_state::SetJoinLinkCode<S>,
+        event_group_chat_member_joined_state::SetJoinLinkCode<St>,
+        S,
     > {
-        self.__unsafe_private_named.6 = ::core::option::Option::Some(value.into());
+        self._fields.6 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberJoinedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatMemberJoinedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatMemberJoinedBuilder<St, S>
 where
-    S: event_group_chat_member_joined_state::State,
-    S::OwnerDid: event_group_chat_member_joined_state::IsUnset,
+    St: event_group_chat_member_joined_state::State,
+    St::OwnerDid: event_group_chat_member_joined_state::IsUnset,
 {
     /// Set the `ownerDid` field (required)
     pub fn owner_did(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> EventGroupChatMemberJoinedBuilder<'a, event_group_chat_member_joined_state::SetOwnerDid<S>>
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> EventGroupChatMemberJoinedBuilder<event_group_chat_member_joined_state::SetOwnerDid<St>, S>
     {
-        self.__unsafe_private_named.7 = ::core::option::Option::Some(value.into());
+        self._fields.7 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberJoinedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatMemberJoinedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatMemberJoinedBuilder<St, S>
 where
-    S: event_group_chat_member_joined_state::State,
-    S::Rev: event_group_chat_member_joined_state::IsUnset,
+    St: event_group_chat_member_joined_state::State,
+    St::Rev: event_group_chat_member_joined_state::IsUnset,
 {
     /// Set the `rev` field (required)
     pub fn rev(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> EventGroupChatMemberJoinedBuilder<'a, event_group_chat_member_joined_state::SetRev<S>>
+        value: impl Into<S>,
+    ) -> EventGroupChatMemberJoinedBuilder<event_group_chat_member_joined_state::SetRev<St>, S>
     {
-        self.__unsafe_private_named.8 = ::core::option::Option::Some(value.into());
+        self._fields.8 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberJoinedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatMemberJoinedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatMemberJoinedBuilder<St, S>
 where
-    S: event_group_chat_member_joined_state::State,
-    S::SubjectFollowsOwner: event_group_chat_member_joined_state::IsUnset,
+    St: event_group_chat_member_joined_state::State,
+    St::SubjectFollowsOwner: event_group_chat_member_joined_state::IsUnset,
 {
     /// Set the `subjectFollowsOwner` field (required)
     pub fn subject_follows_owner(
         mut self,
         value: impl Into<bool>,
     ) -> EventGroupChatMemberJoinedBuilder<
-        'a,
-        event_group_chat_member_joined_state::SetSubjectFollowsOwner<S>,
+        event_group_chat_member_joined_state::SetSubjectFollowsOwner<St>,
+        S,
     > {
-        self.__unsafe_private_named.9 = ::core::option::Option::Some(value.into());
+        self._fields.9 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberJoinedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatMemberJoinedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatMemberJoinedBuilder<St, S>
 where
-    S: event_group_chat_member_joined_state::State,
-    S::ActorDid: event_group_chat_member_joined_state::IsSet,
-    S::ConvoCreatedAt: event_group_chat_member_joined_state::IsSet,
-    S::ConvoId: event_group_chat_member_joined_state::IsSet,
-    S::CreatedAt: event_group_chat_member_joined_state::IsSet,
-    S::GroupMemberCount: event_group_chat_member_joined_state::IsSet,
-    S::GroupName: event_group_chat_member_joined_state::IsSet,
-    S::JoinLinkCode: event_group_chat_member_joined_state::IsSet,
-    S::OwnerDid: event_group_chat_member_joined_state::IsSet,
-    S::Rev: event_group_chat_member_joined_state::IsSet,
-    S::SubjectFollowsOwner: event_group_chat_member_joined_state::IsSet,
+    St: event_group_chat_member_joined_state::State,
+    St::ActorDid: event_group_chat_member_joined_state::IsSet,
+    St::ConvoCreatedAt: event_group_chat_member_joined_state::IsSet,
+    St::ConvoId: event_group_chat_member_joined_state::IsSet,
+    St::CreatedAt: event_group_chat_member_joined_state::IsSet,
+    St::GroupMemberCount: event_group_chat_member_joined_state::IsSet,
+    St::GroupName: event_group_chat_member_joined_state::IsSet,
+    St::JoinLinkCode: event_group_chat_member_joined_state::IsSet,
+    St::OwnerDid: event_group_chat_member_joined_state::IsSet,
+    St::Rev: event_group_chat_member_joined_state::IsSet,
+    St::SubjectFollowsOwner: event_group_chat_member_joined_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> EventGroupChatMemberJoined<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> EventGroupChatMemberJoined<S> {
         EventGroupChatMemberJoined {
-            actor_did: self.__unsafe_private_named.0.unwrap(),
-            convo_created_at: self.__unsafe_private_named.1.unwrap(),
-            convo_id: self.__unsafe_private_named.2.unwrap(),
-            created_at: self.__unsafe_private_named.3.unwrap(),
-            group_member_count: self.__unsafe_private_named.4.unwrap(),
-            group_name: self.__unsafe_private_named.5.unwrap(),
-            join_link_code: self.__unsafe_private_named.6.unwrap(),
-            owner_did: self.__unsafe_private_named.7.unwrap(),
-            rev: self.__unsafe_private_named.8.unwrap(),
-            subject_follows_owner: self.__unsafe_private_named.9.unwrap(),
+            actor_did: self._fields.0.unwrap(),
+            convo_created_at: self._fields.1.unwrap(),
+            convo_id: self._fields.2.unwrap(),
+            created_at: self._fields.3.unwrap(),
+            group_member_count: self._fields.4.unwrap(),
+            group_name: self._fields.5.unwrap(),
+            join_link_code: self._fields.6.unwrap(),
+            owner_did: self._fields.7.unwrap(),
+            rev: self._fields.8.unwrap(),
+            subject_follows_owner: self._fields.9.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> EventGroupChatMemberJoined<'a> {
+    ) -> EventGroupChatMemberJoined<S> {
         EventGroupChatMemberJoined {
-            actor_did: self.__unsafe_private_named.0.unwrap(),
-            convo_created_at: self.__unsafe_private_named.1.unwrap(),
-            convo_id: self.__unsafe_private_named.2.unwrap(),
-            created_at: self.__unsafe_private_named.3.unwrap(),
-            group_member_count: self.__unsafe_private_named.4.unwrap(),
-            group_name: self.__unsafe_private_named.5.unwrap(),
-            join_link_code: self.__unsafe_private_named.6.unwrap(),
-            owner_did: self.__unsafe_private_named.7.unwrap(),
-            rev: self.__unsafe_private_named.8.unwrap(),
-            subject_follows_owner: self.__unsafe_private_named.9.unwrap(),
+            actor_did: self._fields.0.unwrap(),
+            convo_created_at: self._fields.1.unwrap(),
+            convo_id: self._fields.2.unwrap(),
+            created_at: self._fields.3.unwrap(),
+            group_member_count: self._fields.4.unwrap(),
+            group_name: self._fields.5.unwrap(),
+            join_link_code: self._fields.6.unwrap(),
+            owner_did: self._fields.7.unwrap(),
+            rev: self._fields.8.unwrap(),
+            subject_follows_owner: self._fields.9.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for EventGroupChatMemberJoined<'a> {
-    fn nsid() -> &'static str {
-        "chat.bsky.moderation.subscribeModEvents"
-    }
-    fn def_name() -> &'static str {
-        "eventGroupChatMemberJoined"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_chat_bsky_moderation_subscribeModEvents()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-/// Fired when a member leaves or is removed from a group chat.
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct EventGroupChatMemberLeft<'a> {
-    /// The DID of the actor. For voluntary: the person leaving. For kicked: the owner.
-    #[serde(borrow)]
-    pub actor_did: jacquard_common::types::string::Did<'a>,
-    /// When the group was originally created.
-    pub convo_created_at: jacquard_common::types::string::Datetime,
-    #[serde(borrow)]
-    pub convo_id: jacquard_common::CowStr<'a>,
-    pub created_at: jacquard_common::types::string::Datetime,
-    /// Current member count at the time of the event.
-    pub group_member_count: i64,
-    #[serde(borrow)]
-    pub group_name: jacquard_common::CowStr<'a>,
-    /// How the member left.
-    #[serde(borrow)]
-    pub leave_method: jacquard_common::CowStr<'a>,
-    /// The DID of the group chat owner.
-    #[serde(borrow)]
-    pub owner_did: jacquard_common::types::string::Did<'a>,
-    #[serde(borrow)]
-    pub rev: jacquard_common::CowStr<'a>,
-    /// The DID of the member who left or was removed.
-    #[serde(borrow)]
-    pub subject_did: jacquard_common::types::string::Did<'a>,
 }
 
 pub mod event_group_chat_member_left_state {
@@ -6305,153 +6727,153 @@ pub mod event_group_chat_member_left_state {
         type SubjectDid = Unset;
     }
     ///State transition - sets the `actor_did` field to Set
-    pub struct SetActorDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetActorDid<S> {}
-    impl<S: State> State for SetActorDid<S> {
+    pub struct SetActorDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetActorDid<St> {}
+    impl<St: State> State for SetActorDid<St> {
         type ActorDid = Set<members::actor_did>;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type LeaveMethod = S::LeaveMethod;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
-        type SubjectDid = S::SubjectDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type LeaveMethod = St::LeaveMethod;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
+        type SubjectDid = St::SubjectDid;
     }
     ///State transition - sets the `convo_created_at` field to Set
-    pub struct SetConvoCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoCreatedAt<S> {}
-    impl<S: State> State for SetConvoCreatedAt<S> {
-        type ActorDid = S::ActorDid;
+    pub struct SetConvoCreatedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetConvoCreatedAt<St> {}
+    impl<St: State> State for SetConvoCreatedAt<St> {
+        type ActorDid = St::ActorDid;
         type ConvoCreatedAt = Set<members::convo_created_at>;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type LeaveMethod = S::LeaveMethod;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
-        type SubjectDid = S::SubjectDid;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type LeaveMethod = St::LeaveMethod;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
+        type SubjectDid = St::SubjectDid;
     }
     ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
+    pub struct SetConvoId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetConvoId<St> {}
+    impl<St: State> State for SetConvoId<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
         type ConvoId = Set<members::convo_id>;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type LeaveMethod = S::LeaveMethod;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
-        type SubjectDid = S::SubjectDid;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type LeaveMethod = St::LeaveMethod;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
+        type SubjectDid = St::SubjectDid;
     }
     ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
+    pub struct SetCreatedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCreatedAt<St> {}
+    impl<St: State> State for SetCreatedAt<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
         type CreatedAt = Set<members::created_at>;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type LeaveMethod = S::LeaveMethod;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
-        type SubjectDid = S::SubjectDid;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type LeaveMethod = St::LeaveMethod;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
+        type SubjectDid = St::SubjectDid;
     }
     ///State transition - sets the `group_member_count` field to Set
-    pub struct SetGroupMemberCount<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetGroupMemberCount<S> {}
-    impl<S: State> State for SetGroupMemberCount<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
+    pub struct SetGroupMemberCount<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetGroupMemberCount<St> {}
+    impl<St: State> State for SetGroupMemberCount<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
         type GroupMemberCount = Set<members::group_member_count>;
-        type GroupName = S::GroupName;
-        type LeaveMethod = S::LeaveMethod;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
-        type SubjectDid = S::SubjectDid;
+        type GroupName = St::GroupName;
+        type LeaveMethod = St::LeaveMethod;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
+        type SubjectDid = St::SubjectDid;
     }
     ///State transition - sets the `group_name` field to Set
-    pub struct SetGroupName<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetGroupName<S> {}
-    impl<S: State> State for SetGroupName<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
+    pub struct SetGroupName<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetGroupName<St> {}
+    impl<St: State> State for SetGroupName<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
         type GroupName = Set<members::group_name>;
-        type LeaveMethod = S::LeaveMethod;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
-        type SubjectDid = S::SubjectDid;
+        type LeaveMethod = St::LeaveMethod;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
+        type SubjectDid = St::SubjectDid;
     }
     ///State transition - sets the `leave_method` field to Set
-    pub struct SetLeaveMethod<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetLeaveMethod<S> {}
-    impl<S: State> State for SetLeaveMethod<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
+    pub struct SetLeaveMethod<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetLeaveMethod<St> {}
+    impl<St: State> State for SetLeaveMethod<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
         type LeaveMethod = Set<members::leave_method>;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
-        type SubjectDid = S::SubjectDid;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
+        type SubjectDid = St::SubjectDid;
     }
     ///State transition - sets the `owner_did` field to Set
-    pub struct SetOwnerDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetOwnerDid<S> {}
-    impl<S: State> State for SetOwnerDid<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type LeaveMethod = S::LeaveMethod;
+    pub struct SetOwnerDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetOwnerDid<St> {}
+    impl<St: State> State for SetOwnerDid<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type LeaveMethod = St::LeaveMethod;
         type OwnerDid = Set<members::owner_did>;
-        type Rev = S::Rev;
-        type SubjectDid = S::SubjectDid;
+        type Rev = St::Rev;
+        type SubjectDid = St::SubjectDid;
     }
     ///State transition - sets the `rev` field to Set
-    pub struct SetRev<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRev<S> {}
-    impl<S: State> State for SetRev<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type LeaveMethod = S::LeaveMethod;
-        type OwnerDid = S::OwnerDid;
+    pub struct SetRev<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRev<St> {}
+    impl<St: State> State for SetRev<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type LeaveMethod = St::LeaveMethod;
+        type OwnerDid = St::OwnerDid;
         type Rev = Set<members::rev>;
-        type SubjectDid = S::SubjectDid;
+        type SubjectDid = St::SubjectDid;
     }
     ///State transition - sets the `subject_did` field to Set
-    pub struct SetSubjectDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetSubjectDid<S> {}
-    impl<S: State> State for SetSubjectDid<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type LeaveMethod = S::LeaveMethod;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
+    pub struct SetSubjectDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetSubjectDid<St> {}
+    impl<St: State> State for SetSubjectDid<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type LeaveMethod = St::LeaveMethod;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
         type SubjectDid = Set<members::subject_did>;
     }
     /// Marker types for field names
@@ -6480,364 +6902,327 @@ pub mod event_group_chat_member_left_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct EventGroupChatMemberLeftBuilder<'a, S: event_group_chat_member_left_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct EventGroupChatMemberLeftBuilder<
+    St: event_group_chat_member_left_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<i64>,
+        core::option::Option<S>,
+        core::option::Option<EventGroupChatMemberLeftLeaveMethod<S>>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> EventGroupChatMemberLeft<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> EventGroupChatMemberLeftBuilder<'a, event_group_chat_member_left_state::Empty> {
+impl EventGroupChatMemberLeft<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> EventGroupChatMemberLeftBuilder<
+        event_group_chat_member_left_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         EventGroupChatMemberLeftBuilder::new()
     }
 }
 
-impl<'a> EventGroupChatMemberLeftBuilder<'a, event_group_chat_member_left_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> EventGroupChatMemberLeft<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> EventGroupChatMemberLeftBuilder<event_group_chat_member_left_state::Empty, S>
+    {
+        EventGroupChatMemberLeftBuilder::builder()
+    }
+}
+
+impl
+    EventGroupChatMemberLeftBuilder<
+        event_group_chat_member_left_state::Empty,
+        jacquard_common::DefaultStr,
+    >
+{
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         EventGroupChatMemberLeftBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None, None, None, None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatMemberLeftBuilder<'a, S>
+impl<S: jacquard_common::BosStr>
+    EventGroupChatMemberLeftBuilder<event_group_chat_member_left_state::Empty, S>
+{
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        EventGroupChatMemberLeftBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None, None, None, None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> EventGroupChatMemberLeftBuilder<St, S>
 where
-    S: event_group_chat_member_left_state::State,
-    S::ActorDid: event_group_chat_member_left_state::IsUnset,
+    St: event_group_chat_member_left_state::State,
+    St::ActorDid: event_group_chat_member_left_state::IsUnset,
 {
     /// Set the `actorDid` field (required)
     pub fn actor_did(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> EventGroupChatMemberLeftBuilder<'a, event_group_chat_member_left_state::SetActorDid<S>>
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> EventGroupChatMemberLeftBuilder<event_group_chat_member_left_state::SetActorDid<St>, S>
     {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        self._fields.0 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberLeftBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatMemberLeftBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatMemberLeftBuilder<St, S>
 where
-    S: event_group_chat_member_left_state::State,
-    S::ConvoCreatedAt: event_group_chat_member_left_state::IsUnset,
+    St: event_group_chat_member_left_state::State,
+    St::ConvoCreatedAt: event_group_chat_member_left_state::IsUnset,
 {
     /// Set the `convoCreatedAt` field (required)
     pub fn convo_created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> EventGroupChatMemberLeftBuilder<'a, event_group_chat_member_left_state::SetConvoCreatedAt<S>>
+    ) -> EventGroupChatMemberLeftBuilder<event_group_chat_member_left_state::SetConvoCreatedAt<St>, S>
     {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        self._fields.1 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberLeftBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatMemberLeftBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatMemberLeftBuilder<St, S>
 where
-    S: event_group_chat_member_left_state::State,
-    S::ConvoId: event_group_chat_member_left_state::IsUnset,
+    St: event_group_chat_member_left_state::State,
+    St::ConvoId: event_group_chat_member_left_state::IsUnset,
 {
     /// Set the `convoId` field (required)
     pub fn convo_id(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> EventGroupChatMemberLeftBuilder<'a, event_group_chat_member_left_state::SetConvoId<S>>
+        value: impl Into<S>,
+    ) -> EventGroupChatMemberLeftBuilder<event_group_chat_member_left_state::SetConvoId<St>, S>
     {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        self._fields.2 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberLeftBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatMemberLeftBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatMemberLeftBuilder<St, S>
 where
-    S: event_group_chat_member_left_state::State,
-    S::CreatedAt: event_group_chat_member_left_state::IsUnset,
+    St: event_group_chat_member_left_state::State,
+    St::CreatedAt: event_group_chat_member_left_state::IsUnset,
 {
     /// Set the `createdAt` field (required)
     pub fn created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> EventGroupChatMemberLeftBuilder<'a, event_group_chat_member_left_state::SetCreatedAt<S>>
+    ) -> EventGroupChatMemberLeftBuilder<event_group_chat_member_left_state::SetCreatedAt<St>, S>
     {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        self._fields.3 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberLeftBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatMemberLeftBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatMemberLeftBuilder<St, S>
 where
-    S: event_group_chat_member_left_state::State,
-    S::GroupMemberCount: event_group_chat_member_left_state::IsUnset,
+    St: event_group_chat_member_left_state::State,
+    St::GroupMemberCount: event_group_chat_member_left_state::IsUnset,
 {
     /// Set the `groupMemberCount` field (required)
     pub fn group_member_count(
         mut self,
         value: impl Into<i64>,
     ) -> EventGroupChatMemberLeftBuilder<
-        'a,
-        event_group_chat_member_left_state::SetGroupMemberCount<S>,
+        event_group_chat_member_left_state::SetGroupMemberCount<St>,
+        S,
     > {
-        self.__unsafe_private_named.4 = ::core::option::Option::Some(value.into());
+        self._fields.4 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberLeftBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatMemberLeftBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatMemberLeftBuilder<St, S>
 where
-    S: event_group_chat_member_left_state::State,
-    S::GroupName: event_group_chat_member_left_state::IsUnset,
+    St: event_group_chat_member_left_state::State,
+    St::GroupName: event_group_chat_member_left_state::IsUnset,
 {
     /// Set the `groupName` field (required)
     pub fn group_name(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> EventGroupChatMemberLeftBuilder<'a, event_group_chat_member_left_state::SetGroupName<S>>
+        value: impl Into<S>,
+    ) -> EventGroupChatMemberLeftBuilder<event_group_chat_member_left_state::SetGroupName<St>, S>
     {
-        self.__unsafe_private_named.5 = ::core::option::Option::Some(value.into());
+        self._fields.5 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberLeftBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatMemberLeftBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatMemberLeftBuilder<St, S>
 where
-    S: event_group_chat_member_left_state::State,
-    S::LeaveMethod: event_group_chat_member_left_state::IsUnset,
+    St: event_group_chat_member_left_state::State,
+    St::LeaveMethod: event_group_chat_member_left_state::IsUnset,
 {
     /// Set the `leaveMethod` field (required)
     pub fn leave_method(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> EventGroupChatMemberLeftBuilder<'a, event_group_chat_member_left_state::SetLeaveMethod<S>>
+        value: impl Into<EventGroupChatMemberLeftLeaveMethod<S>>,
+    ) -> EventGroupChatMemberLeftBuilder<event_group_chat_member_left_state::SetLeaveMethod<St>, S>
     {
-        self.__unsafe_private_named.6 = ::core::option::Option::Some(value.into());
+        self._fields.6 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberLeftBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatMemberLeftBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatMemberLeftBuilder<St, S>
 where
-    S: event_group_chat_member_left_state::State,
-    S::OwnerDid: event_group_chat_member_left_state::IsUnset,
+    St: event_group_chat_member_left_state::State,
+    St::OwnerDid: event_group_chat_member_left_state::IsUnset,
 {
     /// Set the `ownerDid` field (required)
     pub fn owner_did(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> EventGroupChatMemberLeftBuilder<'a, event_group_chat_member_left_state::SetOwnerDid<S>>
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> EventGroupChatMemberLeftBuilder<event_group_chat_member_left_state::SetOwnerDid<St>, S>
     {
-        self.__unsafe_private_named.7 = ::core::option::Option::Some(value.into());
+        self._fields.7 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberLeftBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatMemberLeftBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatMemberLeftBuilder<St, S>
 where
-    S: event_group_chat_member_left_state::State,
-    S::Rev: event_group_chat_member_left_state::IsUnset,
+    St: event_group_chat_member_left_state::State,
+    St::Rev: event_group_chat_member_left_state::IsUnset,
 {
     /// Set the `rev` field (required)
     pub fn rev(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> EventGroupChatMemberLeftBuilder<'a, event_group_chat_member_left_state::SetRev<S>> {
-        self.__unsafe_private_named.8 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> EventGroupChatMemberLeftBuilder<event_group_chat_member_left_state::SetRev<St>, S> {
+        self._fields.8 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberLeftBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatMemberLeftBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatMemberLeftBuilder<St, S>
 where
-    S: event_group_chat_member_left_state::State,
-    S::SubjectDid: event_group_chat_member_left_state::IsUnset,
+    St: event_group_chat_member_left_state::State,
+    St::SubjectDid: event_group_chat_member_left_state::IsUnset,
 {
     /// Set the `subjectDid` field (required)
     pub fn subject_did(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> EventGroupChatMemberLeftBuilder<'a, event_group_chat_member_left_state::SetSubjectDid<S>>
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> EventGroupChatMemberLeftBuilder<event_group_chat_member_left_state::SetSubjectDid<St>, S>
     {
-        self.__unsafe_private_named.9 = ::core::option::Option::Some(value.into());
+        self._fields.9 = ::core::option::Option::Some(value.into());
         EventGroupChatMemberLeftBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatMemberLeftBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatMemberLeftBuilder<St, S>
 where
-    S: event_group_chat_member_left_state::State,
-    S::ActorDid: event_group_chat_member_left_state::IsSet,
-    S::ConvoCreatedAt: event_group_chat_member_left_state::IsSet,
-    S::ConvoId: event_group_chat_member_left_state::IsSet,
-    S::CreatedAt: event_group_chat_member_left_state::IsSet,
-    S::GroupMemberCount: event_group_chat_member_left_state::IsSet,
-    S::GroupName: event_group_chat_member_left_state::IsSet,
-    S::LeaveMethod: event_group_chat_member_left_state::IsSet,
-    S::OwnerDid: event_group_chat_member_left_state::IsSet,
-    S::Rev: event_group_chat_member_left_state::IsSet,
-    S::SubjectDid: event_group_chat_member_left_state::IsSet,
+    St: event_group_chat_member_left_state::State,
+    St::ActorDid: event_group_chat_member_left_state::IsSet,
+    St::ConvoCreatedAt: event_group_chat_member_left_state::IsSet,
+    St::ConvoId: event_group_chat_member_left_state::IsSet,
+    St::CreatedAt: event_group_chat_member_left_state::IsSet,
+    St::GroupMemberCount: event_group_chat_member_left_state::IsSet,
+    St::GroupName: event_group_chat_member_left_state::IsSet,
+    St::LeaveMethod: event_group_chat_member_left_state::IsSet,
+    St::OwnerDid: event_group_chat_member_left_state::IsSet,
+    St::Rev: event_group_chat_member_left_state::IsSet,
+    St::SubjectDid: event_group_chat_member_left_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> EventGroupChatMemberLeft<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> EventGroupChatMemberLeft<S> {
         EventGroupChatMemberLeft {
-            actor_did: self.__unsafe_private_named.0.unwrap(),
-            convo_created_at: self.__unsafe_private_named.1.unwrap(),
-            convo_id: self.__unsafe_private_named.2.unwrap(),
-            created_at: self.__unsafe_private_named.3.unwrap(),
-            group_member_count: self.__unsafe_private_named.4.unwrap(),
-            group_name: self.__unsafe_private_named.5.unwrap(),
-            leave_method: self.__unsafe_private_named.6.unwrap(),
-            owner_did: self.__unsafe_private_named.7.unwrap(),
-            rev: self.__unsafe_private_named.8.unwrap(),
-            subject_did: self.__unsafe_private_named.9.unwrap(),
+            actor_did: self._fields.0.unwrap(),
+            convo_created_at: self._fields.1.unwrap(),
+            convo_id: self._fields.2.unwrap(),
+            created_at: self._fields.3.unwrap(),
+            group_member_count: self._fields.4.unwrap(),
+            group_name: self._fields.5.unwrap(),
+            leave_method: self._fields.6.unwrap(),
+            owner_did: self._fields.7.unwrap(),
+            rev: self._fields.8.unwrap(),
+            subject_did: self._fields.9.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> EventGroupChatMemberLeft<'a> {
+    ) -> EventGroupChatMemberLeft<S> {
         EventGroupChatMemberLeft {
-            actor_did: self.__unsafe_private_named.0.unwrap(),
-            convo_created_at: self.__unsafe_private_named.1.unwrap(),
-            convo_id: self.__unsafe_private_named.2.unwrap(),
-            created_at: self.__unsafe_private_named.3.unwrap(),
-            group_member_count: self.__unsafe_private_named.4.unwrap(),
-            group_name: self.__unsafe_private_named.5.unwrap(),
-            leave_method: self.__unsafe_private_named.6.unwrap(),
-            owner_did: self.__unsafe_private_named.7.unwrap(),
-            rev: self.__unsafe_private_named.8.unwrap(),
-            subject_did: self.__unsafe_private_named.9.unwrap(),
+            actor_did: self._fields.0.unwrap(),
+            convo_created_at: self._fields.1.unwrap(),
+            convo_id: self._fields.2.unwrap(),
+            created_at: self._fields.3.unwrap(),
+            group_member_count: self._fields.4.unwrap(),
+            group_name: self._fields.5.unwrap(),
+            leave_method: self._fields.6.unwrap(),
+            owner_did: self._fields.7.unwrap(),
+            rev: self._fields.8.unwrap(),
+            subject_did: self._fields.9.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for EventGroupChatMemberLeft<'a> {
-    fn nsid() -> &'static str {
-        "chat.bsky.moderation.subscribeModEvents"
-    }
-    fn def_name() -> &'static str {
-        "eventGroupChatMemberLeft"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_chat_bsky_moderation_subscribeModEvents()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-/// Fired when a group chat's metadata or status changes.
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct EventGroupChatUpdated<'a> {
-    /// The DID of the actor performing the action (the owner).
-    #[serde(borrow)]
-    pub actor_did: jacquard_common::types::string::Did<'a>,
-    /// When the group was originally created.
-    pub convo_created_at: jacquard_common::types::string::Datetime,
-    #[serde(borrow)]
-    pub convo_id: jacquard_common::CowStr<'a>,
-    pub created_at: jacquard_common::types::string::Datetime,
-    /// Current member count at the time of the event.
-    pub group_member_count: i64,
-    /// Current group name.
-    #[serde(borrow)]
-    pub group_name: jacquard_common::CowStr<'a>,
-    /// The code of the join link. Only present when updateType is join-link-related.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub join_link_code: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// Whether the join link is restricted to followers of the owner. Only present when updateType is join-link-related.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub join_link_followers_only: std::option::Option<bool>,
-    /// Whether the join link requires owner approval to join. Only present when updateType is join-link-related.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub join_link_requires_approval: std::option::Option<bool>,
-    /// Why the group was locked. Only present when updateType is 'locked'.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub lock_reason: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// The new group name. Only present when updateType is 'name_changed'.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub new_name: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// The previous group name. Only present when updateType is 'name_changed'.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub old_name: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// The DID of the group chat owner.
-    #[serde(borrow)]
-    pub owner_did: jacquard_common::types::string::Did<'a>,
-    #[serde(borrow)]
-    pub rev: jacquard_common::CowStr<'a>,
-    /// What changed.
-    #[serde(borrow)]
-    pub update_type: jacquard_common::CowStr<'a>,
 }
 
 pub mod event_group_chat_updated_state {
@@ -6875,129 +7260,129 @@ pub mod event_group_chat_updated_state {
         type UpdateType = Unset;
     }
     ///State transition - sets the `actor_did` field to Set
-    pub struct SetActorDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetActorDid<S> {}
-    impl<S: State> State for SetActorDid<S> {
+    pub struct SetActorDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetActorDid<St> {}
+    impl<St: State> State for SetActorDid<St> {
         type ActorDid = Set<members::actor_did>;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
-        type UpdateType = S::UpdateType;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
+        type UpdateType = St::UpdateType;
     }
     ///State transition - sets the `convo_created_at` field to Set
-    pub struct SetConvoCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoCreatedAt<S> {}
-    impl<S: State> State for SetConvoCreatedAt<S> {
-        type ActorDid = S::ActorDid;
+    pub struct SetConvoCreatedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetConvoCreatedAt<St> {}
+    impl<St: State> State for SetConvoCreatedAt<St> {
+        type ActorDid = St::ActorDid;
         type ConvoCreatedAt = Set<members::convo_created_at>;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
-        type UpdateType = S::UpdateType;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
+        type UpdateType = St::UpdateType;
     }
     ///State transition - sets the `convo_id` field to Set
-    pub struct SetConvoId<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetConvoId<S> {}
-    impl<S: State> State for SetConvoId<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
+    pub struct SetConvoId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetConvoId<St> {}
+    impl<St: State> State for SetConvoId<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
         type ConvoId = Set<members::convo_id>;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
-        type UpdateType = S::UpdateType;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
+        type UpdateType = St::UpdateType;
     }
     ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
+    pub struct SetCreatedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCreatedAt<St> {}
+    impl<St: State> State for SetCreatedAt<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
         type CreatedAt = Set<members::created_at>;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
-        type UpdateType = S::UpdateType;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
+        type UpdateType = St::UpdateType;
     }
     ///State transition - sets the `group_member_count` field to Set
-    pub struct SetGroupMemberCount<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetGroupMemberCount<S> {}
-    impl<S: State> State for SetGroupMemberCount<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
+    pub struct SetGroupMemberCount<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetGroupMemberCount<St> {}
+    impl<St: State> State for SetGroupMemberCount<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
         type GroupMemberCount = Set<members::group_member_count>;
-        type GroupName = S::GroupName;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
-        type UpdateType = S::UpdateType;
+        type GroupName = St::GroupName;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
+        type UpdateType = St::UpdateType;
     }
     ///State transition - sets the `group_name` field to Set
-    pub struct SetGroupName<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetGroupName<S> {}
-    impl<S: State> State for SetGroupName<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
+    pub struct SetGroupName<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetGroupName<St> {}
+    impl<St: State> State for SetGroupName<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
         type GroupName = Set<members::group_name>;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
-        type UpdateType = S::UpdateType;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
+        type UpdateType = St::UpdateType;
     }
     ///State transition - sets the `owner_did` field to Set
-    pub struct SetOwnerDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetOwnerDid<S> {}
-    impl<S: State> State for SetOwnerDid<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
+    pub struct SetOwnerDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetOwnerDid<St> {}
+    impl<St: State> State for SetOwnerDid<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
         type OwnerDid = Set<members::owner_did>;
-        type Rev = S::Rev;
-        type UpdateType = S::UpdateType;
+        type Rev = St::Rev;
+        type UpdateType = St::UpdateType;
     }
     ///State transition - sets the `rev` field to Set
-    pub struct SetRev<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRev<S> {}
-    impl<S: State> State for SetRev<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type OwnerDid = S::OwnerDid;
+    pub struct SetRev<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRev<St> {}
+    impl<St: State> State for SetRev<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type OwnerDid = St::OwnerDid;
         type Rev = Set<members::rev>;
-        type UpdateType = S::UpdateType;
+        type UpdateType = St::UpdateType;
     }
     ///State transition - sets the `update_type` field to Set
-    pub struct SetUpdateType<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetUpdateType<S> {}
-    impl<S: State> State for SetUpdateType<S> {
-        type ActorDid = S::ActorDid;
-        type ConvoCreatedAt = S::ConvoCreatedAt;
-        type ConvoId = S::ConvoId;
-        type CreatedAt = S::CreatedAt;
-        type GroupMemberCount = S::GroupMemberCount;
-        type GroupName = S::GroupName;
-        type OwnerDid = S::OwnerDid;
-        type Rev = S::Rev;
+    pub struct SetUpdateType<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetUpdateType<St> {}
+    impl<St: State> State for SetUpdateType<St> {
+        type ActorDid = St::ActorDid;
+        type ConvoCreatedAt = St::ConvoCreatedAt;
+        type ConvoId = St::ConvoId;
+        type CreatedAt = St::CreatedAt;
+        type GroupMemberCount = St::GroupMemberCount;
+        type GroupName = St::GroupName;
+        type OwnerDid = St::OwnerDid;
+        type Rev = St::Rev;
         type UpdateType = Set<members::update_type>;
     }
     /// Marker types for field names
@@ -7024,397 +7409,408 @@ pub mod event_group_chat_updated_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct EventGroupChatUpdatedBuilder<'a, S: event_group_chat_updated_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<i64>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<bool>,
-        ::core::option::Option<bool>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct EventGroupChatUpdatedBuilder<
+    St: event_group_chat_updated_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<i64>,
+        core::option::Option<S>,
+        core::option::Option<S>,
+        core::option::Option<bool>,
+        core::option::Option<bool>,
+        core::option::Option<EventGroupChatUpdatedLockReason<S>>,
+        core::option::Option<S>,
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<S>,
+        core::option::Option<EventGroupChatUpdatedUpdateType<S>>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> EventGroupChatUpdated<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> EventGroupChatUpdatedBuilder<'a, event_group_chat_updated_state::Empty> {
+impl EventGroupChatUpdated<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> EventGroupChatUpdatedBuilder<
+        event_group_chat_updated_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         EventGroupChatUpdatedBuilder::new()
     }
 }
 
-impl<'a> EventGroupChatUpdatedBuilder<'a, event_group_chat_updated_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> EventGroupChatUpdated<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> EventGroupChatUpdatedBuilder<event_group_chat_updated_state::Empty, S> {
+        EventGroupChatUpdatedBuilder::builder()
+    }
+}
+
+impl
+    EventGroupChatUpdatedBuilder<event_group_chat_updated_state::Empty, jacquard_common::DefaultStr>
+{
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         EventGroupChatUpdatedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (
+            _state: ::core::marker::PhantomData,
+            _fields: (
                 None, None, None, None, None, None, None, None, None, None, None, None, None, None,
                 None,
             ),
-            _phantom: ::core::marker::PhantomData,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatUpdatedBuilder<'a, S>
+impl<S: jacquard_common::BosStr>
+    EventGroupChatUpdatedBuilder<event_group_chat_updated_state::Empty, S>
+{
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        EventGroupChatUpdatedBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (
+                None, None, None, None, None, None, None, None, None, None, None, None, None, None,
+                None,
+            ),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> EventGroupChatUpdatedBuilder<St, S>
 where
-    S: event_group_chat_updated_state::State,
-    S::ActorDid: event_group_chat_updated_state::IsUnset,
+    St: event_group_chat_updated_state::State,
+    St::ActorDid: event_group_chat_updated_state::IsUnset,
 {
     /// Set the `actorDid` field (required)
     pub fn actor_did(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> EventGroupChatUpdatedBuilder<'a, event_group_chat_updated_state::SetActorDid<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> EventGroupChatUpdatedBuilder<event_group_chat_updated_state::SetActorDid<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         EventGroupChatUpdatedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatUpdatedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatUpdatedBuilder<St, S>
 where
-    S: event_group_chat_updated_state::State,
-    S::ConvoCreatedAt: event_group_chat_updated_state::IsUnset,
+    St: event_group_chat_updated_state::State,
+    St::ConvoCreatedAt: event_group_chat_updated_state::IsUnset,
 {
     /// Set the `convoCreatedAt` field (required)
     pub fn convo_created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> EventGroupChatUpdatedBuilder<'a, event_group_chat_updated_state::SetConvoCreatedAt<S>>
+    ) -> EventGroupChatUpdatedBuilder<event_group_chat_updated_state::SetConvoCreatedAt<St>, S>
     {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        self._fields.1 = ::core::option::Option::Some(value.into());
         EventGroupChatUpdatedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatUpdatedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatUpdatedBuilder<St, S>
 where
-    S: event_group_chat_updated_state::State,
-    S::ConvoId: event_group_chat_updated_state::IsUnset,
+    St: event_group_chat_updated_state::State,
+    St::ConvoId: event_group_chat_updated_state::IsUnset,
 {
     /// Set the `convoId` field (required)
     pub fn convo_id(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> EventGroupChatUpdatedBuilder<'a, event_group_chat_updated_state::SetConvoId<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> EventGroupChatUpdatedBuilder<event_group_chat_updated_state::SetConvoId<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         EventGroupChatUpdatedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatUpdatedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatUpdatedBuilder<St, S>
 where
-    S: event_group_chat_updated_state::State,
-    S::CreatedAt: event_group_chat_updated_state::IsUnset,
+    St: event_group_chat_updated_state::State,
+    St::CreatedAt: event_group_chat_updated_state::IsUnset,
 {
     /// Set the `createdAt` field (required)
     pub fn created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> EventGroupChatUpdatedBuilder<'a, event_group_chat_updated_state::SetCreatedAt<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+    ) -> EventGroupChatUpdatedBuilder<event_group_chat_updated_state::SetCreatedAt<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
         EventGroupChatUpdatedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatUpdatedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatUpdatedBuilder<St, S>
 where
-    S: event_group_chat_updated_state::State,
-    S::GroupMemberCount: event_group_chat_updated_state::IsUnset,
+    St: event_group_chat_updated_state::State,
+    St::GroupMemberCount: event_group_chat_updated_state::IsUnset,
 {
     /// Set the `groupMemberCount` field (required)
     pub fn group_member_count(
         mut self,
         value: impl Into<i64>,
-    ) -> EventGroupChatUpdatedBuilder<'a, event_group_chat_updated_state::SetGroupMemberCount<S>>
+    ) -> EventGroupChatUpdatedBuilder<event_group_chat_updated_state::SetGroupMemberCount<St>, S>
     {
-        self.__unsafe_private_named.4 = ::core::option::Option::Some(value.into());
+        self._fields.4 = ::core::option::Option::Some(value.into());
         EventGroupChatUpdatedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatUpdatedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatUpdatedBuilder<St, S>
 where
-    S: event_group_chat_updated_state::State,
-    S::GroupName: event_group_chat_updated_state::IsUnset,
+    St: event_group_chat_updated_state::State,
+    St::GroupName: event_group_chat_updated_state::IsUnset,
 {
     /// Set the `groupName` field (required)
     pub fn group_name(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> EventGroupChatUpdatedBuilder<'a, event_group_chat_updated_state::SetGroupName<S>> {
-        self.__unsafe_private_named.5 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> EventGroupChatUpdatedBuilder<event_group_chat_updated_state::SetGroupName<St>, S> {
+        self._fields.5 = ::core::option::Option::Some(value.into());
         EventGroupChatUpdatedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: event_group_chat_updated_state::State> EventGroupChatUpdatedBuilder<'a, S> {
+impl<St: event_group_chat_updated_state::State, S: jacquard_common::BosStr>
+    EventGroupChatUpdatedBuilder<St, S>
+{
     /// Set the `joinLinkCode` field (optional)
-    pub fn join_link_code(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.6 = value.into();
+    pub fn join_link_code(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.6 = value.into();
         self
     }
     /// Set the `joinLinkCode` field to an Option value (optional)
-    pub fn maybe_join_link_code(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.6 = value;
+    pub fn maybe_join_link_code(mut self, value: Option<S>) -> Self {
+        self._fields.6 = value;
         self
     }
 }
 
-impl<'a, S: event_group_chat_updated_state::State> EventGroupChatUpdatedBuilder<'a, S> {
+impl<St: event_group_chat_updated_state::State, S: jacquard_common::BosStr>
+    EventGroupChatUpdatedBuilder<St, S>
+{
     /// Set the `joinLinkFollowersOnly` field (optional)
     pub fn join_link_followers_only(mut self, value: impl Into<Option<bool>>) -> Self {
-        self.__unsafe_private_named.7 = value.into();
+        self._fields.7 = value.into();
         self
     }
     /// Set the `joinLinkFollowersOnly` field to an Option value (optional)
     pub fn maybe_join_link_followers_only(mut self, value: Option<bool>) -> Self {
-        self.__unsafe_private_named.7 = value;
+        self._fields.7 = value;
         self
     }
 }
 
-impl<'a, S: event_group_chat_updated_state::State> EventGroupChatUpdatedBuilder<'a, S> {
+impl<St: event_group_chat_updated_state::State, S: jacquard_common::BosStr>
+    EventGroupChatUpdatedBuilder<St, S>
+{
     /// Set the `joinLinkRequiresApproval` field (optional)
     pub fn join_link_requires_approval(mut self, value: impl Into<Option<bool>>) -> Self {
-        self.__unsafe_private_named.8 = value.into();
+        self._fields.8 = value.into();
         self
     }
     /// Set the `joinLinkRequiresApproval` field to an Option value (optional)
     pub fn maybe_join_link_requires_approval(mut self, value: Option<bool>) -> Self {
-        self.__unsafe_private_named.8 = value;
+        self._fields.8 = value;
         self
     }
 }
 
-impl<'a, S: event_group_chat_updated_state::State> EventGroupChatUpdatedBuilder<'a, S> {
+impl<St: event_group_chat_updated_state::State, S: jacquard_common::BosStr>
+    EventGroupChatUpdatedBuilder<St, S>
+{
     /// Set the `lockReason` field (optional)
-    pub fn lock_reason(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.9 = value.into();
+    pub fn lock_reason(
+        mut self,
+        value: impl Into<Option<EventGroupChatUpdatedLockReason<S>>>,
+    ) -> Self {
+        self._fields.9 = value.into();
         self
     }
     /// Set the `lockReason` field to an Option value (optional)
-    pub fn maybe_lock_reason(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.9 = value;
+    pub fn maybe_lock_reason(mut self, value: Option<EventGroupChatUpdatedLockReason<S>>) -> Self {
+        self._fields.9 = value;
         self
     }
 }
 
-impl<'a, S: event_group_chat_updated_state::State> EventGroupChatUpdatedBuilder<'a, S> {
+impl<St: event_group_chat_updated_state::State, S: jacquard_common::BosStr>
+    EventGroupChatUpdatedBuilder<St, S>
+{
     /// Set the `newName` field (optional)
-    pub fn new_name(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.10 = value.into();
+    pub fn new_name(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.10 = value.into();
         self
     }
     /// Set the `newName` field to an Option value (optional)
-    pub fn maybe_new_name(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.10 = value;
+    pub fn maybe_new_name(mut self, value: Option<S>) -> Self {
+        self._fields.10 = value;
         self
     }
 }
 
-impl<'a, S: event_group_chat_updated_state::State> EventGroupChatUpdatedBuilder<'a, S> {
+impl<St: event_group_chat_updated_state::State, S: jacquard_common::BosStr>
+    EventGroupChatUpdatedBuilder<St, S>
+{
     /// Set the `oldName` field (optional)
-    pub fn old_name(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.11 = value.into();
+    pub fn old_name(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.11 = value.into();
         self
     }
     /// Set the `oldName` field to an Option value (optional)
-    pub fn maybe_old_name(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.11 = value;
+    pub fn maybe_old_name(mut self, value: Option<S>) -> Self {
+        self._fields.11 = value;
         self
     }
 }
 
-impl<'a, S> EventGroupChatUpdatedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatUpdatedBuilder<St, S>
 where
-    S: event_group_chat_updated_state::State,
-    S::OwnerDid: event_group_chat_updated_state::IsUnset,
+    St: event_group_chat_updated_state::State,
+    St::OwnerDid: event_group_chat_updated_state::IsUnset,
 {
     /// Set the `ownerDid` field (required)
     pub fn owner_did(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> EventGroupChatUpdatedBuilder<'a, event_group_chat_updated_state::SetOwnerDid<S>> {
-        self.__unsafe_private_named.12 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> EventGroupChatUpdatedBuilder<event_group_chat_updated_state::SetOwnerDid<St>, S> {
+        self._fields.12 = ::core::option::Option::Some(value.into());
         EventGroupChatUpdatedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatUpdatedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatUpdatedBuilder<St, S>
 where
-    S: event_group_chat_updated_state::State,
-    S::Rev: event_group_chat_updated_state::IsUnset,
+    St: event_group_chat_updated_state::State,
+    St::Rev: event_group_chat_updated_state::IsUnset,
 {
     /// Set the `rev` field (required)
     pub fn rev(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> EventGroupChatUpdatedBuilder<'a, event_group_chat_updated_state::SetRev<S>> {
-        self.__unsafe_private_named.13 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> EventGroupChatUpdatedBuilder<event_group_chat_updated_state::SetRev<St>, S> {
+        self._fields.13 = ::core::option::Option::Some(value.into());
         EventGroupChatUpdatedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatUpdatedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatUpdatedBuilder<St, S>
 where
-    S: event_group_chat_updated_state::State,
-    S::UpdateType: event_group_chat_updated_state::IsUnset,
+    St: event_group_chat_updated_state::State,
+    St::UpdateType: event_group_chat_updated_state::IsUnset,
 {
     /// Set the `updateType` field (required)
     pub fn update_type(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> EventGroupChatUpdatedBuilder<'a, event_group_chat_updated_state::SetUpdateType<S>> {
-        self.__unsafe_private_named.14 = ::core::option::Option::Some(value.into());
+        value: impl Into<EventGroupChatUpdatedUpdateType<S>>,
+    ) -> EventGroupChatUpdatedBuilder<event_group_chat_updated_state::SetUpdateType<St>, S> {
+        self._fields.14 = ::core::option::Option::Some(value.into());
         EventGroupChatUpdatedBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventGroupChatUpdatedBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventGroupChatUpdatedBuilder<St, S>
 where
-    S: event_group_chat_updated_state::State,
-    S::ActorDid: event_group_chat_updated_state::IsSet,
-    S::ConvoCreatedAt: event_group_chat_updated_state::IsSet,
-    S::ConvoId: event_group_chat_updated_state::IsSet,
-    S::CreatedAt: event_group_chat_updated_state::IsSet,
-    S::GroupMemberCount: event_group_chat_updated_state::IsSet,
-    S::GroupName: event_group_chat_updated_state::IsSet,
-    S::OwnerDid: event_group_chat_updated_state::IsSet,
-    S::Rev: event_group_chat_updated_state::IsSet,
-    S::UpdateType: event_group_chat_updated_state::IsSet,
+    St: event_group_chat_updated_state::State,
+    St::ActorDid: event_group_chat_updated_state::IsSet,
+    St::ConvoCreatedAt: event_group_chat_updated_state::IsSet,
+    St::ConvoId: event_group_chat_updated_state::IsSet,
+    St::CreatedAt: event_group_chat_updated_state::IsSet,
+    St::GroupMemberCount: event_group_chat_updated_state::IsSet,
+    St::GroupName: event_group_chat_updated_state::IsSet,
+    St::OwnerDid: event_group_chat_updated_state::IsSet,
+    St::Rev: event_group_chat_updated_state::IsSet,
+    St::UpdateType: event_group_chat_updated_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> EventGroupChatUpdated<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> EventGroupChatUpdated<S> {
         EventGroupChatUpdated {
-            actor_did: self.__unsafe_private_named.0.unwrap(),
-            convo_created_at: self.__unsafe_private_named.1.unwrap(),
-            convo_id: self.__unsafe_private_named.2.unwrap(),
-            created_at: self.__unsafe_private_named.3.unwrap(),
-            group_member_count: self.__unsafe_private_named.4.unwrap(),
-            group_name: self.__unsafe_private_named.5.unwrap(),
-            join_link_code: self.__unsafe_private_named.6,
-            join_link_followers_only: self.__unsafe_private_named.7,
-            join_link_requires_approval: self.__unsafe_private_named.8,
-            lock_reason: self.__unsafe_private_named.9,
-            new_name: self.__unsafe_private_named.10,
-            old_name: self.__unsafe_private_named.11,
-            owner_did: self.__unsafe_private_named.12.unwrap(),
-            rev: self.__unsafe_private_named.13.unwrap(),
-            update_type: self.__unsafe_private_named.14.unwrap(),
+            actor_did: self._fields.0.unwrap(),
+            convo_created_at: self._fields.1.unwrap(),
+            convo_id: self._fields.2.unwrap(),
+            created_at: self._fields.3.unwrap(),
+            group_member_count: self._fields.4.unwrap(),
+            group_name: self._fields.5.unwrap(),
+            join_link_code: self._fields.6,
+            join_link_followers_only: self._fields.7,
+            join_link_requires_approval: self._fields.8,
+            lock_reason: self._fields.9,
+            new_name: self._fields.10,
+            old_name: self._fields.11,
+            owner_did: self._fields.12.unwrap(),
+            rev: self._fields.13.unwrap(),
+            update_type: self._fields.14.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> EventGroupChatUpdated<'a> {
+    ) -> EventGroupChatUpdated<S> {
         EventGroupChatUpdated {
-            actor_did: self.__unsafe_private_named.0.unwrap(),
-            convo_created_at: self.__unsafe_private_named.1.unwrap(),
-            convo_id: self.__unsafe_private_named.2.unwrap(),
-            created_at: self.__unsafe_private_named.3.unwrap(),
-            group_member_count: self.__unsafe_private_named.4.unwrap(),
-            group_name: self.__unsafe_private_named.5.unwrap(),
-            join_link_code: self.__unsafe_private_named.6,
-            join_link_followers_only: self.__unsafe_private_named.7,
-            join_link_requires_approval: self.__unsafe_private_named.8,
-            lock_reason: self.__unsafe_private_named.9,
-            new_name: self.__unsafe_private_named.10,
-            old_name: self.__unsafe_private_named.11,
-            owner_did: self.__unsafe_private_named.12.unwrap(),
-            rev: self.__unsafe_private_named.13.unwrap(),
-            update_type: self.__unsafe_private_named.14.unwrap(),
+            actor_did: self._fields.0.unwrap(),
+            convo_created_at: self._fields.1.unwrap(),
+            convo_id: self._fields.2.unwrap(),
+            created_at: self._fields.3.unwrap(),
+            group_member_count: self._fields.4.unwrap(),
+            group_name: self._fields.5.unwrap(),
+            join_link_code: self._fields.6,
+            join_link_followers_only: self._fields.7,
+            join_link_requires_approval: self._fields.8,
+            lock_reason: self._fields.9,
+            new_name: self._fields.10,
+            old_name: self._fields.11,
+            owner_did: self._fields.12.unwrap(),
+            rev: self._fields.13.unwrap(),
+            update_type: self._fields.14.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for EventGroupChatUpdated<'a> {
-    fn nsid() -> &'static str {
-        "chat.bsky.moderation.subscribeModEvents"
-    }
-    fn def_name() -> &'static str {
-        "eventGroupChatUpdated"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_chat_bsky_moderation_subscribeModEvents()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-/// Fired when a user exceeds a rate limit.
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct EventRateLimitExceeded<'a> {
-    /// The DID of the user who hit the rate limit.
-    #[serde(borrow)]
-    pub actor_did: jacquard_common::types::string::Did<'a>,
-    pub created_at: jacquard_common::types::string::Datetime,
-    /// The NSID of the endpoint that was rate limited.
-    #[serde(borrow)]
-    pub endpoint: jacquard_common::CowStr<'a>,
-    #[serde(borrow)]
-    pub rev: jacquard_common::CowStr<'a>,
 }
 
 pub mod event_rate_limit_exceeded_state {
@@ -7442,39 +7838,39 @@ pub mod event_rate_limit_exceeded_state {
         type Rev = Unset;
     }
     ///State transition - sets the `actor_did` field to Set
-    pub struct SetActorDid<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetActorDid<S> {}
-    impl<S: State> State for SetActorDid<S> {
+    pub struct SetActorDid<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetActorDid<St> {}
+    impl<St: State> State for SetActorDid<St> {
         type ActorDid = Set<members::actor_did>;
-        type CreatedAt = S::CreatedAt;
-        type Endpoint = S::Endpoint;
-        type Rev = S::Rev;
+        type CreatedAt = St::CreatedAt;
+        type Endpoint = St::Endpoint;
+        type Rev = St::Rev;
     }
     ///State transition - sets the `created_at` field to Set
-    pub struct SetCreatedAt<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetCreatedAt<S> {}
-    impl<S: State> State for SetCreatedAt<S> {
-        type ActorDid = S::ActorDid;
+    pub struct SetCreatedAt<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetCreatedAt<St> {}
+    impl<St: State> State for SetCreatedAt<St> {
+        type ActorDid = St::ActorDid;
         type CreatedAt = Set<members::created_at>;
-        type Endpoint = S::Endpoint;
-        type Rev = S::Rev;
+        type Endpoint = St::Endpoint;
+        type Rev = St::Rev;
     }
     ///State transition - sets the `endpoint` field to Set
-    pub struct SetEndpoint<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetEndpoint<S> {}
-    impl<S: State> State for SetEndpoint<S> {
-        type ActorDid = S::ActorDid;
-        type CreatedAt = S::CreatedAt;
+    pub struct SetEndpoint<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetEndpoint<St> {}
+    impl<St: State> State for SetEndpoint<St> {
+        type ActorDid = St::ActorDid;
+        type CreatedAt = St::CreatedAt;
         type Endpoint = Set<members::endpoint>;
-        type Rev = S::Rev;
+        type Rev = St::Rev;
     }
     ///State transition - sets the `rev` field to Set
-    pub struct SetRev<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetRev<S> {}
-    impl<S: State> State for SetRev<S> {
-        type ActorDid = S::ActorDid;
-        type CreatedAt = S::CreatedAt;
-        type Endpoint = S::Endpoint;
+    pub struct SetRev<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetRev<St> {}
+    impl<St: State> State for SetRev<St> {
+        type ActorDid = St::ActorDid;
+        type CreatedAt = St::CreatedAt;
+        type Endpoint = St::Endpoint;
         type Rev = Set<members::rev>;
     }
     /// Marker types for field names
@@ -7491,173 +7887,177 @@ pub mod event_rate_limit_exceeded_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct EventRateLimitExceededBuilder<'a, S: event_rate_limit_exceeded_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::types::string::Did<'a>>,
-        ::core::option::Option<jacquard_common::types::string::Datetime>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
+/// Builder for constructing an instance of this type.
+pub struct EventRateLimitExceededBuilder<
+    St: event_rate_limit_exceeded_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<jacquard_common::types::string::Did<S>>,
+        core::option::Option<jacquard_common::types::string::Datetime>,
+        core::option::Option<S>,
+        core::option::Option<S>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> EventRateLimitExceeded<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> EventRateLimitExceededBuilder<'a, event_rate_limit_exceeded_state::Empty> {
+impl EventRateLimitExceeded<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> EventRateLimitExceededBuilder<
+        event_rate_limit_exceeded_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         EventRateLimitExceededBuilder::new()
     }
 }
 
-impl<'a> EventRateLimitExceededBuilder<'a, event_rate_limit_exceeded_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> EventRateLimitExceeded<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> EventRateLimitExceededBuilder<event_rate_limit_exceeded_state::Empty, S> {
+        EventRateLimitExceededBuilder::builder()
+    }
+}
+
+impl
+    EventRateLimitExceededBuilder<
+        event_rate_limit_exceeded_state::Empty,
+        jacquard_common::DefaultStr,
+    >
+{
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         EventRateLimitExceededBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventRateLimitExceededBuilder<'a, S>
+impl<S: jacquard_common::BosStr>
+    EventRateLimitExceededBuilder<event_rate_limit_exceeded_state::Empty, S>
+{
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        EventRateLimitExceededBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> EventRateLimitExceededBuilder<St, S>
 where
-    S: event_rate_limit_exceeded_state::State,
-    S::ActorDid: event_rate_limit_exceeded_state::IsUnset,
+    St: event_rate_limit_exceeded_state::State,
+    St::ActorDid: event_rate_limit_exceeded_state::IsUnset,
 {
     /// Set the `actorDid` field (required)
     pub fn actor_did(
         mut self,
-        value: impl Into<jacquard_common::types::string::Did<'a>>,
-    ) -> EventRateLimitExceededBuilder<'a, event_rate_limit_exceeded_state::SetActorDid<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::Did<S>>,
+    ) -> EventRateLimitExceededBuilder<event_rate_limit_exceeded_state::SetActorDid<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         EventRateLimitExceededBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventRateLimitExceededBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventRateLimitExceededBuilder<St, S>
 where
-    S: event_rate_limit_exceeded_state::State,
-    S::CreatedAt: event_rate_limit_exceeded_state::IsUnset,
+    St: event_rate_limit_exceeded_state::State,
+    St::CreatedAt: event_rate_limit_exceeded_state::IsUnset,
 {
     /// Set the `createdAt` field (required)
     pub fn created_at(
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
-    ) -> EventRateLimitExceededBuilder<'a, event_rate_limit_exceeded_state::SetCreatedAt<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+    ) -> EventRateLimitExceededBuilder<event_rate_limit_exceeded_state::SetCreatedAt<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         EventRateLimitExceededBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventRateLimitExceededBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventRateLimitExceededBuilder<St, S>
 where
-    S: event_rate_limit_exceeded_state::State,
-    S::Endpoint: event_rate_limit_exceeded_state::IsUnset,
+    St: event_rate_limit_exceeded_state::State,
+    St::Endpoint: event_rate_limit_exceeded_state::IsUnset,
 {
     /// Set the `endpoint` field (required)
     pub fn endpoint(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> EventRateLimitExceededBuilder<'a, event_rate_limit_exceeded_state::SetEndpoint<S>> {
-        self.__unsafe_private_named.2 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> EventRateLimitExceededBuilder<event_rate_limit_exceeded_state::SetEndpoint<St>, S> {
+        self._fields.2 = ::core::option::Option::Some(value.into());
         EventRateLimitExceededBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventRateLimitExceededBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventRateLimitExceededBuilder<St, S>
 where
-    S: event_rate_limit_exceeded_state::State,
-    S::Rev: event_rate_limit_exceeded_state::IsUnset,
+    St: event_rate_limit_exceeded_state::State,
+    St::Rev: event_rate_limit_exceeded_state::IsUnset,
 {
     /// Set the `rev` field (required)
     pub fn rev(
         mut self,
-        value: impl Into<jacquard_common::CowStr<'a>>,
-    ) -> EventRateLimitExceededBuilder<'a, event_rate_limit_exceeded_state::SetRev<S>> {
-        self.__unsafe_private_named.3 = ::core::option::Option::Some(value.into());
+        value: impl Into<S>,
+    ) -> EventRateLimitExceededBuilder<event_rate_limit_exceeded_state::SetRev<St>, S> {
+        self._fields.3 = ::core::option::Option::Some(value.into());
         EventRateLimitExceededBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> EventRateLimitExceededBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> EventRateLimitExceededBuilder<St, S>
 where
-    S: event_rate_limit_exceeded_state::State,
-    S::ActorDid: event_rate_limit_exceeded_state::IsSet,
-    S::CreatedAt: event_rate_limit_exceeded_state::IsSet,
-    S::Endpoint: event_rate_limit_exceeded_state::IsSet,
-    S::Rev: event_rate_limit_exceeded_state::IsSet,
+    St: event_rate_limit_exceeded_state::State,
+    St::ActorDid: event_rate_limit_exceeded_state::IsSet,
+    St::CreatedAt: event_rate_limit_exceeded_state::IsSet,
+    St::Endpoint: event_rate_limit_exceeded_state::IsSet,
+    St::Rev: event_rate_limit_exceeded_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> EventRateLimitExceeded<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> EventRateLimitExceeded<S> {
         EventRateLimitExceeded {
-            actor_did: self.__unsafe_private_named.0.unwrap(),
-            created_at: self.__unsafe_private_named.1.unwrap(),
-            endpoint: self.__unsafe_private_named.2.unwrap(),
-            rev: self.__unsafe_private_named.3.unwrap(),
+            actor_did: self._fields.0.unwrap(),
+            created_at: self._fields.1.unwrap(),
+            endpoint: self._fields.2.unwrap(),
+            rev: self._fields.3.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> EventRateLimitExceeded<'a> {
+    ) -> EventRateLimitExceeded<S> {
         EventRateLimitExceeded {
-            actor_did: self.__unsafe_private_named.0.unwrap(),
-            created_at: self.__unsafe_private_named.1.unwrap(),
-            endpoint: self.__unsafe_private_named.2.unwrap(),
-            rev: self.__unsafe_private_named.3.unwrap(),
+            actor_did: self._fields.0.unwrap(),
+            created_at: self._fields.1.unwrap(),
+            endpoint: self._fields.2.unwrap(),
+            rev: self._fields.3.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for EventRateLimitExceeded<'a> {
-    fn nsid() -> &'static str {
-        "chat.bsky.moderation.subscribeModEvents"
-    }
-    fn def_name() -> &'static str {
-        "eventRateLimitExceeded"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_chat_bsky_moderation_subscribeModEvents()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
-    }
-}
-
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct SubscribeModEvents<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
 }
 
 pub mod subscribe_mod_events_state {
@@ -7679,278 +8079,77 @@ pub mod subscribe_mod_events_state {
     pub mod members {}
 }
 
-/// Builder for constructing an instance of this type
-pub struct SubscribeModEventsBuilder<'a, S: subscribe_mod_events_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<jacquard_common::CowStr<'a>>,),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct SubscribeModEventsBuilder<
+    St: subscribe_mod_events_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<S>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> SubscribeModEvents<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> SubscribeModEventsBuilder<'a, subscribe_mod_events_state::Empty> {
+impl SubscribeModEvents<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> SubscribeModEventsBuilder<subscribe_mod_events_state::Empty, jacquard_common::DefaultStr>
+    {
         SubscribeModEventsBuilder::new()
     }
 }
 
-impl<'a> SubscribeModEventsBuilder<'a, subscribe_mod_events_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> SubscribeModEvents<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> SubscribeModEventsBuilder<subscribe_mod_events_state::Empty, S> {
+        SubscribeModEventsBuilder::builder()
+    }
+}
+
+impl SubscribeModEventsBuilder<subscribe_mod_events_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         SubscribeModEventsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: subscribe_mod_events_state::State> SubscribeModEventsBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> SubscribeModEventsBuilder<subscribe_mod_events_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        SubscribeModEventsBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: subscribe_mod_events_state::State, S: jacquard_common::BosStr>
+    SubscribeModEventsBuilder<St, S>
+{
     /// Set the `cursor` field (optional)
-    pub fn cursor(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+    pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.0 = value.into();
         self
     }
     /// Set the `cursor` field to an Option value (optional)
-    pub fn maybe_cursor(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.0 = value;
+    pub fn maybe_cursor(mut self, value: Option<S>) -> Self {
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S> SubscribeModEventsBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> SubscribeModEventsBuilder<St, S>
 where
-    S: subscribe_mod_events_state::State,
+    St: subscribe_mod_events_state::State,
 {
-    /// Build the final struct
-    pub fn build(self) -> SubscribeModEvents<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> SubscribeModEvents<S> {
         SubscribeModEvents {
-            cursor: self.__unsafe_private_named.0,
+            cursor: self._fields.0,
         }
     }
-}
-
-#[jacquard_derive::open_union]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(tag = "$type")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum SubscribeModEventsMessage<'a> {
-    #[serde(rename = "#eventConvoFirstMessage")]
-    EventConvoFirstMessage(
-        Box<
-            crate::generated::chat_bsky::moderation::subscribe_mod_events::EventConvoFirstMessage<
-                'a,
-            >,
-        >,
-    ),
-    #[serde(rename = "#eventGroupChatCreated")]
-    EventGroupChatCreated(
-        Box<
-            crate::generated::chat_bsky::moderation::subscribe_mod_events::EventGroupChatCreated<
-                'a,
-            >,
-        >,
-    ),
-    #[serde(rename = "#eventGroupChatMemberAdded")]
-    EventGroupChatMemberAdded(
-        Box<
-            crate::generated::chat_bsky::moderation::subscribe_mod_events::EventGroupChatMemberAdded<
-                'a,
-            >,
-        >,
-    ),
-    #[serde(rename = "#eventGroupChatMemberJoined")]
-    EventGroupChatMemberJoined(
-        Box<
-            crate::generated::chat_bsky::moderation::subscribe_mod_events::EventGroupChatMemberJoined<
-                'a,
-            >,
-        >,
-    ),
-    #[serde(rename = "#eventGroupChatJoinRequest")]
-    EventGroupChatJoinRequest(
-        Box<
-            crate::generated::chat_bsky::moderation::subscribe_mod_events::EventGroupChatJoinRequest<
-                'a,
-            >,
-        >,
-    ),
-    #[serde(rename = "#eventGroupChatJoinRequestApproved")]
-    EventGroupChatJoinRequestApproved(
-        Box<
-            crate::generated::chat_bsky::moderation::subscribe_mod_events::EventGroupChatJoinRequestApproved<
-                'a,
-            >,
-        >,
-    ),
-    #[serde(rename = "#eventGroupChatJoinRequestRejected")]
-    EventGroupChatJoinRequestRejected(
-        Box<
-            crate::generated::chat_bsky::moderation::subscribe_mod_events::EventGroupChatJoinRequestRejected<
-                'a,
-            >,
-        >,
-    ),
-    #[serde(rename = "#eventChatAccepted")]
-    EventChatAccepted(
-        Box<
-            crate::generated::chat_bsky::moderation::subscribe_mod_events::EventChatAccepted<
-                'a,
-            >,
-        >,
-    ),
-    #[serde(rename = "#eventGroupChatMemberLeft")]
-    EventGroupChatMemberLeft(
-        Box<
-            crate::generated::chat_bsky::moderation::subscribe_mod_events::EventGroupChatMemberLeft<
-                'a,
-            >,
-        >,
-    ),
-    #[serde(rename = "#eventGroupChatUpdated")]
-    EventGroupChatUpdated(
-        Box<
-            crate::generated::chat_bsky::moderation::subscribe_mod_events::EventGroupChatUpdated<
-                'a,
-            >,
-        >,
-    ),
-    #[serde(rename = "#eventRateLimitExceeded")]
-    EventRateLimitExceeded(
-        Box<
-            crate::generated::chat_bsky::moderation::subscribe_mod_events::EventRateLimitExceeded<
-                'a,
-            >,
-        >,
-    ),
-}
-
-impl<'a> SubscribeModEventsMessage<'a> {
-    /// Decode a framed DAG-CBOR message (header + body).
-    pub fn decode_framed<'de: 'a>(
-        bytes: &'de [u8],
-    ) -> Result<SubscribeModEventsMessage<'a>, jacquard_common::error::DecodeError> {
-        let (header, body) = jacquard_common::xrpc::subscription::parse_event_header(bytes)?;
-        match header.t.as_str() {
-            "#eventConvoFirstMessage" => {
-                let variant = serde_ipld_dagcbor::from_slice(body)?;
-                Ok(Self::EventConvoFirstMessage(Box::new(variant)))
-            }
-            "#eventGroupChatCreated" => {
-                let variant = serde_ipld_dagcbor::from_slice(body)?;
-                Ok(Self::EventGroupChatCreated(Box::new(variant)))
-            }
-            "#eventGroupChatMemberAdded" => {
-                let variant = serde_ipld_dagcbor::from_slice(body)?;
-                Ok(Self::EventGroupChatMemberAdded(Box::new(variant)))
-            }
-            "#eventGroupChatMemberJoined" => {
-                let variant = serde_ipld_dagcbor::from_slice(body)?;
-                Ok(Self::EventGroupChatMemberJoined(Box::new(variant)))
-            }
-            "#eventGroupChatJoinRequest" => {
-                let variant = serde_ipld_dagcbor::from_slice(body)?;
-                Ok(Self::EventGroupChatJoinRequest(Box::new(variant)))
-            }
-            "#eventGroupChatJoinRequestApproved" => {
-                let variant = serde_ipld_dagcbor::from_slice(body)?;
-                Ok(Self::EventGroupChatJoinRequestApproved(Box::new(variant)))
-            }
-            "#eventGroupChatJoinRequestRejected" => {
-                let variant = serde_ipld_dagcbor::from_slice(body)?;
-                Ok(Self::EventGroupChatJoinRequestRejected(Box::new(variant)))
-            }
-            "#eventChatAccepted" => {
-                let variant = serde_ipld_dagcbor::from_slice(body)?;
-                Ok(Self::EventChatAccepted(Box::new(variant)))
-            }
-            "#eventGroupChatMemberLeft" => {
-                let variant = serde_ipld_dagcbor::from_slice(body)?;
-                Ok(Self::EventGroupChatMemberLeft(Box::new(variant)))
-            }
-            "#eventGroupChatUpdated" => {
-                let variant = serde_ipld_dagcbor::from_slice(body)?;
-                Ok(Self::EventGroupChatUpdated(Box::new(variant)))
-            }
-            "#eventRateLimitExceeded" => {
-                let variant = serde_ipld_dagcbor::from_slice(body)?;
-                Ok(Self::EventRateLimitExceeded(Box::new(variant)))
-            }
-            unknown => Err(jacquard_common::error::DecodeError::UnknownEventType(
-                unknown.into(),
-            )),
-        }
-    }
-}
-
-#[jacquard_derive::open_union]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    thiserror::Error,
-    miette::Diagnostic,
-    jacquard_derive::IntoStatic,
-)]
-#[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum SubscribeModEventsError<'a> {
-    #[serde(rename = "FutureCursor")]
-    FutureCursor(std::option::Option<jacquard_common::CowStr<'a>>),
-    /// If the consumer of the stream can not keep up with events, and a backlog gets too large, the server will drop the connection.
-    #[serde(rename = "ConsumerTooSlow")]
-    ConsumerTooSlow(std::option::Option<jacquard_common::CowStr<'a>>),
-}
-
-impl std::fmt::Display for SubscribeModEventsError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::FutureCursor(msg) => {
-                write!(f, "FutureCursor")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
-            Self::ConsumerTooSlow(msg) => {
-                write!(f, "ConsumerTooSlow")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
-        }
-    }
-}
-
-///Stream response type for
-///chat.bsky.moderation.subscribeModEvents
-pub struct SubscribeModEventsStream;
-impl jacquard_common::xrpc::SubscriptionResp for SubscribeModEventsStream {
-    const NSID: &'static str = "chat.bsky.moderation.subscribeModEvents";
-    const ENCODING: jacquard_common::xrpc::MessageEncoding =
-        jacquard_common::xrpc::MessageEncoding::Json;
-    type Message<'de> = SubscribeModEventsMessage<'de>;
-    type Error<'de> = SubscribeModEventsError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcSubscription for SubscribeModEvents<'a> {
-    const NSID: &'static str = "chat.bsky.moderation.subscribeModEvents";
-    const ENCODING: jacquard_common::xrpc::MessageEncoding =
-        jacquard_common::xrpc::MessageEncoding::Json;
-    type Stream = SubscribeModEventsStream;
-}
-
-pub struct SubscribeModEventsEndpoint;
-impl jacquard_common::xrpc::SubscriptionEndpoint for SubscribeModEventsEndpoint {
-    const PATH: &'static str = "/xrpc/chat.bsky.moderation.subscribeModEvents";
-    const ENCODING: jacquard_common::xrpc::MessageEncoding =
-        jacquard_common::xrpc::MessageEncoding::Json;
-    type Params<'de> = SubscribeModEvents<'de>;
-    type Stream = SubscribeModEventsStream;
 }

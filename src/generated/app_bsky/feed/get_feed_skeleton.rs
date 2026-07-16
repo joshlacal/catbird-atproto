@@ -8,16 +8,120 @@
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetFeedSkeleton<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(borrow)]
-    pub feed: jacquard_common::types::string::AtUri<'a>,
-    ///(default: 50, min: 1, max: 100)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub limit: std::option::Option<i64>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetFeedSkeleton<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    pub feed: jacquard_common::types::string::AtUri<S>,
+    /// Defaults to `50`. Min: 1. Max: 100.
+    #[serde(default = "_default_limit")]
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub limit: core::option::Option<i64>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetFeedSkeletonOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub cursor: core::option::Option<S>,
+    pub feed: Vec<crate::generated::app_bsky::feed::SkeletonFeedPost<S>>,
+    ///Unique identifier per request that may be passed back alongside interactions.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub req_id: core::option::Option<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    thiserror::Error,
+    miette::Diagnostic,
+)]
+#[serde(tag = "error", content = "message")]
+pub enum GetFeedSkeletonError {
+    #[serde(rename = "UnknownFeed")]
+    UnknownFeed(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
+}
+
+impl core::fmt::Display for GetFeedSkeletonError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        match self {
+            Self::UnknownFeed(msg) => {
+                write!(f, "UnknownFeed")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+        }
+    }
+}
+
+/** Response marker for the `app.bsky.feed.getFeedSkeleton` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `GetFeedSkeletonOutput<S>` for this endpoint.*/
+pub struct GetFeedSkeletonResponse;
+impl jacquard_common::xrpc::XrpcResp for GetFeedSkeletonResponse {
+    const NSID: &'static str = "app.bsky.feed.getFeedSkeleton";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = GetFeedSkeletonOutput<S>;
+    type Err = GetFeedSkeletonError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetFeedSkeleton<S> {
+    const NSID: &'static str = "app.bsky.feed.getFeedSkeleton";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = GetFeedSkeletonResponse;
+}
+
+/** Endpoint marker for the `app.bsky.feed.getFeedSkeleton` query.
+
+Path: `/xrpc/app.bsky.feed.getFeedSkeleton`. The request payload type is `GetFeedSkeleton<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct GetFeedSkeletonRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for GetFeedSkeletonRequest {
+    const PATH: &'static str = "/xrpc/app.bsky.feed.getFeedSkeleton";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = GetFeedSkeleton<S>;
+    type Response = GetFeedSkeletonResponse;
+}
+
+fn _default_limit() -> core::option::Option<i64> {
+    Some(50i64)
 }
 
 pub mod get_feed_skeleton_state {
@@ -39,9 +143,9 @@ pub mod get_feed_skeleton_state {
         type Feed = Unset;
     }
     ///State transition - sets the `feed` field to Set
-    pub struct SetFeed<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetFeed<S> {}
-    impl<S: State> State for SetFeed<S> {
+    pub struct SetFeed<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetFeed<St> {}
+    impl<St: State> State for SetFeed<St> {
         type Feed = Set<members::feed>;
     }
     /// Marker types for field names
@@ -52,168 +156,113 @@ pub mod get_feed_skeleton_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct GetFeedSkeletonBuilder<'a, S: get_feed_skeleton_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (
-        ::core::option::Option<jacquard_common::CowStr<'a>>,
-        ::core::option::Option<jacquard_common::types::string::AtUri<'a>>,
-        ::core::option::Option<i64>,
+/// Builder for constructing an instance of this type.
+pub struct GetFeedSkeletonBuilder<
+    St: get_feed_skeleton_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<jacquard_common::types::string::AtUri<S>>,
+        core::option::Option<i64>,
     ),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> GetFeedSkeleton<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> GetFeedSkeletonBuilder<'a, get_feed_skeleton_state::Empty> {
+impl GetFeedSkeleton<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new(
+    ) -> GetFeedSkeletonBuilder<get_feed_skeleton_state::Empty, jacquard_common::DefaultStr> {
         GetFeedSkeletonBuilder::new()
     }
 }
 
-impl<'a> GetFeedSkeletonBuilder<'a, get_feed_skeleton_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> GetFeedSkeleton<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> GetFeedSkeletonBuilder<get_feed_skeleton_state::Empty, S> {
+        GetFeedSkeletonBuilder::builder()
+    }
+}
+
+impl GetFeedSkeletonBuilder<get_feed_skeleton_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetFeedSkeletonBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None, None),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: get_feed_skeleton_state::State> GetFeedSkeletonBuilder<'a, S> {
+impl<S: jacquard_common::BosStr> GetFeedSkeletonBuilder<get_feed_skeleton_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GetFeedSkeletonBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St: get_feed_skeleton_state::State, S: jacquard_common::BosStr> GetFeedSkeletonBuilder<St, S> {
     /// Set the `cursor` field (optional)
-    pub fn cursor(mut self, value: impl Into<Option<jacquard_common::CowStr<'a>>>) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+    pub fn cursor(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.0 = value.into();
         self
     }
     /// Set the `cursor` field to an Option value (optional)
-    pub fn maybe_cursor(mut self, value: Option<jacquard_common::CowStr<'a>>) -> Self {
-        self.__unsafe_private_named.0 = value;
+    pub fn maybe_cursor(mut self, value: Option<S>) -> Self {
+        self._fields.0 = value;
         self
     }
 }
 
-impl<'a, S> GetFeedSkeletonBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GetFeedSkeletonBuilder<St, S>
 where
-    S: get_feed_skeleton_state::State,
-    S::Feed: get_feed_skeleton_state::IsUnset,
+    St: get_feed_skeleton_state::State,
+    St::Feed: get_feed_skeleton_state::IsUnset,
 {
     /// Set the `feed` field (required)
     pub fn feed(
         mut self,
-        value: impl Into<jacquard_common::types::string::AtUri<'a>>,
-    ) -> GetFeedSkeletonBuilder<'a, get_feed_skeleton_state::SetFeed<S>> {
-        self.__unsafe_private_named.1 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::AtUri<S>>,
+    ) -> GetFeedSkeletonBuilder<get_feed_skeleton_state::SetFeed<St>, S> {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         GetFeedSkeletonBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S: get_feed_skeleton_state::State> GetFeedSkeletonBuilder<'a, S> {
+impl<St: get_feed_skeleton_state::State, S: jacquard_common::BosStr> GetFeedSkeletonBuilder<St, S> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.2 = value.into();
+        self._fields.2 = value.into();
         self
     }
     /// Set the `limit` field to an Option value (optional)
     pub fn maybe_limit(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.2 = value;
+        self._fields.2 = value;
         self
     }
 }
 
-impl<'a, S> GetFeedSkeletonBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> GetFeedSkeletonBuilder<St, S>
 where
-    S: get_feed_skeleton_state::State,
-    S::Feed: get_feed_skeleton_state::IsSet,
+    St: get_feed_skeleton_state::State,
+    St::Feed: get_feed_skeleton_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> GetFeedSkeleton<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> GetFeedSkeleton<S> {
         GetFeedSkeleton {
-            cursor: self.__unsafe_private_named.0,
-            feed: self.__unsafe_private_named.1.unwrap(),
-            limit: self.__unsafe_private_named.2,
+            cursor: self._fields.0,
+            feed: self._fields.1.unwrap(),
+            limit: self._fields.2,
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct GetFeedSkeletonOutput<'a> {
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub cursor: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(borrow)]
-    pub feed: Vec<crate::generated::app_bsky::feed::SkeletonFeedPost<'a>>,
-    /// Unique identifier per request that may be passed back alongside interactions.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub req_id: std::option::Option<jacquard_common::CowStr<'a>>,
-}
-
-#[jacquard_derive::open_union]
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    thiserror::Error,
-    miette::Diagnostic,
-    jacquard_derive::IntoStatic,
-)]
-#[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum GetFeedSkeletonError<'a> {
-    #[serde(rename = "UnknownFeed")]
-    UnknownFeed(std::option::Option<jacquard_common::CowStr<'a>>),
-}
-
-impl std::fmt::Display for GetFeedSkeletonError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::UnknownFeed(msg) => {
-                write!(f, "UnknownFeed")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
-        }
-    }
-}
-
-/// Response type for
-///app.bsky.feed.getFeedSkeleton
-pub struct GetFeedSkeletonResponse;
-impl jacquard_common::xrpc::XrpcResp for GetFeedSkeletonResponse {
-    const NSID: &'static str = "app.bsky.feed.getFeedSkeleton";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = GetFeedSkeletonOutput<'de>;
-    type Err<'de> = GetFeedSkeletonError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for GetFeedSkeleton<'a> {
-    const NSID: &'static str = "app.bsky.feed.getFeedSkeleton";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = GetFeedSkeletonResponse;
-}
-
-/// Endpoint type for
-///app.bsky.feed.getFeedSkeleton
-pub struct GetFeedSkeletonRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for GetFeedSkeletonRequest {
-    const PATH: &'static str = "/xrpc/app.bsky.feed.getFeedSkeleton";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = GetFeedSkeleton<'de>;
-    type Response = GetFeedSkeletonResponse;
 }

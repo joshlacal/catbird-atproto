@@ -5,7 +5,6 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -16,13 +15,25 @@
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct AddReservedHandle<'a> {
-    #[serde(borrow)]
-    pub handle: jacquard_common::CowStr<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct AddReservedHandle<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub handle: S,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -33,32 +44,50 @@ pub struct AddReservedHandle<'a> {
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct AddReservedHandleOutput<'a> {}
-/// Response type for
-///com.atproto.temp.addReservedHandle
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct AddReservedHandleOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `com.atproto.temp.addReservedHandle` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `AddReservedHandleOutput<S>` for this endpoint.*/
 pub struct AddReservedHandleResponse;
 impl jacquard_common::xrpc::XrpcResp for AddReservedHandleResponse {
     const NSID: &'static str = "com.atproto.temp.addReservedHandle";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = AddReservedHandleOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
+    type Output<S: jacquard_common::BosStr> = AddReservedHandleOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for AddReservedHandle<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for AddReservedHandle<S> {
     const NSID: &'static str = "com.atproto.temp.addReservedHandle";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = AddReservedHandleResponse;
 }
 
-/// Endpoint type for
-///com.atproto.temp.addReservedHandle
+/** Endpoint marker for the `com.atproto.temp.addReservedHandle` procedure.
+
+Path: `/xrpc/com.atproto.temp.addReservedHandle`. The request payload type is `AddReservedHandle<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct AddReservedHandleRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for AddReservedHandleRequest {
     const PATH: &'static str = "/xrpc/com.atproto.temp.addReservedHandle";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = AddReservedHandle<'de>;
+    type Request<S: jacquard_common::BosStr> = AddReservedHandle<S>;
     type Response = AddReservedHandleResponse;
 }

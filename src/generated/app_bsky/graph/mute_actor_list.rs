@@ -5,14 +5,56 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct MuteActorList<'a> {
-    #[serde(borrow)]
-    pub list: jacquard_common::types::string::AtUri<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct MuteActorList<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub list: jacquard_common::types::string::AtUri<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `app.bsky.graph.muteActorList` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `()` for this endpoint.*/
+pub struct MuteActorListResponse;
+impl jacquard_common::xrpc::XrpcResp for MuteActorListResponse {
+    const NSID: &'static str = "app.bsky.graph.muteActorList";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = ();
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for MuteActorList<S> {
+    const NSID: &'static str = "app.bsky.graph.muteActorList";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Response = MuteActorListResponse;
+}
+
+/** Endpoint marker for the `app.bsky.graph.muteActorList` procedure.
+
+Path: `/xrpc/app.bsky.graph.muteActorList`. The request payload type is `MuteActorList<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct MuteActorListRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for MuteActorListRequest {
+    const PATH: &'static str = "/xrpc/app.bsky.graph.muteActorList";
+    const METHOD: jacquard_common::xrpc::XrpcMethod =
+        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    type Request<S: jacquard_common::BosStr> = MuteActorList<S>;
+    type Response = MuteActorListResponse;
 }
 
 pub mod mute_actor_list_state {
@@ -34,9 +76,9 @@ pub mod mute_actor_list_state {
         type List = Unset;
     }
     ///State transition - sets the `list` field to Set
-    pub struct SetList<S: State = Empty>(PhantomData<fn() -> S>);
-    impl<S: State> sealed::Sealed for SetList<S> {}
-    impl<S: State> State for SetList<S> {
+    pub struct SetList<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetList<St> {}
+    impl<St: State> State for SetList<St> {
         type List = Set<members::list>;
     }
     /// Marker types for field names
@@ -47,101 +89,95 @@ pub mod mute_actor_list_state {
     }
 }
 
-/// Builder for constructing an instance of this type
-pub struct MuteActorListBuilder<'a, S: mute_actor_list_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<jacquard_common::types::string::AtUri<'a>>,),
-    _phantom: ::core::marker::PhantomData<&'a ()>,
+/// Builder for constructing an instance of this type.
+pub struct MuteActorListBuilder<
+    St: mute_actor_list_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<jacquard_common::types::string::AtUri<S>>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
-impl<'a> MuteActorList<'a> {
-    /// Create a new builder for this type
-    pub fn new() -> MuteActorListBuilder<'a, mute_actor_list_state::Empty> {
+impl MuteActorList<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> MuteActorListBuilder<mute_actor_list_state::Empty, jacquard_common::DefaultStr>
+    {
         MuteActorListBuilder::new()
     }
 }
 
-impl<'a> MuteActorListBuilder<'a, mute_actor_list_state::Empty> {
-    /// Create a new builder with all fields unset
+impl<S: jacquard_common::BosStr> MuteActorList<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> MuteActorListBuilder<mute_actor_list_state::Empty, S> {
+        MuteActorListBuilder::builder()
+    }
+}
+
+impl MuteActorListBuilder<mute_actor_list_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         MuteActorListBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None,),
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> MuteActorListBuilder<'a, S>
+impl<S: jacquard_common::BosStr> MuteActorListBuilder<mute_actor_list_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        MuteActorListBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> MuteActorListBuilder<St, S>
 where
-    S: mute_actor_list_state::State,
-    S::List: mute_actor_list_state::IsUnset,
+    St: mute_actor_list_state::State,
+    St::List: mute_actor_list_state::IsUnset,
 {
     /// Set the `list` field (required)
     pub fn list(
         mut self,
-        value: impl Into<jacquard_common::types::string::AtUri<'a>>,
-    ) -> MuteActorListBuilder<'a, mute_actor_list_state::SetList<S>> {
-        self.__unsafe_private_named.0 = ::core::option::Option::Some(value.into());
+        value: impl Into<jacquard_common::types::string::AtUri<S>>,
+    ) -> MuteActorListBuilder<mute_actor_list_state::SetList<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
         MuteActorListBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: self.__unsafe_private_named,
-            _phantom: ::core::marker::PhantomData,
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<'a, S> MuteActorListBuilder<'a, S>
+impl<St, S: jacquard_common::BosStr> MuteActorListBuilder<St, S>
 where
-    S: mute_actor_list_state::State,
-    S::List: mute_actor_list_state::IsSet,
+    St: mute_actor_list_state::State,
+    St::List: mute_actor_list_state::IsSet,
 {
-    /// Build the final struct
-    pub fn build(self) -> MuteActorList<'a> {
+    /// Build the final struct.
+    pub fn build(self) -> MuteActorList<S> {
         MuteActorList {
-            list: self.__unsafe_private_named.0.unwrap(),
+            list: self._fields.0.unwrap(),
             extra_data: Default::default(),
         }
     }
-    /// Build the final struct with custom extra_data
+    /// Build the final struct with custom extra_data.
     pub fn build_with_data(
         self,
-        extra_data: std::collections::BTreeMap<
-            jacquard_common::smol_str::SmolStr,
-            jacquard_common::types::value::Data<'a>,
+        extra_data: alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
         >,
-    ) -> MuteActorList<'a> {
+    ) -> MuteActorList<S> {
         MuteActorList {
-            list: self.__unsafe_private_named.0.unwrap(),
+            list: self._fields.0.unwrap(),
             extra_data: Some(extra_data),
         }
     }
-}
-
-/// Response type for
-///app.bsky.graph.muteActorList
-pub struct MuteActorListResponse;
-impl jacquard_common::xrpc::XrpcResp for MuteActorListResponse {
-    const NSID: &'static str = "app.bsky.graph.muteActorList";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = ();
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl<'a> jacquard_common::xrpc::XrpcRequest for MuteActorList<'a> {
-    const NSID: &'static str = "app.bsky.graph.muteActorList";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Response = MuteActorListResponse;
-}
-
-/// Endpoint type for
-///app.bsky.graph.muteActorList
-pub struct MuteActorListRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for MuteActorListRequest {
-    const PATH: &'static str = "/xrpc/app.bsky.graph.muteActorList";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = MuteActorList<'de>;
-    type Response = MuteActorListResponse;
 }

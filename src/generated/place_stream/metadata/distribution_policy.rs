@@ -6,7 +6,7 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 /// Distribution and rebroadcast policy.
-#[jacquard_derive::lexicon]
+
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -17,41 +17,65 @@
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct DistributionPolicy<'a> {
-    /// List of did:webs of the broadcasters you want to allow to distribute your content. "*" allows anyone. Starting a line with a "!" bans that broadcaster.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub allowed_broadcasters: std::option::Option<Vec<jacquard_common::CowStr<'a>>>,
-    /// Duration in seconds after which segments should be deleted. Each segment will expire N seconds after its creation time. -1 to allow indefinite archival.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub delete_after: std::option::Option<i64>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct DistributionPolicy<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///List of did:webs of the broadcasters you want to allow to distribute your content. "*" allows anyone. Starting a line with a "!" bans that broadcaster.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub allowed_broadcasters: core::option::Option<Vec<S>>,
+    ///Duration in seconds after which segments should be deleted. Each segment will expire N seconds after its creation time. -1 to allow indefinite archival.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub delete_after: core::option::Option<i64>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for DistributionPolicy<S> {
+    fn nsid() -> &'static str {
+        "place.stream.metadata.distributionPolicy"
+    }
+    fn def_name() -> &'static str {
+        "main"
+    }
+    fn lexicon_doc() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+        lexicon_doc_place_stream_metadata_distributionPolicy()
+    }
+    fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        Ok(())
+    }
 }
 
 fn lexicon_doc_place_stream_metadata_distributionPolicy(
-) -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
+) -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("place.stream.metadata.distributionPolicy"),
-        revision: None,
-        description: None,
         defs: {
-            let mut map = ::std::collections::BTreeMap::new();
+            let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::smol_str::SmolStr::new_static("main"),
+                ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
                 ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
                     description: Some(
                         ::jacquard_common::CowStr::new_static(
                             "Distribution and rebroadcast policy.",
                         ),
                     ),
-                    required: None,
-                    nullable: None,
                     properties: {
                         #[allow(unused_mut)]
-                        let mut map = ::std::collections::BTreeMap::new();
+                        let mut map = ::alloc::collections::BTreeMap::new();
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "allowedBroadcasters",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
@@ -61,56 +85,26 @@ fn lexicon_doc_place_stream_metadata_distributionPolicy(
                                     ),
                                 ),
                                 items: ::jacquard_lexicon::lexicon::LexArrayItem::String(::jacquard_lexicon::lexicon::LexString {
-                                    description: None,
-                                    format: None,
-                                    default: None,
-                                    min_length: None,
-                                    max_length: None,
-                                    min_graphemes: None,
-                                    max_graphemes: None,
-                                    r#enum: None,
-                                    r#const: None,
-                                    known_values: None,
+                                    ..Default::default()
                                 }),
-                                min_length: None,
-                                max_length: None,
+                                ..Default::default()
                             }),
                         );
                         map.insert(
-                            ::jacquard_common::smol_str::SmolStr::new_static(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "deleteAfter",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                description: None,
-                                default: None,
-                                minimum: None,
-                                maximum: None,
-                                r#enum: None,
-                                r#const: None,
+                                ..Default::default()
                             }),
                         );
                         map
                     },
+                    ..Default::default()
                 }),
             );
             map
         },
-    }
-}
-
-impl<'a> ::jacquard_lexicon::schema::LexiconSchema for DistributionPolicy<'a> {
-    fn nsid() -> &'static str {
-        "place.stream.metadata.distributionPolicy"
-    }
-    fn def_name() -> &'static str {
-        "main"
-    }
-    fn lexicon_doc() -> ::jacquard_lexicon::lexicon::LexiconDoc<'static> {
-        lexicon_doc_place_stream_metadata_distributionPolicy()
-    }
-    fn validate(
-        &self,
-    ) -> ::std::result::Result<(), ::jacquard_lexicon::validation::ConstraintError> {
-        Ok(())
+        ..Default::default()
     }
 }

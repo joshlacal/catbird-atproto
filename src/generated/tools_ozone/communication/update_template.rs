@@ -5,7 +5,6 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -16,46 +15,66 @@
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct UpdateTemplate<'a> {
-    /// Content of the template, markdown supported, can contain variable placeholders.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub content_markdown: std::option::Option<jacquard_common::CowStr<'a>>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub disabled: std::option::Option<bool>,
-    /// ID of the template to be updated.
-    #[serde(borrow)]
-    pub id: jacquard_common::CowStr<'a>,
-    /// Message language.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub lang: std::option::Option<jacquard_common::types::string::Language>,
-    /// Name of the template.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub name: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// Subject of the message, used in emails.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub subject: std::option::Option<jacquard_common::CowStr<'a>>,
-    /// DID of the user who is updating the template.
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    #[serde(borrow)]
-    pub updated_by: std::option::Option<jacquard_common::types::string::Did<'a>>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct UpdateTemplate<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Content of the template, markdown supported, can contain variable placeholders.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub content_markdown: core::option::Option<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub disabled: core::option::Option<bool>,
+    ///ID of the template to be updated.
+    pub id: S,
+    ///Message language.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub lang: core::option::Option<jacquard_common::types::string::Language>,
+    ///Name of the template.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub name: core::option::Option<S>,
+    ///Subject of the message, used in emails.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub subject: core::option::Option<S>,
+    ///DID of the user who is updating the template.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub updated_by: core::option::Option<jacquard_common::types::string::Did<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct UpdateTemplateOutput<'a> {
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct UpdateTemplateOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(flatten)]
-    #[serde(borrow)]
-    pub value: crate::generated::tools_ozone::communication::TemplateView<'a>,
+    pub value: crate::generated::tools_ozone::communication::TemplateView<S>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-#[jacquard_derive::open_union]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -65,17 +84,21 @@ pub struct UpdateTemplateOutput<'a> {
     Eq,
     thiserror::Error,
     miette::Diagnostic,
-    jacquard_derive::IntoStatic,
 )]
 #[serde(tag = "error", content = "message")]
-#[serde(bound(deserialize = "'de: 'a"))]
-pub enum UpdateTemplateError<'a> {
+pub enum UpdateTemplateError {
     #[serde(rename = "DuplicateTemplateName")]
-    DuplicateTemplateName(std::option::Option<jacquard_common::CowStr<'a>>),
+    DuplicateTemplateName(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    /// Catch-all for unknown error codes.
+    #[serde(untagged)]
+    Other {
+        error: jacquard_common::deps::smol_str::SmolStr,
+        message: Option<jacquard_common::deps::smol_str::SmolStr>,
+    },
 }
 
-impl std::fmt::Display for UpdateTemplateError<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl core::fmt::Display for UpdateTemplateError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             Self::DuplicateTemplateName(msg) => {
                 write!(f, "DuplicateTemplateName")?;
@@ -84,35 +107,43 @@ impl std::fmt::Display for UpdateTemplateError<'_> {
                 }
                 Ok(())
             }
-            Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
+            Self::Other { error, message } => {
+                write!(f, "{}", error)?;
+                if let Some(msg) = message {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
         }
     }
 }
 
-/// Response type for
-///tools.ozone.communication.updateTemplate
+/** Response marker for the `tools.ozone.communication.updateTemplate` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `UpdateTemplateOutput<S>` for this endpoint.*/
 pub struct UpdateTemplateResponse;
 impl jacquard_common::xrpc::XrpcResp for UpdateTemplateResponse {
     const NSID: &'static str = "tools.ozone.communication.updateTemplate";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = UpdateTemplateOutput<'de>;
-    type Err<'de> = UpdateTemplateError<'de>;
+    type Output<S: jacquard_common::BosStr> = UpdateTemplateOutput<S>;
+    type Err = UpdateTemplateError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for UpdateTemplate<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for UpdateTemplate<S> {
     const NSID: &'static str = "tools.ozone.communication.updateTemplate";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = UpdateTemplateResponse;
 }
 
-/// Endpoint type for
-///tools.ozone.communication.updateTemplate
+/** Endpoint marker for the `tools.ozone.communication.updateTemplate` procedure.
+
+Path: `/xrpc/tools.ozone.communication.updateTemplate`. The request payload type is `UpdateTemplate<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct UpdateTemplateRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for UpdateTemplateRequest {
     const PATH: &'static str = "/xrpc/tools.ozone.communication.updateTemplate";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = UpdateTemplate<'de>;
+    type Request<S: jacquard_common::BosStr> = UpdateTemplate<S>;
     type Response = UpdateTemplateResponse;
 }

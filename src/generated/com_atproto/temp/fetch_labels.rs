@@ -10,11 +10,66 @@
 )]
 #[serde(rename_all = "camelCase")]
 pub struct FetchLabels {
-    ///(default: 50, min: 1, max: 250)
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub limit: std::option::Option<i64>,
-    #[serde(skip_serializing_if = "std::option::Option::is_none")]
-    pub since: std::option::Option<i64>,
+    /// Defaults to `50`. Min: 1. Max: 250.
+    #[serde(default = "_default_limit")]
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub limit: core::option::Option<i64>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub since: core::option::Option<i64>,
+}
+
+#[derive(
+    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+)]
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct FetchLabelsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub labels: Vec<crate::generated::com_atproto::label::Label<S>>,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
+}
+
+/** Response marker for the `com.atproto.temp.fetchLabels` query.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `FetchLabelsOutput<S>` for this endpoint.*/
+pub struct FetchLabelsResponse;
+impl jacquard_common::xrpc::XrpcResp for FetchLabelsResponse {
+    const NSID: &'static str = "com.atproto.temp.fetchLabels";
+    const ENCODING: &'static str = "application/json";
+    type Output<S: jacquard_common::BosStr> = FetchLabelsOutput<S>;
+    type Err = jacquard_common::xrpc::GenericError;
+}
+
+impl jacquard_common::xrpc::XrpcRequest for FetchLabels {
+    const NSID: &'static str = "com.atproto.temp.fetchLabels";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Response = FetchLabelsResponse;
+}
+
+/** Endpoint marker for the `com.atproto.temp.fetchLabels` query.
+
+Path: `/xrpc/com.atproto.temp.fetchLabels`. The request payload type is `FetchLabels`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+pub struct FetchLabelsRequest;
+impl jacquard_common::xrpc::XrpcEndpoint for FetchLabelsRequest {
+    const PATH: &'static str = "/xrpc/com.atproto.temp.fetchLabels";
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
+    type Request<S: jacquard_common::BosStr> = FetchLabels;
+    type Response = FetchLabelsResponse;
+}
+
+fn _default_limit() -> core::option::Option<i64> {
+    Some(50i64)
 }
 
 pub mod fetch_labels_state {
@@ -36,100 +91,74 @@ pub mod fetch_labels_state {
     pub mod members {}
 }
 
-/// Builder for constructing an instance of this type
-pub struct FetchLabelsBuilder<S: fetch_labels_state::State> {
-    _phantom_state: ::core::marker::PhantomData<fn() -> S>,
-    __unsafe_private_named: (::core::option::Option<i64>, ::core::option::Option<i64>),
+/// Builder for constructing an instance of this type.
+pub struct FetchLabelsBuilder<St: fetch_labels_state::State> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<i64>, core::option::Option<i64>),
 }
 
 impl FetchLabels {
-    /// Create a new builder for this type
+    /// Create a new builder for this type.
     pub fn new() -> FetchLabelsBuilder<fetch_labels_state::Empty> {
         FetchLabelsBuilder::new()
     }
 }
 
 impl FetchLabelsBuilder<fetch_labels_state::Empty> {
-    /// Create a new builder with all fields unset
+    /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         FetchLabelsBuilder {
-            _phantom_state: ::core::marker::PhantomData,
-            __unsafe_private_named: (None, None),
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
         }
     }
 }
 
-impl<S: fetch_labels_state::State> FetchLabelsBuilder<S> {
+impl FetchLabelsBuilder<fetch_labels_state::Empty> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        FetchLabelsBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None, None),
+        }
+    }
+}
+
+impl<St: fetch_labels_state::State> FetchLabelsBuilder<St> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.0 = value.into();
+        self._fields.0 = value.into();
         self
     }
     /// Set the `limit` field to an Option value (optional)
     pub fn maybe_limit(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.0 = value;
+        self._fields.0 = value;
         self
     }
 }
 
-impl<S: fetch_labels_state::State> FetchLabelsBuilder<S> {
+impl<St: fetch_labels_state::State> FetchLabelsBuilder<St> {
     /// Set the `since` field (optional)
     pub fn since(mut self, value: impl Into<Option<i64>>) -> Self {
-        self.__unsafe_private_named.1 = value.into();
+        self._fields.1 = value.into();
         self
     }
     /// Set the `since` field to an Option value (optional)
     pub fn maybe_since(mut self, value: Option<i64>) -> Self {
-        self.__unsafe_private_named.1 = value;
+        self._fields.1 = value;
         self
     }
 }
 
-impl<S> FetchLabelsBuilder<S>
+impl<St> FetchLabelsBuilder<St>
 where
-    S: fetch_labels_state::State,
+    St: fetch_labels_state::State,
 {
-    /// Build the final struct
+    /// Build the final struct.
     pub fn build(self) -> FetchLabels {
         FetchLabels {
-            limit: self.__unsafe_private_named.0,
-            since: self.__unsafe_private_named.1,
+            limit: self._fields.0,
+            since: self._fields.1,
         }
     }
-}
-
-#[jacquard_derive::lexicon]
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
-)]
-#[serde(rename_all = "camelCase")]
-pub struct FetchLabelsOutput<'a> {
-    #[serde(borrow)]
-    pub labels: Vec<crate::generated::com_atproto::label::Label<'a>>,
-}
-
-/// Response type for
-///com.atproto.temp.fetchLabels
-pub struct FetchLabelsResponse;
-impl jacquard_common::xrpc::XrpcResp for FetchLabelsResponse {
-    const NSID: &'static str = "com.atproto.temp.fetchLabels";
-    const ENCODING: &'static str = "application/json";
-    type Output<'de> = FetchLabelsOutput<'de>;
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
-}
-
-impl jacquard_common::xrpc::XrpcRequest for FetchLabels {
-    const NSID: &'static str = "com.atproto.temp.fetchLabels";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Response = FetchLabelsResponse;
-}
-
-/// Endpoint type for
-///com.atproto.temp.fetchLabels
-pub struct FetchLabelsRequest;
-impl jacquard_common::xrpc::XrpcEndpoint for FetchLabelsRequest {
-    const PATH: &'static str = "/xrpc/com.atproto.temp.fetchLabels";
-    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<'de> = FetchLabels;
-    type Response = FetchLabelsResponse;
 }

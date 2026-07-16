@@ -5,7 +5,6 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[jacquard_derive::lexicon]
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -16,36 +15,53 @@
     jacquard_derive::IntoStatic,
     Default,
 )]
-#[serde(rename_all = "camelCase")]
-pub struct RequestPhoneVerification<'a> {
-    #[serde(borrow)]
-    pub phone_number: jacquard_common::CowStr<'a>,
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct RequestPhoneVerification<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub phone_number: S,
+    #[serde(
+        flatten,
+        default,
+        skip_serializing_if = "core::option::Option::is_none"
+    )]
+    pub extra_data: core::option::Option<
+        alloc::collections::BTreeMap<
+            jacquard_common::deps::smol_str::SmolStr,
+            jacquard_common::types::value::Data<S>,
+        >,
+    >,
 }
 
-/// Response type for
-///com.atproto.temp.requestPhoneVerification
+/** Response marker for the `com.atproto.temp.requestPhoneVerification` procedure.
+
+Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `()` for this endpoint.*/
 pub struct RequestPhoneVerificationResponse;
 impl jacquard_common::xrpc::XrpcResp for RequestPhoneVerificationResponse {
     const NSID: &'static str = "com.atproto.temp.requestPhoneVerification";
     const ENCODING: &'static str = "application/json";
-    type Output<'de> = ();
-    type Err<'de> = jacquard_common::xrpc::GenericError<'de>;
+    type Output<S: jacquard_common::BosStr> = ();
+    type Err = jacquard_common::xrpc::GenericError;
 }
 
-impl<'a> jacquard_common::xrpc::XrpcRequest for RequestPhoneVerification<'a> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
+    for RequestPhoneVerification<S>
+{
     const NSID: &'static str = "com.atproto.temp.requestPhoneVerification";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
     type Response = RequestPhoneVerificationResponse;
 }
 
-/// Endpoint type for
-///com.atproto.temp.requestPhoneVerification
+/** Endpoint marker for the `com.atproto.temp.requestPhoneVerification` procedure.
+
+Path: `/xrpc/com.atproto.temp.requestPhoneVerification`. The request payload type is `RequestPhoneVerification<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct RequestPhoneVerificationRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for RequestPhoneVerificationRequest {
     const PATH: &'static str = "/xrpc/com.atproto.temp.requestPhoneVerification";
     const METHOD: jacquard_common::xrpc::XrpcMethod =
         jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
-    type Request<'de> = RequestPhoneVerification<'de>;
+    type Request<S: jacquard_common::BosStr> = RequestPhoneVerification<S>;
     type Response = RequestPhoneVerificationResponse;
 }
