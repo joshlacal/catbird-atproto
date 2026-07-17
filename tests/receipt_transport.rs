@@ -13,6 +13,117 @@ const RECEIPT: &str = r#"{
   "signature":{"$bytes":"BAUG"}
 }"#;
 
+fn receipt_with_unknown_security_field() -> serde_json::Value {
+    let mut receipt = serde_json::from_str::<serde_json::Value>(RECEIPT).unwrap();
+    receipt.as_object_mut().unwrap().insert(
+        "futureSignedSecurityField".to_owned(),
+        serde_json::json!(true),
+    );
+    receipt
+}
+
+#[test]
+fn commit_group_change_output_rejects_unknown_nested_receipt_properties() {
+    let fixture = serde_json::json!({
+        "success": true,
+        "newEpoch": 8,
+        "receipt": receipt_with_unknown_security_field()
+    });
+
+    let result = serde_json::from_str::<mlsChat::commit_group_change::CommitGroupChangeOutput>(
+        &fixture.to_string(),
+    );
+    assert!(
+        result.is_err(),
+        "strict receipt carrier accepted an unsigned nested property"
+    );
+}
+
+#[test]
+fn submit_commit_output_rejects_unknown_nested_receipt_properties() {
+    let fixture = serde_json::json!({
+        "accepted": true,
+        "assignedEpoch": 8,
+        "receipt": receipt_with_unknown_security_field(),
+        "sequencerTerm": 3
+    });
+
+    let result =
+        serde_json::from_str::<mlsDS::submit_commit::SubmitCommitOutput>(&fixture.to_string());
+    assert!(
+        result.is_err(),
+        "strict receipt carrier accepted an unsigned nested property"
+    );
+}
+
+#[test]
+fn optional_strict_receipt_carriers_preserve_absent_null_and_clean_values() {
+    for receipt in [None, Some(serde_json::Value::Null)] {
+        let mut commit_fixture = serde_json::json!({"success": true, "newEpoch": 8});
+        if let Some(receipt) = receipt.clone() {
+            commit_fixture["receipt"] = receipt;
+        }
+        let commit_output = serde_json::from_str::<
+            mlsChat::commit_group_change::CommitGroupChangeOutput,
+        >(&commit_fixture.to_string())
+        .unwrap();
+        assert!(commit_output.receipt.is_none());
+
+        let mut submit_fixture = serde_json::json!({
+            "accepted": true,
+            "assignedEpoch": 8,
+            "sequencerTerm": 3
+        });
+        if let Some(receipt) = receipt {
+            submit_fixture["receipt"] = receipt;
+        }
+        let submit_output = serde_json::from_str::<mlsDS::submit_commit::SubmitCommitOutput>(
+            &submit_fixture.to_string(),
+        )
+        .unwrap();
+        assert!(submit_output.receipt.is_none());
+    }
+
+    let clean_receipt = serde_json::from_str::<serde_json::Value>(RECEIPT).unwrap();
+    let commit_output =
+        serde_json::from_str::<mlsChat::commit_group_change::CommitGroupChangeOutput>(
+            &serde_json::json!({
+                "success": true,
+                "newEpoch": 8,
+                "receipt": clean_receipt.clone()
+            })
+            .to_string(),
+        )
+        .unwrap();
+    assert_eq!(commit_output.receipt.unwrap().sequencer_term, 3);
+
+    let submit_output = serde_json::from_str::<mlsDS::submit_commit::SubmitCommitOutput>(
+        &serde_json::json!({
+            "accepted": true,
+            "assignedEpoch": 8,
+            "receipt": clean_receipt,
+            "sequencerTerm": 3
+        })
+        .to_string(),
+    )
+    .unwrap();
+    assert_eq!(submit_output.receipt.unwrap().sequencer_term, 3);
+}
+
+#[test]
+fn direct_receipt_decode_remains_forward_compatible() {
+    let receipt = serde_json::from_str::<mlsChat::commit_group_change::SequencerReceipt>(
+        &receipt_with_unknown_security_field().to_string(),
+    )
+    .unwrap();
+
+    assert!(receipt
+        .extra_data
+        .as_ref()
+        .unwrap()
+        .contains_key("futureSignedSecurityField"));
+}
+
 #[test]
 fn typed_receipt_and_exact_wire_carriers_round_trip_losslessly() {
     let receipt: serde_json::Value = serde_json::from_str(RECEIPT).unwrap();

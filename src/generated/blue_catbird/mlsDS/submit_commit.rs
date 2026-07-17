@@ -60,6 +60,10 @@ pub struct SubmitCommitOutput<S: jacquard_common::BosStr = jacquard_common::Defa
     pub assigned_epoch: i64,
     ///Strict signed sequencer receipt for the accepted commit
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(
+        default,
+        deserialize_with = "deserialize_strict_submit_commit_output_receipt"
+    )]
     pub receipt: core::option::Option<
         crate::generated::blue_catbird::mlsChat::commit_group_change::SequencerReceipt<S>,
     >,
@@ -642,4 +646,31 @@ where
             extra_data: Some(extra_data),
         }
     }
+}
+
+fn deserialize_strict_submit_commit_output_receipt<'de, D, S>(
+    deserializer: D,
+) -> Result<
+    core::option::Option<
+        crate::generated::blue_catbird::mlsChat::commit_group_change::SequencerReceipt<S>,
+    >,
+    D::Error,
+>
+where
+    D: serde::Deserializer<'de>,
+    S: serde::Deserialize<'de> + jacquard_common::BosStr,
+{
+    let value = <core::option::Option<
+        crate::generated::blue_catbird::mlsChat::commit_group_change::SequencerReceipt<S>,
+    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
+    if value
+        .as_ref()
+        .and_then(|inner| inner.extra_data.as_ref())
+        .is_some_and(|extra| !extra.is_empty())
+    {
+        return Err(<D::Error as serde::de::Error>::custom(
+            "unknown field in security-strict referenced object",
+        ));
+    }
+    Ok(value)
 }
