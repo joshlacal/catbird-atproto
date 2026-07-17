@@ -110,6 +110,13 @@ pub struct CommitGroupChange<S: jacquard_common::BosStr = jacquard_common::Defau
     ///ID of the pending addition to claim or complete
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub pending_addition_id: core::option::Option<S>,
+    ///Optional TransitionAttestationV1 challenge UUID. Must be present if and only if transitionSignature is present.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub transition_challenge_id: core::option::Option<S>,
+    ///Ed25519 signature over the exact challenge bytes. Must be present if and only if transitionChallengeId is present.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(default, with = "jacquard_common::opt_serde_bytes_helper")]
+    pub transition_signature: core::option::Option<jacquard_common::deps::bytes::Bytes>,
     ///MLS Welcome message (used by addMembers, completePendingDeviceAddition)
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     #[serde(default, with = "jacquard_common::opt_serde_bytes_helper")]
@@ -1383,6 +1390,31 @@ fn lexicon_doc_blue_catbird_mlsChat_commitGroupChange(
                                                     "ID of the pending addition to claim or complete",
                                                 ),
                                             ),
+                                            ..Default::default()
+                                        }),
+                                    );
+                                    map.insert(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "transitionChallengeId",
+                                        ),
+                                        ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                            description: Some(
+                                                ::jacquard_common::CowStr::new_static(
+                                                    "Optional TransitionAttestationV1 challenge UUID. Must be present if and only if transitionSignature is present.",
+                                                ),
+                                            ),
+                                            min_length: Some(36usize),
+                                            max_length: Some(36usize),
+                                            ..Default::default()
+                                        }),
+                                    );
+                                    map.insert(
+                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                            "transitionSignature",
+                                        ),
+                                        ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                            max_length: Some(64usize),
+                                            min_length: Some(64usize),
                                             ..Default::default()
                                         }),
                                     );

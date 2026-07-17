@@ -190,6 +190,8 @@ pub mod catbird {
                 pub key_package_hashes: Option<Vec<KeyPackageHashEntry>>,
                 pub member_dids: Option<Vec<crate::types::string::Did>>,
                 pub pending_addition_id: Option<String>,
+                pub transition_challenge_id: Option<String>,
+                pub transition_signature: Option<Vec<u8>>,
                 pub welcome: Option<String>,
             }
 
@@ -210,6 +212,8 @@ pub mod catbird {
                         key_package_hashes: value.key_package_hashes,
                         member_dids: value.member_dids,
                         pending_addition_id: value.pending_addition_id.map(Into::into),
+                        transition_challenge_id: value.transition_challenge_id.map(Into::into),
+                        transition_signature: value.transition_signature.map(bytes::Bytes::from),
                         welcome: value.welcome.map(Into::into),
                     }
                 }
