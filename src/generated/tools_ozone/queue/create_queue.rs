@@ -28,9 +28,6 @@ pub struct CreateQueue<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     pub description: core::option::Option<S>,
     ///Display name for the queue (must be unique)
     pub name: S,
-    ///Policy keys to recommend when actioning reports in this queue
-    #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub recommended_policies: core::option::Option<Vec<S>>,
     ///Report reason types (fully qualified NSIDs)
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub report_types: core::option::Option<Vec<S>>,
@@ -84,9 +81,6 @@ pub struct CreateQueueOutput<S: jacquard_common::BosStr = jacquard_common::Defau
 )]
 #[serde(tag = "error", content = "message")]
 pub enum CreateQueueError {
-    /// One or more recommended policy keys do not exist in the configured policy list
-    #[serde(rename = "InvalidRecommendedPolicies")]
-    InvalidRecommendedPolicies(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// The queue configuration conflicts with an existing queue
     #[serde(rename = "ConflictingQueue")]
     ConflictingQueue(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
@@ -101,13 +95,6 @@ pub enum CreateQueueError {
 impl core::fmt::Display for CreateQueueError {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
-            Self::InvalidRecommendedPolicies(msg) => {
-                write!(f, "InvalidRecommendedPolicies")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
             Self::ConflictingQueue(msg) => {
                 write!(f, "ConflictingQueue")?;
                 if let Some(msg) = msg {

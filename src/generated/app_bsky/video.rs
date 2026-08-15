@@ -23,9 +23,6 @@ pub struct JobStatus<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub did: jacquard_common::types::string::Did<S>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub error: core::option::Option<S>,
-    ///A machine-readable code for why the video processing job failed.
-    #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub failure_code: core::option::Option<JobStatusFailureCode<S>>,
     pub job_id: S,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub message: core::option::Option<S>,
@@ -45,101 +42,6 @@ pub struct JobStatus<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
             jacquard_common::types::value::Data<S>,
         >,
     >,
-}
-
-/// A machine-readable code for why the video processing job failed.
-
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub enum JobStatusFailureCode<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    ValidationFailure,
-    EncodingFailure,
-    PdsUploadFailure,
-    PdsUploadUnsupportedBlobSize,
-    GenericFailure,
-    Other(S),
-}
-
-impl<S: jacquard_common::BosStr> JobStatusFailureCode<S> {
-    pub fn as_str(&self) -> &str {
-        match self {
-            Self::ValidationFailure => "validation_failure",
-            Self::EncodingFailure => "encoding_failure",
-            Self::PdsUploadFailure => "pds_upload_failure",
-            Self::PdsUploadUnsupportedBlobSize => "pds_upload_unsupported_blob_size",
-            Self::GenericFailure => "generic_failure",
-            Self::Other(s) => s.as_ref(),
-        }
-    }
-    /// Construct from a string-like value, matching known values.
-    pub fn from_value(s: S) -> Self {
-        match s.as_ref() {
-            "validation_failure" => Self::ValidationFailure,
-            "encoding_failure" => Self::EncodingFailure,
-            "pds_upload_failure" => Self::PdsUploadFailure,
-            "pds_upload_unsupported_blob_size" => Self::PdsUploadUnsupportedBlobSize,
-            "generic_failure" => Self::GenericFailure,
-            _ => Self::Other(s),
-        }
-    }
-}
-
-impl<S: jacquard_common::BosStr> core::fmt::Display for JobStatusFailureCode<S> {
-    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-        write!(f, "{}", self.as_str())
-    }
-}
-
-impl<S: jacquard_common::BosStr> AsRef<str> for JobStatusFailureCode<S> {
-    fn as_ref(&self) -> &str {
-        self.as_str()
-    }
-}
-
-impl<S: jacquard_common::BosStr> serde::Serialize for JobStatusFailureCode<S> {
-    fn serialize<Ser>(&self, serializer: Ser) -> Result<Ser::Ok, Ser::Error>
-    where
-        Ser: serde::Serializer,
-    {
-        serializer.serialize_str(self.as_str())
-    }
-}
-
-impl<'de, S: serde::Deserialize<'de> + jacquard_common::BosStr> serde::Deserialize<'de>
-    for JobStatusFailureCode<S>
-{
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        let s = S::deserialize(deserializer)?;
-        Ok(Self::from_value(s))
-    }
-}
-
-impl<S: jacquard_common::BosStr + Default> Default for JobStatusFailureCode<S> {
-    fn default() -> Self {
-        Self::Other(Default::default())
-    }
-}
-
-impl<S: jacquard_common::BosStr> jacquard_common::IntoStatic for JobStatusFailureCode<S>
-where
-    S: jacquard_common::BosStr + jacquard_common::IntoStatic,
-    S::Output: jacquard_common::BosStr,
-{
-    type Output = JobStatusFailureCode<S::Output>;
-    fn into_static(self) -> Self::Output {
-        match self {
-            JobStatusFailureCode::ValidationFailure => JobStatusFailureCode::ValidationFailure,
-            JobStatusFailureCode::EncodingFailure => JobStatusFailureCode::EncodingFailure,
-            JobStatusFailureCode::PdsUploadFailure => JobStatusFailureCode::PdsUploadFailure,
-            JobStatusFailureCode::PdsUploadUnsupportedBlobSize => {
-                JobStatusFailureCode::PdsUploadUnsupportedBlobSize
-            }
-            JobStatusFailureCode::GenericFailure => JobStatusFailureCode::GenericFailure,
-            JobStatusFailureCode::Other(v) => JobStatusFailureCode::Other(v.into_static()),
-        }
-    }
 }
 
 /// The state of the video processing job. All values not listed as a known value indicate that the job is in process.
@@ -324,7 +226,6 @@ pub struct JobStatusBuilder<
         core::option::Option<jacquard_common::types::blob::BlobRef<S>>,
         core::option::Option<jacquard_common::types::string::Did<S>>,
         core::option::Option<S>,
-        core::option::Option<JobStatusFailureCode<S>>,
         core::option::Option<S>,
         core::option::Option<S>,
         core::option::Option<i64>,
@@ -352,7 +253,7 @@ impl JobStatusBuilder<job_status_state::Empty, jacquard_common::DefaultStr> {
     pub fn new() -> Self {
         JobStatusBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -363,7 +264,7 @@ impl<S: jacquard_common::BosStr> JobStatusBuilder<job_status_state::Empty, S> {
     pub fn builder() -> Self {
         JobStatusBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -417,19 +318,6 @@ impl<St: job_status_state::State, S: jacquard_common::BosStr> JobStatusBuilder<S
     }
 }
 
-impl<St: job_status_state::State, S: jacquard_common::BosStr> JobStatusBuilder<St, S> {
-    /// Set the `failureCode` field (optional)
-    pub fn failure_code(mut self, value: impl Into<Option<JobStatusFailureCode<S>>>) -> Self {
-        self._fields.3 = value.into();
-        self
-    }
-    /// Set the `failureCode` field to an Option value (optional)
-    pub fn maybe_failure_code(mut self, value: Option<JobStatusFailureCode<S>>) -> Self {
-        self._fields.3 = value;
-        self
-    }
-}
-
 impl<St, S: jacquard_common::BosStr> JobStatusBuilder<St, S>
 where
     St: job_status_state::State,
@@ -440,7 +328,7 @@ where
         mut self,
         value: impl Into<S>,
     ) -> JobStatusBuilder<job_status_state::SetJobId<St>, S> {
-        self._fields.4 = ::core::option::Option::Some(value.into());
+        self._fields.3 = ::core::option::Option::Some(value.into());
         JobStatusBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -452,12 +340,12 @@ where
 impl<St: job_status_state::State, S: jacquard_common::BosStr> JobStatusBuilder<St, S> {
     /// Set the `message` field (optional)
     pub fn message(mut self, value: impl Into<Option<S>>) -> Self {
-        self._fields.5 = value.into();
+        self._fields.4 = value.into();
         self
     }
     /// Set the `message` field to an Option value (optional)
     pub fn maybe_message(mut self, value: Option<S>) -> Self {
-        self._fields.5 = value;
+        self._fields.4 = value;
         self
     }
 }
@@ -465,12 +353,12 @@ impl<St: job_status_state::State, S: jacquard_common::BosStr> JobStatusBuilder<S
 impl<St: job_status_state::State, S: jacquard_common::BosStr> JobStatusBuilder<St, S> {
     /// Set the `progress` field (optional)
     pub fn progress(mut self, value: impl Into<Option<i64>>) -> Self {
-        self._fields.6 = value.into();
+        self._fields.5 = value.into();
         self
     }
     /// Set the `progress` field to an Option value (optional)
     pub fn maybe_progress(mut self, value: Option<i64>) -> Self {
-        self._fields.6 = value;
+        self._fields.5 = value;
         self
     }
 }
@@ -485,7 +373,7 @@ where
         mut self,
         value: impl Into<JobStatusState<S>>,
     ) -> JobStatusBuilder<job_status_state::SetState<St>, S> {
-        self._fields.7 = ::core::option::Option::Some(value.into());
+        self._fields.6 = ::core::option::Option::Some(value.into());
         JobStatusBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -507,11 +395,10 @@ where
             blob: self._fields.0,
             did: self._fields.1.unwrap(),
             error: self._fields.2,
-            failure_code: self._fields.3,
-            job_id: self._fields.4.unwrap(),
-            message: self._fields.5,
-            progress: self._fields.6,
-            state: self._fields.7.unwrap(),
+            job_id: self._fields.3.unwrap(),
+            message: self._fields.4,
+            progress: self._fields.5,
+            state: self._fields.6.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -527,11 +414,10 @@ where
             blob: self._fields.0,
             did: self._fields.1.unwrap(),
             error: self._fields.2,
-            failure_code: self._fields.3,
-            job_id: self._fields.4.unwrap(),
-            message: self._fields.5,
-            progress: self._fields.6,
-            state: self._fields.7.unwrap(),
+            job_id: self._fields.3.unwrap(),
+            message: self._fields.4,
+            progress: self._fields.5,
+            state: self._fields.6.unwrap(),
             extra_data: Some(extra_data),
         }
     }
@@ -580,19 +466,6 @@ fn lexicon_doc_app_bsky_video_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'s
                                 "error",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "failureCode",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "A machine-readable code for why the video processing job failed.",
-                                    ),
-                                ),
                                 ..Default::default()
                             }),
                         );

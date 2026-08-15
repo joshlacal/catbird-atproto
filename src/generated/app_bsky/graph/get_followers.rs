@@ -20,8 +20,6 @@ pub struct GetFollowers<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     #[serde(default = "_default_limit")]
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub limit: core::option::Option<i64>,
-    #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub sort: core::option::Option<S>,
 }
 
 #[derive(
@@ -123,7 +121,6 @@ pub struct GetFollowersBuilder<
         core::option::Option<jacquard_common::types::ident::AtIdentifier<S>>,
         core::option::Option<S>,
         core::option::Option<i64>,
-        core::option::Option<S>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
@@ -147,7 +144,7 @@ impl GetFollowersBuilder<get_followers_state::Empty, jacquard_common::DefaultStr
     pub fn new() -> Self {
         GetFollowersBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None),
+            _fields: (None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -158,7 +155,7 @@ impl<S: jacquard_common::BosStr> GetFollowersBuilder<get_followers_state::Empty,
     pub fn builder() -> Self {
         GetFollowersBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None),
+            _fields: (None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -209,19 +206,6 @@ impl<St: get_followers_state::State, S: jacquard_common::BosStr> GetFollowersBui
     }
 }
 
-impl<St: get_followers_state::State, S: jacquard_common::BosStr> GetFollowersBuilder<St, S> {
-    /// Set the `sort` field (optional)
-    pub fn sort(mut self, value: impl Into<Option<S>>) -> Self {
-        self._fields.3 = value.into();
-        self
-    }
-    /// Set the `sort` field to an Option value (optional)
-    pub fn maybe_sort(mut self, value: Option<S>) -> Self {
-        self._fields.3 = value;
-        self
-    }
-}
-
 impl<St, S: jacquard_common::BosStr> GetFollowersBuilder<St, S>
 where
     St: get_followers_state::State,
@@ -233,7 +217,6 @@ where
             actor: self._fields.0.unwrap(),
             cursor: self._fields.1,
             limit: self._fields.2,
-            sort: self._fields.3,
         }
     }
 }

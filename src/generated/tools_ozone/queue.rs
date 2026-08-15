@@ -120,9 +120,6 @@ pub struct QueueView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub id: i64,
     ///Display name of the queue
     pub name: S,
-    ///Policy keys recommended when actioning reports in this queue
-    #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub recommended_policies: core::option::Option<Vec<S>>,
     ///Report reason types this queue accepts (fully qualified NSIDs)
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub report_types: core::option::Option<Vec<S>>,
@@ -763,22 +760,6 @@ fn lexicon_doc_tools_ozone_queue_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                         );
                         map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "recommendedPolicies",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "Policy keys recommended when actioning reports in this queue",
-                                    ),
-                                ),
-                                items: ::jacquard_lexicon::lexicon::LexArrayItem::String(::jacquard_lexicon::lexicon::LexString {
-                                    ..Default::default()
-                                }),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "reportTypes",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
@@ -990,7 +971,6 @@ pub struct QueueViewBuilder<
         core::option::Option<i64>,
         core::option::Option<S>,
         core::option::Option<Vec<S>>,
-        core::option::Option<Vec<S>>,
         core::option::Option<crate::generated::tools_ozone::queue::QueueStats<S>>,
         core::option::Option<Vec<S>>,
         core::option::Option<jacquard_common::types::string::Datetime>,
@@ -1018,7 +998,7 @@ impl QueueViewBuilder<queue_view_state::Empty, jacquard_common::DefaultStr> {
         QueueViewBuilder {
             _state: ::core::marker::PhantomData,
             _fields: (
-                None, None, None, None, None, None, None, None, None, None, None, None, None,
+                None, None, None, None, None, None, None, None, None, None, None, None,
             ),
             _type: ::core::marker::PhantomData,
         }
@@ -1031,7 +1011,7 @@ impl<S: jacquard_common::BosStr> QueueViewBuilder<queue_view_state::Empty, S> {
         QueueViewBuilder {
             _state: ::core::marker::PhantomData,
             _fields: (
-                None, None, None, None, None, None, None, None, None, None, None, None, None,
+                None, None, None, None, None, None, None, None, None, None, None, None,
             ),
             _type: ::core::marker::PhantomData,
         }
@@ -1182,27 +1162,14 @@ where
 }
 
 impl<St: queue_view_state::State, S: jacquard_common::BosStr> QueueViewBuilder<St, S> {
-    /// Set the `recommendedPolicies` field (optional)
-    pub fn recommended_policies(mut self, value: impl Into<Option<Vec<S>>>) -> Self {
-        self._fields.8 = value.into();
-        self
-    }
-    /// Set the `recommendedPolicies` field to an Option value (optional)
-    pub fn maybe_recommended_policies(mut self, value: Option<Vec<S>>) -> Self {
-        self._fields.8 = value;
-        self
-    }
-}
-
-impl<St: queue_view_state::State, S: jacquard_common::BosStr> QueueViewBuilder<St, S> {
     /// Set the `reportTypes` field (optional)
     pub fn report_types(mut self, value: impl Into<Option<Vec<S>>>) -> Self {
-        self._fields.9 = value.into();
+        self._fields.8 = value.into();
         self
     }
     /// Set the `reportTypes` field to an Option value (optional)
     pub fn maybe_report_types(mut self, value: Option<Vec<S>>) -> Self {
-        self._fields.9 = value;
+        self._fields.8 = value;
         self
     }
 }
@@ -1217,7 +1184,7 @@ where
         mut self,
         value: impl Into<crate::generated::tools_ozone::queue::QueueStats<S>>,
     ) -> QueueViewBuilder<queue_view_state::SetStats<St>, S> {
-        self._fields.10 = ::core::option::Option::Some(value.into());
+        self._fields.9 = ::core::option::Option::Some(value.into());
         QueueViewBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -1229,12 +1196,12 @@ where
 impl<St: queue_view_state::State, S: jacquard_common::BosStr> QueueViewBuilder<St, S> {
     /// Set the `subjectTypes` field (optional)
     pub fn subject_types(mut self, value: impl Into<Option<Vec<S>>>) -> Self {
-        self._fields.11 = value.into();
+        self._fields.10 = value.into();
         self
     }
     /// Set the `subjectTypes` field to an Option value (optional)
     pub fn maybe_subject_types(mut self, value: Option<Vec<S>>) -> Self {
-        self._fields.11 = value;
+        self._fields.10 = value;
         self
     }
 }
@@ -1249,7 +1216,7 @@ where
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
     ) -> QueueViewBuilder<queue_view_state::SetUpdatedAt<St>, S> {
-        self._fields.12 = ::core::option::Option::Some(value.into());
+        self._fields.11 = ::core::option::Option::Some(value.into());
         QueueViewBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -1280,11 +1247,10 @@ where
             enabled: self._fields.5.unwrap(),
             id: self._fields.6.unwrap(),
             name: self._fields.7.unwrap(),
-            recommended_policies: self._fields.8,
-            report_types: self._fields.9,
-            stats: self._fields.10.unwrap(),
-            subject_types: self._fields.11,
-            updated_at: self._fields.12.unwrap(),
+            report_types: self._fields.8,
+            stats: self._fields.9.unwrap(),
+            subject_types: self._fields.10,
+            updated_at: self._fields.11.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -1305,11 +1271,10 @@ where
             enabled: self._fields.5.unwrap(),
             id: self._fields.6.unwrap(),
             name: self._fields.7.unwrap(),
-            recommended_policies: self._fields.8,
-            report_types: self._fields.9,
-            stats: self._fields.10.unwrap(),
-            subject_types: self._fields.11,
-            updated_at: self._fields.12.unwrap(),
+            report_types: self._fields.8,
+            stats: self._fields.9.unwrap(),
+            subject_types: self._fields.10,
+            updated_at: self._fields.11.unwrap(),
             extra_data: Some(extra_data),
         }
     }

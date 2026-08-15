@@ -24,9 +24,6 @@ pub struct UpdateQueue<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     pub name: core::option::Option<S>,
     ///ID of the queue to update
     pub queue_id: i64,
-    ///Policy keys to recommend when actioning reports in this queue
-    #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub recommended_policies: core::option::Option<Vec<S>>,
     #[serde(
         flatten,
         default,
@@ -62,50 +59,6 @@ pub struct UpdateQueueOutput<S: jacquard_common::BosStr = jacquard_common::Defau
     >,
 }
 
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    thiserror::Error,
-    miette::Diagnostic,
-)]
-#[serde(tag = "error", content = "message")]
-pub enum UpdateQueueError {
-    /// One or more recommended policy keys do not exist in the configured policy list
-    #[serde(rename = "InvalidRecommendedPolicies")]
-    InvalidRecommendedPolicies(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
-    /// Catch-all for unknown error codes.
-    #[serde(untagged)]
-    Other {
-        error: jacquard_common::deps::smol_str::SmolStr,
-        message: Option<jacquard_common::deps::smol_str::SmolStr>,
-    },
-}
-
-impl core::fmt::Display for UpdateQueueError {
-    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-        match self {
-            Self::InvalidRecommendedPolicies(msg) => {
-                write!(f, "InvalidRecommendedPolicies")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
-            Self::Other { error, message } => {
-                write!(f, "{}", error)?;
-                if let Some(msg) = message {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
-        }
-    }
-}
-
 /** Response marker for the `tools.ozone.queue.updateQueue` procedure.
 
 Implements `jacquard_common::xrpc::XrpcResp`; successful bodies decode as `Self::Output<S>`, which is `UpdateQueueOutput<S>` for this endpoint.*/
@@ -114,7 +67,7 @@ impl jacquard_common::xrpc::XrpcResp for UpdateQueueResponse {
     const NSID: &'static str = "tools.ozone.queue.updateQueue";
     const ENCODING: &'static str = "application/json";
     type Output<S: jacquard_common::BosStr> = UpdateQueueOutput<S>;
-    type Err = UpdateQueueError;
+    type Err = jacquard_common::xrpc::GenericError;
 }
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for UpdateQueue<S> {
@@ -179,7 +132,6 @@ pub struct UpdateQueueBuilder<
         core::option::Option<bool>,
         core::option::Option<S>,
         core::option::Option<i64>,
-        core::option::Option<Vec<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
@@ -203,7 +155,7 @@ impl UpdateQueueBuilder<update_queue_state::Empty, jacquard_common::DefaultStr> 
     pub fn new() -> Self {
         UpdateQueueBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None),
+            _fields: (None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -214,7 +166,7 @@ impl<S: jacquard_common::BosStr> UpdateQueueBuilder<update_queue_state::Empty, S
     pub fn builder() -> Self {
         UpdateQueueBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None),
+            _fields: (None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -278,19 +230,6 @@ where
     }
 }
 
-impl<St: update_queue_state::State, S: jacquard_common::BosStr> UpdateQueueBuilder<St, S> {
-    /// Set the `recommendedPolicies` field (optional)
-    pub fn recommended_policies(mut self, value: impl Into<Option<Vec<S>>>) -> Self {
-        self._fields.4 = value.into();
-        self
-    }
-    /// Set the `recommendedPolicies` field to an Option value (optional)
-    pub fn maybe_recommended_policies(mut self, value: Option<Vec<S>>) -> Self {
-        self._fields.4 = value;
-        self
-    }
-}
-
 impl<St, S: jacquard_common::BosStr> UpdateQueueBuilder<St, S>
 where
     St: update_queue_state::State,
@@ -303,7 +242,6 @@ where
             enabled: self._fields.1,
             name: self._fields.2,
             queue_id: self._fields.3.unwrap(),
-            recommended_policies: self._fields.4,
             extra_data: Default::default(),
         }
     }
@@ -320,7 +258,6 @@ where
             enabled: self._fields.1,
             name: self._fields.2,
             queue_id: self._fields.3.unwrap(),
-            recommended_policies: self._fields.4,
             extra_data: Some(extra_data),
         }
     }

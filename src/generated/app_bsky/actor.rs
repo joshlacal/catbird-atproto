@@ -2213,17 +2213,10 @@ pub struct ViewerState<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     ///This property is present only in selected cases, as an optimization.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub known_followers: core::option::Option<crate::generated::app_bsky::actor::KnownFollowers<S>>,
-    ///Whether the account is fully muted, directly or via a mutelist. False when the mute is scoped to specific kinds; see mutedOnlyReposts and mutedOnlyQuoteposts.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub muted: core::option::Option<bool>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub muted_by_list: core::option::Option<crate::generated::app_bsky::graph::ListViewBasic<S>>,
-    ///Whether the account's quote posts are muted. Scoped mutes are exclusive with muted: this can be true while muted is false. If muted is true, this will be false.
-    #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub muted_only_quoteposts: core::option::Option<bool>,
-    ///Whether the account's reposts are muted. Scoped mutes are exclusive with muted: this can be true while muted is false. If muted is true, this will be false.
-    #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub muted_only_reposts: core::option::Option<bool>,
     #[serde(
         flatten,
         default,
@@ -5383,22 +5376,6 @@ fn lexicon_doc_app_bsky_actor_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'s
                                 r#ref: ::jacquard_common::CowStr::new_static(
                                     "app.bsky.graph.defs#listViewBasic",
                                 ),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "mutedOnlyQuoteposts",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "mutedOnlyReposts",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
                                 ..Default::default()
                             }),
                         );

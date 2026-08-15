@@ -28,7 +28,14 @@ pub struct CreateDraft<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
 }
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic,
+    Default,
 )]
 #[serde(
     rename_all = "camelCase",
@@ -36,7 +43,7 @@ pub struct CreateDraft<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
 )]
 pub struct CreateDraftOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     ///The ID of the created draft.
-    pub id: jacquard_common::types::string::Tid,
+    pub id: S,
     #[serde(
         flatten,
         default,

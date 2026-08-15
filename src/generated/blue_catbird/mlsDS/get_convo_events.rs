@@ -28,6 +28,13 @@ pub struct ConvoEventEntry<S: jacquard_common::BosStr = jacquard_common::Default
     pub msg_id: S,
     ///Padded plaintext size
     pub padded_size: i64,
+    ///Exact immutable sequencer receipt bytes for a commit event. Optional for Observe-mode legacy data; never reconstruct from typed fields.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    #[serde(default, with = "jacquard_common::opt_serde_bytes_helper")]
+    pub receipt_wire: core::option::Option<jacquard_common::deps::bytes::Bytes>,
+    ///Authoritative conversation reset generation associated with a commit receipt. Optional for legacy and application events.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub reset_generation: core::option::Option<i64>,
     ///Sequence number
     pub seq: i64,
     #[serde(
@@ -152,6 +159,17 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Con
         lexicon_doc_blue_catbird_mlsDS_getConvoEvents()
     }
     fn validate(&self) -> Result<(), jacquard_lexicon::validation::ConstraintError> {
+        if let Some(ref value) = self.reset_generation {
+            if *value < 0i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "reset_generation",
+                    ),
+                    min: 0i64,
+                    actual: *value,
+                });
+            }
+        }
         Ok(())
     }
 }
@@ -331,6 +349,8 @@ pub struct ConvoEventEntryBuilder<
         core::option::Option<S>,
         core::option::Option<S>,
         core::option::Option<i64>,
+        core::option::Option<jacquard_common::deps::bytes::Bytes>,
+        core::option::Option<i64>,
         core::option::Option<i64>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -356,7 +376,7 @@ impl ConvoEventEntryBuilder<convo_event_entry_state::Empty, jacquard_common::Def
     pub fn new() -> Self {
         ConvoEventEntryBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -367,7 +387,7 @@ impl<S: jacquard_common::BosStr> ConvoEventEntryBuilder<convo_event_entry_state:
     pub fn builder() -> Self {
         ConvoEventEntryBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -487,6 +507,38 @@ where
     }
 }
 
+impl<St: convo_event_entry_state::State, S: jacquard_common::BosStr> ConvoEventEntryBuilder<St, S> {
+    /// Set the `receiptWire` field (optional)
+    pub fn receipt_wire(
+        mut self,
+        value: impl Into<Option<jacquard_common::deps::bytes::Bytes>>,
+    ) -> Self {
+        self._fields.6 = value.into();
+        self
+    }
+    /// Set the `receiptWire` field to an Option value (optional)
+    pub fn maybe_receipt_wire(
+        mut self,
+        value: Option<jacquard_common::deps::bytes::Bytes>,
+    ) -> Self {
+        self._fields.6 = value;
+        self
+    }
+}
+
+impl<St: convo_event_entry_state::State, S: jacquard_common::BosStr> ConvoEventEntryBuilder<St, S> {
+    /// Set the `resetGeneration` field (optional)
+    pub fn reset_generation(mut self, value: impl Into<Option<i64>>) -> Self {
+        self._fields.7 = value.into();
+        self
+    }
+    /// Set the `resetGeneration` field to an Option value (optional)
+    pub fn maybe_reset_generation(mut self, value: Option<i64>) -> Self {
+        self._fields.7 = value;
+        self
+    }
+}
+
 impl<St, S: jacquard_common::BosStr> ConvoEventEntryBuilder<St, S>
 where
     St: convo_event_entry_state::State,
@@ -497,7 +549,7 @@ where
         mut self,
         value: impl Into<i64>,
     ) -> ConvoEventEntryBuilder<convo_event_entry_state::SetSeq<St>, S> {
-        self._fields.6 = ::core::option::Option::Some(value.into());
+        self._fields.8 = ::core::option::Option::Some(value.into());
         ConvoEventEntryBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -526,7 +578,9 @@ where
             message_type: self._fields.3.unwrap(),
             msg_id: self._fields.4.unwrap(),
             padded_size: self._fields.5.unwrap(),
-            seq: self._fields.6.unwrap(),
+            receipt_wire: self._fields.6,
+            reset_generation: self._fields.7,
+            seq: self._fields.8.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -545,7 +599,9 @@ where
             message_type: self._fields.3.unwrap(),
             msg_id: self._fields.4.unwrap(),
             padded_size: self._fields.5.unwrap(),
-            seq: self._fields.6.unwrap(),
+            receipt_wire: self._fields.6,
+            reset_generation: self._fields.7,
+            seq: self._fields.8.unwrap(),
             extra_data: Some(extra_data),
         }
     }
@@ -639,6 +695,27 @@ fn lexicon_doc_blue_catbird_mlsDS_getConvoEvents() -> jacquard_lexicon::lexicon:
                                 ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
                                     ::jacquard_lexicon::lexicon::LexInteger {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "receiptWire",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
+                                    ::jacquard_lexicon::lexicon::LexBytes {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "resetGeneration",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        minimum: Some(0i64),
                                         ..Default::default()
                                     },
                                 ),

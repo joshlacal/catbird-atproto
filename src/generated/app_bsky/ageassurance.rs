@@ -133,9 +133,6 @@ pub struct ConfigRegion<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     pub country_code: S,
     ///The minimum age (as a whole integer) required to use Bluesky in this region.
     pub min_access_age: i64,
-    ///The platforms this configuration applies to. If omitted, the configuration applies to all platforms.
-    #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub platforms: core::option::Option<Vec<S>>,
     ///The ISO 3166-2 region code this configuration applies to. If omitted, the configuration applies to the entire country.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub region_code: core::option::Option<S>,
@@ -1186,22 +1183,6 @@ fn lexicon_doc_app_bsky_ageassurance_defs() -> jacquard_lexicon::lexicon::Lexico
                         );
                         map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "platforms",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
-                                description: Some(
-                                    ::jacquard_common::CowStr::new_static(
-                                        "The platforms this configuration applies to. If omitted, the configuration applies to all platforms.",
-                                    ),
-                                ),
-                                items: ::jacquard_lexicon::lexicon::LexArrayItem::String(::jacquard_lexicon::lexicon::LexString {
-                                    ..Default::default()
-                                }),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "regionCode",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
@@ -1894,7 +1875,6 @@ pub struct ConfigRegionBuilder<
         core::option::Option<Vec<S>>,
         core::option::Option<S>,
         core::option::Option<i64>,
-        core::option::Option<Vec<S>>,
         core::option::Option<S>,
         core::option::Option<Vec<ConfigRegionRulesItem<S>>>,
     ),
@@ -1920,7 +1900,7 @@ impl ConfigRegionBuilder<config_region_state::Empty, jacquard_common::DefaultStr
     pub fn new() -> Self {
         ConfigRegionBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None),
+            _fields: (None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -1931,7 +1911,7 @@ impl<S: jacquard_common::BosStr> ConfigRegionBuilder<config_region_state::Empty,
     pub fn builder() -> Self {
         ConfigRegionBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None),
+            _fields: (None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -1989,27 +1969,14 @@ where
 }
 
 impl<St: config_region_state::State, S: jacquard_common::BosStr> ConfigRegionBuilder<St, S> {
-    /// Set the `platforms` field (optional)
-    pub fn platforms(mut self, value: impl Into<Option<Vec<S>>>) -> Self {
-        self._fields.3 = value.into();
-        self
-    }
-    /// Set the `platforms` field to an Option value (optional)
-    pub fn maybe_platforms(mut self, value: Option<Vec<S>>) -> Self {
-        self._fields.3 = value;
-        self
-    }
-}
-
-impl<St: config_region_state::State, S: jacquard_common::BosStr> ConfigRegionBuilder<St, S> {
     /// Set the `regionCode` field (optional)
     pub fn region_code(mut self, value: impl Into<Option<S>>) -> Self {
-        self._fields.4 = value.into();
+        self._fields.3 = value.into();
         self
     }
     /// Set the `regionCode` field to an Option value (optional)
     pub fn maybe_region_code(mut self, value: Option<S>) -> Self {
-        self._fields.4 = value;
+        self._fields.3 = value;
         self
     }
 }
@@ -2024,7 +1991,7 @@ where
         mut self,
         value: impl Into<Vec<ConfigRegionRulesItem<S>>>,
     ) -> ConfigRegionBuilder<config_region_state::SetRules<St>, S> {
-        self._fields.5 = ::core::option::Option::Some(value.into());
+        self._fields.4 = ::core::option::Option::Some(value.into());
         ConfigRegionBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -2046,9 +2013,8 @@ where
             additional_verification_methods: self._fields.0,
             country_code: self._fields.1.unwrap(),
             min_access_age: self._fields.2.unwrap(),
-            platforms: self._fields.3,
-            region_code: self._fields.4,
-            rules: self._fields.5.unwrap(),
+            region_code: self._fields.3,
+            rules: self._fields.4.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -2064,9 +2030,8 @@ where
             additional_verification_methods: self._fields.0,
             country_code: self._fields.1.unwrap(),
             min_access_age: self._fields.2.unwrap(),
-            platforms: self._fields.3,
-            region_code: self._fields.4,
-            rules: self._fields.5.unwrap(),
+            region_code: self._fields.3,
+            rules: self._fields.4.unwrap(),
             extra_data: Some(extra_data),
         }
     }
