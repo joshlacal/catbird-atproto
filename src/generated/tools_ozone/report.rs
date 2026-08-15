@@ -7,6 +7,7 @@
 
 //! Generated bindings for the `tools.ozone.report` Lexicon namespace/module.
 pub mod assign_moderator;
+pub mod close_reports;
 pub mod create_activity;
 pub mod get_assignments;
 pub mod get_historical_stats;

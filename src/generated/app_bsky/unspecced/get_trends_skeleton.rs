@@ -29,6 +29,9 @@ pub struct GetTrendsSkeleton<S: jacquard_common::BosStr = jacquard_common::Defau
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct GetTrendsSkeletonOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Snowflake for this recommendation, use when submitting recommendation events.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub rec_id_str: core::option::Option<S>,
     pub trends: Vec<crate::generated::app_bsky::unspecced::SkeletonTrend<S>>,
     #[serde(
         flatten,

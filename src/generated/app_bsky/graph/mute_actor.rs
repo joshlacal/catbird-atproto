@@ -14,6 +14,12 @@
 )]
 pub struct MuteActor<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub actor: jacquard_common::types::ident::AtIdentifier<S>,
+    ///Restrict the mute to the account's quote posts. See onlyReposts.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub only_quoteposts: core::option::Option<bool>,
+    ///Restrict the mute to the account's reposts. When any 'only' scope is set, just the scoped content is muted; when none are set, the account is fully muted. Repeat calls replace the stored scope rather than adding to it.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub only_reposts: core::option::Option<bool>,
     #[serde(
         flatten,
         default,
@@ -95,7 +101,11 @@ pub struct MuteActorBuilder<
     S: jacquard_common::BosStr = jacquard_common::DefaultStr,
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
-    _fields: (core::option::Option<jacquard_common::types::ident::AtIdentifier<S>>,),
+    _fields: (
+        core::option::Option<jacquard_common::types::ident::AtIdentifier<S>>,
+        core::option::Option<bool>,
+        core::option::Option<bool>,
+    ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
@@ -118,7 +128,7 @@ impl MuteActorBuilder<mute_actor_state::Empty, jacquard_common::DefaultStr> {
     pub fn new() -> Self {
         MuteActorBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None,),
+            _fields: (None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -129,7 +139,7 @@ impl<S: jacquard_common::BosStr> MuteActorBuilder<mute_actor_state::Empty, S> {
     pub fn builder() -> Self {
         MuteActorBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None,),
+            _fields: (None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -154,6 +164,32 @@ where
     }
 }
 
+impl<St: mute_actor_state::State, S: jacquard_common::BosStr> MuteActorBuilder<St, S> {
+    /// Set the `onlyQuoteposts` field (optional)
+    pub fn only_quoteposts(mut self, value: impl Into<Option<bool>>) -> Self {
+        self._fields.1 = value.into();
+        self
+    }
+    /// Set the `onlyQuoteposts` field to an Option value (optional)
+    pub fn maybe_only_quoteposts(mut self, value: Option<bool>) -> Self {
+        self._fields.1 = value;
+        self
+    }
+}
+
+impl<St: mute_actor_state::State, S: jacquard_common::BosStr> MuteActorBuilder<St, S> {
+    /// Set the `onlyReposts` field (optional)
+    pub fn only_reposts(mut self, value: impl Into<Option<bool>>) -> Self {
+        self._fields.2 = value.into();
+        self
+    }
+    /// Set the `onlyReposts` field to an Option value (optional)
+    pub fn maybe_only_reposts(mut self, value: Option<bool>) -> Self {
+        self._fields.2 = value;
+        self
+    }
+}
+
 impl<St, S: jacquard_common::BosStr> MuteActorBuilder<St, S>
 where
     St: mute_actor_state::State,
@@ -163,6 +199,8 @@ where
     pub fn build(self) -> MuteActor<S> {
         MuteActor {
             actor: self._fields.0.unwrap(),
+            only_quoteposts: self._fields.1,
+            only_reposts: self._fields.2,
             extra_data: Default::default(),
         }
     }
@@ -176,6 +214,8 @@ where
     ) -> MuteActor<S> {
         MuteActor {
             actor: self._fields.0.unwrap(),
+            only_quoteposts: self._fields.1,
+            only_reposts: self._fields.2,
             extra_data: Some(extra_data),
         }
     }

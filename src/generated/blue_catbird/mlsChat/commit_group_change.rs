@@ -280,10 +280,6 @@ pub struct CommitGroupChangeOutput<S: jacquard_common::BosStr = jacquard_common:
     >,
     ///Signed sequencer receipt for an accepted epoch-advancing commit. Absent for legacy servers and non-advancing actions.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    #[serde(
-        default,
-        deserialize_with = "deserialize_strict_commit_group_change_output_receipt"
-    )]
     pub receipt: core::option::Option<
         crate::generated::blue_catbird::mlsChat::commit_group_change::SequencerReceipt<S>,
     >,
@@ -933,7 +929,7 @@ pub mod group_frozen_body_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -1771,7 +1767,7 @@ pub mod key_package_hash_entry_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -1932,38 +1928,11 @@ where
     }
 }
 
-fn deserialize_strict_commit_group_change_output_receipt<'de, D, S>(
-    deserializer: D,
-) -> Result<
-    core::option::Option<
-        crate::generated::blue_catbird::mlsChat::commit_group_change::SequencerReceipt<S>,
-    >,
-    D::Error,
->
-where
-    D: serde::Deserializer<'de>,
-    S: serde::Deserialize<'de> + jacquard_common::BosStr,
-{
-    let value = <core::option::Option<
-        crate::generated::blue_catbird::mlsChat::commit_group_change::SequencerReceipt<S>,
-    > as serde::Deserialize<'de>>::deserialize(deserializer)?;
-    if value
-        .as_ref()
-        .and_then(|inner| inner.extra_data.as_ref())
-        .is_some_and(|extra| !extra.is_empty())
-    {
-        return Err(<D::Error as serde::de::Error>::custom(
-            "unknown field in security-strict referenced object",
-        ));
-    }
-    Ok(value)
-}
-
 pub mod pending_device_addition_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -2379,7 +2348,7 @@ pub mod rate_limited_body_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -2617,7 +2586,7 @@ pub mod sequencer_receipt_state {
 
     pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
     #[allow(unused)]
-    use ::core::marker::PhantomData;
+    use core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }

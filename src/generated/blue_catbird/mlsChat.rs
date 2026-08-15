@@ -7,6 +7,7 @@
 
 //! Generated bindings for the `blue.catbird.mlsChat` Lexicon namespace/module.
 pub mod begin_device_auth_binding;
+pub mod begin_transition_attestation;
 pub mod bootstrap_reset_group;
 pub mod check_blocks;
 pub mod commit_group_change;
@@ -14,6 +15,7 @@ pub mod complete_device_auth_binding;
 pub mod create_convo;
 pub mod delete_blob;
 pub mod device;
+pub mod finalize_group_change;
 pub mod get_blob;
 pub mod get_blob_usage;
 pub mod get_block_status;
@@ -376,13 +378,6 @@ pub struct MessageView<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     ///Message type discriminator: 'app' for application messages (user content), 'commit' for MLS protocol control messages (epoch changes, membership updates). Clients should process both types for MLS state tracking but only display 'app' messages in the UI.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub message_type: core::option::Option<S>,
-    ///Exact immutable sequencer receipt bytes for a commit message. Optional for Observe-mode legacy data; never reconstruct from typed fields.
-    #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    #[serde(default, with = "jacquard_common::opt_serde_bytes_helper")]
-    pub receipt_wire: core::option::Option<jacquard_common::deps::bytes::Bytes>,
-    ///Authoritative conversation reset generation associated with a commit receipt. Optional for legacy and application messages.
-    #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub reset_generation: core::option::Option<i64>,
     ///Monotonically increasing sequence number within conversation. Server assigns sequentially starting from 1. Gaps may occur when members are removed from the conversation, but seq values are never reused.
     pub seq: i64,
     #[serde(
@@ -565,17 +560,6 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Mes
             if *value < 0i64 {
                 return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
                     path: jacquard_lexicon::validation::ValidationPath::from_field("epoch"),
-                    min: 0i64,
-                    actual: *value,
-                });
-            }
-        }
-        if let Some(ref value) = self.reset_generation {
-            if *value < 0i64 {
-                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field(
-                        "reset_generation",
-                    ),
                     min: 0i64,
                     actual: *value,
                 });
@@ -1575,23 +1559,6 @@ fn lexicon_doc_blue_catbird_mlsChat_defs() -> jacquard_lexicon::lexicon::Lexicon
                         );
                         map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "receiptWire",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                "resetGeneration",
-                            ),
-                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
-                                minimum: Some(0i64),
-                                ..Default::default()
-                            }),
-                        );
-                        map.insert(
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "seq",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
@@ -2394,8 +2361,6 @@ pub struct MessageViewBuilder<
         core::option::Option<i64>,
         core::option::Option<S>,
         core::option::Option<S>,
-        core::option::Option<jacquard_common::deps::bytes::Bytes>,
-        core::option::Option<i64>,
         core::option::Option<i64>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -2420,7 +2385,7 @@ impl MessageViewBuilder<message_view_state::Empty, jacquard_common::DefaultStr> 
     pub fn new() -> Self {
         MessageViewBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -2431,7 +2396,7 @@ impl<S: jacquard_common::BosStr> MessageViewBuilder<message_view_state::Empty, S
     pub fn builder() -> Self {
         MessageViewBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -2545,38 +2510,6 @@ impl<St: message_view_state::State, S: jacquard_common::BosStr> MessageViewBuild
     }
 }
 
-impl<St: message_view_state::State, S: jacquard_common::BosStr> MessageViewBuilder<St, S> {
-    /// Set the `receiptWire` field (optional)
-    pub fn receipt_wire(
-        mut self,
-        value: impl Into<Option<jacquard_common::deps::bytes::Bytes>>,
-    ) -> Self {
-        self._fields.6 = value.into();
-        self
-    }
-    /// Set the `receiptWire` field to an Option value (optional)
-    pub fn maybe_receipt_wire(
-        mut self,
-        value: Option<jacquard_common::deps::bytes::Bytes>,
-    ) -> Self {
-        self._fields.6 = value;
-        self
-    }
-}
-
-impl<St: message_view_state::State, S: jacquard_common::BosStr> MessageViewBuilder<St, S> {
-    /// Set the `resetGeneration` field (optional)
-    pub fn reset_generation(mut self, value: impl Into<Option<i64>>) -> Self {
-        self._fields.7 = value.into();
-        self
-    }
-    /// Set the `resetGeneration` field to an Option value (optional)
-    pub fn maybe_reset_generation(mut self, value: Option<i64>) -> Self {
-        self._fields.7 = value;
-        self
-    }
-}
-
 impl<St, S: jacquard_common::BosStr> MessageViewBuilder<St, S>
 where
     St: message_view_state::State,
@@ -2587,7 +2520,7 @@ where
         mut self,
         value: impl Into<i64>,
     ) -> MessageViewBuilder<message_view_state::SetSeq<St>, S> {
-        self._fields.8 = ::core::option::Option::Some(value.into());
+        self._fields.6 = ::core::option::Option::Some(value.into());
         MessageViewBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -2615,9 +2548,7 @@ where
             epoch: self._fields.3.unwrap(),
             id: self._fields.4.unwrap(),
             message_type: self._fields.5,
-            receipt_wire: self._fields.6,
-            reset_generation: self._fields.7,
-            seq: self._fields.8.unwrap(),
+            seq: self._fields.6.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -2636,9 +2567,7 @@ where
             epoch: self._fields.3.unwrap(),
             id: self._fields.4.unwrap(),
             message_type: self._fields.5,
-            receipt_wire: self._fields.6,
-            reset_generation: self._fields.7,
-            seq: self._fields.8.unwrap(),
+            seq: self._fields.6.unwrap(),
             extra_data: Some(extra_data),
         }
     }
