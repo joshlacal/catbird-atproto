@@ -501,6 +501,8 @@ pub struct BlobUploadPreparationBody<S: jacquard_common::BosStr = jacquard_commo
     pub conversation_id: crate::generated::blue_catbird::chat::OperationId<S>,
     pub idempotency_key: crate::generated::blue_catbird::chat::OperationId<S>,
     pub key_id: crate::generated::blue_catbird::chat::KeyId<S>,
+    pub media_type: S,
+    pub plaintext_size: i64,
     pub prior: crate::generated::blue_catbird::chat::ConversationCoordinates<S>,
     pub purpose: crate::generated::blue_catbird::chat::BlobPurpose<S>,
     pub signature_domain: S,
@@ -5456,6 +5458,52 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
                         "ciphertext_size",
                     ),
                     min: 17i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.media_type;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) > 128usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("media_type"),
+                    max: 128usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.media_type;
+            #[allow(unused_comparisons)]
+            if <str>::len(value.as_ref()) < 1usize {
+                return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field("media_type"),
+                    min: 1usize,
+                    actual: <str>::len(value.as_ref()),
+                });
+            }
+        }
+        {
+            let value = &self.plaintext_size;
+            if *value > 10485744i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Maximum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "plaintext_size",
+                    ),
+                    max: 10485744i64,
+                    actual: *value,
+                });
+            }
+        }
+        {
+            let value = &self.plaintext_size;
+            if *value < 1i64 {
+                return Err(jacquard_lexicon::validation::ConstraintError::Minimum {
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "plaintext_size",
+                    ),
+                    min: 1i64,
                     actual: *value,
                 });
             }
@@ -12106,6 +12154,8 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "ciphertextSize",
                             ),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("mediaType"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("plaintextSize"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("purpose"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "idempotencyKey",
@@ -12214,6 +12264,28 @@ fn lexicon_doc_blue_catbird_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
                                     ::jacquard_lexicon::lexicon::LexRef {
                                         r#ref: ::jacquard_common::CowStr::new_static("#keyId"),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static("mediaType"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        min_length: Some(1usize),
+                                        max_length: Some(128usize),
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "plaintextSize",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        minimum: Some(1i64),
+                                        maximum: Some(10485744i64),
                                         ..Default::default()
                                     },
                                 ),
@@ -28341,6 +28413,8 @@ pub mod blob_upload_preparation_body_state {
         type ConversationId;
         type IdempotencyKey;
         type KeyId;
+        type MediaType;
+        type PlaintextSize;
         type Prior;
         type Purpose;
         type SignatureDomain;
@@ -28359,6 +28433,8 @@ pub mod blob_upload_preparation_body_state {
         type ConversationId = Unset;
         type IdempotencyKey = Unset;
         type KeyId = Unset;
+        type MediaType = Unset;
+        type PlaintextSize = Unset;
         type Prior = Unset;
         type Purpose = Unset;
         type SignatureDomain = Unset;
@@ -28377,6 +28453,8 @@ pub mod blob_upload_preparation_body_state {
         type ConversationId = St::ConversationId;
         type IdempotencyKey = St::IdempotencyKey;
         type KeyId = St::KeyId;
+        type MediaType = St::MediaType;
+        type PlaintextSize = St::PlaintextSize;
         type Prior = St::Prior;
         type Purpose = St::Purpose;
         type SignatureDomain = St::SignatureDomain;
@@ -28395,6 +28473,8 @@ pub mod blob_upload_preparation_body_state {
         type ConversationId = St::ConversationId;
         type IdempotencyKey = St::IdempotencyKey;
         type KeyId = St::KeyId;
+        type MediaType = St::MediaType;
+        type PlaintextSize = St::PlaintextSize;
         type Prior = St::Prior;
         type Purpose = St::Purpose;
         type SignatureDomain = St::SignatureDomain;
@@ -28413,6 +28493,8 @@ pub mod blob_upload_preparation_body_state {
         type ConversationId = St::ConversationId;
         type IdempotencyKey = St::IdempotencyKey;
         type KeyId = St::KeyId;
+        type MediaType = St::MediaType;
+        type PlaintextSize = St::PlaintextSize;
         type Prior = St::Prior;
         type Purpose = St::Purpose;
         type SignatureDomain = St::SignatureDomain;
@@ -28431,6 +28513,8 @@ pub mod blob_upload_preparation_body_state {
         type ConversationId = St::ConversationId;
         type IdempotencyKey = St::IdempotencyKey;
         type KeyId = St::KeyId;
+        type MediaType = St::MediaType;
+        type PlaintextSize = St::PlaintextSize;
         type Prior = St::Prior;
         type Purpose = St::Purpose;
         type SignatureDomain = St::SignatureDomain;
@@ -28449,6 +28533,8 @@ pub mod blob_upload_preparation_body_state {
         type ConversationId = St::ConversationId;
         type IdempotencyKey = St::IdempotencyKey;
         type KeyId = St::KeyId;
+        type MediaType = St::MediaType;
+        type PlaintextSize = St::PlaintextSize;
         type Prior = St::Prior;
         type Purpose = St::Purpose;
         type SignatureDomain = St::SignatureDomain;
@@ -28467,6 +28553,8 @@ pub mod blob_upload_preparation_body_state {
         type ConversationId = St::ConversationId;
         type IdempotencyKey = St::IdempotencyKey;
         type KeyId = St::KeyId;
+        type MediaType = St::MediaType;
+        type PlaintextSize = St::PlaintextSize;
         type Prior = St::Prior;
         type Purpose = St::Purpose;
         type SignatureDomain = St::SignatureDomain;
@@ -28485,6 +28573,8 @@ pub mod blob_upload_preparation_body_state {
         type ConversationId = Set<members::conversation_id>;
         type IdempotencyKey = St::IdempotencyKey;
         type KeyId = St::KeyId;
+        type MediaType = St::MediaType;
+        type PlaintextSize = St::PlaintextSize;
         type Prior = St::Prior;
         type Purpose = St::Purpose;
         type SignatureDomain = St::SignatureDomain;
@@ -28503,6 +28593,8 @@ pub mod blob_upload_preparation_body_state {
         type ConversationId = St::ConversationId;
         type IdempotencyKey = Set<members::idempotency_key>;
         type KeyId = St::KeyId;
+        type MediaType = St::MediaType;
+        type PlaintextSize = St::PlaintextSize;
         type Prior = St::Prior;
         type Purpose = St::Purpose;
         type SignatureDomain = St::SignatureDomain;
@@ -28521,6 +28613,48 @@ pub mod blob_upload_preparation_body_state {
         type ConversationId = St::ConversationId;
         type IdempotencyKey = St::IdempotencyKey;
         type KeyId = Set<members::key_id>;
+        type MediaType = St::MediaType;
+        type PlaintextSize = St::PlaintextSize;
+        type Prior = St::Prior;
+        type Purpose = St::Purpose;
+        type SignatureDomain = St::SignatureDomain;
+        type SignedAt = St::SignedAt;
+    }
+    ///State transition - sets the `media_type` field to Set
+    pub struct SetMediaType<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetMediaType<St> {}
+    impl<St: State> State for SetMediaType<St> {
+        type ActorDeviceId = St::ActorDeviceId;
+        type ActorDid = St::ActorDid;
+        type AuthGeneration = St::AuthGeneration;
+        type BlobId = St::BlobId;
+        type CiphertextSha256 = St::CiphertextSha256;
+        type CiphertextSize = St::CiphertextSize;
+        type ConversationId = St::ConversationId;
+        type IdempotencyKey = St::IdempotencyKey;
+        type KeyId = St::KeyId;
+        type MediaType = Set<members::media_type>;
+        type PlaintextSize = St::PlaintextSize;
+        type Prior = St::Prior;
+        type Purpose = St::Purpose;
+        type SignatureDomain = St::SignatureDomain;
+        type SignedAt = St::SignedAt;
+    }
+    ///State transition - sets the `plaintext_size` field to Set
+    pub struct SetPlaintextSize<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetPlaintextSize<St> {}
+    impl<St: State> State for SetPlaintextSize<St> {
+        type ActorDeviceId = St::ActorDeviceId;
+        type ActorDid = St::ActorDid;
+        type AuthGeneration = St::AuthGeneration;
+        type BlobId = St::BlobId;
+        type CiphertextSha256 = St::CiphertextSha256;
+        type CiphertextSize = St::CiphertextSize;
+        type ConversationId = St::ConversationId;
+        type IdempotencyKey = St::IdempotencyKey;
+        type KeyId = St::KeyId;
+        type MediaType = St::MediaType;
+        type PlaintextSize = Set<members::plaintext_size>;
         type Prior = St::Prior;
         type Purpose = St::Purpose;
         type SignatureDomain = St::SignatureDomain;
@@ -28539,6 +28673,8 @@ pub mod blob_upload_preparation_body_state {
         type ConversationId = St::ConversationId;
         type IdempotencyKey = St::IdempotencyKey;
         type KeyId = St::KeyId;
+        type MediaType = St::MediaType;
+        type PlaintextSize = St::PlaintextSize;
         type Prior = Set<members::prior>;
         type Purpose = St::Purpose;
         type SignatureDomain = St::SignatureDomain;
@@ -28557,6 +28693,8 @@ pub mod blob_upload_preparation_body_state {
         type ConversationId = St::ConversationId;
         type IdempotencyKey = St::IdempotencyKey;
         type KeyId = St::KeyId;
+        type MediaType = St::MediaType;
+        type PlaintextSize = St::PlaintextSize;
         type Prior = St::Prior;
         type Purpose = Set<members::purpose>;
         type SignatureDomain = St::SignatureDomain;
@@ -28575,6 +28713,8 @@ pub mod blob_upload_preparation_body_state {
         type ConversationId = St::ConversationId;
         type IdempotencyKey = St::IdempotencyKey;
         type KeyId = St::KeyId;
+        type MediaType = St::MediaType;
+        type PlaintextSize = St::PlaintextSize;
         type Prior = St::Prior;
         type Purpose = St::Purpose;
         type SignatureDomain = Set<members::signature_domain>;
@@ -28593,6 +28733,8 @@ pub mod blob_upload_preparation_body_state {
         type ConversationId = St::ConversationId;
         type IdempotencyKey = St::IdempotencyKey;
         type KeyId = St::KeyId;
+        type MediaType = St::MediaType;
+        type PlaintextSize = St::PlaintextSize;
         type Prior = St::Prior;
         type Purpose = St::Purpose;
         type SignatureDomain = St::SignatureDomain;
@@ -28619,6 +28761,10 @@ pub mod blob_upload_preparation_body_state {
         pub struct idempotency_key(());
         ///Marker type for the `key_id` field
         pub struct key_id(());
+        ///Marker type for the `media_type` field
+        pub struct media_type(());
+        ///Marker type for the `plaintext_size` field
+        pub struct plaintext_size(());
         ///Marker type for the `prior` field
         pub struct prior(());
         ///Marker type for the `purpose` field
@@ -28646,6 +28792,8 @@ pub struct BlobUploadPreparationBodyBuilder<
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::OperationId<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::KeyId<S>>,
+        core::option::Option<S>,
+        core::option::Option<i64>,
         core::option::Option<crate::generated::blue_catbird::chat::ConversationCoordinates<S>>,
         core::option::Option<crate::generated::blue_catbird::chat::BlobPurpose<S>>,
         core::option::Option<S>,
@@ -28683,7 +28831,8 @@ impl
         BlobUploadPreparationBodyBuilder {
             _state: ::core::marker::PhantomData,
             _fields: (
-                None, None, None, None, None, None, None, None, None, None, None, None, None,
+                None, None, None, None, None, None, None, None, None, None, None, None, None, None,
+                None,
             ),
             _type: ::core::marker::PhantomData,
         }
@@ -28698,7 +28847,8 @@ impl<S: jacquard_common::BosStr>
         BlobUploadPreparationBodyBuilder {
             _state: ::core::marker::PhantomData,
             _fields: (
-                None, None, None, None, None, None, None, None, None, None, None, None, None,
+                None, None, None, None, None, None, None, None, None, None, None, None, None, None,
+                None,
             ),
             _type: ::core::marker::PhantomData,
         }
@@ -28897,6 +29047,46 @@ where
 impl<St, S: jacquard_common::BosStr> BlobUploadPreparationBodyBuilder<St, S>
 where
     St: blob_upload_preparation_body_state::State,
+    St::MediaType: blob_upload_preparation_body_state::IsUnset,
+{
+    /// Set the `mediaType` field (required)
+    pub fn media_type(
+        mut self,
+        value: impl Into<S>,
+    ) -> BlobUploadPreparationBodyBuilder<blob_upload_preparation_body_state::SetMediaType<St>, S>
+    {
+        self._fields.9 = ::core::option::Option::Some(value.into());
+        BlobUploadPreparationBodyBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> BlobUploadPreparationBodyBuilder<St, S>
+where
+    St: blob_upload_preparation_body_state::State,
+    St::PlaintextSize: blob_upload_preparation_body_state::IsUnset,
+{
+    /// Set the `plaintextSize` field (required)
+    pub fn plaintext_size(
+        mut self,
+        value: impl Into<i64>,
+    ) -> BlobUploadPreparationBodyBuilder<blob_upload_preparation_body_state::SetPlaintextSize<St>, S>
+    {
+        self._fields.10 = ::core::option::Option::Some(value.into());
+        BlobUploadPreparationBodyBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> BlobUploadPreparationBodyBuilder<St, S>
+where
+    St: blob_upload_preparation_body_state::State,
     St::Prior: blob_upload_preparation_body_state::IsUnset,
 {
     /// Set the `prior` field (required)
@@ -28904,7 +29094,7 @@ where
         mut self,
         value: impl Into<crate::generated::blue_catbird::chat::ConversationCoordinates<S>>,
     ) -> BlobUploadPreparationBodyBuilder<blob_upload_preparation_body_state::SetPrior<St>, S> {
-        self._fields.9 = ::core::option::Option::Some(value.into());
+        self._fields.11 = ::core::option::Option::Some(value.into());
         BlobUploadPreparationBodyBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -28924,7 +29114,7 @@ where
         value: impl Into<crate::generated::blue_catbird::chat::BlobPurpose<S>>,
     ) -> BlobUploadPreparationBodyBuilder<blob_upload_preparation_body_state::SetPurpose<St>, S>
     {
-        self._fields.10 = ::core::option::Option::Some(value.into());
+        self._fields.12 = ::core::option::Option::Some(value.into());
         BlobUploadPreparationBodyBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -28946,7 +29136,7 @@ where
         blob_upload_preparation_body_state::SetSignatureDomain<St>,
         S,
     > {
-        self._fields.11 = ::core::option::Option::Some(value.into());
+        self._fields.13 = ::core::option::Option::Some(value.into());
         BlobUploadPreparationBodyBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -28966,7 +29156,7 @@ where
         value: impl Into<crate::generated::blue_catbird::chat::CanonicalDatetime>,
     ) -> BlobUploadPreparationBodyBuilder<blob_upload_preparation_body_state::SetSignedAt<St>, S>
     {
-        self._fields.12 = ::core::option::Option::Some(value.into());
+        self._fields.14 = ::core::option::Option::Some(value.into());
         BlobUploadPreparationBodyBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -28987,6 +29177,8 @@ where
     St::ConversationId: blob_upload_preparation_body_state::IsSet,
     St::IdempotencyKey: blob_upload_preparation_body_state::IsSet,
     St::KeyId: blob_upload_preparation_body_state::IsSet,
+    St::MediaType: blob_upload_preparation_body_state::IsSet,
+    St::PlaintextSize: blob_upload_preparation_body_state::IsSet,
     St::Prior: blob_upload_preparation_body_state::IsSet,
     St::Purpose: blob_upload_preparation_body_state::IsSet,
     St::SignatureDomain: blob_upload_preparation_body_state::IsSet,
@@ -29004,10 +29196,12 @@ where
             conversation_id: self._fields.6.unwrap(),
             idempotency_key: self._fields.7.unwrap(),
             key_id: self._fields.8.unwrap(),
-            prior: self._fields.9.unwrap(),
-            purpose: self._fields.10.unwrap(),
-            signature_domain: self._fields.11.unwrap(),
-            signed_at: self._fields.12.unwrap(),
+            media_type: self._fields.9.unwrap(),
+            plaintext_size: self._fields.10.unwrap(),
+            prior: self._fields.11.unwrap(),
+            purpose: self._fields.12.unwrap(),
+            signature_domain: self._fields.13.unwrap(),
+            signed_at: self._fields.14.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -29029,10 +29223,12 @@ where
             conversation_id: self._fields.6.unwrap(),
             idempotency_key: self._fields.7.unwrap(),
             key_id: self._fields.8.unwrap(),
-            prior: self._fields.9.unwrap(),
-            purpose: self._fields.10.unwrap(),
-            signature_domain: self._fields.11.unwrap(),
-            signed_at: self._fields.12.unwrap(),
+            media_type: self._fields.9.unwrap(),
+            plaintext_size: self._fields.10.unwrap(),
+            prior: self._fields.11.unwrap(),
+            purpose: self._fields.12.unwrap(),
+            signature_domain: self._fields.13.unwrap(),
+            signed_at: self._fields.14.unwrap(),
             extra_data: Some(extra_data),
         }
     }
