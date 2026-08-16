@@ -1,7 +1,7 @@
 # Generated Rust lexicon provenance
 
 This record covers `src/generated/blue_catbird/chat.rs` at
-`2f41bf7334a724a270bbd28b0d017853580d2db8`.
+`8d0026d4c1423b23d2def751fc88b36c3a1b949c`.
 
 ## Canonical command
 
@@ -27,23 +27,24 @@ The clean-room reproduction used these exact jj commit IDs:
 | Input | Revision |
 | --- | --- |
 | `Petrel/generator/lexicons` | `b59b3d457d2c4796df27c58740a2528f1dd2bfa0` |
-| `PetrelCatbird/lexicons` | `f2a095506ec9a5eda96e2226b84a80323a90cc21` |
+| `PetrelCatbird/lexicons` | `8ec8acaa1137b68b57b78ebfaea9404d5923305b` |
 | `mls-ds/codegen` | `00c16517d4e3032afa677310549f7660d07f7b78` |
 
-Deterministic `git ls-tree` record hashes for those inputs are:
+The source revision is a local jj commit which is not exported as a Git
+object. Its deterministic content-record hashes are SHA-256 over sorted lines
+of `SHA256(file-bytes)  path`; the specific schema blob is hashed directly:
 
 ```text
-Petrel/generator/lexicons: d356f3cce92b88ef17644412835662c5ad389519672a1dd0095363f86ce31819
-PetrelCatbird/lexicons:    973ed5f973be034cea6ac0d1c98559182c49721e59520383d3a931173246d696
-blue.catbird.chat subset:  28179d24b5cebfd628e9674525d90172dd9ae8c8e4a7166410a0983cf04580d7
-mls-ds generator inputs:   2c78f8508366406e30634f7294fa909520469ad1f0bb043f68a22b655c496865
+PetrelCatbird/lexicons tree:                 e06f60133a21eb6d1b0c147e227e7c39e1bae362730895e83c87ea3a529192ba
+PetrelCatbird blue.catbird.chat subset:      fa43ff27373981c23f23360c17c249526a1baeaedac68a6fa761e812ef41e054
+blue.catbird.chat.defs.json blob (SHA-256):  88fb17ca9ca2bcc605c22123ba3ae801b2baf1f725afe85934680b5cd2f66c7a
 ```
 
 The regenerated `src/generated/blue_catbird/chat.rs` is byte-identical to
 the committed file:
 
 ```text
-015ff4086feff919ab6846aee0653a5d11b0878888e16457f4a85c2f596b6644
+ae514c3c58f1cc2712cdc2d0821d083023757883f409266bfe9560295fcbda56
 ```
 
 The full generated directory is intentionally not claimed byte-identical in
