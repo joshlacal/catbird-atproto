@@ -24,6 +24,9 @@ pub struct GetTrends {
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct GetTrendsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    ///Snowflake for this recommendation, use when submitting recommendation events.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub rec_id_str: core::option::Option<S>,
     pub trends: Vec<crate::generated::app_bsky::unspecced::TrendView<S>>,
     #[serde(
         flatten,

@@ -6,5 +6,4 @@
 //! Generated bindings for the `blue.catbird` Lexicon namespace/module.
 pub mod bskychat;
 pub mod chat;
-pub mod mlsChat;
 pub mod mlsDS;

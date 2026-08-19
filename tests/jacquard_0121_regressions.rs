@@ -4,7 +4,7 @@ fn generated_owned_type_is_deserialize_owned() {
     fn assert_deserialize_owned<T: serde::de::DeserializeOwned>() {}
 
     assert_deserialize_owned::<
-        catbird_atproto::generated::blue_catbird::mlsChat::send_message::SendMessageOutput,
+        catbird_atproto::generated::blue_catbird::chat::send_message::SendMessageOutput,
     >();
 }
 

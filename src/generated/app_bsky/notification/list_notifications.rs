@@ -75,6 +75,10 @@ pub struct Notification<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub reason_subject: core::option::Option<jacquard_common::types::string::AtUri<S>>,
     pub record: jacquard_common::types::value::Data<S>,
+    ///The starter pack associated with this notification. Present when the notification is for a follow originating from a starter pack.
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub starter_pack:
+        core::option::Option<crate::generated::app_bsky::graph::StarterPackViewBasic<S>>,
     pub uri: jacquard_common::types::string::AtUri<S>,
     #[serde(
         flatten,
@@ -580,6 +584,7 @@ pub struct NotificationBuilder<
         core::option::Option<NotificationReason<S>>,
         core::option::Option<jacquard_common::types::string::AtUri<S>>,
         core::option::Option<jacquard_common::types::value::Data<S>>,
+        core::option::Option<crate::generated::app_bsky::graph::StarterPackViewBasic<S>>,
         core::option::Option<jacquard_common::types::string::AtUri<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -604,7 +609,7 @@ impl NotificationBuilder<notification_state::Empty, jacquard_common::DefaultStr>
     pub fn new() -> Self {
         NotificationBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -615,7 +620,7 @@ impl<S: jacquard_common::BosStr> NotificationBuilder<notification_state::Empty, 
     pub fn builder() -> Self {
         NotificationBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -773,6 +778,25 @@ where
     }
 }
 
+impl<St: notification_state::State, S: jacquard_common::BosStr> NotificationBuilder<St, S> {
+    /// Set the `starterPack` field (optional)
+    pub fn starter_pack(
+        mut self,
+        value: impl Into<Option<crate::generated::app_bsky::graph::StarterPackViewBasic<S>>>,
+    ) -> Self {
+        self._fields.8 = value.into();
+        self
+    }
+    /// Set the `starterPack` field to an Option value (optional)
+    pub fn maybe_starter_pack(
+        mut self,
+        value: Option<crate::generated::app_bsky::graph::StarterPackViewBasic<S>>,
+    ) -> Self {
+        self._fields.8 = value;
+        self
+    }
+}
+
 impl<St, S: jacquard_common::BosStr> NotificationBuilder<St, S>
 where
     St: notification_state::State,
@@ -783,7 +807,7 @@ where
         mut self,
         value: impl Into<jacquard_common::types::string::AtUri<S>>,
     ) -> NotificationBuilder<notification_state::SetUri<St>, S> {
-        self._fields.8 = ::core::option::Option::Some(value.into());
+        self._fields.9 = ::core::option::Option::Some(value.into());
         NotificationBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -814,7 +838,8 @@ where
             reason: self._fields.5.unwrap(),
             reason_subject: self._fields.6,
             record: self._fields.7.unwrap(),
-            uri: self._fields.8.unwrap(),
+            starter_pack: self._fields.8,
+            uri: self._fields.9.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -835,7 +860,8 @@ where
             reason: self._fields.5.unwrap(),
             reason_subject: self._fields.6,
             record: self._fields.7.unwrap(),
-            uri: self._fields.8.unwrap(),
+            starter_pack: self._fields.8,
+            uri: self._fields.9.unwrap(),
             extra_data: Some(extra_data),
         }
     }
@@ -1016,6 +1042,17 @@ fn lexicon_doc_app_bsky_notification_listNotifications(
                                 "record",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Unknown(::jacquard_lexicon::lexicon::LexUnknown {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "starterPack",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "app.bsky.graph.defs#starterPackViewBasic",
+                                ),
                                 ..Default::default()
                             }),
                         );

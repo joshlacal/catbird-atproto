@@ -366,6 +366,8 @@ pub struct SkeletonSearchStarterPack<S: jacquard_common::BosStr = jacquard_commo
 pub struct SkeletonTrend<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub category: core::option::Option<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub description: core::option::Option<S>,
     pub dids: Vec<jacquard_common::types::string::Did<S>>,
     pub display_name: S,
     pub link: S,
@@ -556,8 +558,14 @@ pub struct ThreadItemPost<S: jacquard_common::BosStr = jacquard_common::DefaultS
     pub more_replies: i64,
     ///This is by an account muted by the viewer requesting it.
     pub muted_by_viewer: bool,
-    ///This post is part of a contiguous thread by the OP from the thread root. Many different OP threads can happen in the same thread.
+    ///This post is part of a contiguous thread by the OP from the thread root. Sub-threads by OP deeper in the tree are not considered an OP thread.
     pub op_thread: bool,
+    ///The total number of posts in the contiguous OP thread that this post belongs to. Only present when this post is part of the OP thread (see `opThread`).
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub op_thread_post_count: core::option::Option<i64>,
+    ///The 1-indexed position of this post within the contiguous OP thread. Only present when this post is part of the OP thread (see `opThread`).
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub op_thread_post_index: core::option::Option<i64>,
     pub post: crate::generated::app_bsky::feed::PostView<S>,
     #[serde(
         flatten,
@@ -583,6 +591,8 @@ pub struct TrendView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub actors: Vec<crate::generated::app_bsky::actor::ProfileViewBasic<S>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub category: core::option::Option<S>,
+    #[serde(skip_serializing_if = "core::option::Option::is_none")]
+    pub description: core::option::Option<S>,
     pub display_name: S,
     pub link: S,
     pub post_count: i64,
@@ -1485,6 +1495,14 @@ fn lexicon_doc_app_bsky_unspecced_defs() -> jacquard_lexicon::lexicon::LexiconDo
                         );
                         map.insert(
                             ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "description",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
                                 "dids",
                             ),
                             ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
@@ -1674,6 +1692,26 @@ fn lexicon_doc_app_bsky_unspecced_defs() -> jacquard_lexicon::lexicon::LexiconDo
                                 ),
                             );
                             map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "opThreadPostCount",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "opThreadPostIndex",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
+                                    ::jacquard_lexicon::lexicon::LexInteger {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static("post"),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
                                     ::jacquard_lexicon::lexicon::LexRef {
@@ -1723,6 +1761,16 @@ fn lexicon_doc_app_bsky_unspecced_defs() -> jacquard_lexicon::lexicon::LexiconDo
                             );
                             map.insert(
                                 ::jacquard_common::deps::smol_str::SmolStr::new_static("category"),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
+                                    ::jacquard_lexicon::lexicon::LexString {
+                                        ..Default::default()
+                                    },
+                                ),
+                            );
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "description",
+                                ),
                                 ::jacquard_lexicon::lexicon::LexObjectProperty::String(
                                     ::jacquard_lexicon::lexicon::LexString {
                                         ..Default::default()
@@ -2354,6 +2402,7 @@ pub struct SkeletonTrendBuilder<
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
         core::option::Option<S>,
+        core::option::Option<S>,
         core::option::Option<Vec<jacquard_common::types::string::Did<S>>>,
         core::option::Option<S>,
         core::option::Option<S>,
@@ -2384,7 +2433,7 @@ impl SkeletonTrendBuilder<skeleton_trend_state::Empty, jacquard_common::DefaultS
     pub fn new() -> Self {
         SkeletonTrendBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -2395,7 +2444,7 @@ impl<S: jacquard_common::BosStr> SkeletonTrendBuilder<skeleton_trend_state::Empt
     pub fn builder() -> Self {
         SkeletonTrendBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -2414,6 +2463,19 @@ impl<St: skeleton_trend_state::State, S: jacquard_common::BosStr> SkeletonTrendB
     }
 }
 
+impl<St: skeleton_trend_state::State, S: jacquard_common::BosStr> SkeletonTrendBuilder<St, S> {
+    /// Set the `description` field (optional)
+    pub fn description(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.1 = value.into();
+        self
+    }
+    /// Set the `description` field to an Option value (optional)
+    pub fn maybe_description(mut self, value: Option<S>) -> Self {
+        self._fields.1 = value;
+        self
+    }
+}
+
 impl<St, S: jacquard_common::BosStr> SkeletonTrendBuilder<St, S>
 where
     St: skeleton_trend_state::State,
@@ -2424,7 +2486,7 @@ where
         mut self,
         value: impl Into<Vec<jacquard_common::types::string::Did<S>>>,
     ) -> SkeletonTrendBuilder<skeleton_trend_state::SetDids<St>, S> {
-        self._fields.1 = ::core::option::Option::Some(value.into());
+        self._fields.2 = ::core::option::Option::Some(value.into());
         SkeletonTrendBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -2443,7 +2505,7 @@ where
         mut self,
         value: impl Into<S>,
     ) -> SkeletonTrendBuilder<skeleton_trend_state::SetDisplayName<St>, S> {
-        self._fields.2 = ::core::option::Option::Some(value.into());
+        self._fields.3 = ::core::option::Option::Some(value.into());
         SkeletonTrendBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -2462,7 +2524,7 @@ where
         mut self,
         value: impl Into<S>,
     ) -> SkeletonTrendBuilder<skeleton_trend_state::SetLink<St>, S> {
-        self._fields.3 = ::core::option::Option::Some(value.into());
+        self._fields.4 = ::core::option::Option::Some(value.into());
         SkeletonTrendBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -2481,7 +2543,7 @@ where
         mut self,
         value: impl Into<i64>,
     ) -> SkeletonTrendBuilder<skeleton_trend_state::SetPostCount<St>, S> {
-        self._fields.4 = ::core::option::Option::Some(value.into());
+        self._fields.5 = ::core::option::Option::Some(value.into());
         SkeletonTrendBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -2500,7 +2562,7 @@ where
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
     ) -> SkeletonTrendBuilder<skeleton_trend_state::SetStartedAt<St>, S> {
-        self._fields.5 = ::core::option::Option::Some(value.into());
+        self._fields.6 = ::core::option::Option::Some(value.into());
         SkeletonTrendBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -2512,12 +2574,12 @@ where
 impl<St: skeleton_trend_state::State, S: jacquard_common::BosStr> SkeletonTrendBuilder<St, S> {
     /// Set the `status` field (optional)
     pub fn status(mut self, value: impl Into<Option<SkeletonTrendStatus<S>>>) -> Self {
-        self._fields.6 = value.into();
+        self._fields.7 = value.into();
         self
     }
     /// Set the `status` field to an Option value (optional)
     pub fn maybe_status(mut self, value: Option<SkeletonTrendStatus<S>>) -> Self {
-        self._fields.6 = value;
+        self._fields.7 = value;
         self
     }
 }
@@ -2532,7 +2594,7 @@ where
         mut self,
         value: impl Into<S>,
     ) -> SkeletonTrendBuilder<skeleton_trend_state::SetTopic<St>, S> {
-        self._fields.7 = ::core::option::Option::Some(value.into());
+        self._fields.8 = ::core::option::Option::Some(value.into());
         SkeletonTrendBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -2555,13 +2617,14 @@ where
     pub fn build(self) -> SkeletonTrend<S> {
         SkeletonTrend {
             category: self._fields.0,
-            dids: self._fields.1.unwrap(),
-            display_name: self._fields.2.unwrap(),
-            link: self._fields.3.unwrap(),
-            post_count: self._fields.4.unwrap(),
-            started_at: self._fields.5.unwrap(),
-            status: self._fields.6,
-            topic: self._fields.7.unwrap(),
+            description: self._fields.1,
+            dids: self._fields.2.unwrap(),
+            display_name: self._fields.3.unwrap(),
+            link: self._fields.4.unwrap(),
+            post_count: self._fields.5.unwrap(),
+            started_at: self._fields.6.unwrap(),
+            status: self._fields.7,
+            topic: self._fields.8.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -2575,13 +2638,14 @@ where
     ) -> SkeletonTrend<S> {
         SkeletonTrend {
             category: self._fields.0,
-            dids: self._fields.1.unwrap(),
-            display_name: self._fields.2.unwrap(),
-            link: self._fields.3.unwrap(),
-            post_count: self._fields.4.unwrap(),
-            started_at: self._fields.5.unwrap(),
-            status: self._fields.6,
-            topic: self._fields.7.unwrap(),
+            description: self._fields.1,
+            dids: self._fields.2.unwrap(),
+            display_name: self._fields.3.unwrap(),
+            link: self._fields.4.unwrap(),
+            post_count: self._fields.5.unwrap(),
+            started_at: self._fields.6.unwrap(),
+            status: self._fields.7,
+            topic: self._fields.8.unwrap(),
             extra_data: Some(extra_data),
         }
     }
@@ -2837,6 +2901,8 @@ pub struct ThreadItemPostBuilder<
         core::option::Option<i64>,
         core::option::Option<bool>,
         core::option::Option<bool>,
+        core::option::Option<i64>,
+        core::option::Option<i64>,
         core::option::Option<crate::generated::app_bsky::feed::PostView<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -2862,7 +2928,7 @@ impl ThreadItemPostBuilder<thread_item_post_state::Empty, jacquard_common::Defau
     pub fn new() -> Self {
         ThreadItemPostBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -2873,7 +2939,7 @@ impl<S: jacquard_common::BosStr> ThreadItemPostBuilder<thread_item_post_state::E
     pub fn builder() -> Self {
         ThreadItemPostBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -2974,6 +3040,32 @@ where
     }
 }
 
+impl<St: thread_item_post_state::State, S: jacquard_common::BosStr> ThreadItemPostBuilder<St, S> {
+    /// Set the `opThreadPostCount` field (optional)
+    pub fn op_thread_post_count(mut self, value: impl Into<Option<i64>>) -> Self {
+        self._fields.5 = value.into();
+        self
+    }
+    /// Set the `opThreadPostCount` field to an Option value (optional)
+    pub fn maybe_op_thread_post_count(mut self, value: Option<i64>) -> Self {
+        self._fields.5 = value;
+        self
+    }
+}
+
+impl<St: thread_item_post_state::State, S: jacquard_common::BosStr> ThreadItemPostBuilder<St, S> {
+    /// Set the `opThreadPostIndex` field (optional)
+    pub fn op_thread_post_index(mut self, value: impl Into<Option<i64>>) -> Self {
+        self._fields.6 = value.into();
+        self
+    }
+    /// Set the `opThreadPostIndex` field to an Option value (optional)
+    pub fn maybe_op_thread_post_index(mut self, value: Option<i64>) -> Self {
+        self._fields.6 = value;
+        self
+    }
+}
+
 impl<St, S: jacquard_common::BosStr> ThreadItemPostBuilder<St, S>
 where
     St: thread_item_post_state::State,
@@ -2984,7 +3076,7 @@ where
         mut self,
         value: impl Into<crate::generated::app_bsky::feed::PostView<S>>,
     ) -> ThreadItemPostBuilder<thread_item_post_state::SetPost<St>, S> {
-        self._fields.5 = ::core::option::Option::Some(value.into());
+        self._fields.7 = ::core::option::Option::Some(value.into());
         ThreadItemPostBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -3011,7 +3103,9 @@ where
             more_replies: self._fields.2.unwrap(),
             muted_by_viewer: self._fields.3.unwrap(),
             op_thread: self._fields.4.unwrap(),
-            post: self._fields.5.unwrap(),
+            op_thread_post_count: self._fields.5,
+            op_thread_post_index: self._fields.6,
+            post: self._fields.7.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -3029,7 +3123,9 @@ where
             more_replies: self._fields.2.unwrap(),
             muted_by_viewer: self._fields.3.unwrap(),
             op_thread: self._fields.4.unwrap(),
-            post: self._fields.5.unwrap(),
+            op_thread_post_count: self._fields.5,
+            op_thread_post_index: self._fields.6,
+            post: self._fields.7.unwrap(),
             extra_data: Some(extra_data),
         }
     }
@@ -3158,6 +3254,7 @@ pub struct TrendViewBuilder<
         core::option::Option<S>,
         core::option::Option<S>,
         core::option::Option<S>,
+        core::option::Option<S>,
         core::option::Option<i64>,
         core::option::Option<jacquard_common::types::string::Datetime>,
         core::option::Option<TrendViewStatus<S>>,
@@ -3185,7 +3282,7 @@ impl TrendViewBuilder<trend_view_state::Empty, jacquard_common::DefaultStr> {
     pub fn new() -> Self {
         TrendViewBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -3196,7 +3293,7 @@ impl<S: jacquard_common::BosStr> TrendViewBuilder<trend_view_state::Empty, S> {
     pub fn builder() -> Self {
         TrendViewBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None, None, None, None, None, None),
+            _fields: (None, None, None, None, None, None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -3234,6 +3331,19 @@ impl<St: trend_view_state::State, S: jacquard_common::BosStr> TrendViewBuilder<S
     }
 }
 
+impl<St: trend_view_state::State, S: jacquard_common::BosStr> TrendViewBuilder<St, S> {
+    /// Set the `description` field (optional)
+    pub fn description(mut self, value: impl Into<Option<S>>) -> Self {
+        self._fields.2 = value.into();
+        self
+    }
+    /// Set the `description` field to an Option value (optional)
+    pub fn maybe_description(mut self, value: Option<S>) -> Self {
+        self._fields.2 = value;
+        self
+    }
+}
+
 impl<St, S: jacquard_common::BosStr> TrendViewBuilder<St, S>
 where
     St: trend_view_state::State,
@@ -3244,7 +3354,7 @@ where
         mut self,
         value: impl Into<S>,
     ) -> TrendViewBuilder<trend_view_state::SetDisplayName<St>, S> {
-        self._fields.2 = ::core::option::Option::Some(value.into());
+        self._fields.3 = ::core::option::Option::Some(value.into());
         TrendViewBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -3263,7 +3373,7 @@ where
         mut self,
         value: impl Into<S>,
     ) -> TrendViewBuilder<trend_view_state::SetLink<St>, S> {
-        self._fields.3 = ::core::option::Option::Some(value.into());
+        self._fields.4 = ::core::option::Option::Some(value.into());
         TrendViewBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -3282,7 +3392,7 @@ where
         mut self,
         value: impl Into<i64>,
     ) -> TrendViewBuilder<trend_view_state::SetPostCount<St>, S> {
-        self._fields.4 = ::core::option::Option::Some(value.into());
+        self._fields.5 = ::core::option::Option::Some(value.into());
         TrendViewBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -3301,7 +3411,7 @@ where
         mut self,
         value: impl Into<jacquard_common::types::string::Datetime>,
     ) -> TrendViewBuilder<trend_view_state::SetStartedAt<St>, S> {
-        self._fields.5 = ::core::option::Option::Some(value.into());
+        self._fields.6 = ::core::option::Option::Some(value.into());
         TrendViewBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -3313,12 +3423,12 @@ where
 impl<St: trend_view_state::State, S: jacquard_common::BosStr> TrendViewBuilder<St, S> {
     /// Set the `status` field (optional)
     pub fn status(mut self, value: impl Into<Option<TrendViewStatus<S>>>) -> Self {
-        self._fields.6 = value.into();
+        self._fields.7 = value.into();
         self
     }
     /// Set the `status` field to an Option value (optional)
     pub fn maybe_status(mut self, value: Option<TrendViewStatus<S>>) -> Self {
-        self._fields.6 = value;
+        self._fields.7 = value;
         self
     }
 }
@@ -3333,7 +3443,7 @@ where
         mut self,
         value: impl Into<S>,
     ) -> TrendViewBuilder<trend_view_state::SetTopic<St>, S> {
-        self._fields.7 = ::core::option::Option::Some(value.into());
+        self._fields.8 = ::core::option::Option::Some(value.into());
         TrendViewBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -3357,12 +3467,13 @@ where
         TrendView {
             actors: self._fields.0.unwrap(),
             category: self._fields.1,
-            display_name: self._fields.2.unwrap(),
-            link: self._fields.3.unwrap(),
-            post_count: self._fields.4.unwrap(),
-            started_at: self._fields.5.unwrap(),
-            status: self._fields.6,
-            topic: self._fields.7.unwrap(),
+            description: self._fields.2,
+            display_name: self._fields.3.unwrap(),
+            link: self._fields.4.unwrap(),
+            post_count: self._fields.5.unwrap(),
+            started_at: self._fields.6.unwrap(),
+            status: self._fields.7,
+            topic: self._fields.8.unwrap(),
             extra_data: Default::default(),
         }
     }
@@ -3377,12 +3488,13 @@ where
         TrendView {
             actors: self._fields.0.unwrap(),
             category: self._fields.1,
-            display_name: self._fields.2.unwrap(),
-            link: self._fields.3.unwrap(),
-            post_count: self._fields.4.unwrap(),
-            started_at: self._fields.5.unwrap(),
-            status: self._fields.6,
-            topic: self._fields.7.unwrap(),
+            description: self._fields.2,
+            display_name: self._fields.3.unwrap(),
+            link: self._fields.4.unwrap(),
+            post_count: self._fields.5.unwrap(),
+            started_at: self._fields.6.unwrap(),
+            status: self._fields.7,
+            topic: self._fields.8.unwrap(),
             extra_data: Some(extra_data),
         }
     }
