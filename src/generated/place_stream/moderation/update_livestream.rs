@@ -6,8 +6,15 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -20,11 +27,7 @@ pub struct UpdateLivestream<S: jacquard_common::BosStr = jacquard_common::Defaul
     ///New title for the livestream.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub title: core::option::Option<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -33,23 +36,29 @@ pub struct UpdateLivestream<S: jacquard_common::BosStr = jacquard_common::Defaul
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct UpdateLivestreamOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct UpdateLivestreamOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     ///The CID of the updated livestream record.
     pub cid: jacquard_common::types::string::Cid<S>,
     ///The AT-URI of the updated livestream record.
     pub uri: jacquard_common::types::string::AtUri<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -57,6 +66,7 @@ pub struct UpdateLivestreamOutput<S: jacquard_common::BosStr = jacquard_common::
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -66,8 +76,9 @@ pub struct UpdateLivestreamOutput<S: jacquard_common::BosStr = jacquard_common::
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic,
+    miette::Diagnostic
 )]
+
 #[serde(tag = "error", content = "message")]
 pub enum UpdateLivestreamError {
     /// The request lacks valid authentication credentials.
@@ -143,10 +154,12 @@ impl jacquard_common::xrpc::XrpcResp for UpdateLivestreamResponse {
     type Err = UpdateLivestreamError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for UpdateLivestream<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
+for UpdateLivestream<S> {
     const NSID: &'static str = "place.stream.moderation.updateLivestream";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = UpdateLivestreamResponse;
 }
 
@@ -156,17 +169,18 @@ Path: `/xrpc/place.stream.moderation.updateLivestream`. The request payload type
 pub struct UpdateLivestreamRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for UpdateLivestreamRequest {
     const PATH: &'static str = "/xrpc/place.stream.moderation.updateLivestream";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<S: jacquard_common::BosStr> = UpdateLivestream<S>;
     type Response = UpdateLivestreamResponse;
 }
 
 pub mod update_livestream_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -222,8 +236,10 @@ pub struct UpdateLivestreamBuilder<
 
 impl UpdateLivestream<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new(
-    ) -> UpdateLivestreamBuilder<update_livestream_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> UpdateLivestreamBuilder<
+        update_livestream_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         UpdateLivestreamBuilder::new()
     }
 }
@@ -235,7 +251,10 @@ impl<S: jacquard_common::BosStr> UpdateLivestream<S> {
     }
 }
 
-impl UpdateLivestreamBuilder<update_livestream_state::Empty, jacquard_common::DefaultStr> {
+impl UpdateLivestreamBuilder<
+    update_livestream_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         UpdateLivestreamBuilder {
@@ -246,7 +265,9 @@ impl UpdateLivestreamBuilder<update_livestream_state::Empty, jacquard_common::De
     }
 }
 
-impl<S: jacquard_common::BosStr> UpdateLivestreamBuilder<update_livestream_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> UpdateLivestreamBuilder<update_livestream_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         UpdateLivestreamBuilder {
@@ -295,9 +316,10 @@ where
     }
 }
 
-impl<St: update_livestream_state::State, S: jacquard_common::BosStr>
-    UpdateLivestreamBuilder<St, S>
-{
+impl<
+    St: update_livestream_state::State,
+    S: jacquard_common::BosStr,
+> UpdateLivestreamBuilder<St, S> {
     /// Set the `title` field (optional)
     pub fn title(mut self, value: impl Into<Option<S>>) -> Self {
         self._fields.2 = value.into();

@@ -6,8 +6,15 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -16,20 +23,24 @@ pub struct GetWebhook<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
     pub id: S,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct GetWebhookOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub webhook: crate::generated::place_stream::server::Webhook<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -37,6 +48,7 @@ pub struct GetWebhookOutput<S: jacquard_common::BosStr = jacquard_common::Defaul
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -46,8 +58,9 @@ pub struct GetWebhookOutput<S: jacquard_common::BosStr = jacquard_common::Defaul
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic,
+    miette::Diagnostic
 )]
+
 #[serde(tag = "error", content = "message")]
 pub enum GetWebhookError {
     /// The specified webhook was not found.
@@ -122,9 +135,9 @@ impl jacquard_common::xrpc::XrpcEndpoint for GetWebhookRequest {
 
 pub mod get_webhook_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -164,7 +177,10 @@ pub struct GetWebhookBuilder<
 
 impl GetWebhook<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> GetWebhookBuilder<get_webhook_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> GetWebhookBuilder<
+        get_webhook_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         GetWebhookBuilder::new()
     }
 }
@@ -204,7 +220,10 @@ where
     St::Id: get_webhook_state::IsUnset,
 {
     /// Set the `id` field (required)
-    pub fn id(mut self, value: impl Into<S>) -> GetWebhookBuilder<get_webhook_state::SetId<St>, S> {
+    pub fn id(
+        mut self,
+        value: impl Into<S>,
+    ) -> GetWebhookBuilder<get_webhook_state::SetId<St>, S> {
         self._fields.0 = ::core::option::Option::Some(value.into());
         GetWebhookBuilder {
             _state: ::core::marker::PhantomData,

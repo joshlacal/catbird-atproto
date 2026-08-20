@@ -15,8 +15,9 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -28,11 +29,7 @@ pub struct DistributionPolicy<S: jacquard_common::BosStr = jacquard_common::Defa
     ///Duration in seconds after which segments should be deleted. Each segment will expire N seconds after its creation time. -1 to allow indefinite archival.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub delete_after: core::option::Option<i64>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -41,7 +38,8 @@ pub struct DistributionPolicy<S: jacquard_common::BosStr = jacquard_common::Defa
     >,
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for DistributionPolicy<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for DistributionPolicy<S> {
     fn nsid() -> &'static str {
         "place.stream.metadata.distributionPolicy"
     }
@@ -56,11 +54,14 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Dis
     }
 }
 
-fn lexicon_doc_place_stream_metadata_distributionPolicy(
-) -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_place_stream_metadata_distributionPolicy() -> jacquard_lexicon::lexicon::LexiconDoc<
+    'static,
+> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
-        id: ::jacquard_common::CowStr::new_static("place.stream.metadata.distributionPolicy"),
+        id: ::jacquard_common::CowStr::new_static(
+            "place.stream.metadata.distributionPolicy",
+        ),
         defs: {
             let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(

@@ -10,23 +10,29 @@ pub mod get_broadcaster;
 pub mod origin;
 pub mod syndication;
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct BroadcastOriginView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    pub author: crate::generated::app_bsky::actor::ProfileViewBasic<S>,
+pub struct BroadcastOriginView<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    pub author: jacquard_common::types::value::Data<S>,
     pub cid: jacquard_common::types::string::Cid<S>,
     pub record: jacquard_common::types::value::Data<S>,
     pub uri: jacquard_common::types::string::AtUri<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -36,8 +42,7 @@ pub struct BroadcastOriginView<S: jacquard_common::BosStr = jacquard_common::Def
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-    for BroadcastOriginView<S>
-{
+for BroadcastOriginView<S> {
     fn nsid() -> &'static str {
         "place.stream.broadcast.defs"
     }
@@ -54,9 +59,9 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
 
 pub mod broadcast_origin_view_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -133,7 +138,7 @@ pub struct BroadcastOriginViewBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
-        core::option::Option<crate::generated::app_bsky::actor::ProfileViewBasic<S>>,
+        core::option::Option<jacquard_common::types::value::Data<S>>,
         core::option::Option<jacquard_common::types::string::Cid<S>>,
         core::option::Option<jacquard_common::types::value::Data<S>>,
         core::option::Option<jacquard_common::types::string::AtUri<S>>,
@@ -143,21 +148,28 @@ pub struct BroadcastOriginViewBuilder<
 
 impl BroadcastOriginView<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new(
-    ) -> BroadcastOriginViewBuilder<broadcast_origin_view_state::Empty, jacquard_common::DefaultStr>
-    {
+    pub fn new() -> BroadcastOriginViewBuilder<
+        broadcast_origin_view_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         BroadcastOriginViewBuilder::new()
     }
 }
 
 impl<S: jacquard_common::BosStr> BroadcastOriginView<S> {
     /// Create a new builder for this type
-    pub fn builder() -> BroadcastOriginViewBuilder<broadcast_origin_view_state::Empty, S> {
+    pub fn builder() -> BroadcastOriginViewBuilder<
+        broadcast_origin_view_state::Empty,
+        S,
+    > {
         BroadcastOriginViewBuilder::builder()
     }
 }
 
-impl BroadcastOriginViewBuilder<broadcast_origin_view_state::Empty, jacquard_common::DefaultStr> {
+impl BroadcastOriginViewBuilder<
+    broadcast_origin_view_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         BroadcastOriginViewBuilder {
@@ -168,7 +180,9 @@ impl BroadcastOriginViewBuilder<broadcast_origin_view_state::Empty, jacquard_com
     }
 }
 
-impl<S: jacquard_common::BosStr> BroadcastOriginViewBuilder<broadcast_origin_view_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> BroadcastOriginViewBuilder<broadcast_origin_view_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         BroadcastOriginViewBuilder {
@@ -187,7 +201,7 @@ where
     /// Set the `author` field (required)
     pub fn author(
         mut self,
-        value: impl Into<crate::generated::app_bsky::actor::ProfileViewBasic<S>>,
+        value: impl Into<jacquard_common::types::value::Data<S>>,
     ) -> BroadcastOriginViewBuilder<broadcast_origin_view_state::SetAuthor<St>, S> {
         self._fields.0 = ::core::option::Option::Some(value.into());
         BroadcastOriginViewBuilder {
@@ -291,71 +305,75 @@ where
     }
 }
 
-fn lexicon_doc_place_stream_broadcast_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_place_stream_broadcast_defs() -> jacquard_lexicon::lexicon::LexiconDoc<
+    'static,
+> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("place.stream.broadcast.defs"),
         defs: {
             let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("broadcastOriginView"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        required: Some(vec![
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "broadcastOriginView",
+                ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    required: Some(
+                        vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("uri"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("cid"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("author"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("record"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("author"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "app.bsky.actor.defs#profileViewBasic",
-                                        ),
-                                        ..Default::default()
-                                    },
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("record")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "author",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "app.bsky.actor.defs#profileViewBasic",
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("cid"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Cid,
-                                        ),
-                                        ..Default::default()
-                                    },
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "cid",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Cid,
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("record"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Unknown(
-                                    ::jacquard_lexicon::lexicon::LexUnknown {
-                                        ..Default::default()
-                                    },
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "record",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Unknown(::jacquard_lexicon::lexicon::LexUnknown {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "uri",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("uri"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map
         },

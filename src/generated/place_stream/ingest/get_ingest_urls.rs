@@ -6,25 +6,37 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(rename_all = "camelCase")]
 pub struct GetIngestUrls;
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct GetIngestUrlsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct GetIngestUrlsOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     pub ingests: Vec<crate::generated::place_stream::ingest::Ingest<S>>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -32,6 +44,7 @@ pub struct GetIngestUrlsOutput<S: jacquard_common::BosStr = jacquard_common::Def
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -41,8 +54,9 @@ pub struct GetIngestUrlsOutput<S: jacquard_common::BosStr = jacquard_common::Def
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic,
+    miette::Diagnostic
 )]
+
 #[serde(tag = "error", content = "message")]
 pub enum GetIngestUrlsError {
     /// Catch-all for unknown error codes.

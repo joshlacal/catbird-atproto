@@ -6,30 +6,42 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct GetDevices<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub actor_device_id: S,
     pub user_dids: Vec<jacquard_common::types::string::Did<S>>,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct GetDevicesOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub devices: Vec<crate::generated::blue_catbird::chat::AddressableDevice<S>>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -37,6 +49,7 @@ pub struct GetDevicesOutput<S: jacquard_common::BosStr = jacquard_common::Defaul
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -46,8 +59,9 @@ pub struct GetDevicesOutput<S: jacquard_common::BosStr = jacquard_common::Defaul
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic,
+    miette::Diagnostic
 )]
+
 #[serde(tag = "error", content = "message")]
 pub enum GetDevicesError {
     #[serde(rename = "CutoverRequired")]
@@ -56,10 +70,24 @@ pub enum GetDevicesError {
     DeviceNotRegistered(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "DeviceRevoked")]
     DeviceRevoked(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
-    #[serde(rename = "InvalidDPoP")]
-    InvalidDPoP(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "InvalidRequest")]
     InvalidRequest(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    #[serde(rename = "AccountSessionExpired")]
+    AccountSessionExpired(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "NotAuthorized")]
+    NotAuthorized(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    #[serde(rename = "DeviceBindingMismatch")]
+    DeviceBindingMismatch(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "ProtocolUpgradeRequired")]
+    ProtocolUpgradeRequired(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "RateLimited")]
+    RateLimited(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
@@ -92,15 +120,43 @@ impl core::fmt::Display for GetDevicesError {
                 }
                 Ok(())
             }
-            Self::InvalidDPoP(msg) => {
-                write!(f, "InvalidDPoP")?;
+            Self::InvalidRequest(msg) => {
+                write!(f, "InvalidRequest")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }
                 Ok(())
             }
-            Self::InvalidRequest(msg) => {
-                write!(f, "InvalidRequest")?;
+            Self::AccountSessionExpired(msg) => {
+                write!(f, "AccountSessionExpired")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::NotAuthorized(msg) => {
+                write!(f, "NotAuthorized")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::DeviceBindingMismatch(msg) => {
+                write!(f, "DeviceBindingMismatch")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::ProtocolUpgradeRequired(msg) => {
+                write!(f, "ProtocolUpgradeRequired")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::RateLimited(msg) => {
+                write!(f, "RateLimited")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }
@@ -147,31 +203,43 @@ impl jacquard_common::xrpc::XrpcEndpoint for GetDevicesRequest {
 
 pub mod get_devices_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
+        type ActorDeviceId;
         type UserDids;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
+        type ActorDeviceId = Unset;
         type UserDids = Unset;
+    }
+    ///State transition - sets the `actor_device_id` field to Set
+    pub struct SetActorDeviceId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetActorDeviceId<St> {}
+    impl<St: State> State for SetActorDeviceId<St> {
+        type ActorDeviceId = Set<members::actor_device_id>;
+        type UserDids = St::UserDids;
     }
     ///State transition - sets the `user_dids` field to Set
     pub struct SetUserDids<St: State = Empty>(PhantomData<fn() -> St>);
     impl<St: State> sealed::Sealed for SetUserDids<St> {}
     impl<St: State> State for SetUserDids<St> {
+        type ActorDeviceId = St::ActorDeviceId;
         type UserDids = Set<members::user_dids>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
+        ///Marker type for the `actor_device_id` field
+        pub struct actor_device_id(());
         ///Marker type for the `user_dids` field
         pub struct user_dids(());
     }
@@ -183,13 +251,19 @@ pub struct GetDevicesBuilder<
     S: jacquard_common::BosStr = jacquard_common::DefaultStr,
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
-    _fields: (core::option::Option<Vec<jacquard_common::types::string::Did<S>>>,),
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<Vec<jacquard_common::types::string::Did<S>>>,
+    ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
 impl GetDevices<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> GetDevicesBuilder<get_devices_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> GetDevicesBuilder<
+        get_devices_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         GetDevicesBuilder::new()
     }
 }
@@ -206,7 +280,7 @@ impl GetDevicesBuilder<get_devices_state::Empty, jacquard_common::DefaultStr> {
     pub fn new() -> Self {
         GetDevicesBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None,),
+            _fields: (None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -217,7 +291,26 @@ impl<S: jacquard_common::BosStr> GetDevicesBuilder<get_devices_state::Empty, S> 
     pub fn builder() -> Self {
         GetDevicesBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None,),
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> GetDevicesBuilder<St, S>
+where
+    St: get_devices_state::State,
+    St::ActorDeviceId: get_devices_state::IsUnset,
+{
+    /// Set the `actorDeviceId` field (required)
+    pub fn actor_device_id(
+        mut self,
+        value: impl Into<S>,
+    ) -> GetDevicesBuilder<get_devices_state::SetActorDeviceId<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        GetDevicesBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
             _type: ::core::marker::PhantomData,
         }
     }
@@ -233,7 +326,7 @@ where
         mut self,
         value: impl Into<Vec<jacquard_common::types::string::Did<S>>>,
     ) -> GetDevicesBuilder<get_devices_state::SetUserDids<St>, S> {
-        self._fields.0 = ::core::option::Option::Some(value.into());
+        self._fields.1 = ::core::option::Option::Some(value.into());
         GetDevicesBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -245,12 +338,14 @@ where
 impl<St, S: jacquard_common::BosStr> GetDevicesBuilder<St, S>
 where
     St: get_devices_state::State,
+    St::ActorDeviceId: get_devices_state::IsSet,
     St::UserDids: get_devices_state::IsSet,
 {
     /// Build the final struct.
     pub fn build(self) -> GetDevices<S> {
         GetDevices {
-            user_dids: self._fields.0.unwrap(),
+            actor_device_id: self._fields.0.unwrap(),
+            user_dids: self._fields.1.unwrap(),
         }
     }
 }

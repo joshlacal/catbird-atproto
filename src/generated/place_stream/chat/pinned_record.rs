@@ -8,8 +8,15 @@
 /// Record pinning a chat message for prominent display.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     rename = "place.stream.chat.pinnedRecord",
@@ -27,11 +34,7 @@ pub struct PinnedRecord<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     pub pinned_by: core::option::Option<jacquard_common::types::string::Did<S>>,
     ///AT-URI of the pinned chat message.
     pub pinned_message: jacquard_common::types::string::AtUri<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -43,10 +46,19 @@ pub struct PinnedRecord<S: jacquard_common::BosStr = jacquard_common::DefaultStr
 /// Typed wrapper for GetRecord response with this collection's record type.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(rename_all = "camelCase")]
-pub struct PinnedRecordGetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct PinnedRecordGetRecordOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
     pub uri: jacquard_common::types::string::AtUri<S>,
@@ -77,15 +89,15 @@ impl jacquard_common::xrpc::XrpcResp for PinnedRecordRecord {
     type Err = jacquard_common::types::collection::RecordError;
 }
 
-impl<S: jacquard_common::BosStr> From<PinnedRecordGetRecordOutput<S>> for PinnedRecord<S> {
+impl<S: jacquard_common::BosStr> From<PinnedRecordGetRecordOutput<S>>
+for PinnedRecord<S> {
     fn from(output: PinnedRecordGetRecordOutput<S>) -> Self {
         output.value
     }
 }
 
 impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection
-    for PinnedRecord<S>
-{
+for PinnedRecord<S> {
     const NSID: &'static str = "place.stream.chat.pinnedRecord";
     type Record = PinnedRecordRecord;
 }
@@ -95,7 +107,8 @@ impl jacquard_common::types::collection::Collection for PinnedRecordRecord {
     type Record = PinnedRecordRecord;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for PinnedRecord<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for PinnedRecord<S> {
     fn nsid() -> &'static str {
         "place.stream.chat.pinnedRecord"
     }
@@ -112,9 +125,9 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Pin
 
 pub mod pinned_record_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -171,7 +184,10 @@ pub struct PinnedRecordBuilder<
 
 impl PinnedRecord<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> PinnedRecordBuilder<pinned_record_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> PinnedRecordBuilder<
+        pinned_record_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         PinnedRecordBuilder::new()
     }
 }
@@ -224,7 +240,10 @@ where
     }
 }
 
-impl<St: pinned_record_state::State, S: jacquard_common::BosStr> PinnedRecordBuilder<St, S> {
+impl<
+    St: pinned_record_state::State,
+    S: jacquard_common::BosStr,
+> PinnedRecordBuilder<St, S> {
     /// Set the `expiresAt` field (optional)
     pub fn expires_at(
         mut self,
@@ -243,7 +262,10 @@ impl<St: pinned_record_state::State, S: jacquard_common::BosStr> PinnedRecordBui
     }
 }
 
-impl<St: pinned_record_state::State, S: jacquard_common::BosStr> PinnedRecordBuilder<St, S> {
+impl<
+    St: pinned_record_state::State,
+    S: jacquard_common::BosStr,
+> PinnedRecordBuilder<St, S> {
     /// Set the `pinnedBy` field (optional)
     pub fn pinned_by(
         mut self,
@@ -315,7 +337,9 @@ where
     }
 }
 
-fn lexicon_doc_place_stream_chat_pinnedRecord() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_place_stream_chat_pinnedRecord() -> jacquard_lexicon::lexicon::LexiconDoc<
+    'static,
+> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("place.stream.chat.pinnedRecord"),

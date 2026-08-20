@@ -6,8 +6,15 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -16,13 +23,22 @@ pub struct GetProfileCard<S: jacquard_common::BosStr = jacquard_common::DefaultS
     pub id: S,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(rename_all = "camelCase")]
 pub struct GetProfileCardOutput {
     pub body: jacquard_common::deps::bytes::Bytes,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -32,8 +48,9 @@ pub struct GetProfileCardOutput {
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic,
+    miette::Diagnostic
 )]
+
 #[serde(tag = "error", content = "message")]
 pub enum GetProfileCardError {
     #[serde(rename = "RepoNotFound")]
@@ -97,7 +114,8 @@ impl jacquard_common::xrpc::XrpcResp for GetProfileCardResponse {
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetProfileCard<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
+for GetProfileCard<S> {
     const NSID: &'static str = "place.stream.live.getProfileCard";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = GetProfileCardResponse;
@@ -116,9 +134,9 @@ impl jacquard_common::xrpc::XrpcEndpoint for GetProfileCardRequest {
 
 pub mod get_profile_card_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -158,8 +176,10 @@ pub struct GetProfileCardBuilder<
 
 impl GetProfileCard<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> GetProfileCardBuilder<get_profile_card_state::Empty, jacquard_common::DefaultStr>
-    {
+    pub fn new() -> GetProfileCardBuilder<
+        get_profile_card_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         GetProfileCardBuilder::new()
     }
 }
@@ -182,7 +202,9 @@ impl GetProfileCardBuilder<get_profile_card_state::Empty, jacquard_common::Defau
     }
 }
 
-impl<S: jacquard_common::BosStr> GetProfileCardBuilder<get_profile_card_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> GetProfileCardBuilder<get_profile_card_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         GetProfileCardBuilder {

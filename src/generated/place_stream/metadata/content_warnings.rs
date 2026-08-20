@@ -15,7 +15,7 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Hash,
+    Hash
 )]
 pub struct Pii;
 impl core::fmt::Display for Pii {
@@ -34,7 +34,7 @@ impl core::fmt::Display for Pii {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Hash,
+    Hash
 )]
 pub struct Death;
 impl core::fmt::Display for Death {
@@ -53,7 +53,7 @@ impl core::fmt::Display for Death {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Hash,
+    Hash
 )]
 pub struct DrugUse;
 impl core::fmt::Display for DrugUse {
@@ -72,7 +72,7 @@ impl core::fmt::Display for DrugUse {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Hash,
+    Hash
 )]
 pub struct FantasyViolence;
 impl core::fmt::Display for FantasyViolence {
@@ -91,7 +91,7 @@ impl core::fmt::Display for FantasyViolence {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Hash,
+    Hash
 )]
 pub struct FlashingLights;
 impl core::fmt::Display for FlashingLights {
@@ -110,7 +110,7 @@ impl core::fmt::Display for FlashingLights {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Hash,
+    Hash
 )]
 pub struct Language;
 impl core::fmt::Display for Language {
@@ -129,8 +129,9 @@ impl core::fmt::Display for Language {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -138,11 +139,7 @@ impl core::fmt::Display for Language {
 pub struct ContentWarnings<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub warnings: core::option::Option<Vec<S>>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -161,7 +158,7 @@ pub struct ContentWarnings<S: jacquard_common::BosStr = jacquard_common::Default
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Hash,
+    Hash
 )]
 pub struct Nudity;
 impl core::fmt::Display for Nudity {
@@ -180,7 +177,7 @@ impl core::fmt::Display for Nudity {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Hash,
+    Hash
 )]
 pub struct Sexuality;
 impl core::fmt::Display for Sexuality {
@@ -199,7 +196,7 @@ impl core::fmt::Display for Sexuality {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Hash,
+    Hash
 )]
 pub struct Suffering;
 impl core::fmt::Display for Suffering {
@@ -218,7 +215,7 @@ impl core::fmt::Display for Suffering {
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Hash,
+    Hash
 )]
 pub struct Violence;
 impl core::fmt::Display for Violence {
@@ -227,7 +224,8 @@ impl core::fmt::Display for Violence {
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ContentWarnings<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for ContentWarnings<S> {
     fn nsid() -> &'static str {
         "place.stream.metadata.contentWarnings"
     }
@@ -242,121 +240,104 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Con
     }
 }
 
-fn lexicon_doc_place_stream_metadata_contentWarnings(
-) -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_place_stream_metadata_contentWarnings() -> jacquard_lexicon::lexicon::LexiconDoc<
+    'static,
+> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
-        id: ::jacquard_common::CowStr::new_static("place.stream.metadata.contentWarnings"),
+        id: ::jacquard_common::CowStr::new_static(
+            "place.stream.metadata.contentWarnings",
+        ),
         defs: {
             let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("PII"),
-                ::jacquard_lexicon::lexicon::LexUserType::Token(
-                    ::jacquard_lexicon::lexicon::LexToken {
-                        ..Default::default()
-                    },
-                ),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(::jacquard_lexicon::lexicon::LexToken {
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("death"),
-                ::jacquard_lexicon::lexicon::LexUserType::Token(
-                    ::jacquard_lexicon::lexicon::LexToken {
-                        ..Default::default()
-                    },
-                ),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(::jacquard_lexicon::lexicon::LexToken {
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("drugUse"),
-                ::jacquard_lexicon::lexicon::LexUserType::Token(
-                    ::jacquard_lexicon::lexicon::LexToken {
-                        ..Default::default()
-                    },
-                ),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(::jacquard_lexicon::lexicon::LexToken {
+                    ..Default::default()
+                }),
             );
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("fantasyViolence"),
-                ::jacquard_lexicon::lexicon::LexUserType::Token(
-                    ::jacquard_lexicon::lexicon::LexToken {
-                        ..Default::default()
-                    },
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "fantasyViolence",
                 ),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(::jacquard_lexicon::lexicon::LexToken {
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("flashingLights"),
-                ::jacquard_lexicon::lexicon::LexUserType::Token(
-                    ::jacquard_lexicon::lexicon::LexToken {
-                        ..Default::default()
-                    },
-                ),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(::jacquard_lexicon::lexicon::LexToken {
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("language"),
-                ::jacquard_lexicon::lexicon::LexUserType::Token(
-                    ::jacquard_lexicon::lexicon::LexToken {
-                        ..Default::default()
-                    },
-                ),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(::jacquard_lexicon::lexicon::LexToken {
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: Some(::jacquard_common::CowStr::new_static(
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
                             "Content warnings for a stream.",
-                        )),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("warnings"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Array(
-                                    ::jacquard_lexicon::lexicon::LexArray {
-                                        items: ::jacquard_lexicon::lexicon::LexArrayItem::String(
-                                            ::jacquard_lexicon::lexicon::LexString {
-                                                ..Default::default()
-                                            },
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                        ),
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "warnings",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Array(::jacquard_lexicon::lexicon::LexArray {
+                                items: ::jacquard_lexicon::lexicon::LexArrayItem::String(::jacquard_lexicon::lexicon::LexString {
+                                    ..Default::default()
+                                }),
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("nudity"),
-                ::jacquard_lexicon::lexicon::LexUserType::Token(
-                    ::jacquard_lexicon::lexicon::LexToken {
-                        ..Default::default()
-                    },
-                ),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(::jacquard_lexicon::lexicon::LexToken {
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("sexuality"),
-                ::jacquard_lexicon::lexicon::LexUserType::Token(
-                    ::jacquard_lexicon::lexicon::LexToken {
-                        ..Default::default()
-                    },
-                ),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(::jacquard_lexicon::lexicon::LexToken {
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("suffering"),
-                ::jacquard_lexicon::lexicon::LexUserType::Token(
-                    ::jacquard_lexicon::lexicon::LexToken {
-                        ..Default::default()
-                    },
-                ),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(::jacquard_lexicon::lexicon::LexToken {
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("violence"),
-                ::jacquard_lexicon::lexicon::LexUserType::Token(
-                    ::jacquard_lexicon::lexicon::LexToken {
-                        ..Default::default()
-                    },
-                ),
+                ::jacquard_lexicon::lexicon::LexUserType::Token(::jacquard_lexicon::lexicon::LexToken {
+                    ..Default::default()
+                }),
             );
             map
         },

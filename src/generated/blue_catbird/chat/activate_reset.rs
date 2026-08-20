@@ -6,19 +6,22 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct ActivateReset<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub signed_request: crate::generated::blue_catbird::chat::SignedResetActivation<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -27,22 +30,32 @@ pub struct ActivateReset<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct ActivateResetOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct ActivateResetOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     pub entry: crate::generated::blue_catbird::chat::ResetActivationEntry<S>,
-    pub retired_coordinates: crate::generated::blue_catbird::chat::ConversationCoordinates<S>,
-    pub successor_coordinates: crate::generated::blue_catbird::chat::ConversationCoordinates<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    pub retired_coordinates: crate::generated::blue_catbird::chat::ConversationCoordinates<
+        S,
+    >,
+    pub successor_coordinates: crate::generated::blue_catbird::chat::ConversationCoordinates<
+        S,
+    >,
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -50,6 +63,7 @@ pub struct ActivateResetOutput<S: jacquard_common::BosStr = jacquard_common::Def
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -59,8 +73,9 @@ pub struct ActivateResetOutput<S: jacquard_common::BosStr = jacquard_common::Def
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic,
+    miette::Diagnostic
 )]
+
 #[serde(tag = "error", content = "message")]
 pub enum ActivateResetError {
     #[serde(rename = "AdminRequired")]
@@ -77,12 +92,14 @@ pub enum ActivateResetError {
     DeviceRevoked(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "IdempotencyConflict")]
     IdempotencyConflict(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
-    #[serde(rename = "InvalidDPoP")]
-    InvalidDPoP(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "InvalidGenesisGroupInfo")]
-    InvalidGenesisGroupInfo(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidGenesisGroupInfo(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InvalidMetadataSnapshot")]
-    InvalidMetadataSnapshot(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidMetadataSnapshot(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InvalidMlsArtifact")]
     InvalidMlsArtifact(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "InvalidRequest")]
@@ -102,7 +119,23 @@ pub enum ActivateResetError {
     #[serde(rename = "StaleCoordinates")]
     StaleCoordinates(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "UnsupportedMlsProfile")]
-    UnsupportedMlsProfile(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    UnsupportedMlsProfile(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "AccountSessionExpired")]
+    AccountSessionExpired(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "DeviceBindingMismatch")]
+    DeviceBindingMismatch(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "ProtocolUpgradeRequired")]
+    ProtocolUpgradeRequired(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "RateLimited")]
+    RateLimited(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
@@ -158,13 +191,6 @@ impl core::fmt::Display for ActivateResetError {
             }
             Self::IdempotencyConflict(msg) => {
                 write!(f, "IdempotencyConflict")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
-            Self::InvalidDPoP(msg) => {
-                write!(f, "InvalidDPoP")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }
@@ -254,6 +280,34 @@ impl core::fmt::Display for ActivateResetError {
                 }
                 Ok(())
             }
+            Self::AccountSessionExpired(msg) => {
+                write!(f, "AccountSessionExpired")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::DeviceBindingMismatch(msg) => {
+                write!(f, "DeviceBindingMismatch")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::ProtocolUpgradeRequired(msg) => {
+                write!(f, "ProtocolUpgradeRequired")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::RateLimited(msg) => {
+                write!(f, "RateLimited")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
             Self::Other { error, message } => {
                 write!(f, "{}", error)?;
                 if let Some(msg) = message {
@@ -276,10 +330,12 @@ impl jacquard_common::xrpc::XrpcResp for ActivateResetResponse {
     type Err = ActivateResetError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for ActivateReset<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
+for ActivateReset<S> {
     const NSID: &'static str = "blue.catbird.chat.activateReset";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = ActivateResetResponse;
 }
 
@@ -289,17 +345,18 @@ Path: `/xrpc/blue.catbird.chat.activateReset`. The request payload type is `Acti
 pub struct ActivateResetRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for ActivateResetRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.chat.activateReset";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<S: jacquard_common::BosStr> = ActivateReset<S>;
     type Response = ActivateResetResponse;
 }
 
 pub mod activate_reset_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -333,13 +390,20 @@ pub struct ActivateResetBuilder<
     S: jacquard_common::BosStr = jacquard_common::DefaultStr,
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
-    _fields: (core::option::Option<crate::generated::blue_catbird::chat::SignedResetActivation<S>>,),
+    _fields: (
+        core::option::Option<
+            crate::generated::blue_catbird::chat::SignedResetActivation<S>,
+        >,
+    ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
 impl ActivateReset<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> ActivateResetBuilder<activate_reset_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> ActivateResetBuilder<
+        activate_reset_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         ActivateResetBuilder::new()
     }
 }

@@ -6,8 +6,15 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -16,14 +23,24 @@ pub struct GetConvoDigest<S: jacquard_common::BosStr = jacquard_common::DefaultS
     pub convo_id: S,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct GetConvoDigestOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct GetConvoDigestOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     ///Conversation ID
     pub convo_id: S,
     ///Hex-encoded SHA-256 digest over all messages
@@ -40,11 +57,7 @@ pub struct GetConvoDigestOutput<S: jacquard_common::BosStr = jacquard_common::De
     pub sequencer_ds_did: S,
     ///Current sequencer term
     pub sequencer_term: i64,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -52,6 +65,7 @@ pub struct GetConvoDigestOutput<S: jacquard_common::BosStr = jacquard_common::De
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -61,8 +75,9 @@ pub struct GetConvoDigestOutput<S: jacquard_common::BosStr = jacquard_common::De
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic,
+    miette::Diagnostic
 )]
+
 #[serde(tag = "error", content = "message")]
 pub enum GetConvoDigestError {
     #[serde(rename = "ConversationNotFound")]
@@ -116,7 +131,8 @@ impl jacquard_common::xrpc::XrpcResp for GetConvoDigestResponse {
     type Err = GetConvoDigestError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetConvoDigest<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
+for GetConvoDigest<S> {
     const NSID: &'static str = "blue.catbird.mlsDS.getConvoDigest";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = GetConvoDigestResponse;
@@ -135,9 +151,9 @@ impl jacquard_common::xrpc::XrpcEndpoint for GetConvoDigestRequest {
 
 pub mod get_convo_digest_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -177,8 +193,10 @@ pub struct GetConvoDigestBuilder<
 
 impl GetConvoDigest<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> GetConvoDigestBuilder<get_convo_digest_state::Empty, jacquard_common::DefaultStr>
-    {
+    pub fn new() -> GetConvoDigestBuilder<
+        get_convo_digest_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         GetConvoDigestBuilder::new()
     }
 }
@@ -201,7 +219,9 @@ impl GetConvoDigestBuilder<get_convo_digest_state::Empty, jacquard_common::Defau
     }
 }
 
-impl<S: jacquard_common::BosStr> GetConvoDigestBuilder<get_convo_digest_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> GetConvoDigestBuilder<get_convo_digest_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         GetConvoDigestBuilder {

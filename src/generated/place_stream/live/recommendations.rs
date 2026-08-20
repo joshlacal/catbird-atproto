@@ -8,8 +8,15 @@
 /// A list of recommended streamers, in order of preference
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     rename = "place.stream.live.recommendations",
@@ -21,11 +28,7 @@ pub struct Recommendations<S: jacquard_common::BosStr = jacquard_common::Default
     pub created_at: jacquard_common::types::string::Datetime,
     ///Ordered list of recommended streamer DIDs
     pub streamers: Vec<jacquard_common::types::string::Did<S>>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -37,11 +40,19 @@ pub struct Recommendations<S: jacquard_common::BosStr = jacquard_common::Default
 /// Typed wrapper for GetRecord response with this collection's record type.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(rename_all = "camelCase")]
-pub struct RecommendationsGetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
-{
+pub struct RecommendationsGetRecordOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
     pub uri: jacquard_common::types::string::AtUri<S>,
@@ -72,15 +83,15 @@ impl jacquard_common::xrpc::XrpcResp for RecommendationsRecord {
     type Err = jacquard_common::types::collection::RecordError;
 }
 
-impl<S: jacquard_common::BosStr> From<RecommendationsGetRecordOutput<S>> for Recommendations<S> {
+impl<S: jacquard_common::BosStr> From<RecommendationsGetRecordOutput<S>>
+for Recommendations<S> {
     fn from(output: RecommendationsGetRecordOutput<S>) -> Self {
         output.value
     }
 }
 
 impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection
-    for Recommendations<S>
-{
+for Recommendations<S> {
     const NSID: &'static str = "place.stream.live.recommendations";
     type Record = RecommendationsRecord;
 }
@@ -90,7 +101,8 @@ impl jacquard_common::types::collection::Collection for RecommendationsRecord {
     type Record = RecommendationsRecord;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Recommendations<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for Recommendations<S> {
     fn nsid() -> &'static str {
         "place.stream.live.recommendations"
     }
@@ -106,7 +118,9 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Rec
             #[allow(unused_comparisons)]
             if value.len() > 8usize {
                 return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field("streamers"),
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "streamers",
+                    ),
                     max: 8usize,
                     actual: value.len(),
                 });
@@ -117,7 +131,9 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Rec
             #[allow(unused_comparisons)]
             if value.len() < 0usize {
                 return Err(jacquard_lexicon::validation::ConstraintError::MinLength {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field("streamers"),
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "streamers",
+                    ),
                     min: 0usize,
                     actual: value.len(),
                 });
@@ -129,9 +145,9 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Rec
 
 pub mod recommendations_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -186,8 +202,10 @@ pub struct RecommendationsBuilder<
 
 impl Recommendations<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> RecommendationsBuilder<recommendations_state::Empty, jacquard_common::DefaultStr>
-    {
+    pub fn new() -> RecommendationsBuilder<
+        recommendations_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         RecommendationsBuilder::new()
     }
 }
@@ -210,7 +228,9 @@ impl RecommendationsBuilder<recommendations_state::Empty, jacquard_common::Defau
     }
 }
 
-impl<S: jacquard_common::BosStr> RecommendationsBuilder<recommendations_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> RecommendationsBuilder<recommendations_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         RecommendationsBuilder {
@@ -289,8 +309,9 @@ where
     }
 }
 
-fn lexicon_doc_place_stream_live_recommendations() -> jacquard_lexicon::lexicon::LexiconDoc<'static>
-{
+fn lexicon_doc_place_stream_live_recommendations() -> jacquard_lexicon::lexicon::LexiconDoc<
+    'static,
+> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("place.stream.live.recommendations"),

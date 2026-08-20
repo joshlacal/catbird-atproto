@@ -13,20 +13,21 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct GetSubscriptionTicket<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct GetSubscriptionTicket<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    ///Canonical lowercase hyphenated RFC 4122-variant UUIDv4 device ID; strict runtime validation rejects every other spelling, version, or variant.
+    pub actor_device_id: S,
     pub event_cursor: S,
     pub inventory_session_id: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -35,22 +36,28 @@ pub struct GetSubscriptionTicket<S: jacquard_common::BosStr = jacquard_common::D
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct GetSubscriptionTicketOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct GetSubscriptionTicketOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     pub endpoint: jacquard_common::types::string::UriValue<S>,
     pub expires_at: crate::generated::blue_catbird::chat::CanonicalDatetime,
     pub ticket: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -58,6 +65,7 @@ pub struct GetSubscriptionTicketOutput<S: jacquard_common::BosStr = jacquard_com
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -67,8 +75,9 @@ pub struct GetSubscriptionTicketOutput<S: jacquard_common::BosStr = jacquard_com
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic,
+    miette::Diagnostic
 )]
+
 #[serde(tag = "error", content = "message")]
 pub enum GetSubscriptionTicketError {
     #[serde(rename = "CursorExpired")]
@@ -79,16 +88,34 @@ pub enum GetSubscriptionTicketError {
     DeviceNotRegistered(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "DeviceRevoked")]
     DeviceRevoked(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
-    #[serde(rename = "InvalidDPoP")]
-    InvalidDPoP(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "InvalidRequest")]
     InvalidRequest(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "InventoryIncomplete")]
     InventoryIncomplete(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "InventorySessionExpired")]
-    InventorySessionExpired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InventorySessionExpired(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InventorySessionMismatch")]
-    InventorySessionMismatch(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InventorySessionMismatch(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "AccountSessionExpired")]
+    AccountSessionExpired(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "NotAuthorized")]
+    NotAuthorized(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    #[serde(rename = "DeviceBindingMismatch")]
+    DeviceBindingMismatch(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "ProtocolUpgradeRequired")]
+    ProtocolUpgradeRequired(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "RateLimited")]
+    RateLimited(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
@@ -128,13 +155,6 @@ impl core::fmt::Display for GetSubscriptionTicketError {
                 }
                 Ok(())
             }
-            Self::InvalidDPoP(msg) => {
-                write!(f, "InvalidDPoP")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
             Self::InvalidRequest(msg) => {
                 write!(f, "InvalidRequest")?;
                 if let Some(msg) = msg {
@@ -163,6 +183,41 @@ impl core::fmt::Display for GetSubscriptionTicketError {
                 }
                 Ok(())
             }
+            Self::AccountSessionExpired(msg) => {
+                write!(f, "AccountSessionExpired")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::NotAuthorized(msg) => {
+                write!(f, "NotAuthorized")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::DeviceBindingMismatch(msg) => {
+                write!(f, "DeviceBindingMismatch")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::ProtocolUpgradeRequired(msg) => {
+                write!(f, "ProtocolUpgradeRequired")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::RateLimited(msg) => {
+                write!(f, "RateLimited")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
             Self::Other { error, message } => {
                 write!(f, "{}", error)?;
                 if let Some(msg) = message {
@@ -185,10 +240,12 @@ impl jacquard_common::xrpc::XrpcResp for GetSubscriptionTicketResponse {
     type Err = GetSubscriptionTicketError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetSubscriptionTicket<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
+for GetSubscriptionTicket<S> {
     const NSID: &'static str = "blue.catbird.chat.getSubscriptionTicket";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = GetSubscriptionTicketResponse;
 }
 
@@ -198,8 +255,9 @@ Path: `/xrpc/blue.catbird.chat.getSubscriptionTicket`. The request payload type 
 pub struct GetSubscriptionTicketRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for GetSubscriptionTicketRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.chat.getSubscriptionTicket";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<S: jacquard_common::BosStr> = GetSubscriptionTicket<S>;
     type Response = GetSubscriptionTicketResponse;
 }

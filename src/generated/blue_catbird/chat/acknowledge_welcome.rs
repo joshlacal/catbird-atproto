@@ -6,19 +6,24 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct AcknowledgeWelcome<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    pub signed_request: crate::generated::blue_catbird::chat::SignedWelcomeAcknowledgement<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    pub signed_request: crate::generated::blue_catbird::chat::SignedWelcomeAcknowledgement<
+        S,
+    >,
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -27,21 +32,27 @@ pub struct AcknowledgeWelcome<S: jacquard_common::BosStr = jacquard_common::Defa
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct AcknowledgeWelcomeOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct AcknowledgeWelcomeOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     pub acknowledged_at: crate::generated::blue_catbird::chat::CanonicalDatetime,
     pub status: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -49,6 +60,7 @@ pub struct AcknowledgeWelcomeOutput<S: jacquard_common::BosStr = jacquard_common
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -58,20 +70,21 @@ pub struct AcknowledgeWelcomeOutput<S: jacquard_common::BosStr = jacquard_common
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic,
+    miette::Diagnostic
 )]
+
 #[serde(tag = "error", content = "message")]
 pub enum AcknowledgeWelcomeError {
     #[serde(rename = "AcknowledgementConflict")]
-    AcknowledgementConflict(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    AcknowledgementConflict(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "CutoverRequired")]
     CutoverRequired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "DeviceNotRegistered")]
     DeviceNotRegistered(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "DeviceRevoked")]
     DeviceRevoked(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
-    #[serde(rename = "InvalidDPoP")]
-    InvalidDPoP(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "InvalidRequest")]
     InvalidRequest(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "InvalidSignature")]
@@ -82,6 +95,22 @@ pub enum AcknowledgeWelcomeError {
     WelcomeNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "WelcomeSuperseded")]
     WelcomeSuperseded(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    #[serde(rename = "AccountSessionExpired")]
+    AccountSessionExpired(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "NotAuthorized")]
+    NotAuthorized(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    #[serde(rename = "DeviceBindingMismatch")]
+    DeviceBindingMismatch(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "ProtocolUpgradeRequired")]
+    ProtocolUpgradeRequired(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "RateLimited")]
+    RateLimited(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
@@ -116,13 +145,6 @@ impl core::fmt::Display for AcknowledgeWelcomeError {
             }
             Self::DeviceRevoked(msg) => {
                 write!(f, "DeviceRevoked")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
-            Self::InvalidDPoP(msg) => {
-                write!(f, "InvalidDPoP")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }
@@ -163,6 +185,41 @@ impl core::fmt::Display for AcknowledgeWelcomeError {
                 }
                 Ok(())
             }
+            Self::AccountSessionExpired(msg) => {
+                write!(f, "AccountSessionExpired")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::NotAuthorized(msg) => {
+                write!(f, "NotAuthorized")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::DeviceBindingMismatch(msg) => {
+                write!(f, "DeviceBindingMismatch")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::ProtocolUpgradeRequired(msg) => {
+                write!(f, "ProtocolUpgradeRequired")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::RateLimited(msg) => {
+                write!(f, "RateLimited")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
             Self::Other { error, message } => {
                 write!(f, "{}", error)?;
                 if let Some(msg) = message {
@@ -185,10 +242,12 @@ impl jacquard_common::xrpc::XrpcResp for AcknowledgeWelcomeResponse {
     type Err = AcknowledgeWelcomeError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for AcknowledgeWelcome<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
+for AcknowledgeWelcome<S> {
     const NSID: &'static str = "blue.catbird.chat.acknowledgeWelcome";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = AcknowledgeWelcomeResponse;
 }
 
@@ -198,17 +257,18 @@ Path: `/xrpc/blue.catbird.chat.acknowledgeWelcome`. The request payload type is 
 pub struct AcknowledgeWelcomeRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for AcknowledgeWelcomeRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.chat.acknowledgeWelcome";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<S: jacquard_common::BosStr> = AcknowledgeWelcome<S>;
     type Response = AcknowledgeWelcomeResponse;
 }
 
 pub mod acknowledge_welcome_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -243,16 +303,19 @@ pub struct AcknowledgeWelcomeBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
-        core::option::Option<crate::generated::blue_catbird::chat::SignedWelcomeAcknowledgement<S>>,
+        core::option::Option<
+            crate::generated::blue_catbird::chat::SignedWelcomeAcknowledgement<S>,
+        >,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
 impl AcknowledgeWelcome<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new(
-    ) -> AcknowledgeWelcomeBuilder<acknowledge_welcome_state::Empty, jacquard_common::DefaultStr>
-    {
+    pub fn new() -> AcknowledgeWelcomeBuilder<
+        acknowledge_welcome_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         AcknowledgeWelcomeBuilder::new()
     }
 }
@@ -264,7 +327,10 @@ impl<S: jacquard_common::BosStr> AcknowledgeWelcome<S> {
     }
 }
 
-impl AcknowledgeWelcomeBuilder<acknowledge_welcome_state::Empty, jacquard_common::DefaultStr> {
+impl AcknowledgeWelcomeBuilder<
+    acknowledge_welcome_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         AcknowledgeWelcomeBuilder {
@@ -275,7 +341,9 @@ impl AcknowledgeWelcomeBuilder<acknowledge_welcome_state::Empty, jacquard_common
     }
 }
 
-impl<S: jacquard_common::BosStr> AcknowledgeWelcomeBuilder<acknowledge_welcome_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> AcknowledgeWelcomeBuilder<acknowledge_welcome_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         AcknowledgeWelcomeBuilder {
@@ -294,7 +362,9 @@ where
     /// Set the `signedRequest` field (required)
     pub fn signed_request(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::SignedWelcomeAcknowledgement<S>>,
+        value: impl Into<
+            crate::generated::blue_catbird::chat::SignedWelcomeAcknowledgement<S>,
+        >,
     ) -> AcknowledgeWelcomeBuilder<acknowledge_welcome_state::SetSignedRequest<St>, S> {
         self._fields.0 = ::core::option::Option::Some(value.into());
         AcknowledgeWelcomeBuilder {

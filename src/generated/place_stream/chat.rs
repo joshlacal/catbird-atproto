@@ -11,21 +11,32 @@ pub mod message;
 pub mod pinned_record;
 pub mod profile;
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct MessageView<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    pub author: crate::generated::app_bsky::actor::ProfileViewBasic<S>,
+    pub author: jacquard_common::types::value::Data<S>,
     ///Up to 3 badge tokens to display with the message. First badge is server-controlled, remaining badges are user-settable. Tokens are looked up in badges.json for display info.
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub badges: core::option::Option<Vec<crate::generated::place_stream::badge::BadgeView<S>>>,
+    pub badges: core::option::Option<
+        Vec<crate::generated::place_stream::badge::BadgeView<S>>,
+    >,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub chat_profile:
-        core::option::Option<crate::generated::place_stream::chat::profile::Profile<S>>,
+    pub chat_profile: core::option::Option<
+        crate::generated::place_stream::chat::profile::Profile<S>,
+    >,
     pub cid: jacquard_common::types::string::Cid<S>,
     ///If true, this message has been deleted or labeled and should be cleared from the cache
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -35,11 +46,7 @@ pub struct MessageView<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub reply_to: core::option::Option<MessageViewReplyTo<S>>,
     pub uri: jacquard_common::types::string::AtUri<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -48,10 +55,18 @@ pub struct MessageView<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     >,
 }
 
+
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     tag = "$type",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -64,8 +79,15 @@ pub enum MessageViewReplyTo<S: jacquard_common::BosStr = jacquard_common::Defaul
 /// View of a pinned chat record with hydrated message data.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -74,16 +96,16 @@ pub struct PinnedRecordView<S: jacquard_common::BosStr = jacquard_common::Defaul
     pub cid: jacquard_common::types::string::Cid<S>,
     pub indexed_at: jacquard_common::types::string::Datetime,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub message: core::option::Option<crate::generated::place_stream::chat::MessageView<S>>,
+    pub message: core::option::Option<
+        crate::generated::place_stream::chat::MessageView<S>,
+    >,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub pinned_by: core::option::Option<crate::generated::place_stream::chat::profile::Profile<S>>,
+    pub pinned_by: core::option::Option<
+        crate::generated::place_stream::chat::profile::Profile<S>,
+    >,
     pub record: crate::generated::place_stream::chat::pinned_record::PinnedRecord<S>,
     pub uri: jacquard_common::types::string::AtUri<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -92,7 +114,8 @@ pub struct PinnedRecordView<S: jacquard_common::BosStr = jacquard_common::Defaul
     >,
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for MessageView<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for MessageView<S> {
     fn nsid() -> &'static str {
         "place.stream.chat.defs"
     }
@@ -107,7 +130,9 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Mes
             #[allow(unused_comparisons)]
             if value.len() > 3usize {
                 return Err(jacquard_lexicon::validation::ConstraintError::MaxLength {
-                    path: jacquard_lexicon::validation::ValidationPath::from_field("badges"),
+                    path: jacquard_lexicon::validation::ValidationPath::from_field(
+                        "badges",
+                    ),
                     max: 3usize,
                     actual: value.len(),
                 });
@@ -117,7 +142,8 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Mes
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for PinnedRecordView<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for PinnedRecordView<S> {
     fn nsid() -> &'static str {
         "place.stream.chat.defs"
     }
@@ -134,9 +160,9 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Pin
 
 pub mod message_view_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -231,7 +257,7 @@ pub struct MessageViewBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
-        core::option::Option<crate::generated::app_bsky::actor::ProfileViewBasic<S>>,
+        core::option::Option<jacquard_common::types::value::Data<S>>,
         core::option::Option<Vec<crate::generated::place_stream::badge::BadgeView<S>>>,
         core::option::Option<crate::generated::place_stream::chat::profile::Profile<S>>,
         core::option::Option<jacquard_common::types::string::Cid<S>>,
@@ -246,7 +272,10 @@ pub struct MessageViewBuilder<
 
 impl MessageView<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> MessageViewBuilder<message_view_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> MessageViewBuilder<
+        message_view_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         MessageViewBuilder::new()
     }
 }
@@ -288,7 +317,7 @@ where
     /// Set the `author` field (required)
     pub fn author(
         mut self,
-        value: impl Into<crate::generated::app_bsky::actor::ProfileViewBasic<S>>,
+        value: impl Into<jacquard_common::types::value::Data<S>>,
     ) -> MessageViewBuilder<message_view_state::SetAuthor<St>, S> {
         self._fields.0 = ::core::option::Option::Some(value.into());
         MessageViewBuilder {
@@ -299,11 +328,16 @@ where
     }
 }
 
-impl<St: message_view_state::State, S: jacquard_common::BosStr> MessageViewBuilder<St, S> {
+impl<
+    St: message_view_state::State,
+    S: jacquard_common::BosStr,
+> MessageViewBuilder<St, S> {
     /// Set the `badges` field (optional)
     pub fn badges(
         mut self,
-        value: impl Into<Option<Vec<crate::generated::place_stream::badge::BadgeView<S>>>>,
+        value: impl Into<
+            Option<Vec<crate::generated::place_stream::badge::BadgeView<S>>>,
+        >,
     ) -> Self {
         self._fields.1 = value.into();
         self
@@ -318,11 +352,16 @@ impl<St: message_view_state::State, S: jacquard_common::BosStr> MessageViewBuild
     }
 }
 
-impl<St: message_view_state::State, S: jacquard_common::BosStr> MessageViewBuilder<St, S> {
+impl<
+    St: message_view_state::State,
+    S: jacquard_common::BosStr,
+> MessageViewBuilder<St, S> {
     /// Set the `chatProfile` field (optional)
     pub fn chat_profile(
         mut self,
-        value: impl Into<Option<crate::generated::place_stream::chat::profile::Profile<S>>>,
+        value: impl Into<
+            Option<crate::generated::place_stream::chat::profile::Profile<S>>,
+        >,
     ) -> Self {
         self._fields.2 = value.into();
         self
@@ -356,7 +395,10 @@ where
     }
 }
 
-impl<St: message_view_state::State, S: jacquard_common::BosStr> MessageViewBuilder<St, S> {
+impl<
+    St: message_view_state::State,
+    S: jacquard_common::BosStr,
+> MessageViewBuilder<St, S> {
     /// Set the `deleted` field (optional)
     pub fn deleted(mut self, value: impl Into<Option<bool>>) -> Self {
         self._fields.4 = value.into();
@@ -407,7 +449,10 @@ where
     }
 }
 
-impl<St: message_view_state::State, S: jacquard_common::BosStr> MessageViewBuilder<St, S> {
+impl<
+    St: message_view_state::State,
+    S: jacquard_common::BosStr,
+> MessageViewBuilder<St, S> {
     /// Set the `replyTo` field (optional)
     pub fn reply_to(mut self, value: impl Into<Option<MessageViewReplyTo<S>>>) -> Self {
         self._fields.7 = value.into();
@@ -486,7 +531,9 @@ where
     }
 }
 
-fn lexicon_doc_place_stream_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_place_stream_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc<
+    'static,
+> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("place.stream.chat.defs"),
@@ -615,92 +662,96 @@ fn lexicon_doc_place_stream_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
                 }),
             );
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("pinnedRecordView"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: Some(::jacquard_common::CowStr::new_static(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "pinnedRecordView",
+                ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
                             "View of a pinned chat record with hydrated message data.",
-                        )),
-                        required: Some(vec![
+                        ),
+                    ),
+                    required: Some(
+                        vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("uri"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("cid"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("record"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("indexedAt"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("cid"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Cid,
-                                        ),
-                                        ..Default::default()
-                                    },
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("indexedAt")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "cid",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Cid,
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("indexedAt"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
-                                        ),
-                                        ..Default::default()
-                                    },
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "indexedAt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("message"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "#messageView",
-                                        ),
-                                        ..Default::default()
-                                    },
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "message",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "#messageView",
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("pinnedBy"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "place.stream.chat.profile",
-                                        ),
-                                        ..Default::default()
-                                    },
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "pinnedBy",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "place.stream.chat.profile",
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("record"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(
-                                    ::jacquard_lexicon::lexicon::LexRef {
-                                        r#ref: ::jacquard_common::CowStr::new_static(
-                                            "place.stream.chat.pinnedRecord",
-                                        ),
-                                        ..Default::default()
-                                    },
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "record",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Ref(::jacquard_lexicon::lexicon::LexRef {
+                                r#ref: ::jacquard_common::CowStr::new_static(
+                                    "place.stream.chat.pinnedRecord",
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("uri"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
-                                        ),
-                                        ..Default::default()
-                                    },
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "uri",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::AtUri,
                                 ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map
         },
@@ -710,9 +761,9 @@ fn lexicon_doc_place_stream_chat_defs() -> jacquard_lexicon::lexicon::LexiconDoc
 
 pub mod pinned_record_view_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -793,7 +844,9 @@ pub struct PinnedRecordViewBuilder<
         core::option::Option<jacquard_common::types::string::Datetime>,
         core::option::Option<crate::generated::place_stream::chat::MessageView<S>>,
         core::option::Option<crate::generated::place_stream::chat::profile::Profile<S>>,
-        core::option::Option<crate::generated::place_stream::chat::pinned_record::PinnedRecord<S>>,
+        core::option::Option<
+            crate::generated::place_stream::chat::pinned_record::PinnedRecord<S>,
+        >,
         core::option::Option<jacquard_common::types::string::AtUri<S>>,
     ),
     _type: ::core::marker::PhantomData<fn() -> S>,
@@ -801,8 +854,10 @@ pub struct PinnedRecordViewBuilder<
 
 impl PinnedRecordView<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new(
-    ) -> PinnedRecordViewBuilder<pinned_record_view_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> PinnedRecordViewBuilder<
+        pinned_record_view_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         PinnedRecordViewBuilder::new()
     }
 }
@@ -814,7 +869,10 @@ impl<S: jacquard_common::BosStr> PinnedRecordView<S> {
     }
 }
 
-impl PinnedRecordViewBuilder<pinned_record_view_state::Empty, jacquard_common::DefaultStr> {
+impl PinnedRecordViewBuilder<
+    pinned_record_view_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         PinnedRecordViewBuilder {
@@ -825,7 +883,9 @@ impl PinnedRecordViewBuilder<pinned_record_view_state::Empty, jacquard_common::D
     }
 }
 
-impl<S: jacquard_common::BosStr> PinnedRecordViewBuilder<pinned_record_view_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> PinnedRecordViewBuilder<pinned_record_view_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         PinnedRecordViewBuilder {
@@ -874,9 +934,10 @@ where
     }
 }
 
-impl<St: pinned_record_view_state::State, S: jacquard_common::BosStr>
-    PinnedRecordViewBuilder<St, S>
-{
+impl<
+    St: pinned_record_view_state::State,
+    S: jacquard_common::BosStr,
+> PinnedRecordViewBuilder<St, S> {
     /// Set the `message` field (optional)
     pub fn message(
         mut self,
@@ -895,13 +956,16 @@ impl<St: pinned_record_view_state::State, S: jacquard_common::BosStr>
     }
 }
 
-impl<St: pinned_record_view_state::State, S: jacquard_common::BosStr>
-    PinnedRecordViewBuilder<St, S>
-{
+impl<
+    St: pinned_record_view_state::State,
+    S: jacquard_common::BosStr,
+> PinnedRecordViewBuilder<St, S> {
     /// Set the `pinnedBy` field (optional)
     pub fn pinned_by(
         mut self,
-        value: impl Into<Option<crate::generated::place_stream::chat::profile::Profile<S>>>,
+        value: impl Into<
+            Option<crate::generated::place_stream::chat::profile::Profile<S>>,
+        >,
     ) -> Self {
         self._fields.3 = value.into();
         self
@@ -924,7 +988,9 @@ where
     /// Set the `record` field (required)
     pub fn record(
         mut self,
-        value: impl Into<crate::generated::place_stream::chat::pinned_record::PinnedRecord<S>>,
+        value: impl Into<
+            crate::generated::place_stream::chat::pinned_record::PinnedRecord<S>,
+        >,
     ) -> PinnedRecordViewBuilder<pinned_record_view_state::SetRecord<St>, S> {
         self._fields.4 = ::core::option::Option::Some(value.into());
         PinnedRecordViewBuilder {

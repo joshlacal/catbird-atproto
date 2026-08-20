@@ -6,8 +6,15 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -22,6 +29,7 @@ pub struct GetSegments<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     pub user_did: jacquard_common::types::string::Did<S>,
 }
 
+
 #[derive(
     serde::Serialize,
     serde::Deserialize,
@@ -30,21 +38,19 @@ pub struct GetSegments<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct GetSegmentsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
-    pub segments:
-        core::option::Option<Vec<crate::generated::place_stream::segment::SegmentView<S>>>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    pub segments: core::option::Option<
+        Vec<crate::generated::place_stream::segment::SegmentView<S>>,
+    >,
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -87,9 +93,9 @@ fn _default_limit() -> core::option::Option<i64> {
 
 pub mod get_segments_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -133,7 +139,10 @@ pub struct GetSegmentsBuilder<
 
 impl GetSegments<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> GetSegmentsBuilder<get_segments_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> GetSegmentsBuilder<
+        get_segments_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         GetSegmentsBuilder::new()
     }
 }
@@ -167,7 +176,10 @@ impl<S: jacquard_common::BosStr> GetSegmentsBuilder<get_segments_state::Empty, S
     }
 }
 
-impl<St: get_segments_state::State, S: jacquard_common::BosStr> GetSegmentsBuilder<St, S> {
+impl<
+    St: get_segments_state::State,
+    S: jacquard_common::BosStr,
+> GetSegmentsBuilder<St, S> {
     /// Set the `before` field (optional)
     pub fn before(
         mut self,
@@ -177,13 +189,19 @@ impl<St: get_segments_state::State, S: jacquard_common::BosStr> GetSegmentsBuild
         self
     }
     /// Set the `before` field to an Option value (optional)
-    pub fn maybe_before(mut self, value: Option<jacquard_common::types::string::Datetime>) -> Self {
+    pub fn maybe_before(
+        mut self,
+        value: Option<jacquard_common::types::string::Datetime>,
+    ) -> Self {
         self._fields.0 = value;
         self
     }
 }
 
-impl<St: get_segments_state::State, S: jacquard_common::BosStr> GetSegmentsBuilder<St, S> {
+impl<
+    St: get_segments_state::State,
+    S: jacquard_common::BosStr,
+> GetSegmentsBuilder<St, S> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.1 = value.into();

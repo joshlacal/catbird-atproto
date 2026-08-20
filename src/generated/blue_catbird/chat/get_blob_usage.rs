@@ -6,25 +6,41 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
-#[serde(rename_all = "camelCase")]
-pub struct GetBlobUsage;
+
+#[serde(
+    rename_all = "camelCase",
+    bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
+)]
+pub struct GetBlobUsage<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub actor_device_id: S,
+}
+
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct GetBlobUsageOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub usage: crate::generated::blue_catbird::chat::BlobUsageView<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -32,6 +48,7 @@ pub struct GetBlobUsageOutput<S: jacquard_common::BosStr = jacquard_common::Defa
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -41,8 +58,9 @@ pub struct GetBlobUsageOutput<S: jacquard_common::BosStr = jacquard_common::Defa
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic,
+    miette::Diagnostic
 )]
+
 #[serde(tag = "error", content = "message")]
 pub enum GetBlobUsageError {
     #[serde(rename = "CutoverRequired")]
@@ -51,8 +69,22 @@ pub enum GetBlobUsageError {
     DeviceNotRegistered(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "DeviceRevoked")]
     DeviceRevoked(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
-    #[serde(rename = "InvalidDPoP")]
-    InvalidDPoP(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    #[serde(rename = "AccountSessionExpired")]
+    AccountSessionExpired(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "NotAuthorized")]
+    NotAuthorized(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    #[serde(rename = "DeviceBindingMismatch")]
+    DeviceBindingMismatch(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "ProtocolUpgradeRequired")]
+    ProtocolUpgradeRequired(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "RateLimited")]
+    RateLimited(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
@@ -85,8 +117,36 @@ impl core::fmt::Display for GetBlobUsageError {
                 }
                 Ok(())
             }
-            Self::InvalidDPoP(msg) => {
-                write!(f, "InvalidDPoP")?;
+            Self::AccountSessionExpired(msg) => {
+                write!(f, "AccountSessionExpired")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::NotAuthorized(msg) => {
+                write!(f, "NotAuthorized")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::DeviceBindingMismatch(msg) => {
+                write!(f, "DeviceBindingMismatch")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::ProtocolUpgradeRequired(msg) => {
+                write!(f, "ProtocolUpgradeRequired")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::RateLimited(msg) => {
+                write!(f, "RateLimited")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }
@@ -114,7 +174,7 @@ impl jacquard_common::xrpc::XrpcResp for GetBlobUsageResponse {
     type Err = GetBlobUsageError;
 }
 
-impl jacquard_common::xrpc::XrpcRequest for GetBlobUsage {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetBlobUsage<S> {
     const NSID: &'static str = "blue.catbird.chat.getBlobUsage";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = GetBlobUsageResponse;
@@ -122,11 +182,124 @@ impl jacquard_common::xrpc::XrpcRequest for GetBlobUsage {
 
 /** Endpoint marker for the `blue.catbird.chat.getBlobUsage` query.
 
-Path: `/xrpc/blue.catbird.chat.getBlobUsage`. The request payload type is `GetBlobUsage`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
+Path: `/xrpc/blue.catbird.chat.getBlobUsage`. The request payload type is `GetBlobUsage<S>`; send that request with `jacquard::Client` or use this marker through lower-level `XrpcEndpoint` APIs.*/
 pub struct GetBlobUsageRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for GetBlobUsageRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.chat.getBlobUsage";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
-    type Request<S: jacquard_common::BosStr> = GetBlobUsage;
+    type Request<S: jacquard_common::BosStr> = GetBlobUsage<S>;
     type Response = GetBlobUsageResponse;
+}
+
+pub mod get_blob_usage_state {
+
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
+    #[allow(unused)]
+    use ::core::marker::PhantomData;
+    mod sealed {
+        pub trait Sealed {}
+    }
+    /// State trait tracking which required fields have been set
+    pub trait State: sealed::Sealed {
+        type ActorDeviceId;
+    }
+    /// Empty state - all required fields are unset
+    pub struct Empty(());
+    impl sealed::Sealed for Empty {}
+    impl State for Empty {
+        type ActorDeviceId = Unset;
+    }
+    ///State transition - sets the `actor_device_id` field to Set
+    pub struct SetActorDeviceId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetActorDeviceId<St> {}
+    impl<St: State> State for SetActorDeviceId<St> {
+        type ActorDeviceId = Set<members::actor_device_id>;
+    }
+    /// Marker types for field names
+    #[allow(non_camel_case_types)]
+    pub mod members {
+        ///Marker type for the `actor_device_id` field
+        pub struct actor_device_id(());
+    }
+}
+
+/// Builder for constructing an instance of this type.
+pub struct GetBlobUsageBuilder<
+    St: get_blob_usage_state::State,
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    _state: ::core::marker::PhantomData<fn() -> St>,
+    _fields: (core::option::Option<S>,),
+    _type: ::core::marker::PhantomData<fn() -> S>,
+}
+
+impl GetBlobUsage<jacquard_common::DefaultStr> {
+    /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
+    pub fn new() -> GetBlobUsageBuilder<
+        get_blob_usage_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
+        GetBlobUsageBuilder::new()
+    }
+}
+
+impl<S: jacquard_common::BosStr> GetBlobUsage<S> {
+    /// Create a new builder for this type
+    pub fn builder() -> GetBlobUsageBuilder<get_blob_usage_state::Empty, S> {
+        GetBlobUsageBuilder::builder()
+    }
+}
+
+impl GetBlobUsageBuilder<get_blob_usage_state::Empty, jacquard_common::DefaultStr> {
+    /// Create a new builder with all fields unset, using the default string type, if needed
+    pub fn new() -> Self {
+        GetBlobUsageBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<S: jacquard_common::BosStr> GetBlobUsageBuilder<get_blob_usage_state::Empty, S> {
+    /// Create a new builder with all fields unset
+    pub fn builder() -> Self {
+        GetBlobUsageBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: (None,),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> GetBlobUsageBuilder<St, S>
+where
+    St: get_blob_usage_state::State,
+    St::ActorDeviceId: get_blob_usage_state::IsUnset,
+{
+    /// Set the `actorDeviceId` field (required)
+    pub fn actor_device_id(
+        mut self,
+        value: impl Into<S>,
+    ) -> GetBlobUsageBuilder<get_blob_usage_state::SetActorDeviceId<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        GetBlobUsageBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> GetBlobUsageBuilder<St, S>
+where
+    St: get_blob_usage_state::State,
+    St::ActorDeviceId: get_blob_usage_state::IsSet,
+{
+    /// Build the final struct.
+    pub fn build(self) -> GetBlobUsage<S> {
+        GetBlobUsage {
+            actor_device_id: self._fields.0.unwrap(),
+        }
+    }
 }

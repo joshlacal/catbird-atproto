@@ -6,8 +6,15 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -21,12 +28,20 @@ pub struct GetBlob<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
 /// Raw blob data with appropriate content-type
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(rename_all = "camelCase")]
 pub struct GetBlobOutput {
     pub body: jacquard_common::deps::bytes::Bytes,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -36,8 +51,9 @@ pub struct GetBlobOutput {
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic,
+    miette::Diagnostic
 )]
+
 #[serde(tag = "error", content = "message")]
 pub enum GetBlobError {
     /// The requested branding asset does not exist
@@ -121,9 +137,9 @@ impl jacquard_common::xrpc::XrpcEndpoint for GetBlobRequest {
 
 pub mod get_blob_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -225,7 +241,10 @@ where
     St::Key: get_blob_state::IsUnset,
 {
     /// Set the `key` field (required)
-    pub fn key(mut self, value: impl Into<S>) -> GetBlobBuilder<get_blob_state::SetKey<St>, S> {
+    pub fn key(
+        mut self,
+        value: impl Into<S>,
+    ) -> GetBlobBuilder<get_blob_state::SetKey<St>, S> {
         self._fields.1 = ::core::option::Option::Some(value.into());
         GetBlobBuilder {
             _state: ::core::marker::PhantomData,

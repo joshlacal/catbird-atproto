@@ -6,8 +6,15 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -20,11 +27,7 @@ pub struct CreatePin<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub message_uri: jacquard_common::types::string::AtUri<S>,
     ///The DID of the streamer.
     pub streamer: jacquard_common::types::string::Did<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -33,9 +36,17 @@ pub struct CreatePin<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -45,11 +56,7 @@ pub struct CreatePinOutput<S: jacquard_common::BosStr = jacquard_common::Default
     pub cid: jacquard_common::types::string::Cid<S>,
     ///The AT-URI of the created pinned record.
     pub uri: jacquard_common::types::string::AtUri<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -57,6 +64,7 @@ pub struct CreatePinOutput<S: jacquard_common::BosStr = jacquard_common::Default
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -66,8 +74,9 @@ pub struct CreatePinOutput<S: jacquard_common::BosStr = jacquard_common::Default
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic,
+    miette::Diagnostic
 )]
+
 #[serde(tag = "error", content = "message")]
 pub enum CreatePinError {
     /// The request lacks valid authentication credentials.
@@ -135,8 +144,9 @@ impl jacquard_common::xrpc::XrpcResp for CreatePinResponse {
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for CreatePin<S> {
     const NSID: &'static str = "place.stream.moderation.createPin";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = CreatePinResponse;
 }
 
@@ -146,17 +156,18 @@ Path: `/xrpc/place.stream.moderation.createPin`. The request payload type is `Cr
 pub struct CreatePinRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for CreatePinRequest {
     const PATH: &'static str = "/xrpc/place.stream.moderation.createPin";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<S: jacquard_common::BosStr> = CreatePin<S>;
     type Response = CreatePinResponse;
 }
 
 pub mod create_pin_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -212,7 +223,10 @@ pub struct CreatePinBuilder<
 
 impl CreatePin<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> CreatePinBuilder<create_pin_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> CreatePinBuilder<
+        create_pin_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         CreatePinBuilder::new()
     }
 }

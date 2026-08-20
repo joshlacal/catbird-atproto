@@ -6,8 +6,15 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -18,9 +25,17 @@ pub struct GetVideoPlaylist<S: jacquard_common::BosStr = jacquard_common::Defaul
     pub uri: jacquard_common::types::string::AtUri<S>,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(rename_all = "camelCase")]
 pub struct GetVideoPlaylistOutput {
     pub body: jacquard_common::deps::bytes::Bytes,
@@ -56,7 +71,8 @@ impl jacquard_common::xrpc::XrpcResp for GetVideoPlaylistResponse {
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetVideoPlaylist<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
+for GetVideoPlaylist<S> {
     const NSID: &'static str = "place.stream.playback.getVideoPlaylist";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = GetVideoPlaylistResponse;
@@ -75,9 +91,9 @@ impl jacquard_common::xrpc::XrpcEndpoint for GetVideoPlaylistRequest {
 
 pub mod get_video_playlist_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -120,8 +136,10 @@ pub struct GetVideoPlaylistBuilder<
 
 impl GetVideoPlaylist<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new(
-    ) -> GetVideoPlaylistBuilder<get_video_playlist_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> GetVideoPlaylistBuilder<
+        get_video_playlist_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         GetVideoPlaylistBuilder::new()
     }
 }
@@ -133,7 +151,10 @@ impl<S: jacquard_common::BosStr> GetVideoPlaylist<S> {
     }
 }
 
-impl GetVideoPlaylistBuilder<get_video_playlist_state::Empty, jacquard_common::DefaultStr> {
+impl GetVideoPlaylistBuilder<
+    get_video_playlist_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetVideoPlaylistBuilder {
@@ -144,7 +165,9 @@ impl GetVideoPlaylistBuilder<get_video_playlist_state::Empty, jacquard_common::D
     }
 }
 
-impl<S: jacquard_common::BosStr> GetVideoPlaylistBuilder<get_video_playlist_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> GetVideoPlaylistBuilder<get_video_playlist_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         GetVideoPlaylistBuilder {
@@ -155,9 +178,10 @@ impl<S: jacquard_common::BosStr> GetVideoPlaylistBuilder<get_video_playlist_stat
     }
 }
 
-impl<St: get_video_playlist_state::State, S: jacquard_common::BosStr>
-    GetVideoPlaylistBuilder<St, S>
-{
+impl<
+    St: get_video_playlist_state::State,
+    S: jacquard_common::BosStr,
+> GetVideoPlaylistBuilder<St, S> {
     /// Set the `track` field (optional)
     pub fn track(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.0 = value.into();

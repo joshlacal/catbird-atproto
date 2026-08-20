@@ -6,8 +6,15 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -17,11 +24,7 @@ pub struct CreateGate<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
     pub message_uri: jacquard_common::types::string::AtUri<S>,
     ///The DID of the streamer.
     pub streamer: jacquard_common::types::string::Did<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -30,9 +33,17 @@ pub struct CreateGate<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -42,11 +53,7 @@ pub struct CreateGateOutput<S: jacquard_common::BosStr = jacquard_common::Defaul
     pub cid: jacquard_common::types::string::Cid<S>,
     ///The AT-URI of the created gate record.
     pub uri: jacquard_common::types::string::AtUri<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -54,6 +61,7 @@ pub struct CreateGateOutput<S: jacquard_common::BosStr = jacquard_common::Defaul
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -63,8 +71,9 @@ pub struct CreateGateOutput<S: jacquard_common::BosStr = jacquard_common::Defaul
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic,
+    miette::Diagnostic
 )]
+
 #[serde(tag = "error", content = "message")]
 pub enum CreateGateError {
     /// The request lacks valid authentication credentials.
@@ -132,8 +141,9 @@ impl jacquard_common::xrpc::XrpcResp for CreateGateResponse {
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for CreateGate<S> {
     const NSID: &'static str = "place.stream.moderation.createGate";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = CreateGateResponse;
 }
 
@@ -143,17 +153,18 @@ Path: `/xrpc/place.stream.moderation.createGate`. The request payload type is `C
 pub struct CreateGateRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for CreateGateRequest {
     const PATH: &'static str = "/xrpc/place.stream.moderation.createGate";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<S: jacquard_common::BosStr> = CreateGate<S>;
     type Response = CreateGateResponse;
 }
 
 pub mod create_gate_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -208,7 +219,10 @@ pub struct CreateGateBuilder<
 
 impl CreateGate<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> CreateGateBuilder<create_gate_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> CreateGateBuilder<
+        create_gate_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         CreateGateBuilder::new()
     }
 }

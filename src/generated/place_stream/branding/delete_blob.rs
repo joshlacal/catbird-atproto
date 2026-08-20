@@ -13,8 +13,9 @@
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -25,11 +26,7 @@ pub struct DeleteBlob<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
     pub broadcaster: core::option::Option<jacquard_common::types::string::Did<S>>,
     ///Branding asset key (mainLogo, favicon, siteTitle, etc.)
     pub key: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -38,20 +35,24 @@ pub struct DeleteBlob<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct DeleteBlobOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub success: bool,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -59,6 +60,7 @@ pub struct DeleteBlobOutput<S: jacquard_common::BosStr = jacquard_common::Defaul
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -68,8 +70,9 @@ pub struct DeleteBlobOutput<S: jacquard_common::BosStr = jacquard_common::Defaul
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic,
+    miette::Diagnostic
 )]
+
 #[serde(tag = "error", content = "message")]
 pub enum DeleteBlobError {
     /// The authenticated DID is not authorized to modify branding
@@ -127,8 +130,9 @@ impl jacquard_common::xrpc::XrpcResp for DeleteBlobResponse {
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for DeleteBlob<S> {
     const NSID: &'static str = "place.stream.branding.deleteBlob";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = DeleteBlobResponse;
 }
 
@@ -138,8 +142,9 @@ Path: `/xrpc/place.stream.branding.deleteBlob`. The request payload type is `Del
 pub struct DeleteBlobRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for DeleteBlobRequest {
     const PATH: &'static str = "/xrpc/place.stream.branding.deleteBlob";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<S: jacquard_common::BosStr> = DeleteBlob<S>;
     type Response = DeleteBlobResponse;
 }

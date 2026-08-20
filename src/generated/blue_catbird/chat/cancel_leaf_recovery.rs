@@ -6,19 +6,24 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct CancelLeafRecovery<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    pub signed_request: crate::generated::blue_catbird::chat::SignedLeafRecoveryCancellation<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    pub signed_request: crate::generated::blue_catbird::chat::SignedLeafRecoveryCancellation<
+        S,
+    >,
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -27,20 +32,26 @@ pub struct CancelLeafRecovery<S: jacquard_common::BosStr = jacquard_common::Defa
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct CancelLeafRecoveryOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct CancelLeafRecoveryOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     pub recovery: crate::generated::blue_catbird::chat::LeafRecoveryView<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -48,6 +59,7 @@ pub struct CancelLeafRecoveryOutput<S: jacquard_common::BosStr = jacquard_common
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -57,8 +69,9 @@ pub struct CancelLeafRecoveryOutput<S: jacquard_common::BosStr = jacquard_common
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic,
+    miette::Diagnostic
 )]
+
 #[serde(tag = "error", content = "message")]
 pub enum CancelLeafRecoveryError {
     #[serde(rename = "CancellationConflict")]
@@ -71,8 +84,6 @@ pub enum CancelLeafRecoveryError {
     DeviceRevoked(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "IdempotencyConflict")]
     IdempotencyConflict(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
-    #[serde(rename = "InvalidDPoP")]
-    InvalidDPoP(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "InvalidRequest")]
     InvalidRequest(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "InvalidSignature")]
@@ -81,6 +92,20 @@ pub enum CancelLeafRecoveryError {
     LeafRecoveryNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "NotAuthorized")]
     NotAuthorized(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    #[serde(rename = "AccountSessionExpired")]
+    AccountSessionExpired(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "DeviceBindingMismatch")]
+    DeviceBindingMismatch(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "ProtocolUpgradeRequired")]
+    ProtocolUpgradeRequired(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "RateLimited")]
+    RateLimited(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
@@ -127,13 +152,6 @@ impl core::fmt::Display for CancelLeafRecoveryError {
                 }
                 Ok(())
             }
-            Self::InvalidDPoP(msg) => {
-                write!(f, "InvalidDPoP")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
             Self::InvalidRequest(msg) => {
                 write!(f, "InvalidRequest")?;
                 if let Some(msg) = msg {
@@ -162,6 +180,34 @@ impl core::fmt::Display for CancelLeafRecoveryError {
                 }
                 Ok(())
             }
+            Self::AccountSessionExpired(msg) => {
+                write!(f, "AccountSessionExpired")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::DeviceBindingMismatch(msg) => {
+                write!(f, "DeviceBindingMismatch")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::ProtocolUpgradeRequired(msg) => {
+                write!(f, "ProtocolUpgradeRequired")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::RateLimited(msg) => {
+                write!(f, "RateLimited")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
             Self::Other { error, message } => {
                 write!(f, "{}", error)?;
                 if let Some(msg) = message {
@@ -184,10 +230,12 @@ impl jacquard_common::xrpc::XrpcResp for CancelLeafRecoveryResponse {
     type Err = CancelLeafRecoveryError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for CancelLeafRecovery<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
+for CancelLeafRecovery<S> {
     const NSID: &'static str = "blue.catbird.chat.cancelLeafRecovery";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = CancelLeafRecoveryResponse;
 }
 
@@ -197,17 +245,18 @@ Path: `/xrpc/blue.catbird.chat.cancelLeafRecovery`. The request payload type is 
 pub struct CancelLeafRecoveryRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for CancelLeafRecoveryRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.chat.cancelLeafRecovery";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<S: jacquard_common::BosStr> = CancelLeafRecovery<S>;
     type Response = CancelLeafRecoveryResponse;
 }
 
 pub mod cancel_leaf_recovery_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -251,9 +300,10 @@ pub struct CancelLeafRecoveryBuilder<
 
 impl CancelLeafRecovery<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new(
-    ) -> CancelLeafRecoveryBuilder<cancel_leaf_recovery_state::Empty, jacquard_common::DefaultStr>
-    {
+    pub fn new() -> CancelLeafRecoveryBuilder<
+        cancel_leaf_recovery_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         CancelLeafRecoveryBuilder::new()
     }
 }
@@ -265,7 +315,10 @@ impl<S: jacquard_common::BosStr> CancelLeafRecovery<S> {
     }
 }
 
-impl CancelLeafRecoveryBuilder<cancel_leaf_recovery_state::Empty, jacquard_common::DefaultStr> {
+impl CancelLeafRecoveryBuilder<
+    cancel_leaf_recovery_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         CancelLeafRecoveryBuilder {
@@ -276,7 +329,9 @@ impl CancelLeafRecoveryBuilder<cancel_leaf_recovery_state::Empty, jacquard_commo
     }
 }
 
-impl<S: jacquard_common::BosStr> CancelLeafRecoveryBuilder<cancel_leaf_recovery_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> CancelLeafRecoveryBuilder<cancel_leaf_recovery_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         CancelLeafRecoveryBuilder {
@@ -295,7 +350,9 @@ where
     /// Set the `signedRequest` field (required)
     pub fn signed_request(
         mut self,
-        value: impl Into<crate::generated::blue_catbird::chat::SignedLeafRecoveryCancellation<S>>,
+        value: impl Into<
+            crate::generated::blue_catbird::chat::SignedLeafRecoveryCancellation<S>,
+        >,
     ) -> CancelLeafRecoveryBuilder<cancel_leaf_recovery_state::SetSignedRequest<St>, S> {
         self._fields.0 = ::core::option::Option::Some(value.into());
         CancelLeafRecoveryBuilder {

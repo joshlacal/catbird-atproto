@@ -8,8 +8,15 @@
 /// Record created by a Streamplace broadcaster to indicate that they will be replicating a livestream. NYI
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     rename = "place.stream.broadcast.syndication",
@@ -23,11 +30,7 @@ pub struct Syndication<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     pub created_at: jacquard_common::types::string::Datetime,
     ///DID of the streamer whose livestream is being replicated
     pub streamer: jacquard_common::types::string::Did<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -39,10 +42,19 @@ pub struct Syndication<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
 /// Typed wrapper for GetRecord response with this collection's record type.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(rename_all = "camelCase")]
-pub struct SyndicationGetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct SyndicationGetRecordOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
     pub uri: jacquard_common::types::string::AtUri<S>,
@@ -79,7 +91,8 @@ impl<S: jacquard_common::BosStr> From<SyndicationGetRecordOutput<S>> for Syndica
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection for Syndication<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection
+for Syndication<S> {
     const NSID: &'static str = "place.stream.broadcast.syndication";
     type Record = SyndicationRecord;
 }
@@ -89,7 +102,8 @@ impl jacquard_common::types::collection::Collection for SyndicationRecord {
     type Record = SyndicationRecord;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Syndication<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for Syndication<S> {
     fn nsid() -> &'static str {
         "place.stream.broadcast.syndication"
     }
@@ -106,9 +120,9 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Syn
 
 pub mod syndication_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -178,7 +192,10 @@ pub struct SyndicationBuilder<
 
 impl Syndication<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> SyndicationBuilder<syndication_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> SyndicationBuilder<
+        syndication_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         SyndicationBuilder::new()
     }
 }
@@ -302,8 +319,9 @@ where
     }
 }
 
-fn lexicon_doc_place_stream_broadcast_syndication() -> jacquard_lexicon::lexicon::LexiconDoc<'static>
-{
+fn lexicon_doc_place_stream_broadcast_syndication() -> jacquard_lexicon::lexicon::LexiconDoc<
+    'static,
+> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("place.stream.broadcast.syndication"),

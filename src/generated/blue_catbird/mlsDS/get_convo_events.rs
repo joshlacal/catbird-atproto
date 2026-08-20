@@ -8,8 +8,15 @@
 /// A single conversation event (message) with metadata.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -30,11 +37,7 @@ pub struct ConvoEventEntry<S: jacquard_common::BosStr = jacquard_common::Default
     pub padded_size: i64,
     ///Sequence number
     pub seq: i64,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -43,9 +46,17 @@ pub struct ConvoEventEntry<S: jacquard_common::BosStr = jacquard_common::Default
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -60,27 +71,35 @@ pub struct GetConvoEvents<S: jacquard_common::BosStr = jacquard_common::DefaultS
     pub limit: core::option::Option<i64>,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct GetConvoEventsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct GetConvoEventsOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     ///Conversation ID
     pub convo_id: S,
     ///Ordered list of conversation events
-    pub events: Vec<crate::generated::blue_catbird::mlsDS::get_convo_events::ConvoEventEntry<S>>,
+    pub events: Vec<
+        crate::generated::blue_catbird::mlsDS::get_convo_events::ConvoEventEntry<S>,
+    >,
     ///Lower bound sequence number (exclusive)
     pub from_seq_exclusive: i64,
     ///Upper bound sequence number (inclusive)
     pub to_seq_inclusive: i64,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -88,6 +107,7 @@ pub struct GetConvoEventsOutput<S: jacquard_common::BosStr = jacquard_common::De
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -97,8 +117,9 @@ pub struct GetConvoEventsOutput<S: jacquard_common::BosStr = jacquard_common::De
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic,
+    miette::Diagnostic
 )]
+
 #[serde(tag = "error", content = "message")]
 pub enum GetConvoEventsError {
     #[serde(rename = "ConversationNotFound")]
@@ -141,7 +162,8 @@ impl core::fmt::Display for GetConvoEventsError {
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for ConvoEventEntry<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for ConvoEventEntry<S> {
     fn nsid() -> &'static str {
         "blue.catbird.mlsDS.getConvoEvents"
     }
@@ -167,7 +189,8 @@ impl jacquard_common::xrpc::XrpcResp for GetConvoEventsResponse {
     type Err = GetConvoEventsError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetConvoEvents<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
+for GetConvoEvents<S> {
     const NSID: &'static str = "blue.catbird.mlsDS.getConvoEvents";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = GetConvoEventsResponse;
@@ -186,9 +209,9 @@ impl jacquard_common::xrpc::XrpcEndpoint for GetConvoEventsRequest {
 
 pub mod convo_event_entry_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -338,8 +361,10 @@ pub struct ConvoEventEntryBuilder<
 
 impl ConvoEventEntry<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new(
-    ) -> ConvoEventEntryBuilder<convo_event_entry_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> ConvoEventEntryBuilder<
+        convo_event_entry_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         ConvoEventEntryBuilder::new()
     }
 }
@@ -351,7 +376,10 @@ impl<S: jacquard_common::BosStr> ConvoEventEntry<S> {
     }
 }
 
-impl ConvoEventEntryBuilder<convo_event_entry_state::Empty, jacquard_common::DefaultStr> {
+impl ConvoEventEntryBuilder<
+    convo_event_entry_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         ConvoEventEntryBuilder {
@@ -362,7 +390,9 @@ impl ConvoEventEntryBuilder<convo_event_entry_state::Empty, jacquard_common::Def
     }
 }
 
-impl<S: jacquard_common::BosStr> ConvoEventEntryBuilder<convo_event_entry_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> ConvoEventEntryBuilder<convo_event_entry_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         ConvoEventEntryBuilder {
@@ -551,111 +581,112 @@ where
     }
 }
 
-fn lexicon_doc_blue_catbird_mlsDS_getConvoEvents() -> jacquard_lexicon::lexicon::LexiconDoc<'static>
-{
+fn lexicon_doc_blue_catbird_mlsDS_getConvoEvents() -> jacquard_lexicon::lexicon::LexiconDoc<
+    'static,
+> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("blue.catbird.mlsDS.getConvoEvents"),
         defs: {
             let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("convoEventEntry"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        description: Some(::jacquard_common::CowStr::new_static(
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "convoEventEntry",
+                ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
                             "A single conversation event (message) with metadata.",
-                        )),
-                        required: Some(vec![
+                        ),
+                    ),
+                    required: Some(
+                        vec![
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("seq"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("epoch"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("msgId"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("messageType"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("ciphertext"),
                             ::jacquard_common::deps::smol_str::SmolStr::new_static("paddedSize"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "ciphertext",
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "ciphertext",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(::jacquard_lexicon::lexicon::LexBytes {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "createdAt",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static("Creation timestamp"),
                                 ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Bytes(
-                                    ::jacquard_lexicon::lexicon::LexBytes {
-                                        ..Default::default()
-                                    },
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("createdAt"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: Some(::jacquard_common::CowStr::new_static(
-                                            "Creation timestamp",
-                                        )),
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Datetime,
-                                        ),
-                                        ..Default::default()
-                                    },
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "epoch",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "messageType",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Message type (e.g., 'app')",
+                                    ),
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("epoch"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                    ::jacquard_lexicon::lexicon::LexInteger {
-                                        ..Default::default()
-                                    },
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "msgId",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static("Message ID"),
                                 ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "messageType",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: Some(::jacquard_common::CowStr::new_static(
-                                            "Message type (e.g., 'app')",
-                                        )),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("msgId"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: Some(::jacquard_common::CowStr::new_static(
-                                            "Message ID",
-                                        )),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                    "paddedSize",
-                                ),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                    ::jacquard_lexicon::lexicon::LexInteger {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("seq"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(
-                                    ::jacquard_lexicon::lexicon::LexInteger {
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "paddedSize",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "seq",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::Integer(::jacquard_lexicon::lexicon::LexInteger {
+                                ..Default::default()
+                            }),
+                        );
+                        map
                     },
-                ),
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
@@ -717,9 +748,9 @@ fn _default_limit() -> core::option::Option<i64> {
 
 pub mod get_convo_events_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -763,8 +794,10 @@ pub struct GetConvoEventsBuilder<
 
 impl GetConvoEvents<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> GetConvoEventsBuilder<get_convo_events_state::Empty, jacquard_common::DefaultStr>
-    {
+    pub fn new() -> GetConvoEventsBuilder<
+        get_convo_events_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         GetConvoEventsBuilder::new()
     }
 }
@@ -787,7 +820,9 @@ impl GetConvoEventsBuilder<get_convo_events_state::Empty, jacquard_common::Defau
     }
 }
 
-impl<S: jacquard_common::BosStr> GetConvoEventsBuilder<get_convo_events_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> GetConvoEventsBuilder<get_convo_events_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         GetConvoEventsBuilder {
@@ -798,7 +833,10 @@ impl<S: jacquard_common::BosStr> GetConvoEventsBuilder<get_convo_events_state::E
     }
 }
 
-impl<St: get_convo_events_state::State, S: jacquard_common::BosStr> GetConvoEventsBuilder<St, S> {
+impl<
+    St: get_convo_events_state::State,
+    S: jacquard_common::BosStr,
+> GetConvoEventsBuilder<St, S> {
     /// Set the `afterSeq` field (optional)
     pub fn after_seq(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.0 = value.into();
@@ -830,7 +868,10 @@ where
     }
 }
 
-impl<St: get_convo_events_state::State, S: jacquard_common::BosStr> GetConvoEventsBuilder<St, S> {
+impl<
+    St: get_convo_events_state::State,
+    S: jacquard_common::BosStr,
+> GetConvoEventsBuilder<St, S> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
         self._fields.2 = value.into();

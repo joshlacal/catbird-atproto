@@ -6,8 +6,15 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -16,15 +23,25 @@ pub struct SubscribeSegments<S: jacquard_common::BosStr = jacquard_common::Defau
     pub streamer: S,
 }
 
+
 #[jacquard_derive::open_union]
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     tag = "$type",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub enum SubscribeSegmentsMessage<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub enum SubscribeSegmentsMessage<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     #[serde(rename = "#segment")]
     Segment(Box<crate::generated::place_stream::live::subscribe_segments::Segment>),
 }
@@ -37,18 +54,25 @@ impl<S: jacquard_common::BosStr> SubscribeSegmentsMessage<S> {
     where
         S: serde::Deserialize<'de>,
     {
-        let (header, body) = jacquard_common::xrpc::subscription::parse_event_header(bytes)?;
+        let (header, body) = jacquard_common::xrpc::subscription::parse_event_header(
+            bytes,
+        )?;
         match header.t.as_str() {
             "#segment" => {
-                let variant = jacquard_common::deps::codegen::serde_ipld_dagcbor::from_slice(body)?;
+                let variant = jacquard_common::deps::codegen::serde_ipld_dagcbor::from_slice(
+                    body,
+                )?;
                 Ok(Self::Segment(Box::new(variant)))
             }
-            unknown => Err(jacquard_common::error::DecodeError::UnknownEventType(
-                unknown.into(),
-            )),
+            unknown => {
+                Err(
+                    jacquard_common::error::DecodeError::UnknownEventType(unknown.into()),
+                )
+            }
         }
     }
 }
+
 
 #[derive(
     serde::Serialize,
@@ -58,8 +82,9 @@ impl<S: jacquard_common::BosStr> SubscribeSegmentsMessage<S> {
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic,
+    miette::Diagnostic
 )]
+
 #[serde(tag = "error", content = "message")]
 pub enum SubscribeSegmentsError {
     /// Catch-all for unknown error codes.
@@ -90,33 +115,31 @@ pub type Segment = jacquard_common::deps::bytes::Bytes;
 pub struct SubscribeSegmentsStream;
 impl jacquard_common::xrpc::SubscriptionResp for SubscribeSegmentsStream {
     const NSID: &'static str = "place.stream.live.subscribeSegments";
-    const ENCODING: jacquard_common::xrpc::MessageEncoding =
-        jacquard_common::xrpc::MessageEncoding::Json;
+    const ENCODING: jacquard_common::xrpc::MessageEncoding = jacquard_common::xrpc::MessageEncoding::Json;
     type Message<S: jacquard_common::BosStr> = SubscribeSegmentsMessage<S>;
     type Error = SubscribeSegmentsError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcSubscription for SubscribeSegments<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcSubscription
+for SubscribeSegments<S> {
     const NSID: &'static str = "place.stream.live.subscribeSegments";
-    const ENCODING: jacquard_common::xrpc::MessageEncoding =
-        jacquard_common::xrpc::MessageEncoding::Json;
+    const ENCODING: jacquard_common::xrpc::MessageEncoding = jacquard_common::xrpc::MessageEncoding::Json;
     type Stream = SubscribeSegmentsStream;
 }
 
 pub struct SubscribeSegmentsEndpoint;
 impl jacquard_common::xrpc::SubscriptionEndpoint for SubscribeSegmentsEndpoint {
     const PATH: &'static str = "/xrpc/place.stream.live.subscribeSegments";
-    const ENCODING: jacquard_common::xrpc::MessageEncoding =
-        jacquard_common::xrpc::MessageEncoding::Json;
+    const ENCODING: jacquard_common::xrpc::MessageEncoding = jacquard_common::xrpc::MessageEncoding::Json;
     type Params<S: jacquard_common::BosStr> = SubscribeSegments<S>;
     type Stream = SubscribeSegmentsStream;
 }
 
 pub mod subscribe_segments_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -156,9 +179,10 @@ pub struct SubscribeSegmentsBuilder<
 
 impl SubscribeSegments<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new(
-    ) -> SubscribeSegmentsBuilder<subscribe_segments_state::Empty, jacquard_common::DefaultStr>
-    {
+    pub fn new() -> SubscribeSegmentsBuilder<
+        subscribe_segments_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         SubscribeSegmentsBuilder::new()
     }
 }
@@ -170,7 +194,10 @@ impl<S: jacquard_common::BosStr> SubscribeSegments<S> {
     }
 }
 
-impl SubscribeSegmentsBuilder<subscribe_segments_state::Empty, jacquard_common::DefaultStr> {
+impl SubscribeSegmentsBuilder<
+    subscribe_segments_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         SubscribeSegmentsBuilder {
@@ -181,7 +208,9 @@ impl SubscribeSegmentsBuilder<subscribe_segments_state::Empty, jacquard_common::
     }
 }
 
-impl<S: jacquard_common::BosStr> SubscribeSegmentsBuilder<subscribe_segments_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> SubscribeSegmentsBuilder<subscribe_segments_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         SubscribeSegmentsBuilder {

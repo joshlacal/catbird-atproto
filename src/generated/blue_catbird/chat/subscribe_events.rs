@@ -6,8 +6,15 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -17,8 +24,9 @@ pub struct SubscribeEvents<S: jacquard_common::BosStr = jacquard_common::Default
     pub ticket: S,
 }
 
-pub type SubscribeEventsMessage<S = jacquard_common::DefaultStr> =
-    crate::generated::blue_catbird::chat::SubscriptionMessage<S>;
+pub type SubscribeEventsMessage<S = jacquard_common::DefaultStr> = crate::generated::blue_catbird::chat::SubscriptionMessage<
+    S,
+>;
 
 #[derive(
     serde::Serialize,
@@ -28,8 +36,9 @@ pub type SubscribeEventsMessage<S = jacquard_common::DefaultStr> =
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic,
+    miette::Diagnostic
 )]
+
 #[serde(tag = "error", content = "message")]
 pub enum SubscribeEventsError {
     #[serde(rename = "CursorExpired")]
@@ -42,6 +51,22 @@ pub enum SubscribeEventsError {
     DeviceRevoked(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "InvalidTicket")]
     InvalidTicket(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    #[serde(rename = "AccountSessionExpired")]
+    AccountSessionExpired(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "NotAuthorized")]
+    NotAuthorized(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    #[serde(rename = "DeviceBindingMismatch")]
+    DeviceBindingMismatch(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "ProtocolUpgradeRequired")]
+    ProtocolUpgradeRequired(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "RateLimited")]
+    RateLimited(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
@@ -88,6 +113,41 @@ impl core::fmt::Display for SubscribeEventsError {
                 }
                 Ok(())
             }
+            Self::AccountSessionExpired(msg) => {
+                write!(f, "AccountSessionExpired")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::NotAuthorized(msg) => {
+                write!(f, "NotAuthorized")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::DeviceBindingMismatch(msg) => {
+                write!(f, "DeviceBindingMismatch")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::ProtocolUpgradeRequired(msg) => {
+                write!(f, "ProtocolUpgradeRequired")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::RateLimited(msg) => {
+                write!(f, "RateLimited")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
             Self::Other { error, message } => {
                 write!(f, "{}", error)?;
                 if let Some(msg) = message {
@@ -104,33 +164,31 @@ impl core::fmt::Display for SubscribeEventsError {
 pub struct SubscribeEventsStream;
 impl jacquard_common::xrpc::SubscriptionResp for SubscribeEventsStream {
     const NSID: &'static str = "blue.catbird.chat.subscribeEvents";
-    const ENCODING: jacquard_common::xrpc::MessageEncoding =
-        jacquard_common::xrpc::MessageEncoding::Json;
+    const ENCODING: jacquard_common::xrpc::MessageEncoding = jacquard_common::xrpc::MessageEncoding::Json;
     type Message<S: jacquard_common::BosStr> = SubscribeEventsMessage<S>;
     type Error = SubscribeEventsError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcSubscription for SubscribeEvents<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcSubscription
+for SubscribeEvents<S> {
     const NSID: &'static str = "blue.catbird.chat.subscribeEvents";
-    const ENCODING: jacquard_common::xrpc::MessageEncoding =
-        jacquard_common::xrpc::MessageEncoding::Json;
+    const ENCODING: jacquard_common::xrpc::MessageEncoding = jacquard_common::xrpc::MessageEncoding::Json;
     type Stream = SubscribeEventsStream;
 }
 
 pub struct SubscribeEventsEndpoint;
 impl jacquard_common::xrpc::SubscriptionEndpoint for SubscribeEventsEndpoint {
     const PATH: &'static str = "/xrpc/blue.catbird.chat.subscribeEvents";
-    const ENCODING: jacquard_common::xrpc::MessageEncoding =
-        jacquard_common::xrpc::MessageEncoding::Json;
+    const ENCODING: jacquard_common::xrpc::MessageEncoding = jacquard_common::xrpc::MessageEncoding::Json;
     type Params<S: jacquard_common::BosStr> = SubscribeEvents<S>;
     type Stream = SubscribeEventsStream;
 }
 
 pub mod subscribe_events_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -182,8 +240,10 @@ pub struct SubscribeEventsBuilder<
 
 impl SubscribeEvents<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new(
-    ) -> SubscribeEventsBuilder<subscribe_events_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> SubscribeEventsBuilder<
+        subscribe_events_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         SubscribeEventsBuilder::new()
     }
 }
@@ -206,7 +266,9 @@ impl SubscribeEventsBuilder<subscribe_events_state::Empty, jacquard_common::Defa
     }
 }
 
-impl<S: jacquard_common::BosStr> SubscribeEventsBuilder<subscribe_events_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> SubscribeEventsBuilder<subscribe_events_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         SubscribeEventsBuilder {

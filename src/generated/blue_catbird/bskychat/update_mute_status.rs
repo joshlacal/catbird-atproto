@@ -6,8 +6,15 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -17,11 +24,7 @@ pub struct UpdateMuteStatus<S: jacquard_common::BosStr = jacquard_common::Defaul
     pub convo_id: S,
     ///Whether the conversation should be muted
     pub muted: bool,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -30,20 +33,26 @@ pub struct UpdateMuteStatus<S: jacquard_common::BosStr = jacquard_common::Defaul
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct UpdateMuteStatusOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct UpdateMuteStatusOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     pub success: bool,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -63,10 +72,12 @@ impl jacquard_common::xrpc::XrpcResp for UpdateMuteStatusResponse {
     type Err = jacquard_common::xrpc::GenericError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for UpdateMuteStatus<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
+for UpdateMuteStatus<S> {
     const NSID: &'static str = "blue.catbird.bskychat.updateMuteStatus";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = UpdateMuteStatusResponse;
 }
 
@@ -76,17 +87,18 @@ Path: `/xrpc/blue.catbird.bskychat.updateMuteStatus`. The request payload type i
 pub struct UpdateMuteStatusRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for UpdateMuteStatusRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.bskychat.updateMuteStatus";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<S: jacquard_common::BosStr> = UpdateMuteStatus<S>;
     type Response = UpdateMuteStatusResponse;
 }
 
 pub mod update_mute_status_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -138,8 +150,10 @@ pub struct UpdateMuteStatusBuilder<
 
 impl UpdateMuteStatus<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new(
-    ) -> UpdateMuteStatusBuilder<update_mute_status_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> UpdateMuteStatusBuilder<
+        update_mute_status_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         UpdateMuteStatusBuilder::new()
     }
 }
@@ -151,7 +165,10 @@ impl<S: jacquard_common::BosStr> UpdateMuteStatus<S> {
     }
 }
 
-impl UpdateMuteStatusBuilder<update_mute_status_state::Empty, jacquard_common::DefaultStr> {
+impl UpdateMuteStatusBuilder<
+    update_mute_status_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         UpdateMuteStatusBuilder {
@@ -162,7 +179,9 @@ impl UpdateMuteStatusBuilder<update_mute_status_state::Empty, jacquard_common::D
     }
 }
 
-impl<S: jacquard_common::BosStr> UpdateMuteStatusBuilder<update_mute_status_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> UpdateMuteStatusBuilder<update_mute_status_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         UpdateMuteStatusBuilder {

@@ -11,8 +11,15 @@ pub mod get_ingest_urls;
 /// An ingest URL for a Streamplace station.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -22,11 +29,7 @@ pub struct Ingest<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub r#type: S,
     ///The URL of the ingest endpoint.
     pub url: jacquard_common::types::string::UriValue<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -52,9 +55,9 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Ing
 
 pub mod ingest_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -149,7 +152,10 @@ where
     St::Type: ingest_state::IsUnset,
 {
     /// Set the `type` field (required)
-    pub fn r#type(mut self, value: impl Into<S>) -> IngestBuilder<ingest_state::SetType<St>, S> {
+    pub fn r#type(
+        mut self,
+        value: impl Into<S>,
+    ) -> IngestBuilder<ingest_state::SetType<St>, S> {
         self._fields.0 = ::core::option::Option::Some(value.into());
         IngestBuilder {
             _state: ::core::marker::PhantomData,
@@ -208,7 +214,9 @@ where
     }
 }
 
-fn lexicon_doc_place_stream_ingest_defs() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_place_stream_ingest_defs() -> jacquard_lexicon::lexicon::LexiconDoc<
+    'static,
+> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("place.stream.ingest.defs"),

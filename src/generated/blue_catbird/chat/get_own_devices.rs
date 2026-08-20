@@ -6,13 +6,21 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct GetOwnDevices<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub actor_device_id: S,
     /// Defaults to `50`. Min: 1. Max: 100.
     #[serde(default = "_default_limit")]
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
@@ -22,24 +30,30 @@ pub struct GetOwnDevices<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     pub page_cursor: core::option::Option<S>,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct GetOwnDevicesOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct GetOwnDevicesOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     pub has_more: bool,
     pub items: Vec<crate::generated::blue_catbird::chat::OwnDeviceView<S>>,
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub next_page_cursor: core::option::Option<S>,
     pub snapshot_expires_at: crate::generated::blue_catbird::chat::CanonicalDatetime,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -47,6 +61,7 @@ pub struct GetOwnDevicesOutput<S: jacquard_common::BosStr = jacquard_common::Def
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -56,8 +71,9 @@ pub struct GetOwnDevicesOutput<S: jacquard_common::BosStr = jacquard_common::Def
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic,
+    miette::Diagnostic
 )]
+
 #[serde(tag = "error", content = "message")]
 pub enum GetOwnDevicesError {
     #[serde(rename = "CursorExpired")]
@@ -68,8 +84,22 @@ pub enum GetOwnDevicesError {
     DeviceNotRegistered(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "DeviceRevoked")]
     DeviceRevoked(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
-    #[serde(rename = "InvalidDPoP")]
-    InvalidDPoP(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    #[serde(rename = "AccountSessionExpired")]
+    AccountSessionExpired(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "NotAuthorized")]
+    NotAuthorized(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    #[serde(rename = "DeviceBindingMismatch")]
+    DeviceBindingMismatch(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "ProtocolUpgradeRequired")]
+    ProtocolUpgradeRequired(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "RateLimited")]
+    RateLimited(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
@@ -109,8 +139,36 @@ impl core::fmt::Display for GetOwnDevicesError {
                 }
                 Ok(())
             }
-            Self::InvalidDPoP(msg) => {
-                write!(f, "InvalidDPoP")?;
+            Self::AccountSessionExpired(msg) => {
+                write!(f, "AccountSessionExpired")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::NotAuthorized(msg) => {
+                write!(f, "NotAuthorized")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::DeviceBindingMismatch(msg) => {
+                write!(f, "DeviceBindingMismatch")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::ProtocolUpgradeRequired(msg) => {
+                write!(f, "ProtocolUpgradeRequired")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::RateLimited(msg) => {
+                write!(f, "RateLimited")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }
@@ -138,7 +196,8 @@ impl jacquard_common::xrpc::XrpcResp for GetOwnDevicesResponse {
     type Err = GetOwnDevicesError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetOwnDevices<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
+for GetOwnDevices<S> {
     const NSID: &'static str = "blue.catbird.chat.getOwnDevices";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = GetOwnDevicesResponse;
@@ -161,21 +220,34 @@ fn _default_limit() -> core::option::Option<i64> {
 
 pub mod get_own_devices_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
     /// State trait tracking which required fields have been set
-    pub trait State: sealed::Sealed {}
+    pub trait State: sealed::Sealed {
+        type ActorDeviceId;
+    }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
-    impl State for Empty {}
+    impl State for Empty {
+        type ActorDeviceId = Unset;
+    }
+    ///State transition - sets the `actor_device_id` field to Set
+    pub struct SetActorDeviceId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetActorDeviceId<St> {}
+    impl<St: State> State for SetActorDeviceId<St> {
+        type ActorDeviceId = Set<members::actor_device_id>;
+    }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
-    pub mod members {}
+    pub mod members {
+        ///Marker type for the `actor_device_id` field
+        pub struct actor_device_id(());
+    }
 }
 
 /// Builder for constructing an instance of this type.
@@ -184,14 +256,20 @@ pub struct GetOwnDevicesBuilder<
     S: jacquard_common::BosStr = jacquard_common::DefaultStr,
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
-    _fields: (core::option::Option<i64>, core::option::Option<S>),
+    _fields: (
+        core::option::Option<S>,
+        core::option::Option<i64>,
+        core::option::Option<S>,
+    ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
 impl GetOwnDevices<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> GetOwnDevicesBuilder<get_own_devices_state::Empty, jacquard_common::DefaultStr>
-    {
+    pub fn new() -> GetOwnDevicesBuilder<
+        get_own_devices_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         GetOwnDevicesBuilder::new()
     }
 }
@@ -208,7 +286,7 @@ impl GetOwnDevicesBuilder<get_own_devices_state::Empty, jacquard_common::Default
     pub fn new() -> Self {
         GetOwnDevicesBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None),
+            _fields: (None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -219,34 +297,59 @@ impl<S: jacquard_common::BosStr> GetOwnDevicesBuilder<get_own_devices_state::Emp
     pub fn builder() -> Self {
         GetOwnDevicesBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None),
+            _fields: (None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<St: get_own_devices_state::State, S: jacquard_common::BosStr> GetOwnDevicesBuilder<St, S> {
+impl<St, S: jacquard_common::BosStr> GetOwnDevicesBuilder<St, S>
+where
+    St: get_own_devices_state::State,
+    St::ActorDeviceId: get_own_devices_state::IsUnset,
+{
+    /// Set the `actorDeviceId` field (required)
+    pub fn actor_device_id(
+        mut self,
+        value: impl Into<S>,
+    ) -> GetOwnDevicesBuilder<get_own_devices_state::SetActorDeviceId<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        GetOwnDevicesBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<
+    St: get_own_devices_state::State,
+    S: jacquard_common::BosStr,
+> GetOwnDevicesBuilder<St, S> {
     /// Set the `limit` field (optional)
     pub fn limit(mut self, value: impl Into<Option<i64>>) -> Self {
-        self._fields.0 = value.into();
+        self._fields.1 = value.into();
         self
     }
     /// Set the `limit` field to an Option value (optional)
     pub fn maybe_limit(mut self, value: Option<i64>) -> Self {
-        self._fields.0 = value;
+        self._fields.1 = value;
         self
     }
 }
 
-impl<St: get_own_devices_state::State, S: jacquard_common::BosStr> GetOwnDevicesBuilder<St, S> {
+impl<
+    St: get_own_devices_state::State,
+    S: jacquard_common::BosStr,
+> GetOwnDevicesBuilder<St, S> {
     /// Set the `pageCursor` field (optional)
     pub fn page_cursor(mut self, value: impl Into<Option<S>>) -> Self {
-        self._fields.1 = value.into();
+        self._fields.2 = value.into();
         self
     }
     /// Set the `pageCursor` field to an Option value (optional)
     pub fn maybe_page_cursor(mut self, value: Option<S>) -> Self {
-        self._fields.1 = value;
+        self._fields.2 = value;
         self
     }
 }
@@ -254,12 +357,14 @@ impl<St: get_own_devices_state::State, S: jacquard_common::BosStr> GetOwnDevices
 impl<St, S: jacquard_common::BosStr> GetOwnDevicesBuilder<St, S>
 where
     St: get_own_devices_state::State,
+    St::ActorDeviceId: get_own_devices_state::IsSet,
 {
     /// Build the final struct.
     pub fn build(self) -> GetOwnDevices<S> {
         GetOwnDevices {
-            limit: self._fields.0,
-            page_cursor: self._fields.1,
+            actor_device_id: self._fields.0.unwrap(),
+            limit: self._fields.1,
+            page_cursor: self._fields.2,
         }
     }
 }

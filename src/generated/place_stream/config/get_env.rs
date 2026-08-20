@@ -6,8 +6,15 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(rename_all = "camelCase")]
 pub struct GetEnv;
 
@@ -19,8 +26,9 @@ pub struct GetEnv;
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -29,11 +37,7 @@ pub struct GetEnvOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     ///URL of the Cloudflare playback router worker
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub playback_worker_url: core::option::Option<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -41,6 +45,7 @@ pub struct GetEnvOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -50,8 +55,9 @@ pub struct GetEnvOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic,
+    miette::Diagnostic
 )]
+
 #[serde(tag = "error", content = "message")]
 pub enum GetEnvError {
     /// Catch-all for unknown error codes.

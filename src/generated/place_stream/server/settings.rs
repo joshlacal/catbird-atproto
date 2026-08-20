@@ -8,8 +8,15 @@
 /// Record containing user settings for a particular Streamplace node
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     rename = "place.stream.server.settings",
@@ -20,11 +27,7 @@ pub struct Settings<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     ///Whether this node may archive your livestream for improving the service
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub debug_recording: core::option::Option<bool>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -36,10 +39,19 @@ pub struct Settings<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
 /// Typed wrapper for GetRecord response with this collection's record type.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(rename_all = "camelCase")]
-pub struct SettingsGetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct SettingsGetRecordOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
     pub uri: jacquard_common::types::string::AtUri<S>,
@@ -76,7 +88,8 @@ impl<S: jacquard_common::BosStr> From<SettingsGetRecordOutput<S>> for Settings<S
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection for Settings<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection
+for Settings<S> {
     const NSID: &'static str = "place.stream.server.settings";
     type Record = SettingsRecord;
 }
@@ -86,7 +99,8 @@ impl jacquard_common::types::collection::Collection for SettingsRecord {
     type Record = SettingsRecord;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Settings<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for Settings<S> {
     fn nsid() -> &'static str {
         "place.stream.server.settings"
     }
@@ -103,9 +117,9 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Set
 
 pub mod settings_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -205,7 +219,9 @@ where
     }
 }
 
-fn lexicon_doc_place_stream_server_settings() -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_place_stream_server_settings() -> jacquard_lexicon::lexicon::LexiconDoc<
+    'static,
+> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("place.stream.server.settings"),
@@ -213,36 +229,32 @@ fn lexicon_doc_place_stream_server_settings() -> jacquard_lexicon::lexicon::Lexi
             let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
-                ::jacquard_lexicon::lexicon::LexUserType::Record(
-                    ::jacquard_lexicon::lexicon::LexRecord {
-                        description: Some(::jacquard_common::CowStr::new_static(
+                ::jacquard_lexicon::lexicon::LexUserType::Record(::jacquard_lexicon::lexicon::LexRecord {
+                    description: Some(
+                        ::jacquard_common::CowStr::new_static(
                             "Record containing user settings for a particular Streamplace node",
-                        )),
-                        key: Some(::jacquard_common::CowStr::new_static("any")),
-                        record: ::jacquard_lexicon::lexicon::LexRecordRecord::Object(
-                            ::jacquard_lexicon::lexicon::LexObject {
-                                required: Some(vec![]),
-                                properties: {
-                                    #[allow(unused_mut)]
-                                    let mut map = ::alloc::collections::BTreeMap::new();
-                                    map.insert(
-                                        ::jacquard_common::deps::smol_str::SmolStr::new_static(
-                                            "debugRecording",
-                                        ),
-                                        ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(
-                                            ::jacquard_lexicon::lexicon::LexBoolean {
-                                                ..Default::default()
-                                            },
-                                        ),
-                                    );
-                                    map
-                                },
-                                ..Default::default()
-                            },
                         ),
+                    ),
+                    key: Some(::jacquard_common::CowStr::new_static("any")),
+                    record: ::jacquard_lexicon::lexicon::LexRecordRecord::Object(::jacquard_lexicon::lexicon::LexObject {
+                        required: Some(vec![]),
+                        properties: {
+                            #[allow(unused_mut)]
+                            let mut map = ::alloc::collections::BTreeMap::new();
+                            map.insert(
+                                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                    "debugRecording",
+                                ),
+                                ::jacquard_lexicon::lexicon::LexObjectProperty::Boolean(::jacquard_lexicon::lexicon::LexBoolean {
+                                    ..Default::default()
+                                }),
+                            );
+                            map
+                        },
                         ..Default::default()
-                    },
-                ),
+                    }),
+                    ..Default::default()
+                }),
             );
             map
         },

@@ -8,8 +8,15 @@
 /// Record granting moderation permissions to a user for this streamer's content.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     rename = "place.stream.moderation.permission",
@@ -26,11 +33,7 @@ pub struct Permission<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
     pub moderator: jacquard_common::types::string::Did<S>,
     ///Array of permissions granted to this moderator. 'ban' covers blocks/bans (with optional expiration), 'hide' covers message gates, 'livestream.manage' allows updating livestream metadata.
     pub permissions: Vec<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -42,10 +45,19 @@ pub struct Permission<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
 /// Typed wrapper for GetRecord response with this collection's record type.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(rename_all = "camelCase")]
-pub struct PermissionGetRecordOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct PermissionGetRecordOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub cid: core::option::Option<jacquard_common::types::string::Cid<S>>,
     pub uri: jacquard_common::types::string::AtUri<S>,
@@ -82,7 +94,8 @@ impl<S: jacquard_common::BosStr> From<PermissionGetRecordOutput<S>> for Permissi
     }
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection for Permission<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::types::collection::Collection
+for Permission<S> {
     const NSID: &'static str = "place.stream.moderation.permission";
     type Record = PermissionRecord;
 }
@@ -92,7 +105,8 @@ impl jacquard_common::types::collection::Collection for PermissionRecord {
     type Record = PermissionRecord;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Permission<S> {
+impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
+for Permission<S> {
     fn nsid() -> &'static str {
         "place.stream.moderation.permission"
     }
@@ -109,9 +123,9 @@ impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema for Per
 
 pub mod permission_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -182,7 +196,10 @@ pub struct PermissionBuilder<
 
 impl Permission<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> PermissionBuilder<permission_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> PermissionBuilder<
+        permission_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         PermissionBuilder::new()
     }
 }
@@ -327,8 +344,9 @@ where
     }
 }
 
-fn lexicon_doc_place_stream_moderation_permission() -> jacquard_lexicon::lexicon::LexiconDoc<'static>
-{
+fn lexicon_doc_place_stream_moderation_permission() -> jacquard_lexicon::lexicon::LexiconDoc<
+    'static,
+> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
         id: ::jacquard_common::CowStr::new_static("place.stream.moderation.permission"),

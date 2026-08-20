@@ -6,22 +6,27 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct LivestreamRecommendation<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct LivestreamRecommendation<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     ///The DID of the recommended streamer
     pub did: jacquard_common::types::string::Did<S>,
     ///Source of the recommendation
     pub source: S,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -30,9 +35,17 @@ pub struct LivestreamRecommendation<S: jacquard_common::BosStr = jacquard_common
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -41,25 +54,34 @@ pub struct GetRecommendations<S: jacquard_common::BosStr = jacquard_common::Defa
     pub user_did: jacquard_common::types::string::Did<S>,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct GetRecommendationsOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct GetRecommendationsOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     ///Ordered list of recommendations
-    pub recommendations:
-        Vec<crate::generated::place_stream::live::get_recommendations::LivestreamRecommendation<S>>,
+    pub recommendations: Vec<
+        crate::generated::place_stream::live::get_recommendations::LivestreamRecommendation<
+            S,
+        >,
+    >,
     ///The user DID this recommendation is for
     #[serde(skip_serializing_if = "core::option::Option::is_none")]
     pub user_did: core::option::Option<jacquard_common::types::string::Did<S>>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -69,8 +91,7 @@ pub struct GetRecommendationsOutput<S: jacquard_common::BosStr = jacquard_common
 }
 
 impl<S: jacquard_common::BosStr> jacquard_lexicon::schema::LexiconSchema
-    for LivestreamRecommendation<S>
-{
+for LivestreamRecommendation<S> {
     fn nsid() -> &'static str {
         "place.stream.live.getRecommendations"
     }
@@ -96,7 +117,8 @@ impl jacquard_common::xrpc::XrpcResp for GetRecommendationsResponse {
     type Err = jacquard_common::xrpc::GenericError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetRecommendations<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
+for GetRecommendations<S> {
     const NSID: &'static str = "place.stream.live.getRecommendations";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = GetRecommendationsResponse;
@@ -115,9 +137,9 @@ impl jacquard_common::xrpc::XrpcEndpoint for GetRecommendationsRequest {
 
 pub mod livestream_recommendation_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -182,17 +204,18 @@ impl LivestreamRecommendation<jacquard_common::DefaultStr> {
 
 impl<S: jacquard_common::BosStr> LivestreamRecommendation<S> {
     /// Create a new builder for this type
-    pub fn builder() -> LivestreamRecommendationBuilder<livestream_recommendation_state::Empty, S> {
+    pub fn builder() -> LivestreamRecommendationBuilder<
+        livestream_recommendation_state::Empty,
+        S,
+    > {
         LivestreamRecommendationBuilder::builder()
     }
 }
 
-impl
-    LivestreamRecommendationBuilder<
-        livestream_recommendation_state::Empty,
-        jacquard_common::DefaultStr,
-    >
-{
+impl LivestreamRecommendationBuilder<
+    livestream_recommendation_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         LivestreamRecommendationBuilder {
@@ -203,9 +226,9 @@ impl
     }
 }
 
-impl<S: jacquard_common::BosStr>
-    LivestreamRecommendationBuilder<livestream_recommendation_state::Empty, S>
-{
+impl<
+    S: jacquard_common::BosStr,
+> LivestreamRecommendationBuilder<livestream_recommendation_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         LivestreamRecommendationBuilder {
@@ -225,7 +248,10 @@ where
     pub fn did(
         mut self,
         value: impl Into<jacquard_common::types::string::Did<S>>,
-    ) -> LivestreamRecommendationBuilder<livestream_recommendation_state::SetDid<St>, S> {
+    ) -> LivestreamRecommendationBuilder<
+        livestream_recommendation_state::SetDid<St>,
+        S,
+    > {
         self._fields.0 = ::core::option::Option::Some(value.into());
         LivestreamRecommendationBuilder {
             _state: ::core::marker::PhantomData,
@@ -244,7 +270,10 @@ where
     pub fn source(
         mut self,
         value: impl Into<S>,
-    ) -> LivestreamRecommendationBuilder<livestream_recommendation_state::SetSource<St>, S> {
+    ) -> LivestreamRecommendationBuilder<
+        livestream_recommendation_state::SetSource<St>,
+        S,
+    > {
         self._fields.1 = ::core::option::Option::Some(value.into());
         LivestreamRecommendationBuilder {
             _state: ::core::marker::PhantomData,
@@ -284,54 +313,63 @@ where
     }
 }
 
-fn lexicon_doc_place_stream_live_getRecommendations(
-) -> jacquard_lexicon::lexicon::LexiconDoc<'static> {
+fn lexicon_doc_place_stream_live_getRecommendations() -> jacquard_lexicon::lexicon::LexiconDoc<
+    'static,
+> {
     ::jacquard_lexicon::lexicon::LexiconDoc {
         lexicon: ::jacquard_lexicon::lexicon::Lexicon::Lexicon1,
-        id: ::jacquard_common::CowStr::new_static("place.stream.live.getRecommendations"),
+        id: ::jacquard_common::CowStr::new_static(
+            "place.stream.live.getRecommendations",
+        ),
         defs: {
             let mut map = ::alloc::collections::BTreeMap::new();
             map.insert(
-                ::jacquard_common::deps::smol_str::SmolStr::new_static("livestreamRecommendation"),
-                ::jacquard_lexicon::lexicon::LexUserType::Object(
-                    ::jacquard_lexicon::lexicon::LexObject {
-                        required: Some(vec![
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
-                            ::jacquard_common::deps::smol_str::SmolStr::new_static("source"),
-                        ]),
-                        properties: {
-                            #[allow(unused_mut)]
-                            let mut map = ::alloc::collections::BTreeMap::new();
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: Some(::jacquard_common::CowStr::new_static(
-                                            "The DID of the recommended streamer",
-                                        )),
-                                        format: Some(
-                                            ::jacquard_lexicon::lexicon::LexStringFormat::Did,
-                                        ),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map.insert(
-                                ::jacquard_common::deps::smol_str::SmolStr::new_static("source"),
-                                ::jacquard_lexicon::lexicon::LexObjectProperty::String(
-                                    ::jacquard_lexicon::lexicon::LexString {
-                                        description: Some(::jacquard_common::CowStr::new_static(
-                                            "Source of the recommendation",
-                                        )),
-                                        ..Default::default()
-                                    },
-                                ),
-                            );
-                            map
-                        },
-                        ..Default::default()
-                    },
+                ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                    "livestreamRecommendation",
                 ),
+                ::jacquard_lexicon::lexicon::LexUserType::Object(::jacquard_lexicon::lexicon::LexObject {
+                    required: Some(
+                        vec![
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("did"),
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static("source")
+                        ],
+                    ),
+                    properties: {
+                        #[allow(unused_mut)]
+                        let mut map = ::alloc::collections::BTreeMap::new();
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "did",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "The DID of the recommended streamer",
+                                    ),
+                                ),
+                                format: Some(
+                                    ::jacquard_lexicon::lexicon::LexStringFormat::Did,
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map.insert(
+                            ::jacquard_common::deps::smol_str::SmolStr::new_static(
+                                "source",
+                            ),
+                            ::jacquard_lexicon::lexicon::LexObjectProperty::String(::jacquard_lexicon::lexicon::LexString {
+                                description: Some(
+                                    ::jacquard_common::CowStr::new_static(
+                                        "Source of the recommendation",
+                                    ),
+                                ),
+                                ..Default::default()
+                            }),
+                        );
+                        map
+                    },
+                    ..Default::default()
+                }),
             );
             map.insert(
                 ::jacquard_common::deps::smol_str::SmolStr::new_static("main"),
@@ -378,9 +416,9 @@ fn lexicon_doc_place_stream_live_getRecommendations(
 
 pub mod get_recommendations_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -420,9 +458,10 @@ pub struct GetRecommendationsBuilder<
 
 impl GetRecommendations<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new(
-    ) -> GetRecommendationsBuilder<get_recommendations_state::Empty, jacquard_common::DefaultStr>
-    {
+    pub fn new() -> GetRecommendationsBuilder<
+        get_recommendations_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         GetRecommendationsBuilder::new()
     }
 }
@@ -434,7 +473,10 @@ impl<S: jacquard_common::BosStr> GetRecommendations<S> {
     }
 }
 
-impl GetRecommendationsBuilder<get_recommendations_state::Empty, jacquard_common::DefaultStr> {
+impl GetRecommendationsBuilder<
+    get_recommendations_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetRecommendationsBuilder {
@@ -445,7 +487,9 @@ impl GetRecommendationsBuilder<get_recommendations_state::Empty, jacquard_common
     }
 }
 
-impl<S: jacquard_common::BosStr> GetRecommendationsBuilder<get_recommendations_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> GetRecommendationsBuilder<get_recommendations_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         GetRecommendationsBuilder {

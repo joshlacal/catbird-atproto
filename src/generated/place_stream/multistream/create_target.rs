@@ -6,19 +6,24 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct CreateTarget<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    pub multistream_target: crate::generated::place_stream::multistream::target::Target<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    pub multistream_target: crate::generated::place_stream::multistream::target::Target<
+        S,
+    >,
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -27,9 +32,17 @@ pub struct CreateTarget<S: jacquard_common::BosStr = jacquard_common::DefaultStr
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -37,11 +50,7 @@ pub struct CreateTarget<S: jacquard_common::BosStr = jacquard_common::DefaultStr
 pub struct CreateTargetOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     #[serde(flatten)]
     pub value: crate::generated::place_stream::multistream::TargetView<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -49,6 +58,7 @@ pub struct CreateTargetOutput<S: jacquard_common::BosStr = jacquard_common::Defa
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -58,8 +68,9 @@ pub struct CreateTargetOutput<S: jacquard_common::BosStr = jacquard_common::Defa
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic,
+    miette::Diagnostic
 )]
+
 #[serde(tag = "error", content = "message")]
 pub enum CreateTargetError {
     /// The provided target URL is invalid or unreachable.
@@ -107,8 +118,9 @@ impl jacquard_common::xrpc::XrpcResp for CreateTargetResponse {
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for CreateTarget<S> {
     const NSID: &'static str = "place.stream.multistream.createTarget";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = CreateTargetResponse;
 }
 
@@ -118,17 +130,18 @@ Path: `/xrpc/place.stream.multistream.createTarget`. The request payload type is
 pub struct CreateTargetRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for CreateTargetRequest {
     const PATH: &'static str = "/xrpc/place.stream.multistream.createTarget";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<S: jacquard_common::BosStr> = CreateTarget<S>;
     type Response = CreateTargetResponse;
 }
 
 pub mod create_target_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -162,13 +175,20 @@ pub struct CreateTargetBuilder<
     S: jacquard_common::BosStr = jacquard_common::DefaultStr,
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
-    _fields: (core::option::Option<crate::generated::place_stream::multistream::target::Target<S>>,),
+    _fields: (
+        core::option::Option<
+            crate::generated::place_stream::multistream::target::Target<S>,
+        >,
+    ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
 impl CreateTarget<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> CreateTargetBuilder<create_target_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> CreateTargetBuilder<
+        create_target_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         CreateTargetBuilder::new()
     }
 }

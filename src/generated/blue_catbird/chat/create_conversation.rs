@@ -6,19 +6,22 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct CreateConversation<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub signed_request: crate::generated::blue_catbird::chat::SignedCreation<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -27,20 +30,26 @@ pub struct CreateConversation<S: jacquard_common::BosStr = jacquard_common::Defa
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct CreateConversationOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct CreateConversationOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     pub result: crate::generated::blue_catbird::chat::ConversationCreationResult<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -48,6 +57,7 @@ pub struct CreateConversationOutput<S: jacquard_common::BosStr = jacquard_common
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -57,14 +67,17 @@ pub struct CreateConversationOutput<S: jacquard_common::BosStr = jacquard_common
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic,
+    miette::Diagnostic
 )]
+
 #[serde(tag = "error", content = "message")]
 pub enum CreateConversationError {
     #[serde(rename = "BlockedRelationship")]
     BlockedRelationship(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "ConversationAlreadyExists")]
-    ConversationAlreadyExists(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    ConversationAlreadyExists(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "CutoverRequired")]
     CutoverRequired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "DeviceNotRegistered")]
@@ -75,12 +88,14 @@ pub enum CreateConversationError {
     GroupInvitesDisabled(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "IdempotencyConflict")]
     IdempotencyConflict(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
-    #[serde(rename = "InvalidDPoP")]
-    InvalidDPoP(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "InvalidGenesisGroupInfo")]
-    InvalidGenesisGroupInfo(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidGenesisGroupInfo(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InvalidMetadataSnapshot")]
-    InvalidMetadataSnapshot(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidMetadataSnapshot(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InvalidMlsArtifact")]
     InvalidMlsArtifact(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "InvalidRequest")]
@@ -88,7 +103,9 @@ pub enum CreateConversationError {
     #[serde(rename = "InvalidSignature")]
     InvalidSignature(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "InvitationLimitReached")]
-    InvitationLimitReached(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvitationLimitReached(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "MessagesDisabled")]
     MessagesDisabled(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "MetadataNonceReuse")]
@@ -96,11 +113,31 @@ pub enum CreateConversationError {
     #[serde(rename = "NotAuthorized")]
     NotAuthorized(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "NotFollowedByRecipient")]
-    NotFollowedByRecipient(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    NotFollowedByRecipient(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "RelationshipPolicyUnavailable")]
-    RelationshipPolicyUnavailable(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    RelationshipPolicyUnavailable(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "UnsupportedMlsProfile")]
-    UnsupportedMlsProfile(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    UnsupportedMlsProfile(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "AccountSessionExpired")]
+    AccountSessionExpired(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "DeviceBindingMismatch")]
+    DeviceBindingMismatch(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "ProtocolUpgradeRequired")]
+    ProtocolUpgradeRequired(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "RateLimited")]
+    RateLimited(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
@@ -156,13 +193,6 @@ impl core::fmt::Display for CreateConversationError {
             }
             Self::IdempotencyConflict(msg) => {
                 write!(f, "IdempotencyConflict")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
-            Self::InvalidDPoP(msg) => {
-                write!(f, "InvalidDPoP")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }
@@ -252,6 +282,34 @@ impl core::fmt::Display for CreateConversationError {
                 }
                 Ok(())
             }
+            Self::AccountSessionExpired(msg) => {
+                write!(f, "AccountSessionExpired")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::DeviceBindingMismatch(msg) => {
+                write!(f, "DeviceBindingMismatch")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::ProtocolUpgradeRequired(msg) => {
+                write!(f, "ProtocolUpgradeRequired")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::RateLimited(msg) => {
+                write!(f, "RateLimited")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
             Self::Other { error, message } => {
                 write!(f, "{}", error)?;
                 if let Some(msg) = message {
@@ -274,10 +332,12 @@ impl jacquard_common::xrpc::XrpcResp for CreateConversationResponse {
     type Err = CreateConversationError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for CreateConversation<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
+for CreateConversation<S> {
     const NSID: &'static str = "blue.catbird.chat.createConversation";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = CreateConversationResponse;
 }
 
@@ -287,17 +347,18 @@ Path: `/xrpc/blue.catbird.chat.createConversation`. The request payload type is 
 pub struct CreateConversationRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for CreateConversationRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.chat.createConversation";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<S: jacquard_common::BosStr> = CreateConversation<S>;
     type Response = CreateConversationResponse;
 }
 
 pub mod create_conversation_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -331,15 +392,18 @@ pub struct CreateConversationBuilder<
     S: jacquard_common::BosStr = jacquard_common::DefaultStr,
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
-    _fields: (core::option::Option<crate::generated::blue_catbird::chat::SignedCreation<S>>,),
+    _fields: (
+        core::option::Option<crate::generated::blue_catbird::chat::SignedCreation<S>>,
+    ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
 impl CreateConversation<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new(
-    ) -> CreateConversationBuilder<create_conversation_state::Empty, jacquard_common::DefaultStr>
-    {
+    pub fn new() -> CreateConversationBuilder<
+        create_conversation_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         CreateConversationBuilder::new()
     }
 }
@@ -351,7 +415,10 @@ impl<S: jacquard_common::BosStr> CreateConversation<S> {
     }
 }
 
-impl CreateConversationBuilder<create_conversation_state::Empty, jacquard_common::DefaultStr> {
+impl CreateConversationBuilder<
+    create_conversation_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         CreateConversationBuilder {
@@ -362,7 +429,9 @@ impl CreateConversationBuilder<create_conversation_state::Empty, jacquard_common
     }
 }
 
-impl<S: jacquard_common::BosStr> CreateConversationBuilder<create_conversation_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> CreateConversationBuilder<create_conversation_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         CreateConversationBuilder {

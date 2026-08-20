@@ -6,19 +6,22 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct SubmitTransition<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     pub signed_request: crate::generated::blue_catbird::chat::SignedTransition<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -27,22 +30,28 @@ pub struct SubmitTransition<S: jacquard_common::BosStr = jacquard_common::Defaul
     >,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct SubmitTransitionOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct SubmitTransitionOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
     pub coordinates: crate::generated::blue_catbird::chat::ConversationCoordinates<S>,
     pub entry: crate::generated::blue_catbird::chat::ConversationEntry<S>,
     pub welcomes: Vec<crate::generated::blue_catbird::chat::WelcomeView<S>>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -50,6 +59,7 @@ pub struct SubmitTransitionOutput<S: jacquard_common::BosStr = jacquard_common::
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -59,8 +69,9 @@ pub struct SubmitTransitionOutput<S: jacquard_common::BosStr = jacquard_common::
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic,
+    miette::Diagnostic
 )]
+
 #[serde(tag = "error", content = "message")]
 pub enum SubmitTransitionError {
     #[serde(rename = "AdminRequired")]
@@ -68,9 +79,13 @@ pub enum SubmitTransitionError {
     #[serde(rename = "BlockedRelationship")]
     BlockedRelationship(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "CommitterSelfRemovalForbidden")]
-    CommitterSelfRemovalForbidden(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    CommitterSelfRemovalForbidden(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "ConversationLeafLimitReached")]
-    ConversationLeafLimitReached(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    ConversationLeafLimitReached(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "ConversationNotFound")]
     ConversationNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "CoordinateOverflow")]
@@ -90,27 +105,33 @@ pub enum SubmitTransitionError {
     #[serde(rename = "DuplicateDeviceLeaf")]
     DuplicateDeviceLeaf(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "ExternalCommitForbidden")]
-    ExternalCommitForbidden(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    ExternalCommitForbidden(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "GroupInvitesDisabled")]
     GroupInvitesDisabled(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "IdempotencyConflict")]
     IdempotencyConflict(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "InvalidCommit")]
     InvalidCommit(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
-    #[serde(rename = "InvalidDPoP")]
-    InvalidDPoP(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "InvalidLeaveManifest")]
     InvalidLeaveManifest(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "InvalidMetadataSnapshot")]
-    InvalidMetadataSnapshot(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidMetadataSnapshot(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InvalidRequest")]
     InvalidRequest(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "InvalidSignature")]
     InvalidSignature(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "InvalidWelcomeMapping")]
-    InvalidWelcomeMapping(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvalidWelcomeMapping(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "InvitationLimitReached")]
-    InvitationLimitReached(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    InvitationLimitReached(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "LastAdminRequired")]
     LastAdminRequired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "LeafRecoveryExpired")]
@@ -118,7 +139,9 @@ pub enum SubmitTransitionError {
     #[serde(rename = "LeafRecoveryNotFound")]
     LeafRecoveryNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "LeafRecoverySuperseded")]
-    LeafRecoverySuperseded(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    LeafRecoverySuperseded(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "LeaveRequestExpired")]
     LeaveRequestExpired(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "LeaveRequestNotFound")]
@@ -128,27 +151,57 @@ pub enum SubmitTransitionError {
     #[serde(rename = "MetadataNonceReuse")]
     MetadataNonceReuse(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "MetadataVersionOverflow")]
-    MetadataVersionOverflow(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    MetadataVersionOverflow(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "MissingMetadataSnapshot")]
-    MissingMetadataSnapshot(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    MissingMetadataSnapshot(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "NotAuthorized")]
     NotAuthorized(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "NotFollowedByRecipient")]
-    NotFollowedByRecipient(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    NotFollowedByRecipient(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "NotMember")]
     NotMember(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "ParticipantLeafLimitReached")]
-    ParticipantLeafLimitReached(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    ParticipantLeafLimitReached(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "ParticipantLimitReached")]
-    ParticipantLimitReached(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    ParticipantLimitReached(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "RelationshipPolicyUnavailable")]
-    RelationshipPolicyUnavailable(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    RelationshipPolicyUnavailable(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "StaleCoordinates")]
     StaleCoordinates(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "StandaloneProposalForbidden")]
-    StandaloneProposalForbidden(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    StandaloneProposalForbidden(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "UnsupportedMlsProfile")]
-    UnsupportedMlsProfile(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    UnsupportedMlsProfile(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "AccountSessionExpired")]
+    AccountSessionExpired(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "DeviceBindingMismatch")]
+    DeviceBindingMismatch(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "ProtocolUpgradeRequired")]
+    ProtocolUpgradeRequired(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "RateLimited")]
+    RateLimited(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
@@ -267,13 +320,6 @@ impl core::fmt::Display for SubmitTransitionError {
             }
             Self::InvalidCommit(msg) => {
                 write!(f, "InvalidCommit")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
-            Self::InvalidDPoP(msg) => {
-                write!(f, "InvalidDPoP")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }
@@ -454,6 +500,34 @@ impl core::fmt::Display for SubmitTransitionError {
                 }
                 Ok(())
             }
+            Self::AccountSessionExpired(msg) => {
+                write!(f, "AccountSessionExpired")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::DeviceBindingMismatch(msg) => {
+                write!(f, "DeviceBindingMismatch")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::ProtocolUpgradeRequired(msg) => {
+                write!(f, "ProtocolUpgradeRequired")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::RateLimited(msg) => {
+                write!(f, "RateLimited")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
             Self::Other { error, message } => {
                 write!(f, "{}", error)?;
                 if let Some(msg) = message {
@@ -476,10 +550,12 @@ impl jacquard_common::xrpc::XrpcResp for SubmitTransitionResponse {
     type Err = SubmitTransitionError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for SubmitTransition<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
+for SubmitTransition<S> {
     const NSID: &'static str = "blue.catbird.chat.submitTransition";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = SubmitTransitionResponse;
 }
 
@@ -489,17 +565,18 @@ Path: `/xrpc/blue.catbird.chat.submitTransition`. The request payload type is `S
 pub struct SubmitTransitionRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for SubmitTransitionRequest {
     const PATH: &'static str = "/xrpc/blue.catbird.chat.submitTransition";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<S: jacquard_common::BosStr> = SubmitTransition<S>;
     type Response = SubmitTransitionResponse;
 }
 
 pub mod submit_transition_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -533,14 +610,18 @@ pub struct SubmitTransitionBuilder<
     S: jacquard_common::BosStr = jacquard_common::DefaultStr,
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
-    _fields: (core::option::Option<crate::generated::blue_catbird::chat::SignedTransition<S>>,),
+    _fields: (
+        core::option::Option<crate::generated::blue_catbird::chat::SignedTransition<S>>,
+    ),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
 impl SubmitTransition<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new(
-    ) -> SubmitTransitionBuilder<submit_transition_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> SubmitTransitionBuilder<
+        submit_transition_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         SubmitTransitionBuilder::new()
     }
 }
@@ -552,7 +633,10 @@ impl<S: jacquard_common::BosStr> SubmitTransition<S> {
     }
 }
 
-impl SubmitTransitionBuilder<submit_transition_state::Empty, jacquard_common::DefaultStr> {
+impl SubmitTransitionBuilder<
+    submit_transition_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         SubmitTransitionBuilder {
@@ -563,7 +647,9 @@ impl SubmitTransitionBuilder<submit_transition_state::Empty, jacquard_common::De
     }
 }
 
-impl<S: jacquard_common::BosStr> SubmitTransitionBuilder<submit_transition_state::Empty, S> {
+impl<
+    S: jacquard_common::BosStr,
+> SubmitTransitionBuilder<submit_transition_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         SubmitTransitionBuilder {

@@ -6,13 +6,21 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct GetEntries<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+    pub actor_device_id: S,
     pub after_seq: i64,
     pub conversation_id: S,
     ///  Defaults to `100`
@@ -20,9 +28,17 @@ pub struct GetEntries<S: jacquard_common::BosStr = jacquard_common::DefaultStr> 
     pub limit: i64,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -31,11 +47,7 @@ pub struct GetEntriesOutput<S: jacquard_common::BosStr = jacquard_common::Defaul
     pub entries: Vec<crate::generated::blue_catbird::chat::ConversationEntry<S>>,
     pub has_more: bool,
     pub next_after_seq: i64,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -43,6 +55,7 @@ pub struct GetEntriesOutput<S: jacquard_common::BosStr = jacquard_common::Defaul
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -52,12 +65,15 @@ pub struct GetEntriesOutput<S: jacquard_common::BosStr = jacquard_common::Defaul
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic,
+    miette::Diagnostic
 )]
+
 #[serde(tag = "error", content = "message")]
 pub enum GetEntriesError {
     #[serde(rename = "AccessOutsideMembershipInterval")]
-    AccessOutsideMembershipInterval(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    AccessOutsideMembershipInterval(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "ConversationNotFound")]
     ConversationNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "CutoverRequired")]
@@ -66,12 +82,26 @@ pub enum GetEntriesError {
     DeviceNotRegistered(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "DeviceRevoked")]
     DeviceRevoked(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
-    #[serde(rename = "InvalidDPoP")]
-    InvalidDPoP(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "InvalidRequest")]
     InvalidRequest(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "NotEntitled")]
     NotEntitled(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    #[serde(rename = "AccountSessionExpired")]
+    AccountSessionExpired(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "NotAuthorized")]
+    NotAuthorized(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    #[serde(rename = "DeviceBindingMismatch")]
+    DeviceBindingMismatch(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "ProtocolUpgradeRequired")]
+    ProtocolUpgradeRequired(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "RateLimited")]
+    RateLimited(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
@@ -118,13 +148,6 @@ impl core::fmt::Display for GetEntriesError {
                 }
                 Ok(())
             }
-            Self::InvalidDPoP(msg) => {
-                write!(f, "InvalidDPoP")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
             Self::InvalidRequest(msg) => {
                 write!(f, "InvalidRequest")?;
                 if let Some(msg) = msg {
@@ -134,6 +157,41 @@ impl core::fmt::Display for GetEntriesError {
             }
             Self::NotEntitled(msg) => {
                 write!(f, "NotEntitled")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::AccountSessionExpired(msg) => {
+                write!(f, "AccountSessionExpired")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::NotAuthorized(msg) => {
+                write!(f, "NotAuthorized")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::DeviceBindingMismatch(msg) => {
+                write!(f, "DeviceBindingMismatch")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::ProtocolUpgradeRequired(msg) => {
+                write!(f, "ProtocolUpgradeRequired")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::RateLimited(msg) => {
+                write!(f, "RateLimited")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }
@@ -184,14 +242,15 @@ fn _default_limit() -> i64 {
 
 pub mod get_entries_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
+        type ActorDeviceId;
         type AfterSeq;
         type ConversationId;
         type Limit;
@@ -200,14 +259,25 @@ pub mod get_entries_state {
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
+        type ActorDeviceId = Unset;
         type AfterSeq = Unset;
         type ConversationId = Unset;
         type Limit = Unset;
+    }
+    ///State transition - sets the `actor_device_id` field to Set
+    pub struct SetActorDeviceId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetActorDeviceId<St> {}
+    impl<St: State> State for SetActorDeviceId<St> {
+        type ActorDeviceId = Set<members::actor_device_id>;
+        type AfterSeq = St::AfterSeq;
+        type ConversationId = St::ConversationId;
+        type Limit = St::Limit;
     }
     ///State transition - sets the `after_seq` field to Set
     pub struct SetAfterSeq<St: State = Empty>(PhantomData<fn() -> St>);
     impl<St: State> sealed::Sealed for SetAfterSeq<St> {}
     impl<St: State> State for SetAfterSeq<St> {
+        type ActorDeviceId = St::ActorDeviceId;
         type AfterSeq = Set<members::after_seq>;
         type ConversationId = St::ConversationId;
         type Limit = St::Limit;
@@ -216,6 +286,7 @@ pub mod get_entries_state {
     pub struct SetConversationId<St: State = Empty>(PhantomData<fn() -> St>);
     impl<St: State> sealed::Sealed for SetConversationId<St> {}
     impl<St: State> State for SetConversationId<St> {
+        type ActorDeviceId = St::ActorDeviceId;
         type AfterSeq = St::AfterSeq;
         type ConversationId = Set<members::conversation_id>;
         type Limit = St::Limit;
@@ -224,6 +295,7 @@ pub mod get_entries_state {
     pub struct SetLimit<St: State = Empty>(PhantomData<fn() -> St>);
     impl<St: State> sealed::Sealed for SetLimit<St> {}
     impl<St: State> State for SetLimit<St> {
+        type ActorDeviceId = St::ActorDeviceId;
         type AfterSeq = St::AfterSeq;
         type ConversationId = St::ConversationId;
         type Limit = Set<members::limit>;
@@ -231,6 +303,8 @@ pub mod get_entries_state {
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
+        ///Marker type for the `actor_device_id` field
+        pub struct actor_device_id(());
         ///Marker type for the `after_seq` field
         pub struct after_seq(());
         ///Marker type for the `conversation_id` field
@@ -247,6 +321,7 @@ pub struct GetEntriesBuilder<
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
     _fields: (
+        core::option::Option<S>,
         core::option::Option<i64>,
         core::option::Option<S>,
         core::option::Option<i64>,
@@ -256,7 +331,10 @@ pub struct GetEntriesBuilder<
 
 impl GetEntries<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> GetEntriesBuilder<get_entries_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> GetEntriesBuilder<
+        get_entries_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         GetEntriesBuilder::new()
     }
 }
@@ -273,7 +351,7 @@ impl GetEntriesBuilder<get_entries_state::Empty, jacquard_common::DefaultStr> {
     pub fn new() -> Self {
         GetEntriesBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None),
+            _fields: (None, None, None, None),
             _type: ::core::marker::PhantomData,
         }
     }
@@ -284,7 +362,26 @@ impl<S: jacquard_common::BosStr> GetEntriesBuilder<get_entries_state::Empty, S> 
     pub fn builder() -> Self {
         GetEntriesBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None, None, None),
+            _fields: (None, None, None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> GetEntriesBuilder<St, S>
+where
+    St: get_entries_state::State,
+    St::ActorDeviceId: get_entries_state::IsUnset,
+{
+    /// Set the `actorDeviceId` field (required)
+    pub fn actor_device_id(
+        mut self,
+        value: impl Into<S>,
+    ) -> GetEntriesBuilder<get_entries_state::SetActorDeviceId<St>, S> {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        GetEntriesBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
             _type: ::core::marker::PhantomData,
         }
     }
@@ -300,7 +397,7 @@ where
         mut self,
         value: impl Into<i64>,
     ) -> GetEntriesBuilder<get_entries_state::SetAfterSeq<St>, S> {
-        self._fields.0 = ::core::option::Option::Some(value.into());
+        self._fields.1 = ::core::option::Option::Some(value.into());
         GetEntriesBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -319,7 +416,7 @@ where
         mut self,
         value: impl Into<S>,
     ) -> GetEntriesBuilder<get_entries_state::SetConversationId<St>, S> {
-        self._fields.1 = ::core::option::Option::Some(value.into());
+        self._fields.2 = ::core::option::Option::Some(value.into());
         GetEntriesBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -338,7 +435,7 @@ where
         mut self,
         value: impl Into<i64>,
     ) -> GetEntriesBuilder<get_entries_state::SetLimit<St>, S> {
-        self._fields.2 = ::core::option::Option::Some(value.into());
+        self._fields.3 = ::core::option::Option::Some(value.into());
         GetEntriesBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -350,6 +447,7 @@ where
 impl<St, S: jacquard_common::BosStr> GetEntriesBuilder<St, S>
 where
     St: get_entries_state::State,
+    St::ActorDeviceId: get_entries_state::IsSet,
     St::AfterSeq: get_entries_state::IsSet,
     St::ConversationId: get_entries_state::IsSet,
     St::Limit: get_entries_state::IsSet,
@@ -357,9 +455,10 @@ where
     /// Build the final struct.
     pub fn build(self) -> GetEntries<S> {
         GetEntries {
-            after_seq: self._fields.0.unwrap(),
-            conversation_id: self._fields.1.unwrap(),
-            limit: self._fields.2.unwrap(),
+            actor_device_id: self._fields.0.unwrap(),
+            after_seq: self._fields.1.unwrap(),
+            conversation_id: self._fields.2.unwrap(),
+            limit: self._fields.3.unwrap(),
         }
     }
 }

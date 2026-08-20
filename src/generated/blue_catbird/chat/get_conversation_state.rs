@@ -6,32 +6,52 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct GetConversationState<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
+pub struct GetConversationState<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    pub actor_device_id: S,
     pub conversation_id: S,
 }
 
+
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
-pub struct GetConversationStateOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    pub pending_leave_requests: Vec<crate::generated::blue_catbird::chat::LeaveRequestView<S>>,
-    pub pending_reset_requests: Vec<crate::generated::blue_catbird::chat::ResetRequestView<S>>,
+pub struct GetConversationStateOutput<
+    S: jacquard_common::BosStr = jacquard_common::DefaultStr,
+> {
+    pub pending_leave_requests: Vec<
+        crate::generated::blue_catbird::chat::LeaveRequestView<S>,
+    >,
+    pub pending_reset_requests: Vec<
+        crate::generated::blue_catbird::chat::ResetRequestView<S>,
+    >,
     pub state: crate::generated::blue_catbird::chat::ConversationState<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -39,6 +59,7 @@ pub struct GetConversationStateOutput<S: jacquard_common::BosStr = jacquard_comm
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -48,12 +69,15 @@ pub struct GetConversationStateOutput<S: jacquard_common::BosStr = jacquard_comm
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic,
+    miette::Diagnostic
 )]
+
 #[serde(tag = "error", content = "message")]
 pub enum GetConversationStateError {
     #[serde(rename = "AccessOutsideMembershipInterval")]
-    AccessOutsideMembershipInterval(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    AccessOutsideMembershipInterval(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
     #[serde(rename = "ConversationNotFound")]
     ConversationNotFound(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "CutoverRequired")]
@@ -62,12 +86,26 @@ pub enum GetConversationStateError {
     DeviceNotRegistered(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "DeviceRevoked")]
     DeviceRevoked(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
-    #[serde(rename = "InvalidDPoP")]
-    InvalidDPoP(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "InvalidRequest")]
     InvalidRequest(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     #[serde(rename = "NotEntitled")]
     NotEntitled(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    #[serde(rename = "AccountSessionExpired")]
+    AccountSessionExpired(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "NotAuthorized")]
+    NotAuthorized(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
+    #[serde(rename = "DeviceBindingMismatch")]
+    DeviceBindingMismatch(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "ProtocolUpgradeRequired")]
+    ProtocolUpgradeRequired(
+        core::option::Option<jacquard_common::deps::smol_str::SmolStr>,
+    ),
+    #[serde(rename = "RateLimited")]
+    RateLimited(core::option::Option<jacquard_common::deps::smol_str::SmolStr>),
     /// Catch-all for unknown error codes.
     #[serde(untagged)]
     Other {
@@ -114,13 +152,6 @@ impl core::fmt::Display for GetConversationStateError {
                 }
                 Ok(())
             }
-            Self::InvalidDPoP(msg) => {
-                write!(f, "InvalidDPoP")?;
-                if let Some(msg) = msg {
-                    write!(f, ": {}", msg)?;
-                }
-                Ok(())
-            }
             Self::InvalidRequest(msg) => {
                 write!(f, "InvalidRequest")?;
                 if let Some(msg) = msg {
@@ -130,6 +161,41 @@ impl core::fmt::Display for GetConversationStateError {
             }
             Self::NotEntitled(msg) => {
                 write!(f, "NotEntitled")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::AccountSessionExpired(msg) => {
+                write!(f, "AccountSessionExpired")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::NotAuthorized(msg) => {
+                write!(f, "NotAuthorized")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::DeviceBindingMismatch(msg) => {
+                write!(f, "DeviceBindingMismatch")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::ProtocolUpgradeRequired(msg) => {
+                write!(f, "ProtocolUpgradeRequired")?;
+                if let Some(msg) = msg {
+                    write!(f, ": {}", msg)?;
+                }
+                Ok(())
+            }
+            Self::RateLimited(msg) => {
+                write!(f, "RateLimited")?;
                 if let Some(msg) = msg {
                     write!(f, ": {}", msg)?;
                 }
@@ -157,7 +223,8 @@ impl jacquard_common::xrpc::XrpcResp for GetConversationStateResponse {
     type Err = GetConversationStateError;
 }
 
-impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for GetConversationState<S> {
+impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest
+for GetConversationState<S> {
     const NSID: &'static str = "blue.catbird.chat.getConversationState";
     const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Query;
     type Response = GetConversationStateResponse;
@@ -176,31 +243,43 @@ impl jacquard_common::xrpc::XrpcEndpoint for GetConversationStateRequest {
 
 pub mod get_conversation_state_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
     /// State trait tracking which required fields have been set
     pub trait State: sealed::Sealed {
+        type ActorDeviceId;
         type ConversationId;
     }
     /// Empty state - all required fields are unset
     pub struct Empty(());
     impl sealed::Sealed for Empty {}
     impl State for Empty {
+        type ActorDeviceId = Unset;
         type ConversationId = Unset;
+    }
+    ///State transition - sets the `actor_device_id` field to Set
+    pub struct SetActorDeviceId<St: State = Empty>(PhantomData<fn() -> St>);
+    impl<St: State> sealed::Sealed for SetActorDeviceId<St> {}
+    impl<St: State> State for SetActorDeviceId<St> {
+        type ActorDeviceId = Set<members::actor_device_id>;
+        type ConversationId = St::ConversationId;
     }
     ///State transition - sets the `conversation_id` field to Set
     pub struct SetConversationId<St: State = Empty>(PhantomData<fn() -> St>);
     impl<St: State> sealed::Sealed for SetConversationId<St> {}
     impl<St: State> State for SetConversationId<St> {
+        type ActorDeviceId = St::ActorDeviceId;
         type ConversationId = Set<members::conversation_id>;
     }
     /// Marker types for field names
     #[allow(non_camel_case_types)]
     pub mod members {
+        ///Marker type for the `actor_device_id` field
+        pub struct actor_device_id(());
         ///Marker type for the `conversation_id` field
         pub struct conversation_id(());
     }
@@ -212,45 +291,74 @@ pub struct GetConversationStateBuilder<
     S: jacquard_common::BosStr = jacquard_common::DefaultStr,
 > {
     _state: ::core::marker::PhantomData<fn() -> St>,
-    _fields: (core::option::Option<S>,),
+    _fields: (core::option::Option<S>, core::option::Option<S>),
     _type: ::core::marker::PhantomData<fn() -> S>,
 }
 
 impl GetConversationState<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new(
-    ) -> GetConversationStateBuilder<get_conversation_state_state::Empty, jacquard_common::DefaultStr>
-    {
+    pub fn new() -> GetConversationStateBuilder<
+        get_conversation_state_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         GetConversationStateBuilder::new()
     }
 }
 
 impl<S: jacquard_common::BosStr> GetConversationState<S> {
     /// Create a new builder for this type
-    pub fn builder() -> GetConversationStateBuilder<get_conversation_state_state::Empty, S> {
+    pub fn builder() -> GetConversationStateBuilder<
+        get_conversation_state_state::Empty,
+        S,
+    > {
         GetConversationStateBuilder::builder()
     }
 }
 
-impl GetConversationStateBuilder<get_conversation_state_state::Empty, jacquard_common::DefaultStr> {
+impl GetConversationStateBuilder<
+    get_conversation_state_state::Empty,
+    jacquard_common::DefaultStr,
+> {
     /// Create a new builder with all fields unset, using the default string type, if needed
     pub fn new() -> Self {
         GetConversationStateBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None,),
+            _fields: (None, None),
             _type: ::core::marker::PhantomData,
         }
     }
 }
 
-impl<S: jacquard_common::BosStr>
-    GetConversationStateBuilder<get_conversation_state_state::Empty, S>
-{
+impl<
+    S: jacquard_common::BosStr,
+> GetConversationStateBuilder<get_conversation_state_state::Empty, S> {
     /// Create a new builder with all fields unset
     pub fn builder() -> Self {
         GetConversationStateBuilder {
             _state: ::core::marker::PhantomData,
-            _fields: (None,),
+            _fields: (None, None),
+            _type: ::core::marker::PhantomData,
+        }
+    }
+}
+
+impl<St, S: jacquard_common::BosStr> GetConversationStateBuilder<St, S>
+where
+    St: get_conversation_state_state::State,
+    St::ActorDeviceId: get_conversation_state_state::IsUnset,
+{
+    /// Set the `actorDeviceId` field (required)
+    pub fn actor_device_id(
+        mut self,
+        value: impl Into<S>,
+    ) -> GetConversationStateBuilder<
+        get_conversation_state_state::SetActorDeviceId<St>,
+        S,
+    > {
+        self._fields.0 = ::core::option::Option::Some(value.into());
+        GetConversationStateBuilder {
+            _state: ::core::marker::PhantomData,
+            _fields: self._fields,
             _type: ::core::marker::PhantomData,
         }
     }
@@ -265,8 +373,11 @@ where
     pub fn conversation_id(
         mut self,
         value: impl Into<S>,
-    ) -> GetConversationStateBuilder<get_conversation_state_state::SetConversationId<St>, S> {
-        self._fields.0 = ::core::option::Option::Some(value.into());
+    ) -> GetConversationStateBuilder<
+        get_conversation_state_state::SetConversationId<St>,
+        S,
+    > {
+        self._fields.1 = ::core::option::Option::Some(value.into());
         GetConversationStateBuilder {
             _state: ::core::marker::PhantomData,
             _fields: self._fields,
@@ -278,12 +389,14 @@ where
 impl<St, S: jacquard_common::BosStr> GetConversationStateBuilder<St, S>
 where
     St: get_conversation_state_state::State,
+    St::ActorDeviceId: get_conversation_state_state::IsSet,
     St::ConversationId: get_conversation_state_state::IsSet,
 {
     /// Build the final struct.
     pub fn build(self) -> GetConversationState<S> {
         GetConversationState {
-            conversation_id: self._fields.0.unwrap(),
+            actor_device_id: self._fields.0.unwrap(),
+            conversation_id: self._fields.1.unwrap(),
         }
     }
 }

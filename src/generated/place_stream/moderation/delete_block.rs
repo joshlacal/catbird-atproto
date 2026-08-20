@@ -6,8 +6,15 @@
 // Any manual changes will be overwritten on the next regeneration.
 
 #[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, jacquard_derive::IntoStatic,
+    serde::Serialize,
+    serde::Deserialize,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    jacquard_derive::IntoStatic
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -17,11 +24,7 @@ pub struct DeleteBlock<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     pub block_uri: jacquard_common::types::string::AtUri<S>,
     ///The DID of the streamer.
     pub streamer: jacquard_common::types::string::Did<S>,
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -29,6 +32,7 @@ pub struct DeleteBlock<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -38,18 +42,15 @@ pub struct DeleteBlock<S: jacquard_common::BosStr = jacquard_common::DefaultStr>
     PartialEq,
     Eq,
     jacquard_derive::IntoStatic,
-    Default,
+    Default
 )]
+
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
 )]
 pub struct DeleteBlockOutput<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
-    #[serde(
-        flatten,
-        default,
-        skip_serializing_if = "core::option::Option::is_none"
-    )]
+    #[serde(flatten, default, skip_serializing_if = "core::option::Option::is_none")]
     pub extra_data: core::option::Option<
         alloc::collections::BTreeMap<
             jacquard_common::deps::smol_str::SmolStr,
@@ -57,6 +58,7 @@ pub struct DeleteBlockOutput<S: jacquard_common::BosStr = jacquard_common::Defau
         >,
     >,
 }
+
 
 #[derive(
     serde::Serialize,
@@ -66,8 +68,9 @@ pub struct DeleteBlockOutput<S: jacquard_common::BosStr = jacquard_common::Defau
     PartialEq,
     Eq,
     thiserror::Error,
-    miette::Diagnostic,
+    miette::Diagnostic
 )]
+
 #[serde(tag = "error", content = "message")]
 pub enum DeleteBlockError {
     /// The request lacks valid authentication credentials.
@@ -135,8 +138,9 @@ impl jacquard_common::xrpc::XrpcResp for DeleteBlockResponse {
 
 impl<S: jacquard_common::BosStr> jacquard_common::xrpc::XrpcRequest for DeleteBlock<S> {
     const NSID: &'static str = "place.stream.moderation.deleteBlock";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Response = DeleteBlockResponse;
 }
 
@@ -146,17 +150,18 @@ Path: `/xrpc/place.stream.moderation.deleteBlock`. The request payload type is `
 pub struct DeleteBlockRequest;
 impl jacquard_common::xrpc::XrpcEndpoint for DeleteBlockRequest {
     const PATH: &'static str = "/xrpc/place.stream.moderation.deleteBlock";
-    const METHOD: jacquard_common::xrpc::XrpcMethod =
-        jacquard_common::xrpc::XrpcMethod::Procedure("application/json");
+    const METHOD: jacquard_common::xrpc::XrpcMethod = jacquard_common::xrpc::XrpcMethod::Procedure(
+        "application/json",
+    );
     type Request<S: jacquard_common::BosStr> = DeleteBlock<S>;
     type Response = DeleteBlockResponse;
 }
 
 pub mod delete_block_state {
 
-    pub use crate::builder_types::{IsSet, IsUnset, Set, Unset};
+    pub use crate::builder_types::{Set, Unset, IsSet, IsUnset};
     #[allow(unused)]
-    use core::marker::PhantomData;
+    use ::core::marker::PhantomData;
     mod sealed {
         pub trait Sealed {}
     }
@@ -211,7 +216,10 @@ pub struct DeleteBlockBuilder<
 
 impl DeleteBlock<jacquard_common::DefaultStr> {
     /// Create a new builder for this type, using the default string type (DefaultStr = SmolStr) if needed
-    pub fn new() -> DeleteBlockBuilder<delete_block_state::Empty, jacquard_common::DefaultStr> {
+    pub fn new() -> DeleteBlockBuilder<
+        delete_block_state::Empty,
+        jacquard_common::DefaultStr,
+    > {
         DeleteBlockBuilder::new()
     }
 }

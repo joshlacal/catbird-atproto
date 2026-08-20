@@ -42,27 +42,10 @@
 //!
 extern crate alloc;
 
-#[cfg(feature = "app_bsky")]
-pub mod app_bsky;
-
 #[cfg(feature = "blue_catbird")]
 pub mod blue_catbird;
 pub mod builder_types;
 
-#[cfg(feature = "chat_bsky")]
-pub mod chat_bsky;
-
-#[cfg(feature = "com_atproto")]
-pub mod com_atproto;
-
-#[cfg(feature = "com_germnetwork")]
-pub mod com_germnetwork;
 
 #[cfg(feature = "place_stream")]
 pub mod place_stream;
-
-#[cfg(feature = "site_standard")]
-pub mod site_standard;
-
-#[cfg(feature = "tools_ozone")]
-pub mod tools_ozone;
