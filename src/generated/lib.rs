@@ -45,7 +45,3 @@ extern crate alloc;
 #[cfg(feature = "blue_catbird")]
 pub mod blue_catbird;
 pub mod builder_types;
-
-
-#[cfg(feature = "place_stream")]
-pub mod place_stream;
