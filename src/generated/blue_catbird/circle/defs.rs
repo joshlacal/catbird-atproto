@@ -82,11 +82,8 @@ pub fn validate_space_ref(uri: &str) -> Result<(), SpaceRefError> {
         ));
     }
     let authority = parts[0];
-    if !authority.starts_with("did:") || authority.len() < 8 || !authority[4..].contains(':') {
-        return Err(SpaceRefError(format!(
-            "invalid authority DID '{authority}'"
-        )));
-    }
+    jacquard_common::types::did::validate_did(authority)
+        .map_err(|_| SpaceRefError(format!("invalid authority DID '{authority}'")))?;
     if parts[1] != "space" {
         return Err(SpaceRefError(format!(
             "path segment after authority must be 'space', got '{}'",
@@ -94,19 +91,8 @@ pub fn validate_space_ref(uri: &str) -> Result<(), SpaceRefError> {
         )));
     }
     let space_type = parts[2];
-    if space_type.is_empty()
-        || !space_type.contains('.')
-        || space_type.starts_with('.')
-        || space_type.ends_with('.')
-        || space_type.contains("..")
-        || !space_type
-            .chars()
-            .all(|c| c.is_ascii_alphanumeric() || matches!(c, '.' | '-' | '_'))
-    {
-        return Err(SpaceRefError(format!(
-            "invalid spaceType NSID '{space_type}'"
-        )));
-    }
+    jacquard_common::types::nsid::validate_nsid(space_type)
+        .map_err(|_| SpaceRefError(format!("invalid spaceType NSID '{space_type}'")))?;
     let skey = parts[3];
     if skey.is_empty() {
         return Err(SpaceRefError("skey cannot be empty".to_string()));
