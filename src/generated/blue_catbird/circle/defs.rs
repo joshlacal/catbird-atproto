@@ -11,8 +11,8 @@ use core::fmt;
 use core::ops::Deref;
 
 /// Validated Space reference URI: `at://{authorityDid}/space/{spaceType}/{skey}`.
-#[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Default)]
-pub struct SpaceRef<S: jacquard_common::BosStr = jacquard_common::DefaultStr>(pub S);
+#[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
+pub struct SpaceRef<S: jacquard_common::BosStr = jacquard_common::DefaultStr>(S);
 
 impl<S: jacquard_common::BosStr> SpaceRef<S> {
     pub fn new(s: S) -> Result<Self, SpaceRefError> {
@@ -76,13 +76,13 @@ pub fn validate_space_ref(uri: &str) -> Result<(), SpaceRefError> {
         return Err(SpaceRefError("URI must start with 'at://'".to_string()));
     };
     let parts: Vec<&str> = rest.split('/').collect();
-    if parts.len() < 4 {
+    if parts.len() != 4 {
         return Err(SpaceRefError(
-            "URI must have authority, 'space', spaceType, and skey segments".to_string(),
+            "URI must have exactly authority, 'space', spaceType, and skey segments".to_string(),
         ));
     }
     let authority = parts[0];
-    if !authority.starts_with("did:") || authority.len() < 8 {
+    if !authority.starts_with("did:") || authority.len() < 8 || !authority[4..].contains(':') {
         return Err(SpaceRefError(format!(
             "invalid authority DID '{authority}'"
         )));
@@ -94,7 +94,15 @@ pub fn validate_space_ref(uri: &str) -> Result<(), SpaceRefError> {
         )));
     }
     let space_type = parts[2];
-    if space_type.is_empty() || !space_type.contains('.') {
+    if space_type.is_empty()
+        || !space_type.contains('.')
+        || space_type.starts_with('.')
+        || space_type.ends_with('.')
+        || space_type.contains("..")
+        || !space_type
+            .chars()
+            .all(|c| c.is_ascii_alphanumeric() || matches!(c, '.' | '-' | '_'))
+    {
         return Err(SpaceRefError(format!(
             "invalid spaceType NSID '{space_type}'"
         )));
@@ -107,16 +115,7 @@ pub fn validate_space_ref(uri: &str) -> Result<(), SpaceRefError> {
 }
 
 /// Access state closed enum for Catbird Circles.
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
-    Hash,
-)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 #[serde(rename_all = "lowercase")]
 pub enum AccessState {
     Active,
@@ -126,16 +125,7 @@ pub enum AccessState {
 }
 
 /// Operation status closed enum for Catbird Circles.
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
-    Hash,
-)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 #[serde(rename_all = "lowercase")]
 pub enum OperationStatus {
     Pending,
@@ -144,16 +134,7 @@ pub enum OperationStatus {
 }
 
 /// Notification reason closed enum for Catbird Circles.
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
-    Hash,
-)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 #[serde(rename_all = "lowercase")]
 pub enum NotificationReason {
     Reply,
@@ -162,16 +143,7 @@ pub enum NotificationReason {
 }
 
 /// Report record reason closed enum.
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
-    Hash,
-)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 #[serde(rename_all = "lowercase")]
 pub enum ReportReason {
     Spam,
@@ -180,25 +152,14 @@ pub enum ReportReason {
 }
 
 /// Member action closed enum for updateMember.
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
-    Hash,
-)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 #[serde(rename_all = "lowercase")]
 pub enum MemberAction {
     Add,
     Remove,
 }
 
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq
-)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq)]
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -223,9 +184,7 @@ pub struct CircleSummary<S: jacquard_common::BosStr = jacquard_common::DefaultSt
     >,
 }
 
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq
-)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq)]
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -250,9 +209,7 @@ pub struct Operation<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     >,
 }
 
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq
-)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq)]
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -273,9 +230,7 @@ pub struct FeedItem<S: jacquard_common::BosStr = jacquard_common::DefaultStr> {
     >,
 }
 
-#[derive(
-    serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq
-)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq)]
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")

@@ -5,15 +5,7 @@
 // This file was automatically generated from Lexicon schemas.
 // Any manual changes will be overwritten on the next regeneration.
 
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    Default,
-)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq)]
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -34,15 +26,7 @@ pub struct UpdatePreferences<S: jacquard_common::BosStr = jacquard_common::Defau
     >,
 }
 
-#[derive(
-    serde::Serialize,
-    serde::Deserialize,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    Default,
-)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone, PartialEq, Eq, Default)]
 #[serde(
     rename_all = "camelCase",
     bound(deserialize = "S: serde::Deserialize<'de> + jacquard_common::BosStr")
@@ -92,10 +76,20 @@ impl core::fmt::Display for UpdatePreferencesError {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             Self::AuthRequired(msg) => write!(f, "AuthRequired: {}", msg.as_deref().unwrap_or("")),
-            Self::AccessRemoved(msg) => write!(f, "AccessRemoved: {}", msg.as_deref().unwrap_or("")),
-            Self::UnsupportedPds(msg) => write!(f, "UnsupportedPDS: {}", msg.as_deref().unwrap_or("")),
-            Self::ProtocolRevisionMismatch(msg) => write!(f, "ProtocolRevisionMismatch: {}", msg.as_deref().unwrap_or("")),
-            Self::UpstreamUnavailable(msg) => write!(f, "UpstreamUnavailable: {}", msg.as_deref().unwrap_or("")),
+            Self::AccessRemoved(msg) => {
+                write!(f, "AccessRemoved: {}", msg.as_deref().unwrap_or(""))
+            }
+            Self::UnsupportedPds(msg) => {
+                write!(f, "UnsupportedPDS: {}", msg.as_deref().unwrap_or(""))
+            }
+            Self::ProtocolRevisionMismatch(msg) => write!(
+                f,
+                "ProtocolRevisionMismatch: {}",
+                msg.as_deref().unwrap_or("")
+            ),
+            Self::UpstreamUnavailable(msg) => {
+                write!(f, "UpstreamUnavailable: {}", msg.as_deref().unwrap_or(""))
+            }
             Self::Unknown(err) => write!(f, "Unknown error: {:?}", err),
         }
     }
